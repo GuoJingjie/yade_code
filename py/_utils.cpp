@@ -632,7 +632,6 @@ try {
 	using namespace yade; // 'using namespace' inside function keeps namespace pollution under control. Alernatively I could add y:: in front of function names below and put 'namespace y  = ::yade;' here.
 	namespace py = ::boost::python;
 	YADE_SET_DOCSTRING_OPTS;
-	py::def("initMPI", initMPI, "Initialize MPI communicator, for Foam Coupling");
 	py::def("PWaveTimeStep",
 	        PWaveTimeStep,
 	        "Get timestep accoring to the velocity of P-Wave propagation; computed from sphere radii, rigidities and masses.");
