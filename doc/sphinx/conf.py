@@ -45,6 +45,7 @@ import builtins
 if 'latex' in sys.argv: builtins.writer='latex'
 elif 'html' in sys.argv: builtins.writer='html'
 elif 'epub' in sys.argv: builtins.writer='epub'
+elif 'doctest' in sys.argv: builtins.writer='doctest'
 else: raise RuntimeError("Must have either 'latex' or 'html' on the command line (hack for reference styles)")
 
 
@@ -443,7 +444,8 @@ extensions = [
 		#'matplotlib.sphinxext.mathmpl',
 		'ipython_console_highlighting',
 		'youtube',
-		'sphinx.ext.todo'
+		'sphinx.ext.todo',
+		'sphinx.ext.doctest'
 		]
 
 
