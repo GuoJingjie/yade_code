@@ -4,10 +4,15 @@
 # testGui.py script is only a slightly modified simple-scene-energy-tracking.py example.
 # the screenshots have to be taken inside yade session, while the GUI windows are open.
 
-YADE_EXECUTABLE=install/bin/yade-ci
+#YADE_EXECUTABLE=install/bin/yade-ci			<- this is for CI, uncomment when finished testing
+#GUI_TESTS_PATH=scripts/checks-and-tests/gui  FIXME: Path should be taken out of the call to the script	<- this is for CI, uncomment when finished testing
+YADE_EXECUTABLE=yade-2020-07-27.git-23b17b5
+GUI_TESTS_PATH=.
 
 # You can test locally using this script, just change YADE_EXECUTABLE into something that works for you:
-#   YADE_EXECUTABLE=./examples/yade
+#YADE_EXECUTABLE=./examples/yade
+#
+# Also remember that default path for GuiTest files is scripts/checks-and-tests/gui/* so it to something that works for you e.g. GUI_TESTS_PATH=./
 #
 # then launch this command:
 #   xvfb-run -a -s "-screen 0 1600x1200x16" scripts/checks-and-tests/gui/testGui.sh
@@ -58,13 +63,13 @@ declare -a TESTS=( "Empty" "Simple" )
 
 for TestFile in ${TESTS[@]}; do
 
-	LOGFILE="screenshots/testGui_${TestFile}.txt"
+	LOGFILE="${GUI_TESTS_PATH}/screenshots/testGui_${TestFile}.txt"
 	tail -F ${LOGFILE} &
 	TAIL_PID=$!
 
 	echo -e "******************************************\n*** Testing file testGui${TestFile}.py ***\n******************************************\nLog in file: ${LOGFILE}\ntail pid:${TAIL_PID}\n"
 
-	/usr/bin/xterm -l -xrm "XTerm*logFile:${LOGFILE}" -geometry 100x48+5+560  -e /bin/bash -c "${YADE_EXECUTABLE} scripts/checks-and-tests/gui/testGui${TestFile}.py"
+	/usr/bin/xterm -l -xrm "XTerm*logFile:${LOGFILE}" -geometry 100x48+5+560  -e /bin/bash -c "${YADE_EXECUTABLE} ${GUI_TESTS_PATH}/testGui${TestFile}.py"
 
 	# FIXME: the idea is to have a screenshot from outside of yade. But taking a screenshot after it finished (crashed, or by normal exit)
 	#        will just produce an empty screenshot. It has to be done in a different way.
