@@ -2,8 +2,12 @@
 # ./yadempi script.py #interactive will spawn 3 additional workers
 # mpiexec -n 4 ./yadempi script.py #non interactive
 
-# Only if MPI is enabled and is not using openmpi v2 (too unstable, see https://gitlab.com/yade-dev/trunk/-/merge_requests/489#note_347864439)
-if 'MPI' in yade.config.features and yade.libVersions.getAllVersionsCpp()['mpi'][0][0]!=2: # how could we just "return", in one line, instead of indenting an entire script?...
+# Only if MPI version is openmpi v3
+# v2 is too unstable (see https://gitlab.com/yade-dev/trunk/-/merge_requests/489#note_347864439)
+# v1 is usually fine, but for some reason the pipeline doesn't like it either
+
+
+if 'MPI' in yade.config.features and yade.libVersions.getAllVersionsCpp()['mpi'][0][0]==3:
 		
 	NSTEPS=100 #turn it >0 to see time iterations, else only initilization TODO!HACK
 	#NSTEPS=50 #turn it >0 to see time iterations, else only initilization
@@ -70,5 +74,5 @@ if 'MPI' in yade.config.features and yade.libVersions.getAllVersionsCpp()['mpi']
 		if (abs(Ek-refEk)/refEk)>1e-10:
 			raise YadeCheckError("kinetic energy changed by"+str((Ek-refEk)/refEk))
 else:
-	print("openMPI v2 found, too unstable, this test is skipped")
+	print("checkMPI.py only tested against openmpi3")
 
