@@ -1,7 +1,8 @@
 #! /bin/bash
 
-ls -la /root/OpenFOAM/OpenFOAM-6/etc/bashrc
-source  /root/OpenFOAM/OpenFOAM-6/etc/bashrc
+# use whichever exists. ver.6 on ubuntu 18.04, ver.8 on ubuntu 20.04
+ls -la /root/OpenFOAM/OpenFOAM-6/etc/bashrc && source  /root/OpenFOAM/OpenFOAM-6/etc/bashrc
+ls -la /root/OpenFOAM/OpenFOAM-8/etc/bashrc && source  /root/OpenFOAM/OpenFOAM-8/etc/bashrc
 
 cd ..
 rm -rf Yade-OpenFOAM-coupling

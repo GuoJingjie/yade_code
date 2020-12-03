@@ -6,6 +6,7 @@
 # image: registry.gitlab.com/yade-dev/docker-yade:ubuntu18.04
 # image: registry.gitlab.com/yade-dev/docker-yade:ubuntu18.04_nogui
 # image: registry.gitlab.com/yade-dev/docker-yade:ubuntu18.04_foam
+# image: registry.gitlab.com/yade-dev/docker-yade:ubuntu20.04_foam
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-stretch
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-buster
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
@@ -689,6 +690,21 @@ test_18_foam:
   timeout: 25 minutes
   script:
     - export PYTHONUNBUFFERED=1
+    - cat /etc/os-release
+    - export OMPI_MCA_btl_vader_single_copy_mechanism=none
+    - pwd
+    - scripts/checks-and-tests/testOpenFoam.sh
+
+test_20_foam:
+  <<: *platforms_definition
+  <<: *gitlab_runner_retry_definition
+  stage: test
+  image: registry.gitlab.com/yade-dev/docker-yade:ubuntu20.04_foam
+  dependencies:
+    - make_20_04
+  needs: ["make_20_04"]
+  timeout: 25 minutes
+  script:
     - cat /etc/os-release
     - export OMPI_MCA_btl_vader_single_copy_mechanism=none
     - pwd
