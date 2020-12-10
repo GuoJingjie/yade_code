@@ -6,6 +6,7 @@
 
 YADE_EXECUTABLE=install/bin/yade-ci			#<- this is for CI, uncomment when finished testing
 GUI_TESTS_PATH=scripts/checks-and-tests/gui  #FIXME: Path should be taken out of the call to the script	<- this is for CI, uncomment when finished testing
+SCREENSHOTS_PATH=screenshots
 #YADE_EXECUTABLE=~/Programs/yade_QM/install/bin/yade-2020-08-21.git-9ac74cd	#<--- this is for manual testing
 #GUI_TESTS_PATH=.	#<--- this is for manual testing
 
@@ -54,7 +55,7 @@ testTool "gdb"     "/usr/bin/gdb"     "ERROR_OK"
 
 echo -e "\n\n=== Will now test inside xterm, all usefull output, including gdb crash backtrace, will be on screenshots ===\n\n"
 
-mkdir -p screenshots
+mkdir -p ${SCREENSHOTS_PATH} # screenshots
 
 # FIXME: this should be deduced automatically from the files matching pattern testGui*.py, see also testGui.py
 #        currently these names are written manually inside:
@@ -68,7 +69,7 @@ TESTS=($(python3 ${GUI_TESTS_PATH}/helper/readNames.py ${GUI_TESTS_PATH} | tr -d
 
 for TestFile in ${TESTS[@]}; do
 
-	LOGFILE="screenshots/testGui_${TestFile}.txt"
+	LOGFILE="${SCREENSHOTS_PATH}/testGui_${TestFile}.txt"
 	tail -F ${LOGFILE} &
 	TAIL_PID=$!
 
@@ -80,20 +81,25 @@ for TestFile in ${TESTS[@]}; do
 	#        will just produce an empty screenshot. It has to be done in a different way.
 	# scrot -z scrBash01.png
 
-	mv scr*.png screenshots
+	mv scr*.png ${SCREENSHOTS_PATH}
 	sleep 0.25
 	echo -e "******************************************\n*** Finished file testGui${TestFile}.py ***\n******************************************\n"
 	kill -9 ${TAIL_PID}
 
 # FIXME : this number 14 is hardcoded in scripts/checks-and-tests/gui/helper/testGuiHelper.py as self.maxTestNum=14
-	if [[ ! -f screenshots/scr_${TestFile}_14.png ]] ; then
-	    echo "File screenshots/scr_${TestFile}_14.png is missing, aborting."
+	if [[ ! -f ${SCREENSHOTS_PATH}/scr_${TestFile}_14.png ]] ; then
+	    echo "File ${SCREENSHOTS_PATH}/scr_${TestFile}_14.png is missing, aborting."
 	    exit 1
 	fi
 
 done
 
-python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${GUI_TESTS_PATH}/screenshots/ #As an argument path to the screenshots folder should be given
+
+sleep 1
+echo -e "******************************************\n*** Checking screenshots now ***\n******************************************\n"
+python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${GUI_TESTS_PATH} ${SCREENSHOTS_PATH} || { sleep 2 ; exit 1; }
+echo -e "******************************************\n*** Checking screenshots finished ***\n******************************************\n"
+
 #When processed by CI there will be need for path to comparables replacement in compareScreenshots.py as it bases off of current structure which is:
 #-checks-and-tests
 # |
@@ -102,4 +108,4 @@ python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${GUI_TESTS_PATH}/sc
 #  -compareSources
 #  -differences
 #  -helper
-#  -screenshots
+

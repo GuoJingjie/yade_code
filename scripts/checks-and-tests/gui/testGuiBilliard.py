@@ -5,7 +5,7 @@ from __future__ import print_function
 from testGuiHelper import TestGUIHelper
 from builtins import range
 
-scr = TestGUIHelper("NonQM")
+scr = TestGUIHelper("Billiard")
 
 massBall   = 1.0
 radiusBall = 1.0
