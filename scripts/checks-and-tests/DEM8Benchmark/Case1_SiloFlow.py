@@ -33,7 +33,7 @@ granularMaterial='M1'
 
 # -------------------------------------------------------------------- #
 # Materials
-Steel = O.materials.append(FrictMat(young=210e-3,poisson=0.2,density=7200e-12,label='Steel'))
+Steel = O.materials.append(FrictMat(young=210e3,poisson=0.2,density=7200e-12,label='Steel'))
 
 # -------------------------------------------------------------------- #
 # Asign values based on the Material and Orifice size
@@ -45,17 +45,15 @@ e_M2_M2=0.4;	f_M2_M2=0.4
 e_M2_St=0.4;	f_M2_St=0.2
 
 if granularMaterial=='M1':
-    M1=O.materials.append(FrictMat(young=1.0e-3,poisson=0.2,density=2500e-12,label='M1'))
+    M1=O.materials.append(FrictMat(young=1.0e3,poisson=0.2,density=2500e-12,label='M1'))
     e_gg=e_M1_M1	# Coefficient of restitution (e) between granular material (g) and granular material (g)
     f_gg=f_M1_M1	# Coefficient of friction (f)...
-
     e_gs=e_M1_St	# Coefficient of restitution (e) between granular material (g) and steel (s)
     f_gs=f_M1_St	# Coefficient of friction (f)...
 elif granularMaterial=='M2':
-    M2=O.materials.append(FrictMat(young=0.5e-3,poisson=0.2,density=2000e-12,label='M2'))
+    M2=O.materials.append(FrictMat(young=0.5e3,poisson=0.2,density=2000e-12,label='M2'))
     e_gg=e_M2_M2
     f_gg=f_M2_M2
-
     e_gs=e_M2_St
     f_gs=f_M2_St
 
