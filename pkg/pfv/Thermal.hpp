@@ -120,7 +120,7 @@ public:
 		//((bool,useVolumeChange,false,,"Use volume change for thermal-mechanical-hydraulic coupling instead of pressure change. False by default."))
 		((bool,letThermalRunFlowForceUpdates,false,,"If true, Thermal will run force updates according to new pressures instead of FlowEngine. only useful if useVolumeChange=false."))
 		((bool,flowTempBoundarySet,true,,"set false to change boundary conditions"))
-		((bool,unboundCavityBodies,true,,"automatically unbound bodies touching only cavity cells."))
+		((bool,unboundCavityBodies,false,,"automatically unbound bodies touching only cavity cells."))
 		((Real,particleK,3.0,,"Particle thermal conductivity (W/(mK)"))
 		((Real,particleCp,750.,,"Particle thermal heat capacity (J/(kgK)"))
 		((Real,fluidConductionAreaFactor,1.,,"Factor for the porethroat area (used for fluid-fluid conduction model)"))
