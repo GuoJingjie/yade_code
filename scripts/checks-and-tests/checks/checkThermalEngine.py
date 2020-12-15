@@ -5,7 +5,7 @@ import numpy as np
 Check test for ThermalEngine
 
 """
-if ('THERMAL' in features)
+if ('THERMAL' in features):
   young=5e6
 
   mn,mx=Vector3(0,0,0),Vector3(0.05,0.05,0.05)
@@ -132,4 +132,6 @@ if ('THERMAL' in features)
     raise YadeCheckError('ThermalEngine checktest: fluid temp incorrect')
   if (ftemp - btarget)/btarget > tolerance:
     raise YadeCheckError('ThermalEngine checktest: body temp incorrect')
+else:
+  print("This checkThermalEngine.py cannot be executed because ENABLE_THERMAL is disabled")
 
