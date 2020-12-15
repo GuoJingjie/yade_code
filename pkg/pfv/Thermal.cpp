@@ -283,7 +283,7 @@ void ThermalEngine::setConductionBoundary()
 				for (int v = 0; v < 4; v++) {
 					if (!cell->vertex(v)->info().isFictious) {
 						const long int          id = cell->vertex(v)->info().id();
-						if ((*bodies)[id] == NULL) continue;
+						if (!Body::byId(id)) continue;
 						const shared_ptr<Body>& b  = (*bodies)[id];
 						if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
 							continue;
@@ -356,7 +356,7 @@ void ThermalEngine::computeSolidFluidFluxes()
 			if (!cell->info().Tcondition && cell->info().isFictious)
 				continue; // don't compute conduction with boundary cells that do not have a temperature assigned
 			const long int          id = cell->vertex(v)->info().id();
-			if ((*bodies)[id] == NULL) continue;
+			if (!Body::byId(id)) continue;
 			const shared_ptr<Body>& b  = (*bodies)[id];
 			if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
 				continue;
@@ -372,6 +372,7 @@ void ThermalEngine::computeSolidFluidFluxes()
 		}
 	}
 }
+
 
 void ThermalEngine::unboundCavityParticles()
 { // maybe move to flowbounding sphere, but all tools are here atm
@@ -468,7 +469,7 @@ void ThermalEngine::computeSolidSolidFluxes()
 			if (!geom)
 				continue;
 			const Real              pd  = geom->penetrationDepth;
-			if (Body::byId(I->getId1(), scene) ==NULL or Body::byId(I->getId2(), scene) == NULL) continue;
+			if (!Body::byId(I->getId1(), scene) or !Body::byId(I->getId2(), scene)) continue;
 			const shared_ptr<Body>& b1_ = Body::byId(I->getId1(), scene);
 			const shared_ptr<Body>& b2_ = Body::byId(I->getId2(), scene);
 			if (b1_->shape->getClassIndex() != Sphere::getClassIndexStatic() || b2_->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b1_
@@ -651,8 +652,6 @@ void ThermalEngine::computeNewPoreTemperatures()
 void ThermalEngine::computeNewParticleTemperatures()
 {
 	//applyBoundaryHeatFluxes(); // FIXME: buggy commenting out for now
-	const shared_ptr<BodyContainer>& bodies = scene->bodies;
-	const long                       size   = bodies->size();
 
 	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 		{
@@ -749,7 +748,7 @@ void ThermalEngine::computeCellVolumeChangeFromSolidVolumeChange(CellHandle& cel
 	Real solidVolumeChange = 0;
 	for (int v = 0; v < 4; v++) {
 		const long int          id = cell->vertex(v)->info().id();
-		if ((*bodies)[id] == NULL) continue;
+		if (!Body::byId(id)) continue;
 		const shared_ptr<Body>& b  = (*bodies)[id];
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
 			continue;
