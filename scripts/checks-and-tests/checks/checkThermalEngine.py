@@ -108,15 +108,15 @@ if ('THERMAL' in features):
   flow.emulateAction()
 
   def bodyByPos(x,y,z):
-  cBody = O.bodies[1]
-  cDist = Vector3(100,100,100)
-  for b in O.bodies:
-    if isinstance(b.shape, Sphere):
-    dist = b.state.pos - Vector3(x,y,z)
-    if np.linalg.norm(dist) < np.linalg.norm(cDist):
-      cDist = dist
-      cBody = b
-  return cBody
+    cBody = O.bodies[1]
+    cDist = Vector3(100,100,100)
+    for b in O.bodies:
+      if isinstance(b.shape, Sphere):
+      dist = b.state.pos - Vector3(x,y,z)
+      if np.linalg.norm(dist) < np.linalg.norm(cDist):
+        cDist = dist
+        cBody = b
+    return cBody
 
   bodyOfInterest = bodyByPos(0.025,0.025,0.025)
 
