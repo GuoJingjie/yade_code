@@ -53,6 +53,7 @@ stages:
   <<: *gitlab_runner_retry_definition
   stage: build
   script:
+    - export PYTHONUNBUFFERED=1
     - mkdir install
     # the command 'git diff -w --shortstat' counts the number of changes. The '-w' tells it to ignore whitespace.
     - if [[ -e "/usr/bin/clang-format" ]] ; then
@@ -382,6 +383,7 @@ make_SSE:
   <<: *gitlab_runner_retry_definition
   stage: test
   script:
+    - export PYTHONUNBUFFERED=1
     - if [[ ${SKIP_TEST} == "SKIP_TEST" ]] ; then echo -e "\n\e[93m===\nSkipping this test, because it's a WIP merge request.\n===\e[0m\n"; else install/bin/yade-ci --test; fi
     - if [[ ${SKIP_TEST} == "SKIP_TEST" ]] || [[ ${NO_GUI} == "NO_GUI" ]] ; then echo -e "\n\e[93m===\nSkipping GUI test.\n===\e[0m\n"; else xvfb-run -a -s "-screen 0 1600x1200x16" scripts/checks-and-tests/gui/testGui.sh; fi
     - if [[ ${SKIP_TEST} == "SKIP_TEST" ]] ; then echo -e "\n\e[93m===\nSkipping --quickperformance -j8 test, because it's a WIP merge request.\n===\e[0m\n"; else install/bin/yade-ci --quickperformance -j8; fi
@@ -505,6 +507,7 @@ test_18_foam:
   needs: ["make_18_04"]
   timeout: 25 minutes
   script:
+    - export PYTHONUNBUFFERED=1
     - cat /etc/os-release
     - export OMPI_MCA_btl_vader_single_copy_mechanism=none
     - pwd
@@ -584,7 +587,10 @@ test_SSE:
 #    - export OMPI_MCA_btl_vader_single_copy_mechanism=none
 #    - export OMPI_MCA_mpi_yield_when_idle=1 #degraded mode when oversubscribing (https://www.open-mpi.org/faq/?category=running#oversubscribing)
   script:
+    - export PYTHONUNBUFFERED=1
+    - echo -e "\n===\n\e[44mSingle core check yade --check\e[0m\n===\n"
     - if [[ ${SKIP_TEST} == "SKIP_TEST" ]] ; then echo -e "\n\e[93m===\nSkipping this check, because it's a WIP merge request.\n===\e[0m\n"; else install/bin/yade-ci --check; fi
+    - echo -e "\n===\n\e[44mParallel check yade -j5 --check\e[0m\n===\n"
     - if [[ ${SKIP_TEST} == "SKIP_TEST" ]] ; then echo -e "\n\e[93m===\nSkipping this check, because it's a WIP merge request.\n===\e[0m\n"; else install/bin/yade-ci -j5 --check; fi
     - cat /etc/os-release
     - /usr/bin/dpkg --print-architecture
@@ -742,6 +748,7 @@ check_SSE:
 .doc_template: &doc_definition
   <<: *platforms_definition
   script:
+    - export PYTHONUNBUFFERED=1
     - cd build
     - if [[ ${SKIP_TEST} == "SKIP_TEST" ]] ; then echo -e "\n\e[93m===\nSkipping DOC, because it's a WIP merge request.\n===\e[0m\n"; else xvfb-run -s "-screen 0 1600x1200x24" make doc; fi
   stage: test
@@ -785,6 +792,7 @@ pages:
   only:
     - master
   script:
+    - export PYTHONUNBUFFERED=1
     - cd $CI_PROJECT_DIR/deb/yadedaily
     # see comments in make_template, but here give smaller JOBSNUM because this runs on master only, so the cores can be better utilized on merge_request
     - export JOBSNUM=$(case $CI_RUNNER_DESCRIPTION in
