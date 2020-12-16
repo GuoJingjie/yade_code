@@ -112,7 +112,7 @@ if ('THERMAL' in features):
     cDist = Vector3(100,100,100)
     for b in O.bodies:
       if isinstance(b.shape, Sphere):
-      dist = b.state.pos - Vector3(x,y,z)
+        dist = b.state.pos - Vector3(x,y,z)
       if np.linalg.norm(dist) < np.linalg.norm(cDist):
         cDist = dist
         cBody = b
