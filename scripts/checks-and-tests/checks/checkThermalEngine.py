@@ -128,9 +128,9 @@ if ('THERMAL' in features):
   tolerance = 0.01
   ftarget = 25.556741323314558
   btarget = 43.463950268408055
-  if (ftemp - ftarget)/ftarget > tolerance:
+  if abs(ftemp - ftarget)/ftarget > tolerance:
     raise YadeCheckError('ThermalEngine checktest: fluid temp incorrect')
-  if (ftemp - btarget)/btarget > tolerance:
+  if abs(ftemp - btarget)/btarget > tolerance:
     raise YadeCheckError('ThermalEngine checktest: body temp incorrect')
 else:
   print("This checkThermalEngine.py cannot be executed because ENABLE_THERMAL is disabled")
