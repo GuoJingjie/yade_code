@@ -5,13 +5,16 @@ import numpy as np
 Check test for ThermalEngine
 
 """
+if((opts.threads != None and opts.threads != 1) or (opts.cores != None and opts.cores != '1')):
+	raise YadeCheckError("This test will only work on single core, because it must be fully reproducible, but -j "+str(opts.threads)+" or --cores "+str(opts.cores)+" is used.")
+
 if ('THERMAL' in features):
   young=5e6
 
   mn,mx=Vector3(0,0,0),Vector3(0.05,0.05,0.05)
 
   O.materials.append(FrictMat(young=young*100,poisson=0.5,frictionAngle=0,density=2600e20,label='walls'))
-  O.materials.append(FrictMat(young=young,poisson=0.5,frictionAngle=radians(30),density=2600e10,label='spheres'))
+  O.materials.append(FrictMat(young=young,poisson=0.5,frictionAngle=radians(30),density=2600e20,label='spheres'))
 
   walls=aabbWalls([mn,mx],thickness=0,material='walls')
   wallIds=O.bodies.append(walls)
