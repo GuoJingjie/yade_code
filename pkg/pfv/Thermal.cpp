@@ -183,6 +183,7 @@ void ThermalEngine::setInitialValues()
 	const shared_ptr<BodyContainer>& bodies = scene->bodies;
 	const long                       size   = bodies->size();
 	for (long i = 0; i < size; i++) {
+		if ((*bodies)[i] == NULL) continue;
 		const shared_ptr<Body>& b = (*bodies)[i];
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
 			continue;
@@ -202,6 +203,7 @@ void ThermalEngine::timeStepEstimate()
 	const long                       size   = bodies->size();
 	//	#pragma omp parallel for
 	for (long i = 0; i < size; i++) {
+		if ((*bodies)[i] == NULL) continue;
 		const shared_ptr<Body>& b = (*bodies)[i];
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
 			continue;
@@ -287,6 +289,7 @@ void ThermalEngine::setConductionBoundary()
 				for (int v = 0; v < 4; v++) {
 					if (!cell->vertex(v)->info().isFictious) {
 						const long int          id = cell->vertex(v)->info().id();
+						if ((*bodies)[id] == NULL) continue;
 						const shared_ptr<Body>& b  = (*bodies)[id];
 						if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
 							continue;
@@ -359,6 +362,7 @@ void ThermalEngine::computeSolidFluidFluxes()
 			if (!cell->info().Tcondition && cell->info().isFictious)
 				continue; // don't compute conduction with boundary cells that do not have a temperature assigned
 			const long int          id = cell->vertex(v)->info().id();
+			if ((*bodies)[id] == NULL) continue;
 			const shared_ptr<Body>& b  = (*bodies)[id];
 			if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
 				continue;
@@ -381,6 +385,7 @@ void ThermalEngine::unboundCavityParticles()
 	const long                 size   = bodies->size();
 #pragma omp parallel for
 	for (long i = 0; i < size; i++) {
+		if ((*bodies)[i] == NULL) continue;
 		const shared_ptr<Body>& b       = (*bodies)[i];
 		auto*                   thState = b->state.get();
 		if (thState->isCavity) {
@@ -469,6 +474,7 @@ void ThermalEngine::computeSolidSolidFluxes()
 			if (!geom)
 				continue;
 			const Real              pd  = geom->penetrationDepth;
+			if (Body::byId(I->getId1(), scene) ==NULL or Body::byId(I->getId2(), scene) == NULL) continue;
 			const shared_ptr<Body>& b1_ = Body::byId(I->getId1(), scene);
 			const shared_ptr<Body>& b2_ = Body::byId(I->getId2(), scene);
 			if (b1_->shape->getClassIndex() != Sphere::getClassIndexStatic() || b2_->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b1_
@@ -656,6 +662,7 @@ void ThermalEngine::computeNewParticleTemperatures()
 
 #pragma omp parallel for
 	for (long i = 0; i < size; i++) {
+		if ((*bodies)[i] == NULL) continue;
 		const shared_ptr<Body>& b = (*bodies)[i];
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
 			continue;
@@ -682,6 +689,7 @@ void ThermalEngine::thermalExpansion()
 	if (particleAlpha > 0) {
 #pragma omp parallel for
 		for (long i = 0; i < size; i++) {
+			if ((*bodies)[i] == NULL) continue;
 			const shared_ptr<Body> b = (*bodies)[i];
 			if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
 				continue;
@@ -751,6 +759,7 @@ void ThermalEngine::computeCellVolumeChangeFromSolidVolumeChange(CellHandle& cel
 	Real solidVolumeChange = 0;
 	for (int v = 0; v < 4; v++) {
 		const long int          id = cell->vertex(v)->info().id();
+		if ((*bodies)[id] == NULL) continue;
 		const shared_ptr<Body>& b  = (*bodies)[id];
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
 			continue;
@@ -833,6 +842,7 @@ void ThermalEngine::applyTempDeltaToSolids(Real delT)
 	const long                       size   = bodies->size();
 #pragma omp parallel for
 	for (long i = 0; i < size; i++) {
+		if ((*bodies)[i] == NULL) continue;
 		const shared_ptr<Body> b = (*bodies)[i];
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
 			continue;
