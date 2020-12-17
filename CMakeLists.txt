@@ -58,6 +58,7 @@ string(ASCII 27 Esc)
 set(MAX_LOG_LEVEL "5" CACHE STRING "default MAX_LOG_LEVEL")
 set_property(CACHE MAX_LOG_LEVEL PROPERTY STRINGS "0" "1" "2" "3" "4" "5" "6")  # define list of values GUI will offer for the variable
 
+SET(CMAKE_LD_FLAGS  "${CMAKE_LD_FLAGS} --compress-debug-sections=zlib --no-keep-files-mapped --no-map-whole-files --no-mmap-output-file")
 
 #===========================================================
 SET(DEFAULT ON CACHE INTERNAL "Default value for enabled by default options")
