@@ -58,8 +58,6 @@ string(ASCII 27 Esc)
 set(MAX_LOG_LEVEL "5" CACHE STRING "default MAX_LOG_LEVEL")
 set_property(CACHE MAX_LOG_LEVEL PROPERTY STRINGS "0" "1" "2" "3" "4" "5" "6")  # define list of values GUI will offer for the variable
 
-SET(CMAKE_LD_FLAGS  "${CMAKE_LD_FLAGS} --compress-debug-sections=zlib --no-keep-files-mapped --no-map-whole-files --no-mmap-output-file")
-
 #===========================================================
 SET(DEFAULT ON CACHE INTERNAL "Default value for enabled by default options")
 SET(LINKLIBS "")
@@ -1109,9 +1107,9 @@ ENDIF (CHUNKSIZE)
 #===========================================================
 
 ADD_LIBRARY(boot SHARED ${CMAKE_CURRENT_SOURCE_DIR}/core/main/pyboot.cpp)
-SET_TARGET_PROPERTIES(boot PROPERTIES PREFIX "" LINK_FLAGS "-Wl,--as-needed" )
+SET_TARGET_PROPERTIES(boot PROPERTIES PREFIX "" LINK_FLAGS "-Wl,--as-needed -Wl,--compress-debug-sections=zlib -Wl,--no-keep-files-mapped -Wl,--no-map-whole-files -Wl,--no-mmap-output-file" )
 TARGET_LINK_LIBRARIES(yade ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${LINKLIBS} -lrt)
-SET_TARGET_PROPERTIES(yade  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
+SET_TARGET_PROPERTIES(yade  PROPERTIES LINK_FLAGS "-Wl,--as-needed -Wl,--compress-debug-sections=zlib -Wl,--no-keep-files-mapped -Wl,--no-map-whole-files -Wl,--no-mmap-output-file" )
 TARGET_LINK_LIBRARIES(boot yade)
 
 IF(ENABLE_MPFR)
