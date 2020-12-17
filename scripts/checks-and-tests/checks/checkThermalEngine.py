@@ -105,7 +105,7 @@ if ('THERMAL' in features):
   thermal.minimumThermalCondDist=0
 
   timing.reset()
-  O.dt=1e-2
+  O.dt=1e-4
   O.dynDt=False
   thermal.dead=0
   flow.emulateAction()
