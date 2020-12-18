@@ -14,7 +14,7 @@ failedScripts=list()
 maxElapsedTime=0
 
 #some scripts are singleCore only because of required 100% reproducibility
-singleCore= ['checkVTKRecorder.py' ,'checkPotentialVTKRecorders.py' ,'checkJCFpm.py' ,'checkColliderCorrectness.py' ,'checkColliderConstantness.py']
+singleCore= ['checkVTKRecorder.py' ,'checkPotentialVTKRecorders.py' ,'checkJCFpm.py' ,'checkColliderCorrectness.py' ,'checkColliderConstantness.py', 'checkThermalEngine.py']
 
 #checkSpawn.py fails always for now, needs investigations
 skipScripts = ['checkList.py','checkSpawn.py']
