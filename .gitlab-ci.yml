@@ -101,9 +101,9 @@ stages:
     - export LINK_GOLD=$(case    $CI_PIPELINE_SOURCE in "merge_request_event") echo "20" ;; *) echo "10";; esac)
     - export LINK_REGULAR=$(case $CI_PIPELINE_SOURCE in "merge_request_event") echo "10" ;; *) echo "20";; esac)
     - ld --version
-    #- update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" $LINK_GOLD
-    #- update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" $LINK_REGULAR
-    #- ld --version
+    - update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" $LINK_GOLD
+    - update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" $LINK_REGULAR
+    - ld --version
     # 4pak has 64cores 256GB RAM, and has concurrent = 5 ← amount of simultaneous gitlab jobs
     # 6pak has 48cores 128GB RAM, and has concurrent = 3 , but 6pak must have a little smaller load than the maximum
     # 7pak has 48cores 128GB RAM, and has concurrent = 4
@@ -111,12 +111,12 @@ stages:
     # So let's assume that JOBSUM*concurrent < 1.3*cores and examine how this works out.
     # Current measurements indicate that non-ccached recompilation full CI job is 34 minutes, while ccached one can be as low as 10 minutes.
     - export JOBSNUM=$(case $CI_RUNNER_DESCRIPTION in
-        "y4pak") echo "7" ;;
-        "c4pak") echo "7" ;;
-        "y6pak") echo "9" ;;
-        "c6pak") echo "9" ;;
-        "y7pak") echo "6" ;;
-        "c7pak") echo "6" ;;
+        "y4pak") echo "17" ;;
+        "c4pak") echo "17" ;;
+        "y6pak") echo "19" ;;
+        "c6pak") echo "19" ;;
+        "y7pak") echo "16" ;;
+        "c7pak") echo "16" ;;
         "yade-runner") echo "12" ;;
         "yade-runner-01") echo "1" ;;
         *) echo "8";;
@@ -225,22 +225,6 @@ make_debug:
     - echo $EXTRA_CMAKE_ARGS
     - export CXXFLAGS="-O2 $CXXFLAGS"
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
-
-make_asan32bit:
-  <<: *make_definition
-  before_script:
-    # there can be only one before_script:, so the line below cannot be in a separate template
-    - if [[ ${CI_MERGE_REQUEST_TITLE:0:4} == "WIP:" ]] ; then export SKIP_TEST="SKIP_TEST"; else export TESTS_AFTER_MAKE="TESTS_AFTER_MAKE"; fi
-    - export EXTRA_CMAKE_ARGS="-DENABLE_VTK=OFF -DENABLE_MPI=OFF -DENABLE_GUI=OFF -DENABLE_GTS=OFF -DENABLE_FEMLIKE=OFF -DENABLE_POTENTIAL_BLOCKS=OFF -DENABLE_POTENTIAL_PARTICLES=OFF -DENABLE_GL2PS=OFF -DENABLE_USEFUL_ERRORS=0 -DENABLE_ASAN=1 $EXTRA_CMAKE_ARGS"
-    - echo $EXTRA_CMAKE_ARGS
-    - export ASAN_OPTIONS=detect_leaks=0:log_path=stdout:verify_asan_link_order=false
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-32bit-bullseye
-  tags:
-    - debug
-  artifacts:
-    when: always
-    paths:
-      - screenshots
 
 make_asan:
   <<: *make_definition
