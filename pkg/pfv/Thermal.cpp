@@ -16,7 +16,7 @@ Caulk, R. and Chareyre, B. (2019) An open framework for the simulation of therma
 
 //#define THERMAL
 #ifdef THERMAL
-#ifdef YADE_OPENMP
+//#ifdef YADE_OPENMP
 #include <core/Omega.hpp>
 #include <core/Scene.hpp>
 #include <pkg/common/Sphere.hpp>
@@ -129,7 +129,7 @@ void ThermalEngine::setReynoldsNumbers()
 	const long   size = Tes.cellHandles.size();
 	if (uniformReynolds != -1) { // gain efficiency if we know the flow is creep (assigning uniform low reynolds to all cells)
 		Real NussfluidK = (2. + 0.6 * pow(uniformReynolds, 0.5) * pow(Pr, 0.33333)) * fluidK;
-#pragma omp parallel for
+		//#pragma omp parallel for
 		for (long i = 0; i < size; i++) {
 			CellHandle& cell           = Tes.cellHandles[i];
 			cell->info().Reynolds      = uniformReynolds;
@@ -142,7 +142,7 @@ void ThermalEngine::setReynoldsNumbers()
 	flow->solver->averageRelativeCellVelocity();
 	//	#ifdef YADE_OPENMP
 	const Real poro = Shop::getPorosityAlt();
-#pragma omp parallel for
+	//#pragma omp parallel for
 	for (long i = 0; i < size; i++) {
 		CellHandle& cell = Tes.cellHandles[i];
 		CVector     l;
@@ -345,7 +345,7 @@ void ThermalEngine::computeSolidFluidFluxes()
 	Tesselation&               Tes    = flow->solver->T[flow->solver->currentTes];
 	//	#ifdef YADE_OPENMP
 	const long size = Tes.cellHandles.size();
-#pragma omp parallel for
+	//#pragma omp parallel for
 	for (long i = 0; i < size; i++) {
 		CellHandle& cell = Tes.cellHandles[i];
 		//	#else
@@ -398,7 +398,7 @@ void ThermalEngine::computeVertexSphericalArea()
 	Tesselation& Tes = flow->solver->T[flow->solver->currentTes];
 	//	#ifdef YADE_OPENMP
 	const long size = Tes.cellHandles.size();
-#pragma omp parallel for
+	//#pragma omp parallel for
 	for (long i = 0; i < size; i++) {
 		CellHandle& cell = Tes.cellHandles[i];
 		//	#else
@@ -456,7 +456,7 @@ void ThermalEngine::computeSolidSolidFluxes()
 	//	#ifdef YADE_OPENMP
 	const shared_ptr<InteractionContainer>& interactions = scene->interactions;
 	const long                              size         = interactions->size();
-#pragma omp parallel for
+	//#pragma omp parallel for
 	for (long i = 0; i < size; i++) {
 		const shared_ptr<Interaction>& I = (*interactions)[i];
 		//	#else
@@ -705,7 +705,7 @@ void ThermalEngine::thermalExpansion()
 		Real         cavDens    = flow->solver->cavityFluidDensity;
 		//	#ifdef YADE_OPENMP
 		const long sizeCells = Tes.cellHandles.size();
-#pragma omp parallel for
+		//#pragma omp parallel for
 		for (long i = 0; i < sizeCells; i++) {
 			CellHandle& cell = Tes.cellHandles[i];
 			//	#else
@@ -733,7 +733,7 @@ void ThermalEngine::accountForCavitySolidVolumeChange()
 	Tesselation& Tes = flow->solver->T[flow->solver->currentTes];
 	//	#ifdef YADE_OPENMP
 	const long sizeCells = Tes.cellHandles.size();
-#pragma omp parallel for
+	//#pragma omp parallel for
 	for (long i = 0; i < sizeCells; i++) {
 		CellHandle& cell = Tes.cellHandles[i];
 		if (!cell->info().isCavity || cell->info().blocked)
@@ -939,5 +939,5 @@ void ThermalEngine::resetFlowBoundaryTemps()
 
 } // namespace yade
 
-#endif //YADE_OPENMP
+//#endif //YADE_OPENMP
 #endif //THERMAL
