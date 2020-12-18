@@ -10,6 +10,12 @@
 import subprocess,time,os
 import yade
 from yade import qt
+from yade import plot
+
+# NOTE: sometimes there is an error "QObject: Cannot create children for a parent that is in a different thread."
+#       before stage:1 happens. Might need to look for where is the source of this problem and see 
+#       https://stackoverflow.com/questions/36453462/pyqt5-qobject-cannot-create-children-for-a-parent-that-is-in-a-different-thread
+#       https://stackoverflow.com/questions/17578428/pyqt5-signals-and-slots-qobject-has-no-attribute-error/25930966#25930966
 
 class TestGUIHelper:
 	"""
@@ -145,20 +151,19 @@ class TestGUIHelper:
 			self.clickOnScreen(580,26)
 			#yade.qt.controller.setTabActive('simulation')
 		if(self.scrNum == 13):
-			print(intro+" (testing of matplotlib is skipped for now...)")
-			self.makeNextScreenshot();
-			# FIXME: I couldn't get matplotlib to draw the plot, while screenshotting is going on.
-			# self.makeNextScreenshot();
-			# O.pause()
-			# print(intro+" opening yade.plot.plot()")
-			# plot.liveInterval=0
-			# plot.plot(subPlots=False)
-			# fig=yade.plot.plot();
-			# time.sleep(5)
-			# matplotlib.pyplot.draw()
-			# time.sleep(5)
-			# self.makeNextScreenshot();
-			# matplotlib.pyplot.close(fig)
+			print(intro+" opening yade.plot.plot()")
+			yade.plot.liveInterval=0
+			try: # not all tested scripts plot something.
+				yade.plot.plot(subPlots=False)
+				fig=yade.plot.plot();
+				time.sleep(5)
+				matplotlib.pyplot.draw()
+				time.sleep(5)
+				self.makeNextScreenshot();
+				matplotlib.pyplot.close(fig)
+			except:
+				print(intro+" apparently the tested script does not involve plotting.")
+				pass
 		if(self.scrNum == 14):
 			self.makeNextScreenshot();
 			print(intro+" exiting\n\n")
