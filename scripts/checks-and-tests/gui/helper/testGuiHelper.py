@@ -11,6 +11,7 @@ import subprocess,time,os
 import yade
 from yade import qt
 from yade import plot
+import pylab
 
 # NOTE: sometimes there is an error "QObject: Cannot create children for a parent that is in a different thread."
 #       before stage:1 happens. Might need to look for where is the source of this problem and see 
@@ -151,21 +152,23 @@ class TestGUIHelper:
 			self.clickOnScreen(580,26)
 			#yade.qt.controller.setTabActive('simulation')
 		if(self.scrNum == 13):
+			self.makeNextScreenshot();
 			print(intro+" opening yade.plot.plot()")
 			yade.plot.liveInterval=0
 			try: # not all tested scripts plot something.
 				yade.plot.plot(subPlots=False)
-				fig=yade.plot.plot();
-				time.sleep(5)
-				matplotlib.pyplot.draw()
-				time.sleep(5)
-				self.makeNextScreenshot();
-				matplotlib.pyplot.close(fig)
+				yade.plot.plot();
+				time.sleep(2)
 			except:
 				print(intro+" apparently the tested script does not involve plotting.")
 				pass
 		if(self.scrNum == 14):
 			self.makeNextScreenshot();
+			try:
+				figs=set([l.line.axes.get_figure() for l in yade.plot.currLineRefs])
+				for f in figs: pylab.close(f)
+			except:
+				pass
 			print(intro+" exiting\n\n")
 			O.pause()
 			vv=yade.qt.views()[0]
