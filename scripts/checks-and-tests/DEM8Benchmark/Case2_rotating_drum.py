@@ -8,7 +8,7 @@
 
 # Units: SI (m, N, Pa, kg, sec)
 
-angularVelocity = 2
+angularVelocity = -2
 
 # -------------------------------------------------------------------- #
 # MPI initialization
@@ -50,6 +50,11 @@ F_gs=atan(f_M1_St) # Friction Angle between granular material (g) and steel (s).
 # -------------------------------------------------------------------- #
 # Load particles from .txt file
 from yade import ymport
+import os
+
+# Download the files like this
+#os.system('wget http://perso.3sr-grenoble.fr/users/bchareyre/yade/input/'+fileName+'.stl')
+
 sp_m1=ymport.text('inputData/Case2_Drum_PartCoordinates_M1.txt',material=M1,color=(0,0,1))
 sp_m2=ymport.text('inputData/Case2_Drum_PartCoordinates_M2.txt',material=M2,color=(1,0,0))
 
@@ -143,24 +148,41 @@ else:
 
 ## Check particle quadrant
 def getNumParticlesInQuadrants():
-	zone1_count = 0
-	zone2_count = 0
+	zone1_M1_count = 0
+	zone2_M1_count = 0
+	zone1_M2_count = 0
+	zone2_M2_count = 0
 	for b in O.bodies:
 		if isinstance(b.shape, Sphere):
 			pos = b.state.pos
-			if pos[0] < 0 and pos[2]>0: zone1_count+=1 # -x+z in yade
-			if pos[0] < 0 and pos[2]<0: zone2_count+=1 # -x-z in yade
-	return zone1_count,zone2_count
+			if pos[0] < 0 and pos[2]>0: 
+				if b.material.label=='M1': zone1_M1_count+=1 # -x+z in yade
+				if b.material.label=='M2': zone1_M2_count+=1
+			if pos[0] < 0 and pos[2]<0: 
+				if b.material.label=='M1': zone2_M1_count+=1 # -x-z in yade
+				if b.material.label=='M2': zone2_M2_count+=1
+				
+	return zone1_M1_count,zone1_M2_count,zone2_M1_count,zone2_M2_count
 
 from yade import plot
 def addPlotData(): 
-	zone1_count,zone2_count = getNumParticlesInQuadrants()
-	plot.addData(zone1_count=zone1_count,zone2_count=zone2_count, time1=O.time)
+	zone1_M1_count,zone1_M2_count,zone2_M1_count,zone2_M2_count = getNumParticlesInQuadrants()
+	plot.addData(zone1_M1_count=zone1_M1_count,
+						zone1_M2_count=zone1_M2_count,
+						zone2_M1_count=zone2_M1_count,
+						zone2_M2_count=zone2_M2_count, 
+						time1=O.time)
+	plot.saveDataTxt('Case2_rotating_drum_data.txt',vars=('time1','zone1_M1_count','zone1_M2_count','zone2_M1_count','zone2_M2_count'))
 
 addPlotData() # I use this to record the initial state for O.time=0.0 FIXME: Since we already run NSTEPS, O.time is not exactly zero.
 O.engines=O.engines+[PyRunner(virtPeriod=0.1,command='addPlotData()')] # Here I use virtPeriod=0.1, following the provided .xlsx example file.
 
-plot.plots={'time1':('zone1_count','zone2_count')}
+def stopAt():
+	if O.time>=5: O.stop()
+
+O.engines=O.engines+[PyRunner(iterPeriod=1000,command='stopAt()')]
+
+plot.plots={'time1':('zone1_M1_count','zone1_M2_count','zone2_M1_count','zone2_M2_count')}
 plot.plot(noShow=False)
 
 # -------------------------------------------------------------------- #
@@ -180,6 +202,3 @@ if opts.nogui==False:
 	#rndr.bound=True
 
 O.run()
-#plot.saveDataTxt('Case2_rotating_drum.txt',vars=('time1','retained'))
-
-
