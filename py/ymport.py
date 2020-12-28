@@ -14,7 +14,7 @@ def textExt(fileName,format='x_y_z_r',shift=Vector3.Zero,scale=1.0,attrs=[],**kw
 	"""Load sphere coordinates from file in a format selected by the ``format`` argument, returns a list of corresponding bodies; that may be inserted to the simulation with O.bodies.append().
 
 	:param str filename: file name
-	:param str format: selected input format. Supported `x_y_z_r`(default), `x_y_z_r_matId`, 'x_y_z_r_attrs'
+	:param str format: selected input format. Supported ``'x_y_z_r'``(default), ``'x_y_z_r_matId'``, ``'x_y_z_r_attrs'``
 	:param [float,float,float] shift: [X,Y,Z] parameter moves the specimen.
 	:param float scale: factor scales the given data.
 	:param list attrs: attrs read from file if export.textExt(format='x_y_z_r_attrs') were used ('passed by reference' style)
@@ -60,7 +60,7 @@ def textFacets(fileName,format='x1_y1_z1_x2_y2_z2_x3_y3_z3',shift=Vector3.Zero,s
 	"""Load facet coordinates from file in a format selected by the ``format`` argument, returns a list of corresponding bodies; that may be inserted to the simulation with O.bodies.append().
 	
 	:param str filename: file name
-	:param str format: selected input format. Supported `x1_y1_z1_x2_y2_z2_x3_y3_z3`(default), `x1_y1_z1_x2_y2_z2_x3_y3_z3_matId`, 'id_x1_y1_z1_x2_y2_z2_x3_y3_z3_matId' or 'x1_y1_z1_x2_y2_z2_x3_y3_z3_attrs'
+	:param str format: selected input format. Supported ``'x1_y1_z1_x2_y2_z2_x3_y3_z3'``(default), ``'x1_y1_z1_x2_y2_z2_x3_y3_z3_matId'``, ``'id_x1_y1_z1_x2_y2_z2_x3_y3_z3_matId'`` or ``'x1_y1_z1_x2_y2_z2_x3_y3_z3_attrs'``
 	:param [float,float,float] shift: [X,Y,Z] parameter moves the specimen.
 	:param float scale: factor scales the given data.
 	:param list attrs: attrs read from file ('passed by reference' style)
@@ -105,7 +105,7 @@ def textClumps(fileName,shift=Vector3.Zero,discretization=0,orientation=Quaterni
 	"""Load clumps-members from file in a format selected by the ``format`` argument, insert them to the simulation.
 
 	:param str filename: file name
-	:param str format: selected input format. Supported `x_y_z_r`(default), `x_y_z_r_clumpId`
+	:param str format: selected input format. Supported ``'x_y_z_r'``(default), ``'x_y_z_r_clumpId'``
 	:param [float,float,float] shift: [X,Y,Z] parameter moves the specimen.
 	:param float scale: factor scales the given data.
 	:param \*\*kw: (unused keyword arguments) is passed to :yref:`yade.utils.sphere`
