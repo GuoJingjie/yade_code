@@ -177,10 +177,7 @@ def addPlotData():
 addPlotData() # I use this to record the initial state for O.time=0.0 FIXME: Since we already run NSTEPS, O.time is not exactly zero.
 O.engines=O.engines+[PyRunner(virtPeriod=0.01,command='addPlotData()')] # Here I use virtPeriod=0.1, following the provided .xlsx example file.
 
-def stopAt():
-	if O.time>=5: O.stop()
-
-O.engines=O.engines+[PyRunner(iterPeriod=1000,command='stopAt()')]
+O.stopAtTime=5
 
 plot.plots={'time1':('zone1_M1_count','zone1_M2_count','zone2_M1_count','zone2_M2_count')}
 plot.plot(noShow=False)
