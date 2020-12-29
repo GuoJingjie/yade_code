@@ -8,7 +8,7 @@
 
 # Units: SI (m, N, Pa, kg, sec)
 
-angularVelocity = -2
+angularVelocity = 2
 
 # -------------------------------------------------------------------- #
 # MPI initialization
@@ -52,11 +52,11 @@ F_gs=atan(f_M1_St) # Friction Angle between granular material (g) and steel (s).
 from yade import ymport
 import os
 
-# Download the files like this
+# FIXME: Download coordinate files like this
 #os.system('wget http://perso.3sr-grenoble.fr/users/bchareyre/yade/input/'+fileName+'.stl')
 
-sp_m1=ymport.text('inputData/Case2_Drum_PartCoordinates_M1.txt',material=M1,color=(0,0,1))
-sp_m2=ymport.text('inputData/Case2_Drum_PartCoordinates_M2.txt',material=M2,color=(1,0,0))
+sp_m2=ymport.text('inputData/Case2_Drum_PartCoordinates_M2.txt',material=M2,color=(0,0,1))
+sp_m1=ymport.text('inputData/Case2_Drum_PartCoordinates_M1.txt',material=M1,color=(1,0,0))
 
 # Load facets making the cylinder
 facets = ymport.textFacets('inputData/Case2_Drum_Walls.txt',color=(0,1,0),material=Steel)
@@ -79,7 +79,7 @@ O.engines=[
 	NewtonIntegrator(damping=0,gravity=[0,0,-9.81],label="newton"),
 	RotationEngine(rotateAroundZero=True,zeroPoint=(0,0,0),rotationAxis=(0,1,0),angularVelocity=angularVelocity,ids=drum_ids),
 	#GlobalStiffnessTimeStepper(active=1,timestepSafetyCoefficient=0.8, timeStepUpdateInterval=100, parallelMode=False, label = "ts",defaultDt=PWaveTimeStep()) #FIXME Remember to reinstate parallelMode=True when we use MPI
-	#VTKRecorder(virtPeriod=0.1,fileName='/tmp/Case1_SiloFlow-',recorders=['spheres','facets']),
+	#VTKRecorder(virtPeriod=0.01,fileName='tmp/Case2_drum-',recorders=['spheres','facets']),
 ]
 
 
@@ -120,8 +120,8 @@ else:
 	O.bodies.append(sp_m2)
 
 
-collider.verletDist = 0.5e-3
-O.dt=1e-6
+#collider.verletDist = 0.5e-3
+O.dt=2e-6
 #O.dt=0.8*PWaveTimeStep() #FIXME: Consider larger timestep instead?
 O.dynDt=False
 
@@ -155,11 +155,11 @@ def getNumParticlesInQuadrants():
 	for b in O.bodies:
 		if isinstance(b.shape, Sphere):
 			pos = b.state.pos
-			if pos[0] < 0 and pos[2]>0: 
-				if b.material.label=='M1': zone1_M1_count+=1 # -x+z in yade
+			if pos[0] > 0 and pos[2]<0: 
+				if b.material.label=='M1': zone1_M1_count+=1 # +x-z in yade
 				if b.material.label=='M2': zone1_M2_count+=1
-			if pos[0] < 0 and pos[2]<0: 
-				if b.material.label=='M1': zone2_M1_count+=1 # -x-z in yade
+			if pos[0] < 0 and pos[2]>0: 
+				if b.material.label=='M1': zone2_M1_count+=1 # -x+z in yade
 				if b.material.label=='M2': zone2_M2_count+=1
 				
 	return zone1_M1_count,zone1_M2_count,zone2_M1_count,zone2_M2_count
@@ -175,7 +175,7 @@ def addPlotData():
 	plot.saveDataTxt('Case2_rotating_drum_data.txt',vars=('time1','zone1_M1_count','zone1_M2_count','zone2_M1_count','zone2_M2_count'))
 
 addPlotData() # I use this to record the initial state for O.time=0.0 FIXME: Since we already run NSTEPS, O.time is not exactly zero.
-O.engines=O.engines+[PyRunner(virtPeriod=0.1,command='addPlotData()')] # Here I use virtPeriod=0.1, following the provided .xlsx example file.
+O.engines=O.engines+[PyRunner(virtPeriod=0.01,command='addPlotData()')] # Here I use virtPeriod=0.1, following the provided .xlsx example file.
 
 def stopAt():
 	if O.time>=5: O.stop()
@@ -195,7 +195,7 @@ if opts.nogui==False:
 	#v.upVector    = Vector3(0,0,1)
 	v.viewDir     = Vector3(0,1,0)
 #	v.grid=(False,True,False)
-	v.ortho       = True
+#	v.ortho       = True
 
 	rndr=yade.qt.Renderer()
 	#rndr.shape=False
