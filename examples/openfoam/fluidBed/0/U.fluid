@@ -1,0 +1,57 @@
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U.fluid;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    inlet 
+    {
+        type            interstitialInletVelocity; 
+        inletVelocity   uniform (0 0.9 0.0); 
+        value           uniform (0 0.9 0.0); 
+        phi             phi.fluid; 
+        alpha           alpha.fluid; 
+    }
+
+
+
+    outlet
+    {
+        type            pressureInletOutletVelocity; 
+        phi             phi.fluid; 
+        alpha           alpha.fluid; 
+        inletValue      uniform (0 0 0); 
+        value           uniform (0 0 0); 
+    }
+
+
+
+
+    walls
+    {
+        type            noSlip; 
+    
+    }
+
+
+
+    frontBack
+    {
+        type            symmetry;
+    
+    }
+
+
+}
+
+// ************************************************************************* //
