@@ -40,7 +40,7 @@ elif fileName=='SiloSmallOrifice':
     z=80
 
 
-particleRadius = 2 # 2mm in the benchmark, bigger for less particles and quicker simulations
+particleRadius = 8 # 2mm in the benchmark, bigger for less particles and quicker simulations
 
 granularMaterial='M1'
 #granularMaterial='M2'
@@ -93,70 +93,11 @@ O.engines=[
     #VTKRecorder(virtPeriod=0.04,fileName='/tmp/Silo-',recorders=['spheres','facets']),
 ]
 
-numThreads=3
-from yade import mpy as mp
-if mp.rank==0:
-
-    # -------------------------------------------------------------------- #
-    # Generate initial packing. Choose among regularOrtho, regularHexa or randomDensePack (which I think is best).
-
-    ## Using regularOrtho
-    #sp=pack.regularOrtho(pack.inCylinder(Vector3(0,0,0),Vector3(0,0,305),radius),radius=2,gap=r*1/10.,material=granularMaterial)
-
-    ## Using regularHexa
-    #sp=pack.regularHexa(pack.inCylinder(Vector3(0,0,0),Vector3(0,0,215),radius),radius=2,gap=r*1/10.,material=granularMaterial)  
-
-    # Using randomDensePack
-    sp=pack.randomDensePack(pack.inCylinder((0,0,0),(0,0,254),100),radius=particleRadius,spheresInCell=500,returnSpherePack=False,material=granularMaterial,seed=1) # FIXME: We can maybe increase spheresInCell to 5k or 10k. I used 500 to have a fast generation of the sample at this stage. If you prefer, we can load the packing from a db using memoizeDb, to achieve a faster sample generation.
-
-    # -------------------------------------------------------------------- #
-    # Sort packing in ascending Z coordinates and delete excess particles to achieve sample size of 122k
-    zValues=[]
-    for s in sp:
-        zValues.append(s.state.pos[2])
-
-    from operator import itemgetter
-    indices, zValues_sorted = zip(*sorted(enumerate(zValues), key=itemgetter(1)))
-    list(zValues)
-    list(indices)
-
-    sp_new=[]
-    for i in range(0,len(sp)):
-        sp_new.append(sp[indices[i]])
-
-    Nspheres=122000
-    sp_new=sp_new[0:Nspheres]
-
-    # -------------------------------------------------------------------- #
-    #  Import mesh
-    if not os.path.exists(fileName+'.stl'):
-        print("Downloading mesh file")
-        try:
-            os.system('wget http://perso.3sr-grenoble.fr/users/bchareyre/yade/input/'+fileName+'.stl')
-        except:
-            print("** probably no internet connection, grab the *.stl files by yourself **")
-    from yade import ymport
-    facets = ymport.stl(fileName+'.stl',color=(0,1,0),material=Steel)
-    fctIds = range(len(facets))
-    
-    O.bodies.append(facets)
-    O.bodies.append(sp_new)
-        
-    # -------------------------------------------------------------------- #
-    # Count the number of spherical particles to verify sample size. We can comment this out later on.
-    numSpheres=0
-    for b in O.bodies:
-        if isinstance(b.shape,Sphere):
-            numSpheres=numSpheres+1
-    print('The total number of spheres is: ',numSpheres)
-        
-    collider.verletDist = 0.2*particleRadius
-    O.dt=0.6 * PWaveTimeStep()
-    O.dynDt=False
 
 # This condition is not abolutely necessary but it would be inelegant to
 # download *.stl and generate densePack N times when we need it done only on master (centralized scene method)
 if not mpi or mp.rank==0:
+
     # -------------------------------------------------------------------- #
     # Generate initial packing. Choose among regularOrtho, regularHexa or randomDensePack (which I think is best).
 
