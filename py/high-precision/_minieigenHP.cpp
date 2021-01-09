@@ -74,10 +74,14 @@ template <int N, bool registerConverters> struct RegisterEigenHP {
 
 		expose_vectors1<N>(notDuplicate, topScope);
 		expose_vectors2<N>(notDuplicate, topScope);
+		expose_vectors3<N>(notDuplicate, topScope);
 		expose_matrices1<N>(notDuplicate, topScope); // must come after vectors
 		expose_matrices2<N>(notDuplicate, topScope); // must come after vectors
+		expose_matrices3<N>(notDuplicate, topScope); // must come after vectors
 		expose_complex1<N>(notDuplicate, topScope);
 		expose_complex2<N>(notDuplicate, topScope);
+		expose_complex3<N>(notDuplicate, topScope);
+		expose_complex4<N>(notDuplicate, topScope);
 		expose_quaternion<N>(notDuplicate, topScope);
 		expose_boxes<N>(notDuplicate, topScope);
 	}

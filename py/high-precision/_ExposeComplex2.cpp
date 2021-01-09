@@ -20,11 +20,9 @@ template <int N> void expose_complex2(bool notDuplicate, const py::scope& topSco
 	if (notDuplicate) {
 		py::class_<Matrix3crHP<N>>("Matrix3c", "/*TODO*/", py::init<>()).def(MatrixVisitor<Matrix3crHP<N>>());
 		py::class_<Matrix6crHP<N>>("Matrix6c", "/*TODO*/", py::init<>()).def(MatrixVisitor<Matrix6crHP<N>>());
-		py::class_<MatrixXcrHP<N>>("MatrixXc", "/*TODO*/", py::init<>()).def(MatrixVisitor<MatrixXcrHP<N>>());
 	} else {
 		py::scope().attr("Matrix3c") = topScope.attr("Matrix3c");
 		py::scope().attr("Matrix6c") = topScope.attr("Matrix6c");
-		py::scope().attr("MatrixXc") = topScope.attr("MatrixXc");
 	}
 #endif
 }
