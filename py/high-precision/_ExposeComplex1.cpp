@@ -10,21 +10,15 @@
 #include <lib/high-precision/Real.hpp>
 #include <lib/high-precision/ToFromPythonConverter.hpp>
 using namespace ::yade::MathEigenTypes;
-// define this for compatibility with minieigen.
-#define _COMPLEX_SUPPORT
 // half of minieigen/expose-complex.cpp file
 #include <py/high-precision/minieigen/visitors.hpp>
 template <int N> void expose_complex1(bool notDuplicate, const py::scope& topScope)
 {
-#ifdef _COMPLEX_SUPPORT
 	if (notDuplicate) {
 		py::class_<Vector2crHP<N>>("Vector2c", "/*TODO*/", py::init<>()).def(VectorVisitor<Vector2crHP<N>>());
-		py::class_<Vector3crHP<N>>("Vector3c", "/*TODO*/", py::init<>()).def(VectorVisitor<Vector3crHP<N>>());
 	} else {
 		py::scope().attr("Vector2c") = topScope.attr("Vector2c");
-		py::scope().attr("Vector3c") = topScope.attr("Vector3c");
 	}
-#endif
 }
 
 // explicit instantination - tell compiler to produce a compiled version of expose_converters (it is faster when done in parallel in .cpp files)
