@@ -6,20 +6,20 @@
 *  GNU General Public License v2 or later. See file LICENSE for details. *
 *************************************************************************/
 
-// compilation wall clock time: 0:24.22 → split into two files → 0:13.11
+// compilation wall clock time: 0:24.22 → split into two files → 0:16.20
 #include <lib/high-precision/Real.hpp>
 #include <lib/high-precision/ToFromPythonConverter.hpp>
 using namespace ::yade::MathEigenTypes;
 // half of minieigen/expose-complex.cpp file
 #include <py/high-precision/minieigen/visitors.hpp>
-template <int N> void expose_complex3(bool notDuplicate, const py::scope& topScope)
+template <int N> void expose_complex6(bool notDuplicate, const py::scope& topScope)
 {
 	if (notDuplicate) {
-		py::class_<Vector3crHP<N>>("Vector3c", "/*TODO*/", py::init<>()).def(VectorVisitor<Vector3crHP<N>>());
+		py::class_<MatrixXcrHP<N>>("MatrixXc", "/*TODO*/", py::init<>()).def(MatrixVisitor<MatrixXcrHP<N>>());
 	} else {
-		py::scope().attr("Vector3c") = topScope.attr("Vector3c");
+		py::scope().attr("MatrixXc") = topScope.attr("MatrixXc");
 	}
 }
 
 // explicit instantination - tell compiler to produce a compiled version of expose_converters (it is faster when done in parallel in .cpp files)
-YADE_HP_PYTHON_REGISTER(expose_complex3)
+YADE_HP_PYTHON_REGISTER(expose_complex6)

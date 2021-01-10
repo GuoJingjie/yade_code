@@ -12,14 +12,14 @@
 using namespace ::yade::MathEigenTypes;
 // half of minieigen/expose-complex.cpp file
 #include <py/high-precision/minieigen/visitors.hpp>
-template <int N> void expose_complex3(bool notDuplicate, const py::scope& topScope)
+template <int N> void expose_complex7(bool notDuplicate, const py::scope& topScope)
 {
 	if (notDuplicate) {
-		py::class_<Vector3crHP<N>>("Vector3c", "/*TODO*/", py::init<>()).def(VectorVisitor<Vector3crHP<N>>());
+		py::class_<Matrix6crHP<N>>("Matrix6c", "/*TODO*/", py::init<>()).def(MatrixVisitor<Matrix6crHP<N>>());
 	} else {
-		py::scope().attr("Vector3c") = topScope.attr("Vector3c");
+		py::scope().attr("Matrix6c") = topScope.attr("Matrix6c");
 	}
 }
 
 // explicit instantination - tell compiler to produce a compiled version of expose_converters (it is faster when done in parallel in .cpp files)
-YADE_HP_PYTHON_REGISTER(expose_complex3)
+YADE_HP_PYTHON_REGISTER(expose_complex7)
