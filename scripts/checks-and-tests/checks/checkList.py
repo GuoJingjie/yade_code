@@ -20,7 +20,36 @@ singleCore= ['checkVTKRecorder.py','checkPotentialVTKRecorders.py','checkJCFpm.p
 slowScripts= ['checkClumpHopper.py']
 
 #checkSpawn.py fails always for now, needs investigations
-skipScripts = ['checkList.py']
+skipScripts = ['checkList.py'
+,'DEM-PFV-check.py'
+,'checkAvoidSelfInteractionMask.py'
+,'checkBlockGen.py'
+,'checkCapillaryModels.py'
+,'checkClumpHopper.py'
+,'checkColliderConstantness.py'
+,'checkColliderCorrectness.py'
+,'checkDEM-PFVPressureInjection.py'
+,'checkGravity.py'
+,'checkGravityRungeKuttaCashKarp54.py'
+,'checkJCFpm.py'
+,'checkLiquidMigration.py'
+,'checkLubrication.py'
+,'checkLubricationWithRoughness.py'
+,'checkPolyhedraCrush.py'
+,'checkPotentialBlocks.py'
+,'checkPotentialParticles.py'
+,'checkPotentialVTKRecorders.py'
+,'checkSaveLoadClumps.py'
+,'checkTestDummy.py'
+,'checkTestTriax.py'
+,'checkVTKRecorder.py'
+,'checkViscElEng.py'
+,'checkViscElPM.py'
+,'checkViscElPM2.py'
+,'checkWeight.py'
+,'checkWirePM.py'
+,'check_TwoPhaseFlowEngine_PressureInjection.py']
+
 onlyOneScript = [] # use this if you want to test only one script, it takes precedence over skipScripts.
 
 
