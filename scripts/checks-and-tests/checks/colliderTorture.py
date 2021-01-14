@@ -7,12 +7,20 @@ import time
 newton.gravity=(0,-10,0) 
 newton.damping=0
 
+O.engines=[ #this reproduces the yade default, not present during checkList.py execution
+        ForceResetter(),
+        InsertionSortCollider([Bo1_Sphere_Aabb(),Bo1_Facet_Aabb(),Bo1_Box_Aabb()],verletDist=0.3,label="collider"),
+        InteractionLoop(
+            [Ig2_Facet_Sphere_ScGeom(),Ig2_Box_Sphere_ScGeom()], # <====== disable sphere-sphere contacts, they will be virtual interactions
+            [Ip2_FrictMat_FrictMat_FrictPhys()],
+            [Law2_ScGeom_FrictPhys_CundallStrack(label="law")],
+            label="interactionLoop"
+        ),
+        NewtonIntegrator(label="newton")
+    ]
+
 O.dynDt=False
 O.dt=3e-3
-collider.verletDist=0.3
-
-# disable sphere-sphere contacts, they will be virtual interactions
-O.engines[2].geomDispatcher.functors=O.engines[2].geomDispatcher.functors[1:]
 
 O.bodies.append(box(center=[0,0,0],extents=[500,0,500],color=[0,0,1],fixed=True))
 N=40
@@ -85,7 +93,7 @@ def check():
     if sig1==sig2:
         print("signatures match",sig1)
     else:
-        raise YadeCheckError("signatures mismatch",sig1,sig2)    
+        raise YadeCheckError("signatures mismatch "+str(sig1)+" vs "+str(sig2))    
  
 def signature():
     sig=0
@@ -125,19 +133,15 @@ def testFraction(fraction,withInsert=True):
     collider.__call__()
     times.append(time.time()-t1)
     if not withInsert: insert(n)
-    if (times[0]>2*times[1]):
-        print("collider run in more than twice the initSort time, ratio:",times[0]/times[1])
-        raise YadeCheckError("collider run in more than twice the initSort time, ratio:",times[0]/times[1])
     return times
 
 
 
 for enableRedirection in [False,True]:
     O.bodies.enableRedirection=enableRedirection
-    O.saveTmp()    
     
     print("================")
-    print("redirection/smart:", O.bodies.enableRedirection, collider.smartInsertErase)
+    print("redirection:", O.bodies.enableRedirection)
     print("================")
     
     O.reload()
@@ -158,4 +162,5 @@ for enableRedirection in [False,True]:
     for fraction in [0, 0.001,0.01,0.04,0.1,0.25,0.4,0.7]:
         t=testFraction(fraction,True)
         print("fraction=",fraction,"collider time:", t[0],"vs. initSort",t[1])
+        #if (t[0]>2*t[1]): raise YadeCheckError("collider run in more than twice the initSort time, ratio:"+str(times[0]/times[1]))
     
