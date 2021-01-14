@@ -466,6 +466,10 @@ class Timing_comm():
 	@enable_timing
 	def mpiWaitReceived(self,*args, **kwargs):
 		return O.subD.mpiWaitReceived(*args, **kwargs)
+    
+	@enable_timing
+	def mpiWait(self,req):
+		return comm.wait(req)
 	
 	@enable_timing
 	def mpiSendStates(self,*args, **kwargs):
@@ -835,7 +839,7 @@ def mergeScene():
 			O.subD.mergeOp()
 			sendRecvStatesRunner.dead = isendRecvForcesRunner.dead = waitForcesRunner.dead = collisionChecker.dead = True
 			O.splitted=False
-			collider.doSort = True
+			#collider.doSort = True
 			if (AUTO_COLOR): colorDomains()
 			global NUM_MERGES; NUM_MERGES +=1; 
 		else:
@@ -885,7 +889,7 @@ def mergeScene():
 			# turn mpi engines off
 			sendRecvStatesRunner.dead = isendRecvForcesRunner.dead = waitForcesRunner.dead = collisionChecker.dead = True
 			O.splitted=False
-			collider.doSort = True
+			#collider.doSort = True
 		
 		if (AUTO_COLOR): colorDomains()
 		if rank==0: O.engines = O.initialEngines
