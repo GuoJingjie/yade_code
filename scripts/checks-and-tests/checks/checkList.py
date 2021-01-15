@@ -17,7 +17,7 @@ maxElapsedTime=0
 singleCore= ['checkVTKRecorder.py','checkPotentialVTKRecorders.py','checkJCFpm.py','checkPolyhedraCrush.py','checkColliderCorrectness.py','checkColliderConstantness.py']
 
 #some scripts take longer than 30 seconds. Let's allow them, but only with yade --checkall
-slowScripts= ['checkClumpHopper.py']
+slowScripts= ['checkClumpHopper.py','checkMPISilo.py','colliderTorture.py']
 
 #checkSpawn.py fails always for now, needs investigations
 skipScripts = ['checkList.py','checkMPISilo.py']
