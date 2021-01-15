@@ -7,6 +7,7 @@ AlignTrailingComments: true
 #wait till clang supports it
 # AllowAllArgumentsOnNextLine: true
 # AllowShortBlocksOnASingleLine: Always
+AllowShortIfStatementsOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
 BinPackArguments: false
