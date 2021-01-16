@@ -74,8 +74,7 @@ public:                                                                         
 	virtual int& getBaseClassIndex(int depth)                                                                                                              \
 	{                                                                                                                                                      \
 		static boost::scoped_ptr<BaseClass> baseClass(new BaseClass);                                                                                  \
-		if (depth == 1)                                                                                                                                \
-			return baseClass->getClassIndex();                                                                                                     \
+		if (depth == 1) return baseClass->getClassIndex();                                                                                             \
 		else                                                                                                                                           \
 			return baseClass->getBaseClassIndex(--depth);                                                                                          \
 	}                                                                                                                                                      \
@@ -84,8 +83,7 @@ public:                                                                         
 	virtual const int& getBaseClassIndex(int depth) const                                                                                                  \
 	{                                                                                                                                                      \
 		static boost::scoped_ptr<BaseClass> baseClass(new BaseClass);                                                                                  \
-		if (depth == 1)                                                                                                                                \
-			return baseClass->getClassIndex();                                                                                                     \
+		if (depth == 1) return baseClass->getClassIndex();                                                                                             \
 		else                                                                                                                                           \
 			return baseClass->getBaseClassIndex(--depth);                                                                                          \
 	}
@@ -138,9 +136,7 @@ public:                                                                         
 	{                                                                                                                                                      \
 		SomeClass* Indexable##SomeClass = 0;                                                                                                           \
 		Indexable##SomeClass            = dynamic_cast<SomeClass*>(const_cast<SomeClass*>(this));                                                      \
-		if (Indexable##SomeClass) {                                                                                                                    \
-			assert(Indexable##SomeClass);                                                                                                          \
-		}                                                                                                                                              \
+		if (Indexable##SomeClass) { assert(Indexable##SomeClass); }                                                                                    \
 		return getMaxCurrentlyUsedIndexStatic();                                                                                                       \
 	}                                                                                                                                                      \
                                                                                                                                                                \
@@ -149,9 +145,7 @@ public:                                                                         
 	{                                                                                                                                                      \
 		SomeClass* Indexable##SomeClass = 0;                                                                                                           \
 		Indexable##SomeClass            = dynamic_cast<SomeClass*>(this);                                                                              \
-		if (Indexable##SomeClass) {                                                                                                                    \
-			assert(Indexable##SomeClass);                                                                                                          \
-		}                                                                                                                                              \
+		if (Indexable##SomeClass) { assert(Indexable##SomeClass); }                                                                                    \
 		int& max = getMaxCurrentlyUsedIndexStatic();                                                                                                   \
 		max++;                                                                                                                                         \
 	}

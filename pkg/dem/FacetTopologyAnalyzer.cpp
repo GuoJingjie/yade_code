@@ -23,8 +23,7 @@ void FacetTopologyAnalyzer::action()
 	Real minSqLen = numeric_limits<Real>::infinity();
 	for (const auto& b : *scene->bodies) {
 		shared_ptr<Facet> f = YADE_PTR_DYN_CAST<Facet>(b->shape);
-		if (!f)
-			continue;
+		if (!f) continue;
 		const Vector3r& pos = b->state->pos;
 		for (size_t i = 0; i < 3; i++) {
 			vv.push_back(shared_ptr<VertexData>(new VertexData(b->getId(), i, f->vertices[i] + pos, (f->vertices[i] + pos).dot(projectionAxis))));
@@ -65,8 +64,7 @@ void FacetTopologyAnalyzer::action()
 			v->vertexId = maxVertexId++;
 		}
 		FOREACH(shared_ptr<VertexData> & vNext, v->nextIdentical) { vNext->vertexId = v->vertexId; }
-		if (v->vertexId >= 0)
-			continue; // already assigned
+		if (v->vertexId >= 0) continue; // already assigned
 	}
 	LOG_DEBUG("Found " << maxVertexId << " unique vertices.");
 	commonVerticesFound = maxVertexId;
@@ -74,8 +72,7 @@ void FacetTopologyAnalyzer::action()
 	vector<shared_ptr<FacetTopology>> topo(scene->bodies->size()); // initialized with the default ctor
 	FOREACH(shared_ptr<VertexData> & v, vv)
 	{
-		if (!topo[v->id])
-			topo[v->id] = shared_ptr<FacetTopology>(new FacetTopology(v->id));
+		if (!topo[v->id]) topo[v->id] = shared_ptr<FacetTopology>(new FacetTopology(v->id));
 		topo[v->id]->vertices[v->vertexNo] = v->vertexId;
 	}
 	// make sure all facets have their vertex id's assigned
@@ -83,8 +80,7 @@ void FacetTopologyAnalyzer::action()
 	vector<shared_ptr<FacetTopology>> topo1;
 	for (size_t i = 0; i < topo.size(); i++) {
 		shared_ptr<FacetTopology> t = topo[i];
-		if (!t)
-			continue;
+		if (!t) continue;
 		if (t->vertices[0] < 0 || t->vertices[1] < 0 || t->vertices[2] < 0) {
 			LOG_FATAL("Facet #" << i << ": some vertex has no integrized vertexId assigned!!");
 			LOG_FATAL("Vertices are: " << t->vertices[0] << "," << t->vertices[1] << "," << t->vertices[2]);
@@ -103,19 +99,16 @@ void FacetTopologyAnalyzer::action()
 			/* since facets are sorted by their min vertex id,
 				we know that it is safe to skip all the rest
 				as soon as max vertex of ti one is smaller than min vertex of tj, as i<=j */
-			if (tj->minVertex() > tiMaxVertex)
-				break;
+			if (tj->minVertex() > tiMaxVertex) break;
 			vector<size_t> vvv; // array of common vertices
 			for (size_t k = 0; k < 3; k++) {
-				if (ti->vertices[k] == tj->vertices[0])
-					vvv.push_back(ti->vertices[k]);
+				if (ti->vertices[k] == tj->vertices[0]) vvv.push_back(ti->vertices[k]);
 				else if (ti->vertices[k] == tj->vertices[1])
 					vvv.push_back(ti->vertices[k]);
 				else if (ti->vertices[k] == tj->vertices[2])
 					vvv.push_back(ti->vertices[k]);
 			}
-			if (vvv.size() < 2)
-				continue;
+			if (vvv.size() < 2) continue;
 			assert(vvv.size() != 3 /* same coords? nonsense*/);
 			assert(vvv.size() == 2);
 			// from here, we know ti and tj are adjacent
@@ -126,8 +119,7 @@ void FacetTopologyAnalyzer::action()
 				for (edge[k] = 0; edge[k] < 3; edge[k]++) {
 					const shared_ptr<FacetTopology>& tt(k == 0 ? ti : tj);
 					size_t                           v1 = tt->vertices[edge[k]], v2 = tt->vertices[(edge[k] + 1) % 3];
-					if ((vvv[0] == v1 && vvv[1] == v2) || (vvv[0] == v2 && vvv[1] == v1))
-						break;
+					if ((vvv[0] == v1 && vvv[1] == v2) || (vvv[0] == v2 && vvv[1] == v1)) break;
 					if (edge[k] == 2) {
 						LOG_FATAL(
 						        "No edge identified for 2 vertices " << vvv[0] << "," << vvv[1] << " (facet #" << tt->id
@@ -157,8 +149,7 @@ void FacetTopologyAnalyzer::action()
 			AngleAxisr aa12(q12);
 			Real       halfAngle = .5 * aa12.angle();
 			assert(halfAngle >= 0 && halfAngle <= Mathr::HALF_PI);
-			if (aa12.axis().dot(contEdge1g) < 0 /* convex contact from the side of +n1 */)
-				halfAngle *= -1.;
+			if (aa12.axis().dot(contEdge1g) < 0 /* convex contact from the side of +n1 */) halfAngle *= -1.;
 			f1->edgeAdjHalfAngle[ei] = halfAngle;
 			f2->edgeAdjHalfAngle[ej] = (invNormals ? -halfAngle : halfAngle);
 			commonEdgesFound++;

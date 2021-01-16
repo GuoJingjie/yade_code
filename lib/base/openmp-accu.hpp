@@ -53,15 +53,13 @@ public:
 	// change number of elements (per each thread)
 	void resize(size_t n)
 	{
-		if (n == sz)
-			return; // nothing to do
+		if (n == sz) return; // nothing to do
 		size_t nCL_new = nCL_for_N(n);
 		if (nCL_new > nCL) {
 			for (size_t th = 0; th < nThreads; th++) {
 				void* oldChunk = (void*)chunks[th];
 				int   succ     = posix_memalign((void**)(&chunks[th]), /*alignment*/ CLS, /*size*/ nCL_new * CLS);
-				if (succ != 0)
-					throw std::runtime_error("OpenMPArrayAccumulator: posix_memalign failed to allocate memory.");
+				if (succ != 0) throw std::runtime_error("OpenMPArrayAccumulator: posix_memalign failed to allocate memory.");
 				if (oldChunk) { // initialized to NULL initially, that must not be copied and freed
 #if (YADE_REAL_BIT > 64)
 #warning                                                                                                                                                       \
@@ -148,8 +146,7 @@ public:
 		// TODO: consider using https://en.cppreference.com/w/cpp/language/alignof or https://en.cppreference.com/w/cpp/types/alignment_of
 		// FIXME: This is suspected to not work on mips64el properly.
 		int succ = posix_memalign(/*where allocated*/ (void**)&data, /*alignment*/ CLS, /*size*/ nThreads * eSize);
-		if (succ != 0)
-			throw std::runtime_error("OpenMPAccumulator: posix_memalign failed to allocate memory.");
+		if (succ != 0) throw std::runtime_error("OpenMPAccumulator: posix_memalign failed to allocate memory.");
 		reset();
 	}
 	~OpenMPAccumulator() { free((void*)data); }

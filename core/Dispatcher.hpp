@@ -60,11 +60,9 @@ Because we need literal functor and class names for registration in python, we p
 		bool   dupe = false;                                                                                                                           \
 		string fn   = f->getClassName();                                                                                                               \
 		for (const auto& fScan : functors) {                                                                                                           \
-			if (fn == fScan->getClassName())                                                                                                       \
-				dupe = true;                                                                                                                   \
+			if (fn == fScan->getClassName()) dupe = true;                                                                                          \
 		}                                                                                                                                              \
-		if (!dupe)                                                                                                                                     \
-			functors.push_back(f);                                                                                                                 \
+		if (!dupe) functors.push_back(f);                                                                                                              \
 		addFunctor(f);                                                                                                                                 \
 	}                                                                                                                                                      \
 	BOOST_PP_CAT(_YADE_DISPATCHER, BOOST_PP_CAT(Dim, D_FUNCTOR_ADD))(FunctorT, f) boost::python::list functors_get(void) const                             \
@@ -84,10 +82,8 @@ Because we need literal functor and class names for registration in python, we p
 	}                                                                                                                                                      \
 	void pyHandleCustomCtorArgs(boost::python::tuple& t, boost::python::dict& /*d*/)                                                                       \
 	{                                                                                                                                                      \
-		if (boost::python::len(t) == 0)                                                                                                                \
-			return;                                                                                                                                \
-		if (boost::python::len(t) != 1)                                                                                                                \
-			throw invalid_argument("Exactly one list of " BOOST_PP_STRINGIZE(FunctorT) " must be given.");                                         \
+		if (boost::python::len(t) == 0) return;                                                                                                        \
+		if (boost::python::len(t) != 1) throw invalid_argument("Exactly one list of " BOOST_PP_STRINGIZE(FunctorT) " must be given.");                 \
 		typedef std::vector<shared_ptr<FunctorT>> vecF;                                                                                                \
 		vecF                                      vf = boost::python::extract<vecF>(t[0])();                                                           \
 		functors_set(vf);                                                                                                                              \
@@ -143,8 +139,7 @@ template <class topIndexable> std::string Dispatcher_indexToClassName(int idx)
 				        "Class " + inst->getClassName() + " didn't use REGISTER_CLASS_INDEX(" + inst->getClassName() + "," + top->getClassName()
 				        + ") and/or forgot to call createIndex() in the ctor. [[ Please fix that! ]]");
 			}
-			if (inst->getClassIndex() == idx)
-				return clss.first;
+			if (inst->getClassIndex() == idx) return clss.first;
 		}
 	}
 	throw runtime_error("No class with index " + boost::lexical_cast<string>(idx) + " found (top-level indexable is " + topName + ")");
@@ -159,22 +154,18 @@ template <typename TopIndexable> boost::python::list Indexable_getClassIndices(c
 	int                 depth = 1;
 	boost::python::list ret;
 	int                 idx0 = i->getClassIndex();
-	if (convertToNames)
-		ret.append(Dispatcher_indexToClassName<TopIndexable>(idx0));
+	if (convertToNames) ret.append(Dispatcher_indexToClassName<TopIndexable>(idx0));
 	else
 		ret.append(idx0);
 
-	if (idx0 < 0)
-		return ret; // don't continue and call getBaseClassIndex(), since we are at the top already
+	if (idx0 < 0) return ret; // don't continue and call getBaseClassIndex(), since we are at the top already
 
 	while (true) {
 		int idx = i->getBaseClassIndex(depth++);
-		if (convertToNames)
-			ret.append(Dispatcher_indexToClassName<TopIndexable>(idx));
+		if (convertToNames) ret.append(Dispatcher_indexToClassName<TopIndexable>(idx));
 		else
 			ret.append(idx);
-		if (idx < 0)
-			return ret;
+		if (idx < 0) return ret;
 	}
 }
 

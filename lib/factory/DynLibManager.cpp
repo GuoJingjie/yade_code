@@ -20,18 +20,15 @@ DynLibManager::DynLibManager() { autoUnload = true; }
 
 DynLibManager::~DynLibManager()
 {
-	if (autoUnload)
-		unloadAll();
+	if (autoUnload) unloadAll();
 }
 
 // load plugin with given filename
 bool DynLibManager::load(const string& lib)
 {
-	if (lib.empty())
-		throw std::runtime_error(__FILE__ ": got empty library name to load.");
+	if (lib.empty()) throw std::runtime_error(__FILE__ ": got empty library name to load.");
 	void* handle = dlopen(lib.c_str(), RTLD_GLOBAL | RTLD_NOW);
-	if (!handle)
-		return !error();
+	if (!handle) return !error();
 	handles[lib] = handle;
 	return true;
 }
@@ -39,8 +36,7 @@ bool DynLibManager::load(const string& lib)
 // unload plugin, given full filename
 bool DynLibManager::unload(const string& libName)
 {
-	if (isLoaded(libName))
-		return closeLib(libName);
+	if (isLoaded(libName)) return closeLib(libName);
 	else
 		return false;
 }
@@ -51,8 +47,7 @@ bool DynLibManager::unloadAll()
 	std::map<const string, void*>::iterator ith    = handles.begin();
 	std::map<const string, void*>::iterator ithEnd = handles.end();
 	for (; ith != ithEnd; ++ith)
-		if ((*ith).first.length() != 0)
-			unload((*ith).first);
+		if ((*ith).first.length() != 0) unload((*ith).first);
 	return false;
 }
 
@@ -78,9 +73,7 @@ std::string DynLibManager::lastError() { return lastError_; }
 bool DynLibManager::error()
 {
 	char* error = dlerror();
-	if (error != NULL) {
-		lastError_ = error;
-	}
+	if (error != NULL) { lastError_ = error; }
 	return (error != NULL);
 }
 

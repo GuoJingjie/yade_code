@@ -87,8 +87,7 @@ static PyObject* neighbor_number(PygtsFace* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &s_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &s_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	if (pygts_surface_check(s_)) {
@@ -114,8 +113,7 @@ static PyObject* neighbors(PygtsFace* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &s_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &s_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	if (pygts_surface_check(s_)) {
@@ -159,8 +157,7 @@ static PyObject* is_compatible(PygtsFace* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &o1_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &o1_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	if (pygts_triangle_check(o1_)) {
@@ -202,8 +199,7 @@ static PyObject* is_on(PygtsFace* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &s_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &s_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	if (pygts_surface_check(s_)) {
@@ -296,12 +292,8 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	/* Parse the args */
 	if (kwds) {
 		o = PyDict_GetItemString(kwds, "alloc_gtsobj");
-		if (o == Py_False) {
-			alloc_gtsobj = FALSE;
-		}
-		if (o != NULL) {
-			PyDict_DelItemString(kwds, "alloc_gtsobj");
-		}
+		if (o == Py_False) { alloc_gtsobj = FALSE; }
+		if (o != NULL) { PyDict_DelItemString(kwds, "alloc_gtsobj"); }
 	}
 	if (kwds) {
 		Py_INCREF(Py_False);
@@ -395,30 +387,18 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 		      || (s1->v1 == s3->v1 && s1->v2 == s2->v2 && s2->v1 == s3->v2) || (s1->v2 == s3->v2 && s1->v1 == s2->v2 && s2->v1 == s3->v1)
 		      || (s1->v2 == s3->v1 && s1->v1 == s2->v1 && s2->v2 == s3->v2) || (s1->v2 == s3->v1 && s1->v1 == s2->v2 && s2->v1 == s3->v2))) {
 			PyErr_SetString(PyExc_RuntimeError, "Edges in face must connect");
-			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) {
-				gts_object_destroy(GTS_OBJECT(e1));
-			}
-			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) {
-				gts_object_destroy(GTS_OBJECT(e2));
-			}
-			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) {
-				gts_object_destroy(GTS_OBJECT(e3));
-			}
+			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) { gts_object_destroy(GTS_OBJECT(e1)); }
+			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) { gts_object_destroy(GTS_OBJECT(e2)); }
+			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) { gts_object_destroy(GTS_OBJECT(e3)); }
 			return NULL;
 		}
 
 		/* Create the GtsFace */
 		if ((f = gts_face_new(gts_face_class(), e1, e2, e3)) == NULL) {
 			PyErr_SetString(PyExc_MemoryError, "could not create Face");
-			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) {
-				gts_object_destroy(GTS_OBJECT(e1));
-			}
-			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) {
-				gts_object_destroy(GTS_OBJECT(e2));
-			}
-			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) {
-				gts_object_destroy(GTS_OBJECT(e3));
-			}
+			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) { gts_object_destroy(GTS_OBJECT(e1)); }
+			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) { gts_object_destroy(GTS_OBJECT(e2)); }
+			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) { gts_object_destroy(GTS_OBJECT(e3)); }
 			return NULL;
 		}
 
@@ -426,9 +406,7 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 		t = gts_triangle_is_duplicate(GTS_TRIANGLE(f));
 		if (t != NULL) {
 			gts_object_destroy(GTS_OBJECT(f));
-			if (!GTS_IS_FACE(t)) {
-				PyErr_SetString(PyExc_TypeError, "expected a Face (internal error)");
-			}
+			if (!GTS_IS_FACE(t)) { PyErr_SetString(PyExc_TypeError, "expected a Face (internal error)"); }
 			f = GTS_FACE(t);
 		}
 
@@ -464,9 +442,7 @@ static int init(PygtsFace* self, PyObject* args, PyObject* kwds)
 	gint ret;
 
 	/* Chain up */
-	if ((ret = PygtsTriangleType.tp_init((PyObject*)self, args, kwds)) != 0) {
-		return ret;
-	}
+	if ((ret = PygtsTriangleType.tp_init((PyObject*)self, args, kwds)) != 0) { return ret; }
 
 	return 0;
 }
@@ -538,8 +514,7 @@ gboolean pygts_face_is_ok(PygtsFace* f)
 
 	obj = PYGTS_OBJECT(f);
 
-	if (!pygts_triangle_is_ok(PYGTS_TRIANGLE(f)))
-		return FALSE;
+	if (!pygts_triangle_is_ok(PYGTS_TRIANGLE(f))) return FALSE;
 
 	/* Check for a valid parent */
 	g_return_val_if_fail(obj->gtsobj_parent != NULL, FALSE);

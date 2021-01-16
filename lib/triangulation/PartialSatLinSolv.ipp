@@ -31,8 +31,7 @@ namespace CGT {
 	{
 #ifdef SUITESPARSE_VERSION_4
 		if (useSolver == 4) {
-			if (getCHOLMODPerfTimings)
-				gettimeofday(&start, NULL);
+			if (getCHOLMODPerfTimings) gettimeofday(&start, NULL);
 			CHOLMOD(free_sparse)(&Achol, &com);
 			CHOLMOD(free_factor)(&L, &com);
 			CHOLMOD(finish)(&com);
@@ -73,8 +72,7 @@ namespace CGT {
 // }
 #endif
 
-		if (getCHOLMODPerfTimings)
-			gettimeofday(&start, NULL);
+		if (getCHOLMODPerfTimings) gettimeofday(&start, NULL);
 
 		RTriangulation& Tri     = T[currentTes].Triangulation();
 		int             n_cells = Tri.number_of_finite_cells();
@@ -92,8 +90,7 @@ namespace CGT {
 			for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
 				orderedCells.push_back(cell);
 				cell->info().index = 0;
-				if (!cell->info().Pcondition && !cell->info().blocked)
-					++ncols;
+				if (!cell->info().Pcondition && !cell->info().blocked) ++ncols;
 			}
 			orderedCells.shrink_to_fit();
 			//		//Segfault on 14.10, and useless overall since SuiteSparse has preconditionners (including metis)
@@ -146,11 +143,9 @@ namespace CGT {
 					js[T_nnz] = index;
 					vs[T_nnz] = 0;
 					for (int j = 0; j < 4; j++)
-						if (!cell->neighbor(j)->info().blocked)
-							vs[T_nnz] += (cell->info().kNorm())[j];
+						if (!cell->neighbor(j)->info().blocked) vs[T_nnz] += (cell->info().kNorm())[j];
 					// 				vs[T_nnz] = (cell->info().kNorm())[0]+ (cell->info().kNorm())[1]+ (cell->info().kNorm())[2]+ (cell->info().kNorm())[3];
-					if (fluidBulkModulus > 0)
-						vs[T_nnz] += (1.f / (dt * fluidBulkModulus * cell->info().invVoidVolume()));
+					if (fluidBulkModulus > 0) vs[T_nnz] += (1.f / (dt * fluidBulkModulus * cell->info().invVoidVolume()));
 					if (!freezeSaturation && partialSatEngine && !math::isnan(cell->info().dsdp)) {
 						vs[T_nnz] += cell->info().dsdp / (cell->info().invVoidVolume() * dt);
 						//if (useKeq) vs[T_nnz] += 1./(dt*cell->info().equivalentBulkModulus*cell->info().invVoidVolume());
@@ -160,8 +155,7 @@ namespace CGT {
 				for (int j = 0; j < 4; j++) {
 					neighbourCell = cell->neighbor(j);
 					nIndex        = neighbourCell->info().index;
-					if (Tri.is_infinite(neighbourCell))
-						continue;
+					if (Tri.is_infinite(neighbourCell)) continue;
 					if (!isLinearSystemSet && !(neighbourCell->info().Pcondition || neighbourCell->info().blocked)) {
 						if (nIndex == 0) {
 							T_cells[++T_index]          = neighbourCell;
@@ -202,8 +196,7 @@ namespace CGT {
 #endif
 #ifdef SUITESPARSE_VERSION_4
 			} else if (useSolver == 4) {
-				if (getCHOLMODPerfTimings)
-					gettimeofday(&start, NULL);
+				if (getCHOLMODPerfTimings) gettimeofday(&start, NULL);
 				cholmod_triplet* trip = CHOLMOD(allocate_triplet)(ncols, ncols, T_nnz, 1, CHOLMOD_REAL, &com);
 
 				// set all the values for the cholmod triplet matrix

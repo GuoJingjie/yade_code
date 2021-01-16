@@ -17,8 +17,7 @@ bool pyGaussAverage::pointInsidePolygon(const Vector2r& pt, const vector<Vector2
 	const Real &testx = pt[0], testy = pt[1];
 	for (i = 0, j = rows - 1; i < rows; j = i++) {
 		const Real &vx_i = vertices[i][0], vy_i = vertices[i][1], vx_j = vertices[j][0], vy_j = vertices[j][1];
-		if (((vy_i > testy) != (vy_j > testy)) && (testx < (vx_j - vx_i) * (testy - vy_i) / (vy_j - vy_i) + vx_i))
-			inside = !inside;
+		if (((vy_i > testy) != (vy_j > testy)) && (testx < (vx_j - vx_i) * (testy - vy_i) / (vy_j - vy_i) + vx_i)) inside = !inside;
 	}
 	return inside;
 }

@@ -16,8 +16,7 @@ qglviewer::Vec tuple2vec(py::tuple t)
 	qglviewer::Vec ret;
 	for (int i = 0; i < 3; i++) {
 		py::extract<Real> e(t[i]);
-		if (!e.check())
-			throw invalid_argument("Element #" + boost::lexical_cast<string>(i) + " is not a number");
+		if (!e.check()) throw invalid_argument("Element #" + boost::lexical_cast<string>(i) + " is not a number");
 		ret[i] = static_cast<qreal>(e());
 	}
 	return ret;
@@ -52,8 +51,7 @@ public:
 		GLV;
 		glv->drawGrid = 0;
 		for (int i = 0; i < 3; i++)
-			if (py::extract<bool>(t[i])())
-				glv->drawGrid += 1 << i;
+			if (py::extract<bool>(t[i])()) glv->drawGrid += 1 << i;
 	}
 #define VEC_GET_SET(property, getter, setter)                                                                                                                  \
 	Vector3r get_##property()                                                                                                                              \
@@ -148,8 +146,7 @@ public:
 	void center(bool median, Real suggestedRadius)
 	{
 		GLV;
-		if (median)
-			glv->centerMedianQuartile();
+		if (median) glv->centerMedianQuartile();
 		else
 			glv->centerScene(suggestedRadius);
 	}
@@ -195,12 +192,9 @@ public:
 		GLV;
 		const int& m(glv->timeDispMask);
 		string     ret;
-		if (m & GLViewer::TIME_REAL)
-			ret += 'r';
-		if (m & GLViewer::TIME_VIRT)
-			ret += "v";
-		if (m & GLViewer::TIME_ITER)
-			ret += "i";
+		if (m & GLViewer::TIME_REAL) ret += 'r';
+		if (m & GLViewer::TIME_VIRT) ret += "v";
+		if (m & GLViewer::TIME_ITER) ret += "i";
 		return ret;
 	}
 	void set_timeDisp(string s)
@@ -245,8 +239,7 @@ public:
 pyGLViewer createView()
 {
 	int id = OpenGLManager::self->waitForNewView();
-	if (id < 0)
-		throw std::runtime_error("Unable to open new 3d view.");
+	if (id < 0) throw std::runtime_error("Unable to open new 3d view.");
 	return pyGLViewer((*OpenGLManager::self->views.rbegin())->viewId);
 }
 
@@ -255,8 +248,7 @@ py::list getAllViews()
 	py::list ret;
 	FOREACH(const shared_ptr<GLViewer>& v, OpenGLManager::self->views)
 	{
-		if (v)
-			ret.append(pyGLViewer(v->viewId));
+		if (v) ret.append(pyGLViewer(v->viewId));
 	}
 	return ret;
 };

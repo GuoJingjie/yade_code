@@ -67,8 +67,7 @@ public:
 		while (I != Iend) {
 			ret = I;
 			++I;
-			if (*ret)
-				return *ret;
+			if (*ret) return *ret;
 		}
 		PyErr_SetNone(PyExc_StopIteration);
 		py::throw_error_already_set(); /* never reached, but makes the compiler happier */
@@ -99,17 +98,14 @@ public:
 	bool getEnableRedirection(void) { return proxee->enableRedirection; }
 	void setUseRedirection(bool val)
 	{
-		if (val and not proxee->useRedirection == val)
-			proxee->useRedirection = val;
+		if (val and not proxee->useRedirection == val) proxee->useRedirection = val;
 		proxee->dirty = true;
-		if (val)
-			proxee->enableRedirection = true;
+		if (val) proxee->enableRedirection = true;
 	}
 	void setEnableRedirection(bool val)
 	{
 		proxee->enableRedirection = val;
-		if (not val)
-			proxee->useRedirection = false;
+		if (not val) proxee->useRedirection = false;
 	}
 
 	shared_ptr<Body> pyGetitem(Body::id_t _id)
@@ -179,8 +175,7 @@ public:
 			excludeListC.push_back(py::extract<Body::id_t>(excludeList[ii])());
 		for (const auto& b : *proxee) {
 			if (!(std::find(excludeListC.begin(), excludeListC.end(), b->getId()) != excludeListC.end())) {
-				if (b->isClump())
-					Clump::updateProperties(b, discretization);
+				if (b->isClump()) Clump::updateProperties(b, discretization);
 			}
 		}
 	}
@@ -190,9 +185,7 @@ public:
 		if (clump->members.size() == 1) {
 			Clump::del(clumpBody, memberBody); //phD was not commented out
 			for (unsigned i = 0; i < clump->ids.size(); i++) {
-				if (clump->ids[i] == memberBody->getId()) {
-					clump->ids.erase(clump->ids.begin() + i);
-				}
+				if (clump->ids[i] == memberBody->getId()) { clump->ids.erase(clump->ids.begin() + i); }
 			}
 			proxee->erase(memberBody->getId(), false);
 			proxee->erase(clumpBody->getId(), false);
@@ -200,9 +193,7 @@ public:
 		} else {
 			Clump::del(clumpBody, memberBody); //pHD was not commented out
 			for (unsigned i = 0; i < clump->ids.size(); i++) {
-				if (clump->ids[i] == memberBody->getId()) {
-					clump->ids.erase(clump->ids.begin() + i);
-				}
+				if (clump->ids[i] == memberBody->getId()) { clump->ids.erase(clump->ids.begin() + i); }
 			}
 			Clump::updatePropertiesNonSpherical(clumpBody, /*intersecting*/ false);
 			proxee->erase(memberBody->getId(), false);
@@ -341,8 +332,7 @@ public:
 		shared_ptr<Sphere>       sph(new Sphere);
 		int                      Sph_Index = sph->getClassIndexStatic();
 		for (const auto& b : *proxee)
-			if ((b->shape->getClassIndex() == Sph_Index) && (b->isStandalone()))
-				sphereList.push_back(b);
+			if ((b->shape->getClassIndex() == Sph_Index) && (b->isStandalone())) sphereList.push_back(b);
 		int num = sphereList.size();
 
 		//loop over templates:
@@ -503,8 +493,7 @@ public:
 							dens = member->material->density;
 						}
 					}
-					if (dens > 0.)
-						vol = b->state->mass / dens;
+					if (dens > 0.) vol = b->state->mass / dens;
 					R1 = pow((3. * vol) / (4. * Mathr::PI), 1. / 3.); //get theoretical radius of a sphere, with same volume as clump
 					if (R2 < R1) {
 						PyErr_Warn(PyExc_UserWarning, ("Something went wrong in getRoundness method (R2 < R1 detected)."));
@@ -515,8 +504,7 @@ public:
 				}
 			}
 		}
-		if (c == 0)
-			c = 1;     //in case no spheres and no clumps are present in the scene: RC = 0
+		if (c == 0) c = 1; //in case no spheres and no clumps are present in the scene: RC = 0
 		return RC_sum / c; //return roundness coefficient RC
 	}
 	vector<Body::id_t> replace(vector<shared_ptr<Body>> bb)
@@ -544,9 +532,7 @@ public:
 	{
 		FOREACH(string val, mb->tags)
 		{
-			if (boost::algorithm::starts_with(val, key + "=")) {
-				return true;
-			}
+			if (boost::algorithm::starts_with(val, key + "=")) { return true; }
 		}
 		return false;
 	}
@@ -585,8 +571,7 @@ public:
 		FOREACH(string val, mb->tags)
 		{
 			size_t i = val.find("=");
-			if (i == string::npos)
-				throw runtime_error("Tags must be in the key=value format (internal error?)");
+			if (i == string::npos) throw runtime_error("Tags must be in the key=value format (internal error?)");
 			boost::algorithm::erase_tail(val, val.size() - i);
 			ret.append(val);
 		}
@@ -611,8 +596,7 @@ public:
 		while (I != Iend) {
 			ret = I;
 			++I;
-			if ((*ret)->isReal())
-				return *ret;
+			if ((*ret)->isReal()) return *ret;
 		}
 		PyErr_SetNone(PyExc_StopIteration);
 		py::throw_error_already_set();
@@ -639,8 +623,7 @@ public:
 		if (id12.size() == 2) {
 			//if(max(id12[0],id12[1])>
 			shared_ptr<Interaction> i = proxee->find(id12[0], id12[1]);
-			if (i)
-				return i;
+			if (i) return i;
 			else {
 				PyErr_SetString(PyExc_IndexError, "No such interaction");
 				py::throw_error_already_set(); /* make compiler happy; never reached */
@@ -657,10 +640,8 @@ public:
 		long i = 0;
 		FOREACH(shared_ptr<Interaction> I, *proxee)
 		{
-			if (!I->isReal())
-				continue;
-			if (i++ == n)
-				return I;
+			if (!I->isReal()) continue;
+			if (i++ == n) return I;
 		}
 		PyErr_SetString(
 		        PyExc_IndexError,
@@ -675,8 +656,7 @@ public:
 		py::list ret;
 		FOREACH(const Body::MapId2IntrT::value_type& I, Body::byId(id, scene)->intrs)
 		{
-			if (I.second->isReal())
-				ret.append(I.second);
+			if (I.second->isReal()) ret.append(I.second);
 		}
 		return ret;
 	}
@@ -691,8 +671,7 @@ public:
 		py::list ret;
 		FOREACH(const shared_ptr<Interaction>& I, *proxee)
 		{
-			if (onlyReal && !I->isReal())
-				continue;
+			if (onlyReal && !I->isReal()) continue;
 			ret.append(I);
 		}
 		return ret;
@@ -702,8 +681,7 @@ public:
 		long ret = 0;
 		FOREACH(const shared_ptr<Interaction>& I, *proxee)
 		{
-			if (I->isReal())
-				ret++;
+			if (I->isReal()) ret++;
 		}
 		return ret;
 	}
@@ -732,24 +710,21 @@ public:
 	Vector3r force_get(long id, bool sync)
 	{
 		checkId(id);
-		if (!sync and !scene->forces.synced)
-			return scene->forces.getForceSingle(id);
+		if (!sync and !scene->forces.synced) return scene->forces.getForceSingle(id);
 		scene->forces.sync();
 		return scene->forces.getForce(id);
 	}
 	Vector3r torque_get(long id, bool sync)
 	{
 		checkId(id);
-		if (!sync and !scene->forces.synced)
-			return scene->forces.getTorqueSingle(id);
+		if (!sync and !scene->forces.synced) return scene->forces.getTorqueSingle(id);
 		scene->forces.sync();
 		return scene->forces.getTorque(id);
 	}
 	void force_add(long id, const Vector3r& f, bool permanent)
 	{
 		checkId(id);
-		if (!permanent)
-			scene->forces.addForce(id, f);
+		if (!permanent) scene->forces.addForce(id, f);
 		else {
 			LOG_WARN("O.forces.addF(...,permanent=True) is deprecated, use O.forces.setPermF(...) instead");
 			scene->forces.setPermForce(id, f);
@@ -758,8 +733,7 @@ public:
 	void torque_add(long id, const Vector3r& t, bool permanent)
 	{
 		checkId(id);
-		if (!permanent)
-			scene->forces.addTorque(id, t);
+		if (!permanent) scene->forces.addTorque(id, t);
 		else {
 			LOG_WARN("O.forces.addT(...,permanent=True) is deprecated, use O.forces.setPermT(...) instead");
 			scene->forces.setPermTorque(id, t);
@@ -852,8 +826,7 @@ private:
 	// can be safely removed now, since pyOmega makes an empty scene in the constructor, if there is none
 	void assertScene()
 	{
-		if (!OMEGA.getScene())
-			throw std::runtime_error("No Scene instance?!");
+		if (!OMEGA.getScene()) throw std::runtime_error("No Scene instance?!");
 	}
 	Omega& OMEGA;
 
@@ -867,9 +840,7 @@ public:
 			rb = OMEGA.getScene();
 		}
 		assert(rb);
-		if (!OMEGA.hasSimulationLoop()) {
-			OMEGA.createSimulationLoop();
-		}
+		if (!OMEGA.hasSimulationLoop()) { OMEGA.createSimulationLoop(); }
 	};
 	/* Create variables in python's __builtin__ namespace that correspond to labeled objects. At this moment, only engines and functors can be labeled (not bodies etc). */
 	void mapLabeledEntitiesToVariables()
@@ -883,24 +854,18 @@ public:
 #endif
 		FOREACH(const shared_ptr<Engine>& e, OMEGA.getScene()->engines)
 		{
-			if (!e->label.empty()) {
-				pyRunString("__builtins__." + e->label + "=Omega().labeledEngine('" + e->label + "')");
-			}
+			if (!e->label.empty()) { pyRunString("__builtins__." + e->label + "=Omega().labeledEngine('" + e->label + "')"); }
 #define _DO_FUNCTORS(functors, FunctorT)                                                                                                                       \
 	{                                                                                                                                                      \
 		FOREACH(const shared_ptr<FunctorT>& f, functors)                                                                                               \
 		{                                                                                                                                              \
-			if (!f->label.empty()) {                                                                                                               \
-				pyRunString("__builtins__." + f->label + "=Omega().labeledEngine('" + f->label + "')");                                        \
-			}                                                                                                                                      \
+			if (!f->label.empty()) { pyRunString("__builtins__." + f->label + "=Omega().labeledEngine('" + f->label + "')"); }                     \
 		}                                                                                                                                              \
 	}
 #define _TRY_DISPATCHER(DispatcherT)                                                                                                                           \
 	{                                                                                                                                                      \
 		DispatcherT* d = dynamic_cast<DispatcherT*>(e.get());                                                                                          \
-		if (d) {                                                                                                                                       \
-			_DO_FUNCTORS(d->functors, DispatcherT::FunctorType);                                                                                   \
-		}                                                                                                                                              \
+		if (d) { _DO_FUNCTORS(d->functors, DispatcherT::FunctorType); }                                                                                \
 	}
 			_TRY_DISPATCHER(BoundDispatcher);
 			_TRY_DISPATCHER(IGeomDispatcher);
@@ -913,18 +878,14 @@ public:
 				_DO_FUNCTORS(id->lawDispatcher->functors, LawFunctor);
 			}
 			Collider* coll = dynamic_cast<Collider*>(e.get());
-			if (coll) {
-				_DO_FUNCTORS(coll->boundDispatcher->functors, BoundFunctor);
-			}
+			if (coll) { _DO_FUNCTORS(coll->boundDispatcher->functors, BoundFunctor); }
 #undef _DO_FUNCTORS
 #undef _TRY_DISPATCHER
 			CombinedKinematicEngine* cke = dynamic_cast<CombinedKinematicEngine*>(e.get());
 			if (cke) {
 				FOREACH(const shared_ptr<KinematicEngine>& ke, cke->comb)
 				{
-					if (!ke->label.empty()) {
-						pyRunString("__builtins__." + ke->label + "=Omega().labeledEngine('" + ke->label + "')");
-					}
+					if (!ke->label.empty()) { pyRunString("__builtins__." + ke->label + "=Omega().labeledEngine('" + ke->label + "')"); }
 				}
 			}
 		}
@@ -937,20 +898,15 @@ public:
 	{                                                                                                                                                      \
 		FOREACH(const shared_ptr<FunctorT>& f, functors)                                                                                               \
 		{                                                                                                                                              \
-			if (f->label == label)                                                                                                                 \
-				return py::object(f);                                                                                                          \
+			if (f->label == label) return py::object(f);                                                                                           \
 		}                                                                                                                                              \
 	}
 #define _TRY_DISPATCHER(DispatcherT)                                                                                                                           \
 	{                                                                                                                                                      \
 		DispatcherT* d = dynamic_cast<DispatcherT*>(e.get());                                                                                          \
-		if (d) {                                                                                                                                       \
-			_DO_FUNCTORS(d->functors, DispatcherT::FunctorType);                                                                                   \
-		}                                                                                                                                              \
+		if (d) { _DO_FUNCTORS(d->functors, DispatcherT::FunctorType); }                                                                                \
 	}
-			if (e->label == label) {
-				return py::object(e);
-			}
+			if (e->label == label) { return py::object(e); }
 			_TRY_DISPATCHER(BoundDispatcher);
 			_TRY_DISPATCHER(IGeomDispatcher);
 			_TRY_DISPATCHER(IPhysDispatcher);
@@ -962,17 +918,14 @@ public:
 				_DO_FUNCTORS(id->lawDispatcher->functors, LawFunctor);
 			}
 			Collider* coll = dynamic_cast<Collider*>(e.get());
-			if (coll) {
-				_DO_FUNCTORS(coll->boundDispatcher->functors, BoundFunctor);
-			}
+			if (coll) { _DO_FUNCTORS(coll->boundDispatcher->functors, BoundFunctor); }
 #undef _DO_FUNCTORS
 #undef _TRY_DISPATCHER
 			CombinedKinematicEngine* cke = dynamic_cast<CombinedKinematicEngine*>(e.get());
 			if (cke) {
 				FOREACH(const shared_ptr<KinematicEngine>& ke, cke->comb)
 				{
-					if (ke->label == label)
-						return py::object(ke);
+					if (ke->label == label) return py::object(ke);
 				}
 			}
 		}
@@ -1022,8 +975,7 @@ public:
 	void run(long int numIter = -1, bool doWait = false)
 	{
 		Scene* scene = OMEGA.getScene().get();
-		if (numIter > 0)
-			scene->stopAtIter = scene->iter + numIter;
+		if (numIter > 0) scene->stopAtIter = scene->iter + numIter;
 		OMEGA.run();
 		// timespec t1,t2; t1.tv_sec=0; t1.tv_nsec=40000000; /* 40 ms */
 		// while(!OMEGA.isRunning()) nanosleep(&t1,&t2); // wait till we start, so that calling wait() immediately afterwards doesn't return immediately
@@ -1032,8 +984,7 @@ public:
 		        << ((scene->stopAtIter - scene->iter) > 0 ? string(" (" + boost::lexical_cast<string>(scene->stopAtIter - scene->iter) + " to go)")
 		                                                  : string(""))
 		        << "!");
-		if (doWait)
-			wait();
+		if (doWait) wait();
 	}
 	void pause()
 	{
@@ -1044,8 +995,7 @@ public:
 	}
 	void step()
 	{
-		if (OMEGA.isRunning())
-			throw runtime_error("Called O.step() while simulation is running.");
+		if (OMEGA.isRunning()) throw runtime_error("Called O.step() while simulation is running.");
 		OMEGA.getScene()->moveToNextTimeStep(); /* LOG_DEBUG("STEP!"); run(1); wait(); */
 	}
 	void wait()
@@ -1061,8 +1011,7 @@ public:
 		while (OMEGA.isRunning())
 			nanosleep(&t1, &t2);
 		Py_END_ALLOW_THREADS;
-		if (!OMEGA.simulationLoop->workerThrew)
-			return;
+		if (!OMEGA.simulationLoop->workerThrew) return;
 		LOG_ERROR("Simulation error encountered.");
 		OMEGA.simulationLoop->workerThrew = false;
 		throw OMEGA.simulationLoop->workerException;
@@ -1070,14 +1019,12 @@ public:
 	bool isRunning() { return OMEGA.isRunning(); }
 	void throwIfRunning()
 	{
-		if (isRunning())
-			throw std::runtime_error("Please call O.stop() first.");
+		if (isRunning()) throw std::runtime_error("Please call O.stop() first.");
 	}
 	py::object get_filename()
 	{
 		string f = OMEGA.sceneFile;
-		if (f.size() > 0)
-			return py::object(f);
+		if (f.size() > 0) return py::object(f);
 		return py::object();
 	}
 	void load(std::string fileName, bool quiet = false)
@@ -1106,21 +1053,17 @@ public:
 	}
 	void tmpToFile(string mark, string filename)
 	{
-		if (OMEGA.memSavedSimulations.count(":memory:" + mark) == 0)
-			throw runtime_error("No memory-saved simulation named " + mark);
+		if (OMEGA.memSavedSimulations.count(":memory:" + mark) == 0) throw runtime_error("No memory-saved simulation named " + mark);
 		boost::iostreams::filtering_ostream out;
-		if (boost::algorithm::ends_with(filename, ".bz2"))
-			out.push(boost::iostreams::bzip2_compressor());
+		if (boost::algorithm::ends_with(filename, ".bz2")) out.push(boost::iostreams::bzip2_compressor());
 		out.push(boost::iostreams::file_sink(filename));
-		if (!out.good())
-			throw runtime_error("Error while opening file `" + filename + "' for writing.");
+		if (!out.good()) throw runtime_error("Error while opening file `" + filename + "' for writing.");
 		LOG_INFO("Saving :memory:" << mark << " to " << filename);
 		out << OMEGA.memSavedSimulations[":memory:" + mark];
 	}
 	string tmpToString(string mark)
 	{
-		if (OMEGA.memSavedSimulations.count(":memory:" + mark) == 0)
-			throw runtime_error("No memory-saved simulation named " + mark);
+		if (OMEGA.memSavedSimulations.count(":memory:" + mark) == 0) throw runtime_error("No memory-saved simulation named " + mark);
 		return OMEGA.memSavedSimulations[":memory:" + mark];
 	}
 
@@ -1204,10 +1147,8 @@ public:
 PyObject*
 intrsctToBytes(const shared_ptr<Subdomain>& subD, unsigned rank, bool mirror)
 {
-	if (subD->intersections.size() <= rank)
-		LOG_ERROR("rank too large");
-	if (not mirror)
-		return PyBytes_FromStringAndSize((char*)&(subD->intersections[rank][0]), subD->intersections[rank].size() * sizeof(Body::id_t));
+	if (subD->intersections.size() <= rank) LOG_ERROR("rank too large");
+	if (not mirror) return PyBytes_FromStringAndSize((char*)&(subD->intersections[rank][0]), subD->intersections[rank].size() * sizeof(Body::id_t));
 	else
 		return PyBytes_FromStringAndSize((char*)&(subD->mirrorIntersections[rank][0]), subD->mirrorIntersections[rank].size() * sizeof(Body::id_t));
 }
@@ -1215,15 +1156,12 @@ intrsctToBytes(const shared_ptr<Subdomain>& subD, unsigned rank, bool mirror)
 PyObject* bufferFromIntrsct(const shared_ptr<Subdomain>& subD, unsigned rank, unsigned size, bool mirror)
 {
 	//FIXME: if returning a memoryview, do we need to release it at some point? (https://docs.python.org/3/library/stdtypes.html#memoryview.release)
-	if (subD->intersections.size() <= rank)
-		LOG_ERROR("rank too large");
+	if (subD->intersections.size() <= rank) LOG_ERROR("rank too large");
 	if (not mirror) {
-		if (subD->intersections[rank].size() != size)
-			subD->intersections[rank].resize(size);
+		if (subD->intersections[rank].size() != size) subD->intersections[rank].resize(size);
 		return PyMemoryView_FromMemory((char*)(subD->intersections[rank].data()), subD->intersections[rank].size() * sizeof(Body::id_t), PyBUF_WRITE);
 	} else {
-		if (subD->mirrorIntersections[rank].size() != size)
-			subD->mirrorIntersections[rank].resize(size);
+		if (subD->mirrorIntersections[rank].size() != size) subD->mirrorIntersections[rank].resize(size);
 		return PyMemoryView_FromMemory(
 		        (char*)&(subD->mirrorIntersections[rank][0]), subD->mirrorIntersections[rank].size() * sizeof(Body::id_t), PyBUF_WRITE);
 	}
@@ -1276,8 +1214,7 @@ void engines_set(const vector<shared_ptr<Engine>>& egs)
 {
 	assertScene();
 	Scene* scene = OMEGA.getScene().get();
-	if (scene->subStep < 0)
-		scene->engines = egs; // not inside the engine loop right now, ok to update directly
+	if (scene->subStep < 0) scene->engines = egs; // not inside the engine loop right now, ok to update directly
 	else
 		scene->_nextEngines
 		        = egs; // inside the engine loop, update _nextEngines; O.engines picks that up automatically, and Scene::moveToNextTimestep will put them in place of engines at the start of the next loop
@@ -1308,8 +1245,7 @@ py::list listChildClassesNonrecursive(const string& base)
 	for (std::map<std::string, DynlibDescriptor>::const_iterator di = Omega::instance().getDynlibsDescriptor().begin();
 	     di != Omega::instance().getDynlibsDescriptor().end();
 	     ++di)
-		if (Omega::instance().isInheritingFrom((*di).first, base))
-			ret.append(di->first);
+		if (Omega::instance().isInheritingFrom((*di).first, base)) ret.append(di->first);
 	return ret;
 }
 
@@ -1334,8 +1270,7 @@ pyTags tags_get(void)
 void interactionContainer_set(string clss)
 {
 	Scene* rb = OMEGA.getScene().get();
-	if (rb->interactions->size() > 0)
-		throw std::runtime_error("Interaction container not empty, will not change its class.");
+	if (rb->interactions->size() > 0) throw std::runtime_error("Interaction container not empty, will not change its class.");
 	shared_ptr<InteractionContainer> ic = YADE_PTR_DYN_CAST<InteractionContainer>(ClassFactory::instance().createShared(clss));
 	rb->interactions                    = ic;
 }
@@ -1344,8 +1279,7 @@ string interactionContainer_get(string /*clss*/) { return OMEGA.getScene()->inte
 void bodyContainer_set(string clss)
 {
 	Scene* rb = OMEGA.getScene().get();
-	if (rb->bodies->size() > 0)
-		throw std::runtime_error("Body container not empty, will not change its class.");
+	if (rb->bodies->size() > 0) throw std::runtime_error("Body container not empty, will not change its class.");
 	shared_ptr<BodyContainer> bc = YADE_PTR_DYN_CAST<BodyContainer>(ClassFactory::instance().createShared(clss));
 	rb->bodies                   = bc;
 }
@@ -1369,8 +1303,7 @@ void numThreads_set(int n)
 
 shared_ptr<Cell> cell_get()
 {
-	if (OMEGA.getScene()->isPeriodic)
-		return OMEGA.getScene()->cell;
+	if (OMEGA.getScene()->isPeriodic) return OMEGA.getScene()->cell;
 	return shared_ptr<Cell>();
 }
 bool periodic_get(void) { return OMEGA.getScene()->isPeriodic; }
@@ -1387,8 +1320,7 @@ void disableGdb()
 }
 void exitNoBacktrace(int status = 0)
 {
-	if (status == 0)
-		signal(SIGSEGV, termHandlerNormal); /* unset the handler that runs gdb and prints backtrace */
+	if (status == 0) signal(SIGSEGV, termHandlerNormal); /* unset the handler that runs gdb and prints backtrace */
 	else
 		signal(SIGSEGV, termHandlerError);
 	// try to clean our mess

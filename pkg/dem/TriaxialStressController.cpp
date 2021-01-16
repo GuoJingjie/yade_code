@@ -53,8 +53,7 @@ void TriaxialStressController::updateStiffness()
 		if (e->getClassName() == "FlowEngine") {
 			TemplateFlowEngine_FlowEngineT<FlowCellInfo_FlowEngineT, FlowVertexInfo_FlowEngineT>* flow
 			        = dynamic_cast<TemplateFlowEngine_FlowEngineT<FlowCellInfo_FlowEngineT, FlowVertexInfo_FlowEngineT>*>(e.get());
-			if ((flow->fluidBulkModulus > 0) && (!(flow->dead)))
-				fluidStiffness = flow->fluidBulkModulus / porosity;
+			if ((flow->fluidBulkModulus > 0) && (!(flow->dead))) fluidStiffness = flow->fluidBulkModulus / porosity;
 		}
 	}
 #endif
@@ -98,8 +97,7 @@ void TriaxialStressController::controlExternalStress(
 	if (translation != 0) {
 		if (stiffness[wall] != 0) {
 			translation /= stiffness[wall];
-			if (log)
-				TRVAR2(translation, wall_max_vel * scene->dt)
+			if (log) TRVAR2(translation, wall_max_vel * scene->dt)
 			translation = math::min(math::abs(translation), wall_max_vel * scene->dt) * math::sign(translation);
 		} else
 			translation = wall_max_vel * math::sign(translation) * scene->dt;
@@ -127,8 +125,7 @@ void TriaxialStressController::action()
 		wall_id[wall_back]   = wall_back_id;
 	}
 
-	if (thickness < 0)
-		thickness = 2.0 * YADE_PTR_CAST<Box>(Body::byId(wall_bottom_id, scene)->shape)->extents.y();
+	if (thickness < 0) thickness = 2.0 * YADE_PTR_CAST<Box>(Body::byId(wall_bottom_id, scene)->shape)->extents.y();
 	State* p_bottom = Body::byId(wall_bottom_id, scene)->state.get();
 	State* p_top    = Body::byId(wall_top_id, scene)->state.get();
 	State* p_left   = Body::byId(wall_left_id, scene)->state.get();
@@ -169,18 +166,15 @@ void TriaxialStressController::action()
 
 	// must be done _after_ height, width, depth have been calculated
 	//Update stiffness only if it has been computed by StiffnessCounter (see "stiffnessUpdateInterval")
-	if (scene->iter % stiffnessUpdateInterval == 0 || scene->iter < 100)
-		updateStiffness();
+	if (scene->iter % stiffnessUpdateInterval == 0 || scene->iter < 100) updateStiffness();
 	bool isARadiusControlIteration = (scene->iter % radiusControlInterval == 0);
 
-	if (scene->iter % computeStressStrainInterval == 0 || (internalCompaction && isARadiusControlIteration))
-		computeStressStrain();
+	if (scene->iter % computeStressStrainInterval == 0 || (internalCompaction && isARadiusControlIteration)) computeStressStrain();
 
 	if (!internalCompaction) {
 		Vector3r wallForce(0, goal2 * width * depth, 0);
 		if (wall_bottom_activated) {
-			if (stressMask & 2)
-				controlExternalStress(wall_bottom, wallForce, p_bottom, max_vel2);
+			if (stressMask & 2) controlExternalStress(wall_bottom, wallForce, p_bottom, max_vel2);
 			else {
 				p_bottom->vel[1] += (-normal[wall_bottom][1] * 0.5 * goal2 * height - p_bottom->vel[1]) * (1 - strainDamping);
 				externalWork += p_bottom->vel.dot(getForce(scene, wall_bottom_id)) * scene->dt;
@@ -188,8 +182,7 @@ void TriaxialStressController::action()
 		} else
 			p_bottom->vel = Vector3r::Zero();
 		if (wall_top_activated) {
-			if (stressMask & 2)
-				controlExternalStress(wall_top, -wallForce, p_top, max_vel2);
+			if (stressMask & 2) controlExternalStress(wall_top, -wallForce, p_top, max_vel2);
 			else {
 				p_top->vel[1] += (-normal[wall_top][1] * 0.5 * goal2 * height - p_top->vel[1]) * (1 - strainDamping);
 				externalWork += p_top->vel.dot(getForce(scene, wall_top_id)) * scene->dt;
@@ -199,8 +192,7 @@ void TriaxialStressController::action()
 
 		wallForce = Vector3r(goal1 * height * depth, 0, 0);
 		if (wall_left_activated) {
-			if (stressMask & 1)
-				controlExternalStress(wall_left, wallForce, p_left, max_vel1);
+			if (stressMask & 1) controlExternalStress(wall_left, wallForce, p_left, max_vel1);
 			else {
 				p_left->vel[0] += (-normal[wall_left][0] * 0.5 * goal1 * width - p_left->vel[0]) * (1 - strainDamping);
 				externalWork += p_left->vel.dot(getForce(scene, wall_left_id)) * scene->dt;
@@ -208,8 +200,7 @@ void TriaxialStressController::action()
 		} else
 			p_left->vel = Vector3r::Zero();
 		if (wall_right_activated) {
-			if (stressMask & 1)
-				controlExternalStress(wall_right, -wallForce, p_right, max_vel1);
+			if (stressMask & 1) controlExternalStress(wall_right, -wallForce, p_right, max_vel1);
 			else {
 				p_right->vel[0] += (-normal[wall_right][0] * 0.5 * goal1 * width - p_right->vel[0]) * (1 - strainDamping);
 				externalWork += p_right->vel.dot(getForce(scene, wall_right_id)) * scene->dt;
@@ -219,8 +210,7 @@ void TriaxialStressController::action()
 
 		wallForce = Vector3r(0, 0, goal3 * height * width);
 		if (wall_back_activated) {
-			if (stressMask & 4)
-				controlExternalStress(wall_back, wallForce, p_back, max_vel3);
+			if (stressMask & 4) controlExternalStress(wall_back, wallForce, p_back, max_vel3);
 			else {
 				p_back->vel[2] += (-normal[wall_back][2] * 0.5 * goal3 * depth - p_back->vel[2]) * (1 - strainDamping);
 				externalWork += p_back->vel.dot(getForce(scene, wall_back_id)) * scene->dt;
@@ -228,8 +218,7 @@ void TriaxialStressController::action()
 		} else
 			p_back->vel = Vector3r::Zero();
 		if (wall_front_activated) {
-			if (stressMask & 4)
-				controlExternalStress(wall_front, -wallForce, p_front, max_vel3);
+			if (stressMask & 4) controlExternalStress(wall_front, -wallForce, p_front, max_vel3);
 			else {
 				p_front->vel[2] += (-normal[wall_front][2] * 0.5 * goal3 * depth - p_front->vel[2]) * (1 - strainDamping);
 				externalWork += p_front->vel.dot(getForce(scene, wall_front_id)) * scene->dt;
@@ -247,10 +236,8 @@ void TriaxialStressController::action()
 		if (isARadiusControlIteration) {
 			Real sigma_iso_ = bool(stressMask & 1) * goal1 + bool(stressMask & 2) * goal2 + bool(stressMask & 4) * goal3;
 			sigma_iso_ /= bool(stressMask & 1) + bool(stressMask & 2) + bool(stressMask & 4);
-			if (math::abs(sigma_iso_) <= math::abs(meanStress))
-				maxMultiplier = finalMaxMultiplier;
-			if (meanStress == 0)
-				previousMultiplier = maxMultiplier;
+			if (math::abs(sigma_iso_) <= math::abs(meanStress)) maxMultiplier = finalMaxMultiplier;
+			if (meanStress == 0) previousMultiplier = maxMultiplier;
 			else {
 				//     		previousMultiplier = 1+0.7*(sigma_iso-s)*(previousMultiplier-1.f)/(s-previousStress); // = (Dsigma/apparentModulus)*0.7
 				//     		previousMultiplier = math::max(2-maxMultiplier, math::min(previousMultiplier, maxMultiplier));
@@ -284,12 +271,9 @@ void TriaxialStressController::computeStressStrain()
 	depth  = p_front->se3.position.z() - p_back->se3.position.z() - thickness;
 
 	meanStress = 0;
-	if (height0 == 0)
-		height0 = height;
-	if (width0 == 0)
-		width0 = width;
-	if (depth0 == 0)
-		depth0 = depth;
+	if (height0 == 0) height0 = height;
+	if (width0 == 0) width0 = width;
+	if (depth0 == 0) depth0 = depth;
 	strain[0]        = log(width / width0); // all strain values are positiv for extension
 	strain[1]        = log(height / height0);
 	strain[2]        = log(depth / depth0);

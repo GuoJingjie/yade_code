@@ -15,8 +15,7 @@ LudingPhys::~LudingPhys() { }
 
 void Ip2_LudingMat_LudingMat_LudingPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 
 	LudingMat* mat1 = static_cast<LudingMat*>(b1.get());
 	LudingMat* mat2 = static_cast<LudingMat*>(b2.get());
@@ -120,8 +119,7 @@ bool Law2_ScGeom_LudingPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys
 #endif
 
 	const Real Delt = geom.penetrationDepth + addDR;
-	if (Delt < 0)
-		return false;
+	if (Delt < 0) return false;
 
 	Real forceHys = 0.0;
 
@@ -131,13 +129,9 @@ bool Law2_ScGeom_LudingPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys
 		phys.k2 = phys.k1 + (phys.kp - phys.k1) * phys.DeltMax / phys.DeltPMax;
 	}
 
-	if (phys.k2 > phys.kp) {
-		phys.k2 = phys.kp;
-	}
+	if (phys.k2 > phys.kp) { phys.k2 = phys.kp; }
 
-	if (phys.k1 > phys.k2) {
-		phys.k1 = phys.k2;
-	}
+	if (phys.k1 > phys.k2) { phys.k1 = phys.k2; }
 
 	phys.DeltMin = (phys.k2 - phys.k1) / (phys.k2 + phys.kc);
 
@@ -178,8 +172,7 @@ bool Law2_ScGeom_LudingPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys
 
 
 	Vector3r& shearForce = phys.shearForce;
-	if (I->isFresh(scene))
-		shearForce = Vector3r(0, 0, 0);
+	if (I->isFresh(scene)) shearForce = Vector3r(0, 0, 0);
 	const Real& dt = scene->dt;
 	shearForce     = geom.rotate(shearForce);
 

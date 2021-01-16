@@ -127,14 +127,12 @@ bool Ig2_Polyhedra_Polyhedra_PolyhedraGeom::go(
 		return !isNew;
 	}
 
-	if (isNew)
-		interaction->geom = bang;
+	if (isNew) interaction->geom = bang;
 
 	//find normal direction
 	Vector3r normal = FindNormal(Int, PA, PB);
 
-	if ((se32.position + shift2 - centroid).dot(normal) < 0)
-		normal *= -1;
+	if ((se32.position + shift2 - centroid).dot(normal) < 0) normal *= -1;
 
 	Real area = math::pow(volume, 2. / 3.);
 	// store calculated stuff in bang; some is redundant
@@ -216,8 +214,7 @@ bool Ig2_Wall_Polyhedra_PolyhedraGeom::go(
 
 	//move wall
 	Vector3r normal = Vector3r(0, 0, 0);
-	if (sense != 0)
-		normal[PA] = sense;
+	if (sense != 0) normal[PA] = sense;
 	else
 		normal[PA] = se32.position[PA] - se31.position[PA] > 0 ? 1 : -1;
 	CGALvector CGALnormal = CGALvector(normal[0], normal[1], normal[2]);
@@ -374,8 +371,7 @@ bool Ig2_Facet_Polyhedra_PolyhedraGeom::go(
 
 	//find normal direction
 	Vector3r normal = FindNormal(Int, PA, PB);
-	if ((se32.position - centroid).dot(normal) < 0)
-		normal *= -1;
+	if ((se32.position - centroid).dot(normal) < 0) normal *= -1;
 
 	//calculate area of projection of Intersection into the normal plane
 	Real area = volume / 1E-8;
@@ -445,9 +441,8 @@ bool Ig2_Sphere_Polyhedra_ScGeom::go(
 		e3  = p1 - p3;
 		n   = (e1.cross(-e3)).normalized(); // tirangle outer normal
 		dst = (p0 - p1).dot(n);             // oriented distance of p0 to triangle plane
-		if (dst > 0)
-			isInside = false; // p0 lies in positive halfspace of triangle, cannot be inside
-		p0a = p0 - dst * n;       // p0 projected to triangle plane
+		if (dst > 0) isInside = false;      // p0 lies in positive halfspace of triangle, cannot be inside
+		p0a = p0 - dst * n;                 // p0 projected to triangle plane
 		p10 = p0a - p1;
 		p20 = p0a - p2;
 		p30 = p0a - p3;
@@ -496,8 +491,7 @@ bool Ig2_Sphere_Polyhedra_ScGeom::go(
 	}
 	//******************************************************************************
 
-	if (isNew && !(isInside || dst2min <= r2))
-		return false;
+	if (isNew && !(isInside || dst2min <= r2)) return false;
 
 	if (isNew) {
 		geom          = shared_ptr<ScGeom>(new ScGeom());
@@ -516,9 +510,7 @@ bool Ig2_Sphere_Polyhedra_ScGeom::go(
 		normal /= dst;
 		contactPoint = center + normal * (.5 * radius);
 	} else {
-		if (rel == none) {
-			LOG_FATAL("TODO");
-		}
+		if (rel == none) { LOG_FATAL("TODO"); }
 		Real coeff = rel == edge ? edgeCoeff : (rel == vertex ? vertexCoeff : 1.0);
 		normal     = closest - center;
 		dst        = normal.norm();
@@ -556,9 +548,7 @@ bool Ig2_Polyhedra_Polyhedra_ScGeom::go(
 		Ig2_Polyhedra_Polyhedra_PolyhedraGeom ppGeom = Ig2_Polyhedra_Polyhedra_PolyhedraGeom();
 		ppGeom.interactionDetectionFactor            = interactionDetectionFactor;
 		bool pp                                      = ppGeom.go(shape1, shape2, state2, state1, shift2, force, interaction);
-		if (!pp) {
-			return false;
-		}
+		if (!pp) { return false; }
 		shared_ptr<PolyhedraGeom> pGeom = YADE_PTR_CAST<PolyhedraGeom>(interaction->geom);
 		geom                            = shared_ptr<ScGeom>(new ScGeom());
 		geom->radius1                   = (pGeom->contactPoint - se31.position).norm();
@@ -612,14 +602,10 @@ bool Ig2_Polyhedra_Polyhedra_PolyhedraGeomOrScGeom::go(
 	}
 	//
 	ScGeom* scGeom = dynamic_cast<ScGeom*>(interaction->geom.get());
-	if (scGeom) {
-		return ig2scGeom->go(shape1, shape2, state1, state2, shift2, force, interaction);
-	}
+	if (scGeom) { return ig2scGeom->go(shape1, shape2, state1, state2, shift2, force, interaction); }
 	//
 	PolyhedraGeom* pGeom = dynamic_cast<PolyhedraGeom*>(interaction->geom.get());
-	if (pGeom) {
-		return ig2polyhedraGeom->go(shape1, shape2, state1, state2, shift2, force, interaction);
-	}
+	if (pGeom) { return ig2polyhedraGeom->go(shape1, shape2, state1, state2, shift2, force, interaction); }
 	//
 	LOG_ERROR("TODO, should not happen");
 	return false;

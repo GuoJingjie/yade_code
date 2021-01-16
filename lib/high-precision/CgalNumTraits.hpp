@@ -42,9 +42,7 @@ public:
 	{
 // When CGAL detects IEEE bug, then long double needs special treatment:
 #ifdef CGAL_CFG_IEEE_754_BUG // and (YADE_REAL_BIT == 80)
-		if (std::is_same<::yade::RealHP<levelHP>, long double>::value) {
-			return Is_valid<long double>()(static_cast<long double>(x));
-		}
+		if (std::is_same<::yade::RealHP<levelHP>, long double>::value) { return Is_valid<long double>()(static_cast<long double>(x)); }
 #endif
 		return not ::yade::math::isnan(x);
 	}

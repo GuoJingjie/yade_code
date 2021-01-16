@@ -104,8 +104,7 @@ private:
 
 	static bool __eq__(const MatrixBaseT& a, const MatrixBaseT& b)
 	{
-		if (a.rows() != b.rows() || a.cols() != b.cols())
-			return false;
+		if (a.rows() != b.rows() || a.cols() != b.cols()) return false;
 		return a.cwiseEqual(b).all();
 	}
 	static bool isApprox(const MatrixBaseT& a, const MatrixBaseT& b, const RealScalar& prec) { return a.isApprox(b, prec); }
@@ -238,8 +237,7 @@ private:
 		MatrixBaseT ret(MatrixBaseT::Zero(a.rows(), a.cols()));
 		for (Index c = 0; c < a.cols(); c++) {
 			for (Index r = 0; r < a.rows(); r++) {
-				if (!prune_element(a(c, r), absTol))
-					ret(c, r) = a(c, r);
+				if (!prune_element(a(c, r), absTol)) ret(c, r) = a(c, r);
 			}
 		}
 		return ret;
@@ -730,8 +728,7 @@ private:
 		/* check vector dimensions */ CompatVecX rr[] = { r0, r1, r2, r3, r4, r5, r6, r7, r8, r9 };
 		int                                      cols = -1, rows = -1;
 		for (int i = 0; i < 10; i++) {
-			if (rows < 0 && rr[i].size() == 0)
-				rows = i;
+			if (rows < 0 && rr[i].size() == 0) rows = i;
 			if (rows >= 0 && rr[i].size() > 0)
 				throw std::invalid_argument("Matrix6r: non-empty rows not allowed after first empty row, which marks end of the matrix.");
 		}
@@ -745,8 +742,7 @@ private:
 		CompatMatX* m;
 		m = setCols ? new CompatMatX(cols, rows) : new CompatMatX(rows, cols);
 		for (int i = 0; i < rows; i++) {
-			if (setCols)
-				m->col(i) = rr[i];
+			if (setCols) m->col(i) = rr[i];
 			else
 				m->row(i) = rr[i];
 		}
@@ -756,13 +752,11 @@ private:
 	{
 		int rows = rr.size(), cols = rr.size() > 0 ? rr[0].size() : 0;
 		for (int i = 1; i < rows; i++)
-			if (rr[i].size() != cols)
-				throw std::invalid_argument(("MatrixX: all rows must have the same length."));
+			if (rr[i].size() != cols) throw std::invalid_argument(("MatrixX: all rows must have the same length."));
 		CompatMatX* m;
 		m = setCols ? new CompatMatX(cols, rows) : new CompatMatX(rows, cols);
 		for (int i = 0; i < rows; i++) {
-			if (setCols)
-				m->col(i) = rr[i];
+			if (setCols) m->col(i) = rr[i];
 			else
 				m->row(i) = rr[i];
 		}
@@ -835,8 +829,7 @@ private:
 
 	static void ensureSquare(const MatrixT& m)
 	{
-		if (m.rows() != m.cols())
-			throw std::runtime_error("Matrix is not square.");
+		if (m.rows() != m.cols()) throw std::runtime_error("Matrix is not square.");
 	}
 	static py::tuple jacobiSVD(const MatrixT& in)
 	{
@@ -872,8 +865,7 @@ private:
 		if (!dyn() && !wrap) {
 			VectorVisitor<CompatVectorT>::template Vector_data_stream<MatrixT>(m, oss, /*pad=*/0);
 		} else {
-			if (wrap)
-				oss << "\n";
+			if (wrap) oss << "\n";
 			for (Index r = 0; r < m.rows(); r++) {
 				oss << (wrap ? "\t" : "") << "(";
 				VectorVisitor<CompatVectorT>::template Vector_data_stream<CompatVectorT>(m.row(r), oss, /*pad=*/(wrap ? 7 : 0));
@@ -959,8 +951,7 @@ private:
 		Index idx[2];
 		Index mx[2] = { 2, Box::AmbientDimAtCompileTime };
 		IDX2_CHECKED_TUPLE_INTS(_idx, mx, idx);
-		if (idx[0] == 0)
-			return self.min()[idx[1]];
+		if (idx[0] == 0) return self.min()[idx[1]];
 		return self.max()[idx[1]];
 	}
 	static void set_item(Box& self, py::tuple _idx, Scalar value)
@@ -968,23 +959,20 @@ private:
 		Index idx[2];
 		Index mx[2] = { 2, Box::AmbientDimAtCompileTime };
 		IDX2_CHECKED_TUPLE_INTS(_idx, mx, idx);
-		if (idx[0] == 0)
-			self.min()[idx[1]] = value;
+		if (idx[0] == 0) self.min()[idx[1]] = value;
 		else
 			self.max()[idx[1]] = value;
 	}
 	static VectorType get_minmax(const Box& self, Index idx)
 	{
 		IDX_CHECK(idx, 2);
-		if (idx == 0)
-			return self.min();
+		if (idx == 0) return self.min();
 		return self.max();
 	}
 	static void set_minmax(Box& self, Index idx, const VectorType& value)
 	{
 		IDX_CHECK(idx, 2);
-		if (idx == 0)
-			self.min() = value;
+		if (idx == 0) self.min() = value;
 		else
 			self.max() = value;
 	}
@@ -1115,19 +1103,15 @@ private:
 	static Scalar __getitem__(const QuaternionT& self, Index idx)
 	{
 		IDX_CHECK(idx, 4);
-		if (idx == 0)
-			return self.x();
-		if (idx == 1)
-			return self.y();
-		if (idx == 2)
-			return self.z();
+		if (idx == 0) return self.x();
+		if (idx == 1) return self.y();
+		if (idx == 2) return self.z();
 		return self.w();
 	}
 	static void __setitem__(QuaternionT& self, Index idx, Scalar value)
 	{
 		IDX_CHECK(idx, 4);
-		if (idx == 0)
-			self.x() = value;
+		if (idx == 0) self.x() = value;
 		else if (idx == 1)
 			self.y() = value;
 		else if (idx == 2)

@@ -34,8 +34,7 @@ void Gl1_Node::go(const shared_ptr<Shape>& cm, const shared_ptr<State>&, bool wi
 
 	Real r = (static_cast<Sphere*>(cm.get()))->radius;
 	glColor3v(cm->color);
-	if (wire || wire2)
-		glutWireSphere(r, int(math::round(quality * glutSlices)), int(math::round(quality * glutStacks)));
+	if (wire || wire2) glutWireSphere(r, int(math::round(quality * glutSlices)), int(math::round(quality * glutStacks)));
 	else {
 		//Check if quality has been modified or if previous lists are invalidated (e.g. by creating a new qt view), then regenerate lists
 		bool somethingChanged = (math::abs(quality - prevQuality) > 0.001 || glIsList(glStripedSphereList) != GL_TRUE);
@@ -45,8 +44,7 @@ void Gl1_Node::go(const shared_ptr<Shape>& cm, const shared_ptr<State>&, bool wi
 			prevQuality = quality;
 		}
 		glScale(r, r, r);
-		if (stripes)
-			glCallList(glStripedSphereList);
+		if (stripes) glCallList(glStripedSphereList);
 		else
 			glCallList(glGlutSphereList);
 	}

@@ -33,8 +33,7 @@ void DomainLimiter::action()
 {
 	std::list<Body::id_t> out;
 	for (const auto& b : *scene->bodies) {
-		if ((!b) or ((mask > 0) and ((b->groupMask & mask) == 0)) or b->isClumpMember())
-			continue;
+		if ((!b) or ((mask > 0) and ((b->groupMask & mask) == 0)) or b->isClumpMember()) continue;
 		const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
 		if (sphere or b->isClump()) { //Delete only spheres and clumps
 			const Vector3r& p(b->state->pos);
@@ -42,8 +41,7 @@ void DomainLimiter::action()
 				out.push_back(b->id);
 				nDeleted++;
 				mDeleted += b->state->mass;
-				if (sphere)
-					vDeleted += (4 / 3.) * Mathr::PI * pow(sphere->radius, 3);
+				if (sphere) vDeleted += (4 / 3.) * Mathr::PI * pow(sphere->radius, 3);
 			}
 		}
 	}
@@ -54,14 +52,10 @@ CREATE_LOGGER(LawTester);
 
 void LawTester::postLoad(LawTester&)
 {
-	if (ids.size() == 0)
-		return; // uninitialized object, don't do nothing at all
-	if (ids.size() != 2)
-		throw std::invalid_argument("LawTester.ids: exactly two values must be given.");
-	if (disPath.empty() && rotPath.empty())
-		throw invalid_argument("LawTester.{disPath,rotPath}: at least one point must be given.");
-	if (pathSteps.empty())
-		throw invalid_argument("LawTester.pathSteps: at least one value must be given.");
+	if (ids.size() == 0) return; // uninitialized object, don't do nothing at all
+	if (ids.size() != 2) throw std::invalid_argument("LawTester.ids: exactly two values must be given.");
+	if (disPath.empty() && rotPath.empty()) throw invalid_argument("LawTester.{disPath,rotPath}: at least one point must be given.");
+	if (pathSteps.empty()) throw invalid_argument("LawTester.pathSteps: at least one value must be given.");
 	size_t pathSize = max(disPath.size(), rotPath.size());
 	// update path points
 	_path.clear();
@@ -85,8 +79,7 @@ void LawTester::postLoad(LawTester&)
 void LawTester::action()
 {
 	Vector2r foo; // avoid undefined ~Vector2r with clang?
-	if (ids.size() != 2)
-		throw std::invalid_argument("LawTester.ids: exactly two values must be given.");
+	if (ids.size() != 2) throw std::invalid_argument("LawTester.ids: exactly two values must be given.");
 	LOG_DEBUG("=================== LawTester step " << step << " ========================");
 	const shared_ptr<Interaction> Inew = scene->interactions->find(ids[0], ids[1]);
 	string                        strIds("##" + boost::lexical_cast<string>(ids[0]) + "+" + boost::lexical_cast<string>(ids[1]));
@@ -100,12 +93,10 @@ void LawTester::action()
 	if (I && (!Inew || !Inew->isReal()))
 		throw std::runtime_error("LawTester: interaction " + strIds + " was deleted" + (Inew ? " (is not real anymore)." : "."));
 	// different interaction object
-	if (I && Inew && I != Inew)
-		throw std::logic_error("LawTester: interacion " + strIds + " is a different object now?!");
+	if (I && Inew && I != Inew) throw std::logic_error("LawTester: interacion " + strIds + " is a different object now?!");
 	assert(Inew);
 	bool doInit = (!I);
-	if (doInit)
-		I = Inew;
+	if (doInit) I = Inew;
 
 	id1 = I->getId1();
 	id2 = I->getId2();
@@ -117,10 +108,8 @@ void LawTester::action()
 	ScGeom6D*              scGeom6d = dynamic_cast<ScGeom6D*>(I->geom.get());
 	bool                   hasRot   = (l6Geom || scGeom6d);
 	//NormShearPhys* phys=dynamic_cast<NormShearPhys*>(I->phys.get());			//Disabled because of warning
-	if (!gsc)
-		throw std::invalid_argument("LawTester: IGeom of " + strIds + " not a GenericSpheresContact.");
-	if (!scGeom && !l3Geom)
-		throw std::invalid_argument("LawTester: IGeom of " + strIds + " is neither ScGeom, nor L3Geom (or L6Geom).");
+	if (!gsc) throw std::invalid_argument("LawTester: IGeom of " + strIds + " not a GenericSpheresContact.");
+	if (!scGeom && !l3Geom) throw std::invalid_argument("LawTester: IGeom of " + strIds + " is neither ScGeom, nor L3Geom (or L6Geom).");
 	assert(!((bool)scGeom && (bool)l3Geom)); // nonsense
 	// get body objects
 	State *state1 = Body::byId(id1, scene)->state.get(), *state2 = Body::byId(id2, scene)->state.get();
@@ -159,8 +148,7 @@ void LawTester::action()
 			axY.normalize();
 			axZ = axX.cross(axY);
 			LOG_DEBUG("Initial axes x=" << axX << ", y=" << axY << ", z=" << axZ);
-			if (scGeom6d)
-				uGeom.tail<3>() = Vector3r::Zero();
+			if (scGeom6d) uGeom.tail<3>() = Vector3r::Zero();
 		} else { // udpate of an existing interaction
 			if (scGeom) {
 				scGeom->rotate(axY);
@@ -186,8 +174,7 @@ void LawTester::action()
 		axY             = trsf.row(1);
 		axZ             = trsf.row(2);
 		uGeom.head<3>() = l3Geom->u;
-		if (l6Geom)
-			uGeom.tail<3>() = l6Geom->phi;
+		if (l6Geom) uGeom.tail<3>() = l6Geom->phi;
 	}
 	// perform all shearing by translation, as it does not induce bending
 	if (hasRot && rotWeight != 0) {
@@ -281,8 +268,7 @@ void LawTester::action()
 	int nPathT = _pathT.size();
 	for (int i = 1; i < nPathT; i++) {
 		// i-th point on _pathT is (i-1)th on path; run corresponding hook, if it exists
-		if (step == _pathT[i] && ((int)hooks.size()) > (i - 1) && !hooks[i - 1].empty())
-			pyRunString(hooks[i - 1]);
+		if (step == _pathT[i] && ((int)hooks.size()) > (i - 1) && !hooks[i - 1].empty()) pyRunString(hooks[i - 1]);
 	}
 	step++;
 }
@@ -294,15 +280,13 @@ CREATE_LOGGER(GlExtra_LawTester);
 void GlExtra_LawTester::render()
 {
 	// scene object changed (after reload, for instance), for re-initialization
-	if (tester && tester->scene != scene)
-		tester = shared_ptr<LawTester>();
+	if (tester && tester->scene != scene) tester = shared_ptr<LawTester>();
 
 	if (!tester) {
 		FOREACH(shared_ptr<Engine> e, scene->engines)
 		{
 			tester = YADE_PTR_DYN_CAST<LawTester>(e);
-			if (tester)
-				break;
+			if (tester) break;
 		}
 	}
 	if (!tester) {
@@ -348,8 +332,7 @@ void GlExtra_LawTester::render()
 
 	// scale displacement, if they have the strain meaning
 	Real scale = 1;
-	if (tester->displIsRel)
-		scale = tester->refLength;
+	if (tester->displIsRel) scale = tester->refLength;
 
 	// find maximum displacement, draw axes in the shear plane
 	Real displMax                           = 0;
@@ -382,15 +365,13 @@ void GlExtra_LawTester::render()
 
 void GlExtra_OctreeCubes::postLoad(GlExtra_OctreeCubes&)
 {
-	if (boxesFile.empty())
-		return;
+	if (boxesFile.empty()) return;
 	boxes.clear();
 	std::ifstream txt(boxesFile.c_str());
 	while (!txt.eof()) {
 		Real data[8];
 		for (int i = 0; i < 8; i++) {
-			if (i < 7 && txt.eof())
-				goto done;
+			if (i < 7 && txt.eof()) goto done;
 			txt >> data[i];
 		}
 		OctreeBox ob;
@@ -410,10 +391,8 @@ void GlExtra_OctreeCubes::render()
 {
 	FOREACH(const OctreeBox& ob, boxes)
 	{
-		if (ob.fill < fillRangeDraw[0] || ob.fill > fillRangeDraw[1])
-			continue;
-		if (ob.level < levelRangeDraw[0] || ob.level > levelRangeDraw[1])
-			continue;
+		if (ob.fill < fillRangeDraw[0] || ob.fill > fillRangeDraw[1]) continue;
+		if (ob.level < levelRangeDraw[0] || ob.level > levelRangeDraw[1]) continue;
 		bool doFill = (ob.fill >= fillRangeFill[0] && ob.fill <= fillRangeFill[1] && (ob.fill != 0 || !noFillZero));
 		// -2: empty
 		// -1: recursion limit, empty
@@ -431,8 +410,7 @@ void GlExtra_OctreeCubes::render()
 		glPushMatrix();
 		glTranslatev(ob.center);
 		glScale(2 * ob.extents[0], 2 * ob.extents[1], 2 * ob.extents[2]);
-		if (doFill)
-			glutSolidCube(1);
+		if (doFill) glutSolidCube(1);
 		else
 			glutWireCube(1);
 		glPopMatrix();

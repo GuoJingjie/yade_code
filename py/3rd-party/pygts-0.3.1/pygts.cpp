@@ -45,9 +45,7 @@ static PyObject* merge(PyObject* self, PyObject* args)
 	PygtsVertex* vertex;
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "Od", &tuple, &epsilon)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "Od", &tuple, &epsilon)) { return NULL; }
 	if (PyList_Check(tuple)) {
 		tuple = PyList_AsTuple(tuple);
 	} else {
@@ -108,9 +106,7 @@ static PyObject* vertices(PyObject* self, PyObject* args)
 	PygtsVertex* vertex;
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &tuple)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &tuple)) { return NULL; }
 	if (PyList_Check(tuple)) {
 		tuple = PyList_AsTuple(tuple);
 	} else {
@@ -171,9 +167,7 @@ static PyObject* segments(PyObject* self, PyObject* args)
 	PygtsSegment* segment;
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &tuple)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &tuple)) { return NULL; }
 	if (PyList_Check(tuple)) {
 		tuple = PyList_AsTuple(tuple);
 	} else {
@@ -258,9 +252,7 @@ static PyObject* triangles(PyObject* self, PyObject* args)
 	PygtsTriangle* triangle;
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &tuple)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &tuple)) { return NULL; }
 	if (PyList_Check(tuple)) {
 		tuple = PyList_AsTuple(tuple);
 	} else {
@@ -346,9 +338,7 @@ static PyObject* triangle_enclosing(PyObject* self, PyObject* args)
 	PygtsTriangle* triangle;
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &tuple)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &tuple)) { return NULL; }
 	if (PyList_Check(tuple)) {
 		tuple = PyList_AsTuple(tuple);
 	} else {
@@ -383,9 +373,7 @@ static PyObject* triangle_enclosing(PyObject* self, PyObject* args)
 		return NULL;
 	}
 
-	if ((triangle = pygts_triangle_new(t)) == NULL) {
-		return NULL;
-	}
+	if ((triangle = pygts_triangle_new(t)) == NULL) { return NULL; }
 
 	return (PyObject*)triangle;
 }
@@ -401,12 +389,10 @@ static FILE* streamFromPyFile(PyObject* file, const char* mode)
 	FILE* fs;
 
 	fd = PyObject_AsFileDescriptor(file);
-	if (fd < 0)
-		return NULL;
+	if (fd < 0) return NULL;
 
 	fd = dup(fd);
-	if (fd < 0)
-		return NULL;
+	if (fd < 0) return NULL;
 
 	fs = fdopen(fd, mode);
 	if (fs == NULL) {
@@ -447,12 +433,10 @@ static PyObject* pygts_read(PygtsSurface* self, PyObject* args)
 	PygtsSurface* surface;
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &f_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &f_)) return NULL;
 
 	f = FILE_from_py_file__raises(f_, "r");
-	if (!f)
-		return NULL;
+	if (!f) return NULL;
 
 	if (feof(f)) {
 		PyErr_SetString(PyExc_EOFError, "End of File");
@@ -493,8 +477,7 @@ static PyObject* sphere(PyObject* self, PyObject* args)
 	guint         geodesation_order;
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "i", &geodesation_order))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "i", &geodesation_order)) return NULL;
 
 	/* Chain up object allocation */
 	args    = Py_BuildValue("()");
@@ -532,12 +515,8 @@ static void isofunc(gdouble** f, GtsCartesianGrid g, guint k, gpointer data)
 }
 
 #define ISO_CLEANUP                                                                                                                                            \
-	if (scalars) {                                                                                                                                         \
-		Py_DECREF(scalars);                                                                                                                            \
-	}                                                                                                                                                      \
-	if (extents) {                                                                                                                                         \
-		Py_DECREF(extents);                                                                                                                            \
-	}
+	if (scalars) { Py_DECREF(scalars); }                                                                                                                   \
+	if (extents) { Py_DECREF(extents); }
 
 static PyObject* isosurface(PyObject* self, PyObject* args, PyObject* kwds)
 {
@@ -551,9 +530,7 @@ static PyObject* isosurface(PyObject* self, PyObject* args, PyObject* kwds)
 
 	static char* kwlist[] = { "scalars", "isoval", "method", "extents", NULL };
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "Od|sO", kwlist, &Oscalars, isoval, &method, &Oextents)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "Od|sO", kwlist, &Oscalars, isoval, &method, &Oextents)) { return NULL; }
 
 	if (!(scalars = (PyArrayObject*)PyArray_ContiguousFromObject(Oscalars, NPY_DOUBLE, 3, 3))) {
 		ISO_CLEANUP;
@@ -777,46 +754,36 @@ PyMODINIT_FUNC __attribute__((visibility("default"))) init_gts(void)
 	PyObject* m;
 
 	/* Allocate the object table */
-	if ((obj_table = g_hash_table_new(NULL, NULL)) == NULL)
-		return MOD_ERROR_VAL;
+	if ((obj_table = g_hash_table_new(NULL, NULL)) == NULL) return MOD_ERROR_VAL;
 
 	/* Set class base types and make ready (i.e., inherit methods) */
-	if (PyType_Ready(&PygtsObjectType) < 0)
-		return MOD_ERROR_VAL;
+	if (PyType_Ready(&PygtsObjectType) < 0) return MOD_ERROR_VAL;
 
 	PygtsPointType.tp_base = &PygtsObjectType;
-	if (PyType_Ready(&PygtsPointType) < 0)
-		return MOD_ERROR_VAL;
+	if (PyType_Ready(&PygtsPointType) < 0) return MOD_ERROR_VAL;
 
 	PygtsVertexType.tp_base = &PygtsPointType;
-	if (PyType_Ready(&PygtsVertexType) < 0)
-		return MOD_ERROR_VAL;
+	if (PyType_Ready(&PygtsVertexType) < 0) return MOD_ERROR_VAL;
 
 	PygtsSegmentType.tp_base = &PygtsObjectType;
-	if (PyType_Ready(&PygtsSegmentType) < 0)
-		return MOD_ERROR_VAL;
+	if (PyType_Ready(&PygtsSegmentType) < 0) return MOD_ERROR_VAL;
 
 	PygtsEdgeType.tp_base = &PygtsSegmentType;
-	if (PyType_Ready(&PygtsEdgeType) < 0)
-		return MOD_ERROR_VAL;
+	if (PyType_Ready(&PygtsEdgeType) < 0) return MOD_ERROR_VAL;
 
 	PygtsTriangleType.tp_base = &PygtsObjectType;
-	if (PyType_Ready(&PygtsTriangleType) < 0)
-		return MOD_ERROR_VAL;
+	if (PyType_Ready(&PygtsTriangleType) < 0) return MOD_ERROR_VAL;
 
 	PygtsFaceType.tp_base = &PygtsTriangleType;
-	if (PyType_Ready(&PygtsFaceType) < 0)
-		return MOD_ERROR_VAL;
+	if (PyType_Ready(&PygtsFaceType) < 0) return MOD_ERROR_VAL;
 
 	PygtsSurfaceType.tp_base = &PygtsObjectType;
-	if (PyType_Ready(&PygtsSurfaceType) < 0)
-		return MOD_ERROR_VAL;
+	if (PyType_Ready(&PygtsSurfaceType) < 0) return MOD_ERROR_VAL;
 
 
 	/* Initialize the module */
 	MOD_DEF(m, "_gts", "Gnu Triangulated Surface Library", gts_methods);
-	if (m == NULL)
-		return MOD_ERROR_VAL;
+	if (m == NULL) return MOD_ERROR_VAL;
 
 #if PYGTS_HAS_NUMPY
 	/* Make sure Surface.iso can work with numpy arrays */

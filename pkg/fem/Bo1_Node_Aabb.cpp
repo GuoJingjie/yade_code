@@ -16,9 +16,7 @@ namespace yade { // Cannot have #include directive inside.
 void Bo1_Node_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body* /*b*/)
 {
 	Node* node = static_cast<Node*>(cm.get());
-	if (!bv) {
-		bv = shared_ptr<Bound>(new Aabb);
-	}
+	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 	Aabb*    aabb     = static_cast<Aabb*>(bv.get());
 	Vector3r halfSize = (aabbEnlargeFactor > 0 ? aabbEnlargeFactor : 1.) * Vector3r(node->radius, node->radius, node->radius);
 	if (!scene->isPeriodic) {

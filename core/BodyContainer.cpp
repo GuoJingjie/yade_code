@@ -34,8 +34,7 @@ Body::id_t BodyContainer::insert(shared_ptr<Body> b)
 
 Body::id_t BodyContainer::insertAtId(shared_ptr<Body> b, Body::id_t candidate)
 {
-	if (not b)
-		LOG_ERROR("Inserting null body");
+	if (not b) LOG_ERROR("Inserting null body");
 	const shared_ptr<Scene>& scene = Omega::instance().getScene();
 	if (enableRedirection) {
 		dirty             = true;
@@ -79,8 +78,7 @@ bool BodyContainer::exists(Body::id_t id) const { return ((id >= 0) && ((size_t)
 
 bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
 { //default is false (as before)
-	if (!body[id])
-		return false;
+	if (!body[id]) return false;
 	const shared_ptr<Scene>& scene = Omega::instance().getScene();
 	if (enableRedirection) {
 		useRedirection    = true;
@@ -93,8 +91,7 @@ bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
 		const shared_ptr<Body>  clumpBody = Body::byId(b->clumpId);
 		const shared_ptr<Clump> clump     = YADE_PTR_CAST<Clump>(clumpBody->shape);
 		Clump::del(clumpBody, b);
-		if (clump->members.size() == 0)
-			this->erase(clumpBody->id, false); //Clump has no members any more. Remove it
+		if (clump->members.size() == 0) this->erase(clumpBody->id, false); //Clump has no members any more. Remove it
 	}
 
 	if ((b) and (b->isClump())) {
@@ -115,7 +112,7 @@ bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
 		body[id].reset();
 		return true;
 	}
-	
+
 	for (auto it = b->intrs.begin(), end = b->intrs.end(); it != end;) { //Iterate over all body's interactions
 		Body::MapId2IntrT::iterator willBeInvalid = it;
 		++it;
@@ -135,8 +132,7 @@ void BodyContainer::updateShortLists()
 		realBodies.clear();
 		return;
 	}
-	if (not dirty)
-		return; //already ok
+	if (not dirty) return; //already ok
 	unsigned long size1 = realBodies.size();
 	realBodies.clear();
 	realBodies.reserve((long unsigned)(size1 * 1.3));
@@ -147,12 +143,10 @@ void BodyContainer::updateShortLists()
 	const int& subdomain = Omega::instance().getScene()->subdomain;
 #endif
 	for (const auto& b : *(Omega::instance().getScene()->bodies)) {
-		if (not b)
-			continue;
+		if (not b) continue;
 		realBodies.push_back(b->getId());
 #ifdef YADE_MPI
-		if (b->subdomain == subdomain and not b->getIsSubdomain())
-			subdomainBodies.push_back(b->id);
+		if (b->subdomain == subdomain and not b->getIsSubdomain()) subdomainBodies.push_back(b->id);
 #endif
 	}
 	dirty = false;

@@ -23,8 +23,7 @@ public:
 	{
 		assert(values.size() == displayTypes.size());
 		vector<string>::iterator I = std::find(displayTypes.begin(), displayTypes.end(), displayType);
-		if (I == displayTypes.end())
-			return false;
+		if (I == displayTypes.end()) return false;
 		value = values[std::distance(displayTypes.begin(), I)];
 		return true;
 	}

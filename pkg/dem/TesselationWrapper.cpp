@@ -71,8 +71,7 @@ struct RTraits_for_spatial_sort : public CGT::SimpleTriangulationTypes::RTriangu
 // template <class Triangulation>
 void build_triangulation_with_ids(const shared_ptr<BodyContainer>& bodies, TesselationWrapper& TW, bool reset = true)
 {
-	if (reset)
-		TW.clear();
+	if (reset) TW.clear();
 	typedef SimpleTesselation::RTriangulation              RTriangulation;
 	SimpleTesselation&                                     Tes = *(TW.Tes);
 	RTriangulation&                                        T   = Tes.Triangulation();
@@ -123,8 +122,7 @@ void build_triangulation_with_ids(const shared_ptr<BodyContainer>& bodies, Tesse
 		int                         li, lj;
 		c                               = T.locate(*(p->first), lt, li, lj, hint);
 		RTriangulation::Vertex_handle v = T.insert(*(p->first), lt, c, li, lj);
-		if (v == RTriangulation::Vertex_handle())
-			hint = c;
+		if (v == RTriangulation::Vertex_handle()) hint = c;
 		else {
 			v->info().setId((unsigned int)p->second);
 			//Vh->info().isFictious = false;//false is the default
@@ -141,8 +139,7 @@ double thickness = 0;
 
 TesselationWrapper::~TesselationWrapper()
 {
-	if (Tes)
-		delete Tes;
+	if (Tes) delete Tes;
 }
 
 void TesselationWrapper::clear(void)
@@ -201,8 +198,7 @@ void TesselationWrapper::checkMinMax(double x, double y, double z, double rad)
 bool TesselationWrapper::move(double x, double y, double z, double rad, unsigned int id)
 {
 	checkMinMax(x, y, z, rad);
-	if (Tes->move(x, y, z, rad, id) != NULL)
-		return true;
+	if (Tes->move(x, y, z, rad, id) != NULL) return true;
 	else {
 		std::cerr << "Tes->move(x,y,z,rad,id)==NULL" << std::endl;
 		return false;
@@ -211,8 +207,7 @@ bool TesselationWrapper::move(double x, double y, double z, double rad, unsigned
 
 void TesselationWrapper::computeTesselation(void)
 {
-	if (not(Tes->vertexHandles.size() > 0))
-		insertSceneSpheres();
+	if (not(Tes->vertexHandles.size() > 0)) insertSceneSpheres();
 	if (!rad_divided) {
 		mean_radius /= n_spheres;
 		rad_divided = true;
@@ -222,25 +217,21 @@ void TesselationWrapper::computeTesselation(void)
 
 void TesselationWrapper::computeTesselation(double pminx, double pmaxx, double pminy, double pmaxy, double pminz, double pmaxz)
 {
-	if (not(Tes->vertexHandles.size() > 0))
-		insertSceneSpheres();
+	if (not(Tes->vertexHandles.size() > 0)) insertSceneSpheres();
 	addBoundingPlanes(pminx, pmaxx, pminy, pmaxy, pminz, pmaxz);
 	computeTesselation();
 }
 
 void TesselationWrapper::computeVolumes(void)
 {
-	if (not(Tes->vertexHandles.size() > 0))
-		insertSceneSpheres();
-	if (!bounded)
-		addBoundingPlanes();
+	if (not(Tes->vertexHandles.size() > 0)) insertSceneSpheres();
+	if (!bounded) addBoundingPlanes();
 	computeTesselation();
 	Tes->computeVolumes();
 }
 unsigned int TesselationWrapper::NumberOfFacets(bool initIters)
 {
-	if (initIters)
-		InitIter();
+	if (initIters) InitIter();
 	return Tes->Triangulation().number_of_finite_edges();
 }
 
@@ -253,8 +244,7 @@ void TesselationWrapper::InitIter(void)
 
 bool TesselationWrapper::nextFacet(std::pair<unsigned int, unsigned int>& facet)
 {
-	if (facet_end == facet_it)
-		return false;
+	if (facet_end == facet_it) return false;
 	facet.first  = facet_it->first->vertex(facet_it->second)->info().id();
 	facet.second = facet_it->first->vertex((facet_it)->third)->info().id();
 	++facet_it;
@@ -333,8 +323,7 @@ void TesselationWrapper::defToVtkFromPositions(string inputFile1, string inputFi
 	sp1.fromFile(inputFile1);
 	sp2.fromFile(inputFile2);
 	size_t imax = sp1.pack.size();
-	if (imax != sp2.pack.size())
-		LOG_ERROR("The files have different numbers of spheres");
+	if (imax != sp2.pack.size()) LOG_ERROR("The files have different numbers of spheres");
 	shared_ptr<Body> body;
 	scene->bodies->clear();
 	for (size_t i = 0; i < imax; i++) {
@@ -391,15 +380,13 @@ boost::python::dict TesselationWrapper::getVolPoroDef(bool deformation)
 		Real             sphereVol = 4.188790 * math::pow((V_it->point().weight()), 1.5); // 4/3*PI*R³ = 4.188...*R³
 		vol[id]                    = V_it->info().v();
 		poro[id]                   = (V_it->info().v() - sphereVol) / V_it->info().v();
-		if (deformation)
-			MATRIX3R_TO_NUMPY(mma.analyser->ParticleDeformation[id], def[id]);
+		if (deformation) MATRIX3R_TO_NUMPY(mma.analyser->ParticleDeformation[id], def[id]);
 		//cerr << V_it->info().v()<<" "<<ParticleDeformation[id]<<endl;
 	}
 	boost::python::dict ret;
 	ret["vol"]  = vol;
 	ret["poro"] = poro;
-	if (deformation)
-		ret["def"] = def;
+	if (deformation) ret["def"] = def;
 	return ret;
 }
 
@@ -428,8 +415,7 @@ boost::python::list TesselationWrapper::getAlphaCaps(double alpha, double shrink
 void TesselationWrapper::applyAlphaForces(Matrix3r stress, double alpha, double shrinkedAlpha, bool fixedAlpha)
 {
 	Scene* scene = Omega::instance().getScene().get();
-	if (Tes->Triangulation().number_of_vertices() <= 0)
-		build_triangulation_with_ids(scene->bodies, *this, true); //if not already triangulated do it now
+	if (Tes->Triangulation().number_of_vertices() <= 0) build_triangulation_with_ids(scene->bodies, *this, true); //if not already triangulated do it now
 	vector<AlphaCap> caps;
 	Tes->setExtendedAlphaCaps(caps, alpha, shrinkedAlpha, fixedAlpha);
 	for (auto f = caps.begin(); f != caps.end(); f++)

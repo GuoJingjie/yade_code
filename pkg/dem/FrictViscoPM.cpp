@@ -31,8 +31,7 @@ void Ip2_FrictViscoMat_FrictViscoMat_FrictViscoPhys::go(
 {
 	LOG_TRACE("Ip2_FrictViscoMat_FrictViscoMat_FrictViscoPhys::go - contact law");
 
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 	const shared_ptr<FrictViscoMat>& mat1            = YADE_PTR_CAST<FrictViscoMat>(b1);
 	const shared_ptr<FrictViscoMat>& mat2            = YADE_PTR_CAST<FrictViscoMat>(b2);
 	interaction->phys                                = shared_ptr<FrictViscoPhys>(new FrictViscoPhys());
@@ -95,8 +94,7 @@ void Ip2_FrictMat_FrictViscoMat_FrictViscoPhys::go(const shared_ptr<Material>& b
 {
 	LOG_TRACE("Ip2_FrictMat_FrictViscoMat_FrictViscoPhys::go - contact law");
 
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 	const shared_ptr<FrictMat>&      mat1            = YADE_PTR_CAST<FrictMat>(b1);
 	const shared_ptr<FrictViscoMat>& mat2            = YADE_PTR_CAST<FrictViscoMat>(b2);
 	interaction->phys                                = shared_ptr<FrictViscoPhys>(new FrictViscoPhys());
@@ -164,12 +162,9 @@ Real Law2_ScGeom_FrictViscoPhys_CundallStrackVisco::elasticEnergy()
 	Real energy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		FrictPhys* phys = dynamic_cast<FrictPhys*>(I->phys.get());
-		if (phys) {
-			energy += 0.5 * (phys->normalForce.squaredNorm() / phys->kn + phys->shearForce.squaredNorm() / phys->ks);
-		}
+		if (phys) { energy += 0.5 * (phys->normalForce.squaredNorm() / phys->kn + phys->shearForce.squaredNorm() / phys->ks); }
 	}
 	return energy;
 }
@@ -234,8 +229,7 @@ bool Law2_ScGeom_FrictViscoPhys_CundallStrackVisco::go(shared_ptr<IGeom>& ig, sh
 			//define the plastic work input and increment the total plastic energy dissipated
 			shearForce *= ratio;
 			Real dissip = ((1 / phys->ks) * (trialForce - shearForce)) /*plastic disp*/.dot(shearForce) /*active force*/;
-			if (traceEnergy)
-				plasticDissipation += dissip;
+			if (traceEnergy) plasticDissipation += dissip;
 			else if (dissip > 0)
 				scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset*/ false);
 		}

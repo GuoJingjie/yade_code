@@ -35,9 +35,7 @@ void L3Geom::applyLocalForceTorque(const Vector3r& localF, const Vector3r& local
 		nsp->shearForce  = globF - nsp->normalForce;
 	}
 	Vector3r globT = Vector3r::Zero();
-	if (localT != Vector3r::Zero()) {
-		globT = trsf.transpose() * localT;
-	}
+	if (localT != Vector3r::Zero()) { globT = trsf.transpose() * localT; }
 	// apply force and torque
 	scene->forces.addForce(I->getId1(), globF);
 	scene->forces.addTorque(I->getId1(), x1c.cross(globF) + globT);
@@ -97,8 +95,7 @@ bool Ig2_Sphere_Sphere_L3Geom::genericGo(
 	const Real& r2       = s2->cast<Sphere>().radius;
 	Vector3r    relPos   = state2.pos + shift2 - state1.pos;
 	Real        unDistSq = relPos.squaredNorm() - pow(math::abs(distFactor) * (r1 + r2), 2);
-	if (unDistSq > 0 && !I->isReal() && !force)
-		return false;
+	if (unDistSq > 0 && !I->isReal() && !force) return false;
 
 	// contact exists, go ahead
 
@@ -129,8 +126,7 @@ void Ig2_Sphere_Sphere_L3Geom::handleSpheresLikeContact(
 {
 	// create geometry
 	if (!I->geom) {
-		if (is6Dof)
-			I->geom = shared_ptr<L6Geom>(new L6Geom);
+		if (is6Dof) I->geom = shared_ptr<L6Geom>(new L6Geom);
 		else
 			I->geom = shared_ptr<L3Geom>(new L3Geom);
 		L3Geom& g(I->geom->cast<L3Geom>());
@@ -149,8 +145,7 @@ void Ig2_Sphere_Sphere_L3Geom::handleSpheresLikeContact(
 		g.trsf.row(1) = locY;
 		g.trsf.row(2) = locZ;
 		g.u           = Vector3r(uN, 0, 0); // zero shear displacement
-		if (distFactor < 0)
-			g.u0[0] = uN;
+		if (distFactor < 0) g.u0[0] = uN;
 		// L6Geom::phi is initialized to Vector3r::Zero() automatically
 		//cerr<<"Init trsf=\n"<<g.trsf<<endl<<"locX="<<locX<<", locY="<<locY<<", locZ="<<locZ<<endl;
 		return;
@@ -183,8 +178,7 @@ void Ig2_Sphere_Sphere_L3Geom::handleSpheresLikeContact(
 	//cerr<<"correction "<<(scene->isPeriodic?scene->cell->intrShiftVel(I->cellDist):Vector3r::Zero())<<endl;
 	Vector3r relShearVel = (state2.vel + state2.angVel.cross(c2x)) - (state1.vel + state1.angVel.cross(c1x));
 	// account for relative velocity of particles in different cell periods
-	if (scene->isPeriodic)
-		relShearVel += scene->cell->intrShiftVel(I->cellDist);
+	if (scene->isPeriodic) relShearVel += scene->cell->intrShiftVel(I->cellDist);
 	relShearVel -= avgNormal.dot(relShearVel) * avgNormal;
 	Vector3r relShearDu = relShearVel * scene->dt;
 
@@ -265,23 +259,19 @@ bool Ig2_Wall_Sphere_L3Geom::go(
         const bool&                    force,
         const shared_ptr<Interaction>& I)
 {
-	if (scene->isPeriodic)
-		throw std::logic_error("Ig2_Wall_Sphere_L3Geom does not handle periodic boundary conditions.");
+	if (scene->isPeriodic) throw std::logic_error("Ig2_Wall_Sphere_L3Geom does not handle periodic boundary conditions.");
 	const Real& radius = s2->cast<Sphere>().radius;
 	const int&  ax(s1->cast<Wall>().axis);
 	const int&  sense(s1->cast<Wall>().sense);
-	Real        dist = state2.pos[ax] + shift2[ax] - state1.pos[ax]; // signed "distance" between centers
-	if (!I->isReal() && math::abs(dist) > radius && !force) {
-		return false;
-	} // wall and sphere too far from each other
+	Real        dist = state2.pos[ax] + shift2[ax] - state1.pos[ax];          // signed "distance" between centers
+	if (!I->isReal() && math::abs(dist) > radius && !force) { return false; } // wall and sphere too far from each other
 	// contact point is sphere center projected onto the wall
 	Vector3r contPt = state2.pos + shift2;
 	contPt[ax]      = state1.pos[ax];
 	Vector3r normal = Vector3r::Zero();
 	// wall interacting from both sides: normal depends on sphere's position
 	assert(sense == -1 || sense == 0 || sense == 1);
-	if (sense == 0)
-		normal[ax] = dist > 0 ? 1. : -1.;
+	if (sense == 0) normal[ax] = dist > 0 ? 1. : -1.;
 	else
 		normal[ax] = (sense == 1 ? 1. : -1);
 	Real uN = normal[ax] * dist - radius; // takes in account sense, radius and distance
@@ -312,8 +302,7 @@ bool Ig2_Facet_Sphere_L3Geom::go(
 	Vector3r cogLine   = state1.ori.conjugate() * (state2.pos + shift2 - state1.pos); // connect centers of gravity
 	Vector3r normal    = facet.normal;                                                // trial contact normal
 	Real     planeDist = normal.dot(cogLine);
-	if (math::abs(planeDist) > radius && !I->isReal() && !force)
-		return false; // sphere too far
+	if (math::abs(planeDist) > radius && !I->isReal() && !force) return false; // sphere too far
 	if (planeDist < 0) {
 		normal *= -1;
 		planeDist *= -1;
@@ -338,10 +327,8 @@ bool Ig2_Facet_Sphere_L3Geom::go(
 			                  "bug)"); // +++ (impossible)
 		default: throw logic_error("Ig2_Facet_Sphere_L3Geom: Nonsense intersection value. (please report bug)");
 	}
-	normal = cogLine - contactPt; // normal is now the contact normal, still in local coords
-	if (!I->isReal() && normal.squaredNorm() > radius * radius && !force) {
-		return false;
-	} // fast test before sqrt
+	normal = cogLine - contactPt;                                                           // normal is now the contact normal, still in local coords
+	if (!I->isReal() && normal.squaredNorm() > radius * radius && !force) { return false; } // fast test before sqrt
 	Real dist = normal.norm();
 	normal /= dist; // normal is unit vector now
 	// end facet-local coordinates
@@ -360,8 +347,7 @@ bool Law2_L3Geom_FrictPhys_ElPerfPl::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>
 	Vector3r& localF(geom->F);
 	localF = geom->relU().cwiseProduct(Vector3r(phys->kn, phys->ks, phys->ks));
 	// break if necessary
-	if (localF[0] > 0 && !noBreak)
-		return false;
+	if (localF[0] > 0 && !noBreak) return false;
 
 	if (!noSlip) {
 		// plastic slip, if necessary; non-zero elastic limit only for compression
@@ -375,8 +361,7 @@ bool Law2_L3Geom_FrictPhys_ElPerfPl::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>
 			Fs *= ratio;        // decrement shear force value;
 			if (scene->trackEnergy) {
 				Real dissip = Fs.norm() * u0slip.norm();
-				if (dissip > 0)
-					scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset*/ false);
+				if (dissip > 0) scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset*/ false);
 			}
 		}
 	}
@@ -434,14 +419,12 @@ void Gl1_L3Geom::draw(const shared_ptr<IGeom>& ig, bool isL6Geom, const Real& ph
 			Vector3r color = .3 * Vector3r::Ones();
 			color[i]       = 1;
 			GLUtils::GLDrawLine(Vector3r::Zero(), pt, color);
-			if (axesLabels)
-				GLUtils::GLDrawText(string(i == 0 ? "x" : (i == 1 ? "y" : "z")), pt, color);
+			if (axesLabels) GLUtils::GLDrawText(string(i == 0 ? "x" : (i == 1 ? "y" : "z")), pt, color);
 		}
 	}
 	if (uPhiWd > 0) {
 		glLineWidth(uPhiWd);
-		if (uScale != 0)
-			GLUtils::GLDrawLine(Vector3r::Zero(), uScale * g.relU(), Vector3r(0, 1, .5));
+		if (uScale != 0) GLUtils::GLDrawLine(Vector3r::Zero(), uScale * g.relU(), Vector3r(0, 1, .5));
 		if (isL6Geom && phiScale > 0)
 			GLUtils::GLDrawLine(Vector3r::Zero(), ig->cast<L6Geom>().relPhi() / Mathr::PI * rMin * phiScale, Vector3r(.8, 0, 1));
 	}

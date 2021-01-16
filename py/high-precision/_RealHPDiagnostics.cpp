@@ -85,8 +85,7 @@ public:
 	// don't call rebuild() when wrong() == true
 	template <typename Rr> Rr rebuild() const
 	{
-		if (wrong())
-			throw std::runtime_error("DecomposedReal::rebuild got wrong() data.");
+		if (wrong()) throw std::runtime_error("DecomposedReal::rebuild got wrong() data.");
 		return rebuild<Rr>(this->bits, this->exp, this->sig);
 	}
 	template <typename Rr> static Rr rebuild(const std::vector<unsigned char>& bits, const int& exp, const int& sig)
@@ -113,17 +112,14 @@ public:
 		fpNormal        = (fpClassify == FP_NORMAL);
 		fpSubNormal     = (fpClassify == FP_SUBNORMAL);
 		fpZero          = (fpClassify == FP_ZERO);
-		if ((fpInf != (fpClassify == FP_INFINITE)) or (fpNan != (fpClassify == FP_NAN))) {
-			bad = true;
-		}
+		if ((fpInf != (fpClassify == FP_INFINITE)) or (fpNan != (fpClassify == FP_NAN))) { bad = true; }
 		demangledType = boost::core::demangle(typeid(Rr).name());
 		whatEntered   = math::toStringHP(x);
 		bad           = (not math::isfinite(x)); // NaN or Inf
 		int ex        = 0;
 		Rr  norm      = math::frexp(math::abs(x), &ex);
 		checkNormExp(norm, ex, x); // may set bad=true;
-		if (bad)
-			return;
+		if (bad) return;
 		sig     = math::sign(x);
 		exp     = ex - 1;
 		ex      = 0;
@@ -143,9 +139,7 @@ public:
 			}
 		};
 		bad = false;
-		if (x != rebuild<Rr>()) {
-			throw std::runtime_error("DecomposedReal rebuild error.");
-		}
+		if (x != rebuild<Rr>()) { throw std::runtime_error("DecomposedReal rebuild error."); }
 	}
 	template <typename Rr = double> void     print() const { std::cout << py::extract<std::string>(py::str(getDict<Rr>()))() << "\n"; }
 	template <typename Rr = double> py::dict getDict() const
@@ -181,14 +175,11 @@ public:
 	{
 		if (this->bits.size() > maxPrec.bits.size())
 			throw std::runtime_error("DecomposedReal::veryEqual - the argument maxPrec should have higher precision");
-		if ((this->sig != maxPrec.sig) or (this->exp != maxPrec.exp))
-			return false;
+		if ((this->sig != maxPrec.sig) or (this->exp != maxPrec.exp)) return false;
 		size_t i = 0;
 		for (; i < maxPrec.bits.size(); ++i) {
-			if ((i < this->bits.size()) and (this->bits[i] != maxPrec.bits[i]))
-				return false;
-			if ((i >= this->bits.size()) and (maxPrec.bits[i] != 0))
-				return false;
+			if ((i < this->bits.size()) and (this->bits[i] != maxPrec.bits[i])) return false;
+			if ((i >= this->bits.size()) and (maxPrec.bits[i] != 0)) return false;
 		}
 		return true;
 	}
@@ -368,8 +359,7 @@ public:
 	        , useRandomArgs { useRnd }
 	{
 		for (auto N : testSet)
-			if (N != *testSet.rbegin())
-				empty[N] = Error { {}, 0 };
+			if (N != *testSet.rbegin()) empty[N] = Error { {}, 0 };
 	}
 	void prepare()
 	{
@@ -399,8 +389,7 @@ public:
 	template <int testN>
 	void amend(const std::string& funcName, const RealHP<testN>& funcValue, const std::vector<Domain>& domains, const std::array<RealHP<testN>, 3>& args)
 	{
-		if (results.count(funcName) == 0)
-			results[funcName] = empty;
+		if (results.count(funcName) == 0) results[funcName] = empty;
 		if (first) { // store results for the highest N
 			reference[funcName] = static_cast<RealHP<maxN>>(funcValue);
 		} else if (math::isfinite(funcValue) and math::isfinite(reference[funcName])) {
@@ -409,8 +398,7 @@ public:
 			if (ulpError > results[funcName][testN].second) {
 				std::array<RealHP<maxP>, 3> usedArgs { 0, 0, 0 };
 				for (size_t i = 0; i < 3; ++i)
-					if (i < domains.size())
-						usedArgs[i] = static_cast<RealHP<maxP>>(applyDomain<testN>(args[i], domains[i]));
+					if (i < domains.size()) usedArgs[i] = static_cast<RealHP<maxP>>(applyDomain<testN>(args[i], domains[i]));
 				if (collectArgs) {
 					results[funcName][testN].first.push_back(usedArgs);
 					results[funcName][testN].second = ulpError;
@@ -562,14 +550,12 @@ getRealHPErrors(const py::list& testLevelsHP, int testCount, Real minX, Real max
 	TRVAR5(testCount, minX, maxX, useRandomArgs, printEveryNth);
 	TRVAR2(collectArgs, extraChecks);
 	std::set<int> testSet { py::stl_input_iterator<int>(testLevelsHP), py::stl_input_iterator<int>() };
-	if (testSet.size() < 2)
-		throw std::runtime_error("The testLevelsHP is too small, there must be a higher precision to test against.");
+	if (testSet.size() < 2) throw std::runtime_error("The testLevelsHP is too small, there must be a higher precision to test against.");
 	if (not std::includes(math::RealHPConfig::supportedByMinieigen.begin(), math::RealHPConfig::supportedByMinieigen.end(), testSet.begin(), testSet.end()))
 		throw std::runtime_error("testLevelsHP contains N not present in yade.math.RealHPConfig.getSupportedByMinieigen()");
 	int smallestTestedHPn = *testSet.begin();
 	// Go from runtime parameter to a constexpr template parameter. This allows for greater precision in entire test.
-	if (smallestTestedHPn == 1)
-		return runTest<1>(testCount, minX, maxX, useRandomArgs, printEveryNth, testSet, collectArgs, extraChecks);
+	if (smallestTestedHPn == 1) return runTest<1>(testCount, minX, maxX, useRandomArgs, printEveryNth, testSet, collectArgs, extraChecks);
 	else
 		return runTest<2>(testCount, minX, maxX, useRandomArgs, printEveryNth, testSet, collectArgs, extraChecks);
 

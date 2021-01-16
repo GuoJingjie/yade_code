@@ -33,13 +33,11 @@ void Gl1_GridConnection::go(const shared_ptr<Shape>& cm, const shared_ptr<State>
 	Real                          length = GC->getLength();
 	const shared_ptr<Interaction> intr   = scene->interactions->find((int)GC->node1->getId(), (int)GC->node2->getId());
 	Vector3r                      segt   = GC->node2->state->pos - GC->node1->state->pos;
-	if (scene->isPeriodic && intr)
-		segt += scene->cell->intrShiftPos(intr->cellDist);
+	if (scene->isPeriodic && intr) segt += scene->cell->intrShiftPos(intr->cellDist);
 	//glMaterialv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Vector3f(cm->color[0],cm->color[1],cm->color[2]));
 
 	glColor3v(cm->color);
-	if (glutNormalize)
-		glPushAttrib(GL_NORMALIZE);
+	if (glutNormalize) glPushAttrib(GL_NORMALIZE);
 	// 	glPushMatrix();
 	Quaternionr shift;
 	shift.setFromTwoVectors(Vector3r::UnitZ(), segt);
@@ -47,12 +45,9 @@ void Gl1_GridConnection::go(const shared_ptr<Shape>& cm, const shared_ptr<State>
 	st->ori = Quaternionr::
 	        Identity(); // Otherwise clumped connexions get rotated by the clump motion and the view is messed up (note that orientation is never used in mechanical calculations in the case of connexions and pfacets).
 
-	if (intr) {
-		drawCylinder(wire || wire2, r, length, shift);
-	}
+	if (intr) { drawCylinder(wire || wire2, r, length, shift); }
 	// 	if (intr && scene->isPeriodic) { glTranslatef(-segt[0],-segt[1],-segt[2]); drawCylinder(wire || wire2, r,length,-shift);}
-	if (glutNormalize)
-		glPopAttrib();
+	if (glutNormalize) glPopAttrib();
 	// 	glPopMatrix();
 	return;
 }

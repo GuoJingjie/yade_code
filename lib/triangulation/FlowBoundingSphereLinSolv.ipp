@@ -63,13 +63,11 @@ namespace CGT {
 	template <class _Tesselation, class FlowType> FlowBoundingSphereLinSolv<_Tesselation, FlowType>::~FlowBoundingSphereLinSolv()
 	{
 #ifdef TAUCS_LIB
-		if (Fccs)
-			taucs_ccs_free(Fccs);
+		if (Fccs) taucs_ccs_free(Fccs);
 #endif
 #ifdef SUITESPARSE_VERSION_4
 		if (useSolver == 4) {
-			if (getCHOLMODPerfTimings)
-				gettimeofday(&start, NULL);
+			if (getCHOLMODPerfTimings) gettimeofday(&start, NULL);
 			CHOLMOD(free_sparse)(&Achol, &com);
 			CHOLMOD(free_factor)(&L, &com);
 			CHOLMOD(finish)(&com);
@@ -114,8 +112,7 @@ namespace CGT {
 		com.nmethods           = 1;             // nOrderingMethods; //1;
 		com.method[0].ordering = CHOLMOD_METIS; // orderingMethod; //CHOLMOD_METIS;
 #ifdef PFV_GPU
-		if (multithread)
-			com.maxGpuMemFraction = 0.4; //using (less than) half of the available memory for each solver
+		if (multithread) com.maxGpuMemFraction = 0.4; //using (less than) half of the available memory for each solver
 #endif
 		com.supernodal = CHOLMOD_AUTO; //CHOLMOD_SUPERNODAL;
 #endif
@@ -164,11 +161,9 @@ namespace CGT {
 		isFullLinearSystemGSSet = false;
 		areCellsOrdered         = false;
 #ifdef TAUCS_LIB
-		if (F)
-			taucs_supernodal_factor_free(F);
+		if (F) taucs_supernodal_factor_free(F);
 		F = NULL;
-		if (Fccs)
-			taucs_ccs_free(Fccs);
+		if (Fccs) taucs_ccs_free(Fccs);
 		Fccs = NULL;
 #endif
 #ifdef LINSOLV
@@ -188,8 +183,7 @@ namespace CGT {
 	{
 #ifdef SUITESPARSE_VERSION_4
 		if (!multithread && factorExists && useSolver == 4) {
-			if (getCHOLMODPerfTimings)
-				gettimeofday(&start, NULL);
+			if (getCHOLMODPerfTimings) gettimeofday(&start, NULL);
 			CHOLMOD(free_sparse)(&Achol, &com);
 			//cholmod_l_free_triplet(&cholT, &com);
 			if (!reuseOrdering) {
@@ -208,8 +202,7 @@ namespace CGT {
 		}
 #endif
 
-		if (getCHOLMODPerfTimings)
-			gettimeofday(&start, NULL);
+		if (getCHOLMODPerfTimings) gettimeofday(&start, NULL);
 
 		RTriangulation& Tri     = T[currentTes].Triangulation();
 		int             n_cells = Tri.number_of_finite_cells();
@@ -226,8 +219,7 @@ namespace CGT {
 			for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
 				orderedCells.push_back(cell);
 				cell->info().index = 0;
-				if (!cell->info().Pcondition && !cell->info().blocked)
-					++ncols;
+				if (!cell->info().Pcondition && !cell->info().blocked) ++ncols;
 			}
 			orderedCells.shrink_to_fit();
 			//		//Segfault on 14.10, and useless overall since SuiteSparse has preconditionners (including metis)
@@ -239,8 +231,7 @@ namespace CGT {
 		}
 		if (!isLinearSystemSet) {
 #ifdef TAUCS_LIB
-			if (Fccs)
-				taucs_ccs_free(Fccs); //delete the old factor
+			if (Fccs) taucs_ccs_free(Fccs); //delete the old factor
 #endif
 			int n = 3 * (ncols + 1); //number of non-zero in triangular matrix
 			is.resize(n);
@@ -280,8 +271,7 @@ namespace CGT {
 					js[T_nnz] = index;
 					vs[T_nnz] = 0;
 					for (int j = 0; j < 4; j++)
-						if (!cell->neighbor(j)->info().blocked)
-							vs[T_nnz] += (cell->info().kNorm())[j];
+						if (!cell->neighbor(j)->info().blocked) vs[T_nnz] += (cell->info().kNorm())[j];
 					// 				vs[T_nnz] = (cell->info().kNorm())[0]+ (cell->info().kNorm())[1]+ (cell->info().kNorm())[2]+ (cell->info().kNorm())[3];
 					if (fluidBulkModulus > 0) {
 						if (cell->info().isCavity && phiZero > 0)
@@ -294,8 +284,7 @@ namespace CGT {
 				for (int j = 0; j < 4; j++) {
 					neighbourCell = cell->neighbor(j);
 					nIndex        = neighbourCell->info().index;
-					if (Tri.is_infinite(neighbourCell))
-						continue;
+					if (Tri.is_infinite(neighbourCell)) continue;
 					if (!isLinearSystemSet && !(neighbourCell->info().Pcondition || neighbourCell->info().blocked)) {
 						if (nIndex == 0) {
 							T_cells[++T_index]          = neighbourCell;
@@ -376,8 +365,7 @@ namespace CGT {
 #endif
 #ifdef SUITESPARSE_VERSION_4
 			} else if (useSolver == 4) {
-				if (getCHOLMODPerfTimings)
-					gettimeofday(&start, NULL);
+				if (getCHOLMODPerfTimings) gettimeofday(&start, NULL);
 				cholmod_triplet* trip = CHOLMOD(allocate_triplet)(ncols, ncols, T_nnz, 1, CHOLMOD_REAL, &com);
 				// set all the values for the cholmod triplet matrix
 				for (int k = 0; k < T_nnz; k++) {
@@ -410,9 +398,7 @@ namespace CGT {
 		for (int ii = 1; ii <= ncols; ii++) {
 			gsP[ii]  = T_cells[ii]->info().p();
 			gsdV[ii] = T_cells[ii]->info().dv();
-			if (fluidBulkModulus > 0) {
-				gsdV[ii] -= T_cells[ii]->info().p() / (fluidBulkModulus * dt * T_cells[ii]->info().invVoidVolume());
-			}
+			if (fluidBulkModulus > 0) { gsdV[ii] -= T_cells[ii]->info().p() / (fluidBulkModulus * dt * T_cells[ii]->info().invVoidVolume()); }
 		}
 	}
 
@@ -450,8 +436,7 @@ namespace CGT {
 			if (fluidBulkModulus > 0) {
 				if (phiZero > 0 && T_cells[ii]->info().isCavity) { // consider air compressibility in cavity
 					T_bv[ii - 1] += T_cells[ii]->info().p() * equivalentCompressibility / (dt * T_cells[ii]->info().invVoidVolume());
-					if (controlCavityVolumeChange)
-						T_bv[ii - 1] += cavityDV;
+					if (controlCavityVolumeChange) T_bv[ii - 1] += cavityDV;
 				} else { // use normal bulkmodulus
 					T_bv[ii - 1] += T_cells[ii]->info().p() / (fluidBulkModulus * dt * T_cells[ii]->info().invVoidVolume());
 				}
@@ -477,8 +462,7 @@ namespace CGT {
 
 			for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
 				orderedCells.push_back(cell);
-				if (!cell->info().Pcondition && !cell->info().blocked)
-					++ncols;
+				if (!cell->info().Pcondition && !cell->info().blocked) ++ncols;
 			}
 			//FIXME: does it really help? test by commenting this "sorting" line
 			spatial_sort(orderedCells.begin(), orderedCells.end(), CellTraits_for_spatial_sort<RTriangulation>());
@@ -523,8 +507,7 @@ namespace CGT {
 					//Add diagonal term
 					Real num
 					        = (cell->info().kNorm())[0] + (cell->info().kNorm())[1] + (cell->info().kNorm())[2] + (cell->info().kNorm())[3];
-					if (fluidBulkModulus > 0)
-						num += (1.f / (dt * fluidBulkModulus * cell->info().invVoidVolume()));
+					if (fluidBulkModulus > 0) num += (1.f / (dt * fluidBulkModulus * cell->info().invVoidVolume()));
 					fullAvalues[cell->info().index][4] = 1.f / num;
 					++T_nnz;
 
@@ -575,8 +558,7 @@ namespace CGT {
 		using math::min;
 
 		// 	cout<<"VectorizedGaussSeidel"<<endl;
-		if (!isFullLinearSystemGSSet || (isFullLinearSystemGSSet && reApplyBoundaryConditions()))
-			setLinearSystemFullGS(dt);
+		if (!isFullLinearSystemGSSet || (isFullLinearSystemGSSet && reApplyBoundaryConditions())) setLinearSystemFullGS(dt);
 		copyCellsToGs(dt);
 
 		int  j = 0;
@@ -599,8 +581,7 @@ namespace CGT {
 		sum_p  = 0;
 		sum_dp = 0;
 		do {
-			if (++j2 >= 10)
-				j2 = 0; //compute max/mean only each 10 iterations
+			if (++j2 >= 10) j2 = 0; //compute max/mean only each 10 iterations
 			if (j2 == 0) {
 				dp_max = 0;
 				p_max  = 0;
@@ -663,8 +644,7 @@ namespace CGT {
 			if (j2 == 0) {
 				p_moy  = sum_p / ncols;
 				dp_moy = sum_dp / ncols;
-				if (debugOut)
-					cerr << "GS : j=" << j << " p_moy=" << p_moy << " dp_moy=" << dp_moy << endl;
+				if (debugOut) cerr << "GS : j=" << j << " p_moy=" << p_moy << " dp_moy=" << dp_moy << endl;
 			}
 #ifdef GS_OPEN_MP
 #pragma omp master
@@ -672,10 +652,8 @@ namespace CGT {
 			j++;
 		} while ((dp_max / p_max) > tolerance && j < 20000 /*&& ( dp_max > tolerance )*/ /* &&*/ /*( j<50 )*/);
 		copyGsToCells();
-		if (j >= 20000)
-			cerr << "GS did not converge in 20k iterations (maybe because the reference pressure is 0?)" << endl;
-		if (debugOut)
-			cerr << "GS iterations : " << j - 1 << endl;
+		if (j >= 20000) cerr << "GS did not converge in 20k iterations (maybe because the reference pressure is 0?)" << endl;
+		if (debugOut) cerr << "GS iterations : " << j - 1 << endl;
 	}
 
 	template <class _Tesselation, class FlowType> void FlowBoundingSphereLinSolv<_Tesselation, FlowType>::sortV(int k1, int k2, int* is, Real* ds)
@@ -693,8 +671,7 @@ namespace CGT {
 	template <class _Tesselation, class FlowType> int FlowBoundingSphereLinSolv<_Tesselation, FlowType>::eigenSolve(Real dt)
 	{
 #ifdef LINSOLV
-		if (!isLinearSystemSet || (isLinearSystemSet && reApplyBoundaryConditions()) || !updatedRHS)
-			ncols = setLinearSystem(dt);
+		if (!isLinearSystemSet || (isLinearSystemSet && reApplyBoundaryConditions()) || !updatedRHS) ncols = setLinearSystem(dt);
 		copyCellsToLin(dt);
 		//FIXME: we introduce new Eigen vectors, then we have to copy from/to c-arrays, can be optimized later
 		VectorXr eb(ncols);
@@ -730,8 +707,7 @@ namespace CGT {
 	template <class _Tesselation, class FlowType> int FlowBoundingSphereLinSolv<_Tesselation, FlowType>::cholmodSolve(Real dt)
 	{
 #ifdef SUITESPARSE_VERSION_4
-		if (!isLinearSystemSet || (isLinearSystemSet && reApplyBoundaryConditions()) || !updatedRHS)
-			ncols = setLinearSystem(dt);
+		if (!isLinearSystemSet || (isLinearSystemSet && reApplyBoundaryConditions()) || !updatedRHS) ncols = setLinearSystem(dt);
 		copyCellsToLin(dt);
 		cholmod_dense* B   = CHOLMOD(zeros)(ncols, 1, Achol->xtype, &com); //cholmod_l_zeros(ncols, 1, Achol->xtype, &com);
 		Real*          B_x = (Real*)B->x;
@@ -739,8 +715,7 @@ namespace CGT {
 			B_x[k] = T_bv[k];
 		if (!factorizedEigenSolver) {
 			openblas_set_num_threads(numFactorizeThreads);
-			if (getCHOLMODPerfTimings)
-				gettimeofday(&start, NULL);
+			if (getCHOLMODPerfTimings) gettimeofday(&start, NULL);
 			if (!reuseOrdering) {
 				L = CHOLMOD(analyze)(Achol, &com); //cholmod_l_analyze(Achol, &com);
 			} else {
@@ -751,8 +726,7 @@ namespace CGT {
 				cout << "Reusing reordering? " << reuseOrdering << ". CHOLMOD Time to Analyze "
 				     << ((end.tv_sec * 1000000 + end.tv_usec) - (start.tv_sec * 1000000 + start.tv_usec)) << endl;
 			}
-			if (getCHOLMODPerfTimings)
-				gettimeofday(&start, NULL);
+			if (getCHOLMODPerfTimings) gettimeofday(&start, NULL);
 			if (!reuseOrdering) {
 				CHOLMOD(factorize)(Achol, L, &com); //cholmod_l_factorize(Achol, L, &com);
 			} else {
@@ -834,8 +808,7 @@ namespace CGT {
 		for (FiniteFacetsIterator f_it = Tri.finite_facets_begin(); f_it != Tri.finite_facets_end(); f_it++) {
 			const CellHandle& cell         = f_it->first;
 			const CellHandle& neighborCell = f_it->first->neighbor(f_it->second);
-			if (cell->info().blocked || neighborCell->info().blocked || (cell->info().Pcondition && neighborCell->info().Pcondition))
-				continue;
+			if (cell->info().blocked || neighborCell->info().blocked || (cell->info().Pcondition && neighborCell->info().Pcondition)) continue;
 			facetFlowRate = cell->info().kNorm()[f_it->second] * (cell->info().p() - cell->neighbor(f_it->second)->info().p());
 			if (facetFlowRate > 0) {
 				upwindTemp = cell->info().temp();
@@ -843,10 +816,8 @@ namespace CGT {
 				upwindTemp = neighborCell->info().temp();
 			}
 			energyFlux = fluidCp * fluidRho * dt * upwindTemp * facetFlowRate;
-			if (!cell->info().Tcondition && !cell->info().isFictious)
-				cell->info().internalEnergy -= energyFlux;
-			if (!neighborCell->info().Tcondition && !neighborCell->info().isFictious)
-				neighborCell->info().internalEnergy += energyFlux;
+			if (!cell->info().Tcondition && !cell->info().isFictious) cell->info().internalEnergy -= energyFlux;
+			if (!neighborCell->info().Tcondition && !neighborCell->info().isFictious) neighborCell->info().internalEnergy += energyFlux;
 		}
 	}
 
@@ -873,8 +844,7 @@ namespace CGT {
 				} else {
 					cell->info().temp() = cell->info().internalEnergy / ((cell->info().volume()) * fluidCp * fluidRho);
 				}
-				if (!addToDeltaTemp)
-					cell->info().dtemp() = cell->info().temp() - oldTemp;
+				if (!addToDeltaTemp) cell->info().dtemp() = cell->info().temp() - oldTemp;
 				else
 					cell->info().dtemp() += cell->info().temp()
 					        - oldTemp; // fluid conduction is a midstep proces that uses a midsteptemp, in this case we want to add to the existing deltatemp so that fluid expansion is computed based on full temp step
@@ -892,8 +862,7 @@ namespace CGT {
 #endif
 			for (long i = 0; i < sizeCells; i++) {
 				CellHandle& cell = Tes.cellHandles[i];
-				if (!cell->info().isCavity)
-					continue;
+				if (!cell->info().isCavity) continue;
 				Real oldTemp         = cell->info().temp();
 				cell->info().temp()  = cavityTemp;
 				cell->info().dtemp() = cell->info().temp() - oldTemp;
@@ -904,20 +873,17 @@ namespace CGT {
 	template <class _Tesselation, class FlowType> int FlowBoundingSphereLinSolv<_Tesselation, FlowType>::taucsSolve(Real /*dt*/)
 	{
 #ifdef TAUCS_LIB
-		if (debugOut)
-			cerr << endl << "TAUCS solve" << endl;
+		if (debugOut) cerr << endl << "TAUCS solve" << endl;
 		Real t  = taucs_ctime(); //timer
 		Real t2 = taucs_ctime(); //global timer
 		if (!isLinearSystemSet || (isLinearSystemSet && reApplyBoundaryConditions())) {
 			ncols = setLinearSystem(dt);
-			if (debugOut)
-				cerr << "Assembling the matrix : " << taucs_ctime() - t << endl;
+			if (debugOut) cerr << "Assembling the matrix : " << taucs_ctime() - t << endl;
 			t = taucs_ctime();
 		}
 
 		copyCellsToLin(dt);
-		if (debugOut)
-			cerr << "Updating dv's (Yade->LinSolver) : " << taucs_ctime() - t << endl;
+		if (debugOut) cerr << "Updating dv's (Yade->LinSolver) : " << taucs_ctime() - t << endl;
 		t = taucs_ctime();
 		//taucs_logfile("stdout");//! VERY USEFULL!!!!!!!!!!! (disable to exclude output time from taucs_ctime() measurments)
 
@@ -926,24 +892,19 @@ namespace CGT {
 		taucs_double* xod = &xodv[0];
 
 		if (Fccs == NULL) {
-			if (debugOut)
-				cerr << "_entering taucs_" << endl;
+			if (debugOut) cerr << "_entering taucs_" << endl;
 			// 1) Reordering
 			taucs_ccs_order(T_A, &perm, &invperm, (char*)"metis");
-			if (debugOut)
-				cerr << "_entering taucs_" << endl;
+			if (debugOut) cerr << "_entering taucs_" << endl;
 			taucs_ccs_matrix* Aod;
-			if (debugOut)
-				cerr << "_entering taucs_" << endl;
+			if (debugOut) cerr << "_entering taucs_" << endl;
 			Aod = taucs_ccs_permute_symmetrically(T_A, perm, invperm);
-			if (debugOut)
-				cerr << "Reordering : " << taucs_ctime() - t << endl;
+			if (debugOut) cerr << "Reordering : " << taucs_ctime() - t << endl;
 			t = taucs_ctime();
 
 			// 2) Factoring
 			F = taucs_ccs_factor_llt_mf(Aod);
-			if (F == NULL)
-				cerr << "factorization failed" << endl;
+			if (F == NULL) cerr << "factorization failed" << endl;
 			taucs_dccs_free(Aod);
 			Aod = NULL;
 			//convert F to ccs for faster solve
@@ -951,16 +912,14 @@ namespace CGT {
 			//... then delete F
 			taucs_supernodal_factor_free(F);
 			F = NULL;
-			if (debugOut)
-				cerr << "Factoring : " << taucs_ctime() - t << endl;
+			if (debugOut) cerr << "Factoring : " << taucs_ctime() - t << endl;
 			t = taucs_ctime();
 		}
 		taucs_vec_permute(ncols, TAUCS_DOUBLE, &T_bv[0], bod, perm);
 		// 3) Back substitution and reodering the solution back
 		taucs_ccs_solve_llt(Fccs, xod, bod); //the ccs format (faster)
 		                                     // 	taucs_supernodal_solve_llt(F, xod, bod);//the blackbox format (slower)
-		if (debugOut)
-			cerr << "Solving : " << taucs_ctime() - t << endl;
+		if (debugOut) cerr << "Solving : " << taucs_ctime() - t << endl;
 		t = taucs_ctime();
 		t = taucs_ctime();
 		taucs_vec_ipermute(ncols, TAUCS_DOUBLE, xod, x, perm);
@@ -968,8 +927,7 @@ namespace CGT {
 		// 4) Copy back to the triangulation
 		copyLinToCells();
 		// 	cerr << "Updating P (LinSolver->Yade) : " <<  taucs_ctime()-t << endl;
-		if (debugOut)
-			cerr << "Total TAUCS time ................ : " << taucs_ctime() - t2 << endl;
+		if (debugOut) cerr << "Total TAUCS time ................ : " << taucs_ctime() - t2 << endl;
 #else
 		cerr << "Flow engine not compiled with taucs, nothing computed if useSolver=1" << endl;
 #endif
@@ -983,31 +941,26 @@ namespace CGT {
 #else
 		Real iniT = taucs_ctime();
 
-		if (debugOut)
-			cerr << "_entering pardiso_" << endl;
+		if (debugOut) cerr << "_entering pardiso_" << endl;
 		/* Matrix data. */
 		Real t = taucs_ctime(); //timer
 		bool wasLSystemSet = isLinearSystemSet;
 		if (!isLinearSystemSet || (isLinearSystemSet && reApplyBoundaryConditions())) {
 			ncols = setLinearSystem(dt);
-			if (debugOut)
-				cerr << "Assembling the matrix : " << taucs_ctime() - t << endl;
+			if (debugOut) cerr << "Assembling the matrix : " << taucs_ctime() - t << endl;
 			t = taucs_ctime();
 		}
 
-		if (debugOut)
-			cerr << taucs_ctime() - t << "s : set system" << endl;
+		if (debugOut) cerr << taucs_ctime() - t << "s : set system" << endl;
 		t = taucs_ctime();
 		ia = T_A->colptr;
 		ja = T_A->rowind;
 		a = T_A->values.d;
-		if (debugOut)
-			cerr << taucs_ctime() - t << "s : set system" << endl;
+		if (debugOut) cerr << taucs_ctime() - t << "s : set system" << endl;
 		if (!wasLSystemSet)
 			for (int k = 0; k < ncols; k++)
 				sortV(ia[k], ia[k + 1] - 1, ja, a);
-		if (debugOut)
-			cout << taucs_ctime() - t << "s for ordering CCS format" << endl;
+		if (debugOut) cout << taucs_ctime() - t << "s for ordering CCS format" << endl;
 		t = taucs_ctime();
 
 		nnz = ia[ncols];
@@ -1027,25 +980,19 @@ namespace CGT {
 
 		if (!pardisoInitialized) {
 			var = getenv("OMP_NUM_THREADS");
-			if (var != NULL)
-				sscanf(var, "%d", &num_procs);
+			if (var != NULL) sscanf(var, "%d", &num_procs);
 			else {
 				num_procs = 1;
 				cerr << "Set environment OMP_NUM_THREADS to something. Pardiso needs it defined!" << endl;
 			}
-			if (debugOut)
-				cerr << taucs_ctime() - t << "pardisoinit" << endl;
+			if (debugOut) cerr << taucs_ctime() - t << "pardisoinit" << endl;
 			F77_FUNC(pardisoinit)(pt, &mtype, &solver, iparm, dparm, &error);
-			if (debugOut)
-				cerr << taucs_ctime() - t << "pardisoinit'ed" << endl;
+			if (debugOut) cerr << taucs_ctime() - t << "pardisoinit'ed" << endl;
 			pardisoInitialized = true;
 			if (error != 0) {
-				if (error == -10)
-					printf("No license file found \n");
-				if (error == -11)
-					printf("License is expired \n");
-				if (error == -12)
-					printf("Wrong username or hostname \n");
+				if (error == -10) printf("No license file found \n");
+				if (error == -11) printf("License is expired \n");
+				if (error == -12) printf("Wrong username or hostname \n");
 				return 1;
 			}
 			iparm[2] = num_procs;
@@ -1056,8 +1003,7 @@ namespace CGT {
 
 			/* ..  Convert matrix from 0-based C-notation to Fortran 1-based        */
 			/*     notation.                                                        */
-			if (debugOut)
-				cout << taucs_ctime() - t << "tuning" << endl;
+			if (debugOut) cout << taucs_ctime() - t << "tuning" << endl;
 			t = taucs_ctime();
 			for (i = 0; i < ncols + 1; i++) {
 				ia[i] += 1;
@@ -1065,8 +1011,7 @@ namespace CGT {
 			for (i = 0; i < nnz; i++) {
 				ja[i] += 1;
 			}
-			if (debugOut)
-				cout << taucs_ctime() - t << "s : Convert matrix from 0-based" << endl;
+			if (debugOut) cout << taucs_ctime() - t << "s : Convert matrix from 0-based" << endl;
 			t = taucs_ctime();
 			/* ..  Reordering and Symbolic Factorization.  This step also allocates */
 			/*     all memory that is necessary for the factorization.              */
@@ -1076,8 +1021,7 @@ namespace CGT {
 				printf("\nERROR during symbolic factorization: %d", error);
 				exit(1);
 			}
-			if (debugOut)
-				cout << taucs_ctime() - t << "s : Reordering and Symbolic Factorization" << endl;
+			if (debugOut) cout << taucs_ctime() - t << "s : Reordering and Symbolic Factorization" << endl;
 			t = taucs_ctime();
 
 			/* ..  Numerical factorization.                                         */
@@ -1088,8 +1032,7 @@ namespace CGT {
 				printf("\nERROR during numerical factorization: %d", error);
 				exit(2);
 			}
-			if (debugOut)
-				cerr << taucs_ctime() - t << "s : Numerical factorization. " << endl;
+			if (debugOut) cerr << taucs_ctime() - t << "s : Numerical factorization. " << endl;
 			t = taucs_ctime();
 		}
 		/* ..  Back substitution and iterative refinement.                      */
@@ -1101,12 +1044,10 @@ namespace CGT {
 			printf("\nERROR during solution: %d", error);
 			exit(3);
 		}
-		if (debugOut)
-			cerr << taucs_ctime() - t << "s : Back substitution and iterative refinement." << endl;
+		if (debugOut) cerr << taucs_ctime() - t << "s : Back substitution and iterative refinement." << endl;
 		t = taucs_ctime();
 		copyLinToCells();
-		if (debugOut)
-			cerr << taucs_ctime() - t << "s : Copy back." << endl;
+		if (debugOut) cerr << taucs_ctime() - t << "s : Copy back." << endl;
 
 		if (wasLSystemSet) {
 			pTime1N++;
@@ -1190,8 +1131,7 @@ namespace CGT {
 
 		/* Numbers of processors, value of OMP_NUM_THREADS */
 		var = getenv("OMP_NUM_THREADS");
-		if (var != NULL)
-			sscanf(var, "%d", &num_procs);
+		if (var != NULL) sscanf(var, "%d", &num_procs);
 		else {
 			num_procs = 1;
 			printf("Set environment OMP_NUM_THREADS to something. Pardiso needs it defined. \n");
@@ -1200,12 +1140,9 @@ namespace CGT {
 
 		F77_FUNC(pardisoinit)(pt, &mtype, &solver, iparm, dparm, &error);
 		if (error != 0) {
-			if (error == -10)
-				printf("No license file found \n");
-			if (error == -11)
-				printf("License is expired \n");
-			if (error == -12)
-				printf("Wrong username or hostname \n");
+			if (error == -10) printf("No license file found \n");
+			if (error == -11) printf("License is expired \n");
+			if (error == -12) printf("Wrong username or hostname \n");
 			return 1;
 		}
 		iparm[2] = num_procs;

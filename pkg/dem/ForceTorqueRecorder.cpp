@@ -10,8 +10,7 @@ void ForceRecorder::action()
 	totalForce = Vector3r::Zero();
 	FOREACH(Body::id_t id, ids)
 	{
-		if (!(scene->bodies->exists(id)))
-			continue;
+		if (!(scene->bodies->exists(id))) continue;
 		totalForce += scene->forces.getForce(id);
 	};
 
@@ -28,8 +27,7 @@ void TorqueRecorder::action()
 
 	FOREACH(Body::id_t id, ids)
 	{
-		if (!(scene->bodies->exists(id)))
-			continue;
+		if (!(scene->bodies->exists(id))) continue;
 		Body* b = Body::byId(id, scene).get();
 
 		Vector3r tmpPos       = b->state->pos;

@@ -31,40 +31,33 @@ void Gl1_NormPhys::go(const shared_ptr<IPhys>& ip, const shared_ptr<Interaction>
 {
 	if (!gluQuadric) {
 		gluQuadric = gluNewQuadric();
-		if (!gluQuadric)
-			throw runtime_error("Gl1_NormPhys::go unable to allocate new GLUquadric object (out of memory?).");
+		if (!gluQuadric) throw runtime_error("Gl1_NormPhys::go unable to allocate new GLUquadric object (out of memory?).");
 	}
 	NormPhys*         np = static_cast<NormPhys*>(ip.get());
 	shared_ptr<IGeom> ig(i->geom);
-	if (!ig)
-		return; // changed meanwhile?
+	if (!ig) return; // changed meanwhile?
 	GenericSpheresContact* geom = YADE_CAST<GenericSpheresContact*>(ig.get());
 	//if(!geom) cerr<<"Gl1_NormPhys: IGeom is not a GenericSpheresContact, but a "<<ig->getClassName()<<endl;
 	Real fnNorm = np->normalForce.dot(geom->normal);
-	if ((signFilter > 0 && fnNorm < 0) || (signFilter < 0 && fnNorm > 0))
-		return;
+	if ((signFilter > 0 && fnNorm < 0) || (signFilter < 0 && fnNorm > 0)) return;
 	int fnSign       = fnNorm > 0 ? 1 : -1;
 	fnNorm           = math::abs(fnNorm);
 	Real radiusScale = 1.;
 	// weak/strong fabric, only used if maxWeakFn is set
 	if (!math::isnan(maxWeakFn)) {
 		if (fnNorm * fnSign < maxWeakFn) { // weak fabric
-			if (weakFilter > 0)
-				return;
+			if (weakFilter > 0) return;
 			radiusScale = weakScale;
 		} else { // strong fabric
-			if (weakFilter < 0)
-				return;
+			if (weakFilter < 0) return;
 		}
 	}
 
 	maxFn = max(fnNorm, maxFn);
 	Real realMaxRadius;
 	if (maxRadius < 0) {
-		if (geom->refR1 > 0)
-			refRadius = min(geom->refR1, refRadius);
-		if (geom->refR2 > 0)
-			refRadius = min(geom->refR2, refRadius);
+		if (geom->refR1 > 0) refRadius = min(geom->refR1, refRadius);
+		if (geom->refR2 > 0) refRadius = min(geom->refR2, refRadius);
 		realMaxRadius = refRadius;
 	} else
 		realMaxRadius = maxRadius;

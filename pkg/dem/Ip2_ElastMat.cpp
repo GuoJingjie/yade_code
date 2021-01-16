@@ -10,8 +10,7 @@ YADE_PLUGIN((Ip2_ElastMat_ElastMat_NormPhys)(Ip2_ElastMat_ElastMat_NormShearPhys
 
 void Ip2_ElastMat_ElastMat_NormPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 	const shared_ptr<ElastMat>& mat1  = YADE_PTR_CAST<ElastMat>(b1);
 	const shared_ptr<ElastMat>& mat2  = YADE_PTR_CAST<ElastMat>(b2);
 	Real                        Ea    = mat1->young;
@@ -35,8 +34,7 @@ void Ip2_ElastMat_ElastMat_NormPhys::go(const shared_ptr<Material>& b1, const sh
 
 void Ip2_ElastMat_ElastMat_NormShearPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 	const shared_ptr<ElastMat>& mat1      = YADE_PTR_CAST<ElastMat>(b1);
 	const shared_ptr<ElastMat>& mat2      = YADE_PTR_CAST<ElastMat>(b2);
 	Real                        Ea        = mat1->young;

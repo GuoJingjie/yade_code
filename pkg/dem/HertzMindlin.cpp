@@ -25,8 +25,7 @@ CREATE_LOGGER(Ip2_FrictMat_FrictMat_MindlinPhys);
 
 void Ip2_FrictMat_FrictMat_MindlinPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
-	if (interaction->phys)
-		return; // no updates of an already existing contact necessary
+	if (interaction->phys) return; // no updates of an already existing contact necessary
 	shared_ptr<MindlinPhys> contactPhysics(new MindlinPhys());
 	interaction->phys = contactPhysics;
 	const auto mat1   = YADE_CAST<FrictMat*>(b1.get());
@@ -74,10 +73,8 @@ void Ip2_FrictMat_FrictMat_MindlinPhys::go(const shared_ptr<Material>& b1, const
 	contactPhysics->maxBendPl = eta * Rmean; // does this make sense? why do we take Rmean?
 
 	/* compute viscous coefficients */
-	if (en && betan)
-		throw std::invalid_argument("Ip2_FrictMat_FrictMat_MindlinPhys: only one of en, betan can be specified.");
-	if (es && betas)
-		throw std::invalid_argument("Ip2_FrictMat_FrictMat_MindlinPhys: only one of es, betas can be specified.");
+	if (en && betan) throw std::invalid_argument("Ip2_FrictMat_FrictMat_MindlinPhys: only one of en, betan can be specified.");
+	if (es && betas) throw std::invalid_argument("Ip2_FrictMat_FrictMat_MindlinPhys: only one of es, betas can be specified.");
 
 	// en or es specified, just compute alpha, otherwise alpha remains 0
 	if (en || es) {
@@ -99,12 +96,9 @@ Real Law2_ScGeom_MindlinPhys_Mindlin::contactsAdhesive() // It is returning some
 	Real contactsAdhesive = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		MindlinPhys* phys = dynamic_cast<MindlinPhys*>(I->phys.get());
-		if (phys->isAdhesive) {
-			contactsAdhesive += 1;
-		}
+		if (phys->isAdhesive) { contactsAdhesive += 1; }
 	}
 	return contactsAdhesive;
 }
@@ -116,12 +110,9 @@ Real Law2_ScGeom_MindlinPhys_Mindlin::ratioSlidingContacts()
 	int  count(0);
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		MindlinPhys* phys = dynamic_cast<MindlinPhys*>(I->phys.get());
-		if (phys->isSliding) {
-			ratio += 1;
-		}
+		if (phys->isSliding) { ratio += 1; }
 		count++;
 	}
 	ratio /= count;
@@ -134,8 +125,7 @@ Real Law2_ScGeom_MindlinPhys_Mindlin::normElastEnergy()
 	Real normEnergy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		ScGeom*      scg  = dynamic_cast<ScGeom*>(I->geom.get());
 		MindlinPhys* phys = dynamic_cast<MindlinPhys*>(I->phys.get());
 		if (phys) {
@@ -155,8 +145,7 @@ Real Law2_ScGeom_MindlinPhys_Mindlin::adhesionEnergy()
 	Real adhesionEnergy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		ScGeom*      scg  = dynamic_cast<ScGeom*>(I->geom.get());
 		MindlinPhys* phys = dynamic_cast<MindlinPhys*>(I->phys.get());
 		if (phys && includeAdhesion) {
@@ -187,8 +176,7 @@ bool Law2_ScGeom_MindlinPhys_MindlinDeresiewitz::go(shared_ptr<IGeom>& ig, share
 	Real Fn           = phys->kno * pow(uN, 3 / 2.);
 	phys->normalForce = Fn * geom->normal;
 	// exactly zero would not work with the shear formulation, and would give zero shear force anyway
-	if (Fn == 0)
-		return true;
+	if (Fn == 0) return true;
 	//phys->kn=3./2.*phys->kno*math::pow(uN,0.5); // update stiffness, not needed
 
 	// contact radius
@@ -257,8 +245,7 @@ bool Law2_ScGeom_MindlinPhys_HertzWithLinearShear::go(shared_ptr<IGeom>& ig, sha
 	Fs -= ks * shearIncrement;
 	// Mohr-Coulomb slip
 	Real maxFs2 = pow(Fn, 2) * pow(phys->tangensOfFrictionAngle, 2);
-	if (Fs.squaredNorm() > maxFs2)
-		Fs *= sqrt(maxFs2) / Fs.norm();
+	if (Fs.squaredNorm() > maxFs2) Fs *= sqrt(maxFs2) / Fs.norm();
 
 	// apply forces
 	Vector3r f = -phys->normalForce - phys->shearForce; /* should be a reference returned by geom->rotate */
@@ -292,9 +279,7 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 
 	bool useDamping = (phys->betan != 0. || phys->betas != 0. || phys->alpha != 0.);
 	bool LinDamp    = true;
-	if (phys->alpha != 0.) {
-		LinDamp = false;
-	} // use non linear damping
+	if (phys->alpha != 0.) { LinDamp = false; } // use non linear damping
 
 #ifdef PARTIALSAT
 	if (contact->isFresh(scene)) {
@@ -432,9 +417,7 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 				phys->normalForce -= phys->normalViscous;
 			}
 		}
-		if (calcEnergy) {
-			normDampDissip += phys->normalViscous.dot(incidentVn * dt);
-		} // calc dissipation of energy due to normal damping
+		if (calcEnergy) { normDampDissip += phys->normalViscous.dot(incidentVn * dt); } // calc dissipation of energy due to normal damping
 	}
 
 
@@ -521,9 +504,7 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 
 	if (useDamping) { // get normal viscous component (the shear one is calculated inside Mohr-Coulomb criterion, see above)
 		if (calcEnergy) {
-			if (!noShearDamp) {
-				shearDampDissip += phys->shearViscous.dot(incidentVs * dt);
-			}
+			if (!noShearDamp) { shearDampDissip += phys->shearViscous.dot(incidentVs * dt); }
 		} // calc energy dissipation due to viscous linear damping
 	}
 
@@ -623,8 +604,7 @@ void Ip2_FrictMat_FrictMat_MindlinCapillaryPhys::go(
         ,
         const shared_ptr<Interaction>& interaction)
 {
-	if (interaction->phys)
-		return; // no updates of an already existing contact necessary
+	if (interaction->phys) return; // no updates of an already existing contact necessary
 
 	shared_ptr<MindlinCapillaryPhys> contactPhysics(new MindlinCapillaryPhys());
 	interaction->phys = contactPhysics;
@@ -672,10 +652,8 @@ void Ip2_FrictMat_FrictMat_MindlinCapillaryPhys::go(
 	contactPhysics->maxBendPl = eta * Rmean; // does this make sense? why do we take Rmean?
 
 	/* compute viscous coefficients */
-	if (en && betan)
-		throw std::invalid_argument("Ip2_FrictMat_FrictMat_MindlinCapillaryPhys: only one of en, betan can be specified.");
-	if (es && betas)
-		throw std::invalid_argument("Ip2_FrictMat_FrictMat_MindlinCapillaryPhys: only one of es, betas can be specified.");
+	if (en && betan) throw std::invalid_argument("Ip2_FrictMat_FrictMat_MindlinCapillaryPhys: only one of en, betan can be specified.");
+	if (es && betas) throw std::invalid_argument("Ip2_FrictMat_FrictMat_MindlinCapillaryPhys: only one of es, betas can be specified.");
 
 	// en or es specified, just compute alpha, otherwise alpha remains 0
 	if (en || es) {
@@ -696,8 +674,7 @@ CREATE_LOGGER(Ip2_PartialSatMat_PartialSatMat_MindlinPhys);
 
 void Ip2_PartialSatMat_PartialSatMat_MindlinPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
-	if (interaction->phys)
-		return; // no updates of an already existing contact necessary
+	if (interaction->phys) return; // no updates of an already existing contact necessary
 	shared_ptr<MindlinPhys> contactPhysics(new MindlinPhys());
 	interaction->phys = contactPhysics;
 	const auto mat1   = YADE_CAST<FrictMat*>(b1.get());
@@ -745,10 +722,8 @@ void Ip2_PartialSatMat_PartialSatMat_MindlinPhys::go(const shared_ptr<Material>&
 	contactPhysics->maxBendPl = eta * Rmean; // does this make sense? why do we take Rmean?
 
 	/* compute viscous coefficients */
-	if (en && betan)
-		throw std::invalid_argument("Ip2_PartialSatMat_PartialSatMat_MindlinPhys: only one of en, betan can be specified.");
-	if (es && betas)
-		throw std::invalid_argument("Ip2_PartialSatMat_PartialSatMat_MindlinPhys: only one of es, betas can be specified.");
+	if (en && betan) throw std::invalid_argument("Ip2_PartialSatMat_PartialSatMat_MindlinPhys: only one of en, betan can be specified.");
+	if (es && betas) throw std::invalid_argument("Ip2_PartialSatMat_PartialSatMat_MindlinPhys: only one of es, betas can be specified.");
 
 	// en or es specified, just compute alpha, otherwise alpha remains 0
 	if (en || es) {

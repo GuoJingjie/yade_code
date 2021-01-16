@@ -229,8 +229,7 @@ void SimpleShear::createActors(shared_ptr<Scene>& scene)
 	scene->engines.push_back(globalStiffnessTimeStepper);
 	scene->engines.push_back(collider);
 	scene->engines.push_back(ids);
-	if (gravApplied)
-		scene->engines.push_back(gravityCondition);
+	if (gravApplied) scene->engines.push_back(gravityCondition);
 	scene->engines.push_back(shared_ptr<Engine>(new NewtonIntegrator));
 	scene->engines.push_back(kinemEngine);
 }
@@ -257,8 +256,7 @@ string SimpleShear::GenerateCloud(vector<BasicSphere>& sphere_list, Vector3r low
 			s.first.z()  = lowerCorner.z() + s.second + (dimensions.z() - 2 * s.second) * math::unitRandom();
 			bool overlap = false;
 			for (long j = 0; (j < i && !overlap); j++)
-				if (pow(sphere_list[j].second + s.second, 2) > (sphere_list[j].first - s.first).squaredNorm())
-					overlap = true;
+				if (pow(sphere_list[j].second + s.second, 2) > (sphere_list[j].first - s.first).squaredNorm()) overlap = true;
 			if (!overlap) {
 				sphere_list.push_back(s);
 				// 				cout << "j'ai bien rajoute une sphere dans la liste" << endl;

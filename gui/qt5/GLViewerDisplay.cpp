@@ -163,8 +163,7 @@ void GLViewer::draw()
 			newSe3.orientation.normalize();
 			const Se3r& oldSe3 = renderer->clipPlaneSe3[manipulatedClipPlane];
 			for (const auto& planeId : boundClipPlanes) {
-				if (planeId >= renderer->numClipPlanes || !renderer->clipPlaneActive[planeId] || planeId == manipulatedClipPlane)
-					continue;
+				if (planeId >= renderer->numClipPlanes || !renderer->clipPlaneActive[planeId] || planeId == manipulatedClipPlane) continue;
 				Se3r&       boundSe3  = renderer->clipPlaneSe3[planeId];
 				Quaternionr relOrient = oldSe3.orientation.conjugate() * boundSe3.orientation;
 				relOrient.normalize();
@@ -240,8 +239,7 @@ void GLViewer::postDraw()
 	        wholeDiameter, max(static_cast<Real>(radiusCenter.first * 2.), wholeDiameter / 1e3)); // limit to avoid drawing 1e5 lines with big zoom level
 	//qglviewer::Vec center=QGLViewer::camera()->sceneCenter();
 	Real gridStep(requestedGridStep);
-	if (autoGrid)
-		gridStep = pow(10, (floor(0.5 + log10(dispDiameter))));
+	if (autoGrid) gridStep = pow(10, (floor(0.5 + log10(dispDiameter))));
 	glPushMatrix();
 
 	auto nHalfSegments = ((int)(wholeDiameter / gridStep)) + 1;
@@ -261,8 +259,7 @@ void GLViewer::postDraw()
 		gridStep  = prevGridStep;
 	}
 	prevGridStep = gridStep;
-	if (autoGrid)
-		requestedGridStep = gridStep;
+	if (autoGrid) requestedGridStep = gridStep;
 	nHalfSegments       = ((int)(wholeDiameter / gridStep)) + 1;
 	const auto realSize = nHalfSegments * gridStep;
 	//LOG_TRACE("nHalfSegments="<<nHalfSegments<<",gridStep="<<gridStep<<",realSize="<<realSize);
@@ -331,26 +328,17 @@ void GLViewer::postDraw()
 		glDisable(GL_DEPTH_TEST);
 		for (int xyz(-nHalfSegments); xyz <= nHalfSegments; xyz++) { // write text - coordinate numbers on grid
 			Real pos = xyz * gridStep;
-			if ((drawGrid & 2) or (drawGrid & 4))
-				drawReadableNum(pos + gridCen[0], Vector3r(pos, 0, 0) + gridCen, gridDecimalPlaces);
-			if ((drawGrid & 1) or (drawGrid & 4))
-				drawReadableNum(pos + gridCen[1], Vector3r(0, pos, 0) + gridCen, gridDecimalPlaces);
-			if ((drawGrid & 1) or (drawGrid & 2))
-				drawReadableNum(pos + gridCen[2], Vector3r(0, 0, pos) + gridCen, gridDecimalPlaces);
+			if ((drawGrid & 2) or (drawGrid & 4)) drawReadableNum(pos + gridCen[0], Vector3r(pos, 0, 0) + gridCen, gridDecimalPlaces);
+			if ((drawGrid & 1) or (drawGrid & 4)) drawReadableNum(pos + gridCen[1], Vector3r(0, pos, 0) + gridCen, gridDecimalPlaces);
+			if ((drawGrid & 1) or (drawGrid & 2)) drawReadableNum(pos + gridCen[2], Vector3r(0, 0, pos) + gridCen, gridDecimalPlaces);
 		}
 		Real pos = nHalfSegments * gridStep + gridStep * 0.1;
-		if ((drawGrid & 2) or (drawGrid & 4))
-			drawReadableText("X", Vector3r(pos, 0, 0) + gridCen);
-		if ((drawGrid & 1) or (drawGrid & 4))
-			drawReadableText("Y", Vector3r(0, pos, 0) + gridCen);
-		if ((drawGrid & 1) or (drawGrid & 2))
-			drawReadableText("Z", Vector3r(0, 0, pos) + gridCen);
-		if ((drawGrid & 2) or (drawGrid & 4))
-			drawReadableText("-X", Vector3r(-pos, 0, 0) + gridCen);
-		if ((drawGrid & 1) or (drawGrid & 4))
-			drawReadableText("-Y", Vector3r(0, -pos, 0) + gridCen);
-		if ((drawGrid & 1) or (drawGrid & 2))
-			drawReadableText("-Z", Vector3r(0, 0, -pos) + gridCen);
+		if ((drawGrid & 2) or (drawGrid & 4)) drawReadableText("X", Vector3r(pos, 0, 0) + gridCen);
+		if ((drawGrid & 1) or (drawGrid & 4)) drawReadableText("Y", Vector3r(0, pos, 0) + gridCen);
+		if ((drawGrid & 1) or (drawGrid & 2)) drawReadableText("Z", Vector3r(0, 0, pos) + gridCen);
+		if ((drawGrid & 2) or (drawGrid & 4)) drawReadableText("-X", Vector3r(-pos, 0, 0) + gridCen);
+		if ((drawGrid & 1) or (drawGrid & 4)) drawReadableText("-Y", Vector3r(0, -pos, 0) + gridCen);
+		if ((drawGrid & 1) or (drawGrid & 2)) drawReadableText("-Z", Vector3r(0, 0, -pos) + gridCen);
 		// enable back lighting & depth test
 		glEnable(GL_LIGHTING);
 		glEnable(GL_DEPTH_TEST);
@@ -403,16 +391,14 @@ void GLViewer::postDraw()
 	// only painted if one of those is being manipulated
 	if (manipulatedClipPlane >= 0) {
 		for (int planeId = 0; planeId < renderer->numClipPlanes; planeId++) {
-			if (!renderer->clipPlaneActive[planeId] && planeId != manipulatedClipPlane)
-				continue;
+			if (!renderer->clipPlaneActive[planeId] && planeId != manipulatedClipPlane) continue;
 			glPushMatrix();
 			const Se3r& se3 = renderer->clipPlaneSe3[planeId];
 			AngleAxisr  aa(se3.orientation);
 			glTranslate(se3.position[0], se3.position[1], se3.position[2]);
 			glRotate(aa.angle() * Mathr::RAD_TO_DEG, aa.axis()[0], aa.axis()[1], aa.axis()[2]);
 			Real cff = 1;
-			if (!renderer->clipPlaneActive[planeId])
-				cff = .4;
+			if (!renderer->clipPlaneActive[planeId]) cff = .4;
 			glColor3(
 			        max((Real)0., cff * cos(planeId)), max((Real)0., cff * sin(planeId)), Real(planeId == manipulatedClipPlane)); // variable colors
 			QGLViewer::drawGrid(static_cast<double>(realSize), 2 * nSegments);
@@ -433,8 +419,7 @@ void GLViewer::postDraw()
 			const Real&        t   = Omega::instance().getScene()->time;
 			unsigned           min = ((unsigned)t / 60), sec = (((unsigned)t) % 60), msec = ((unsigned)(1e3 * t)) % 1000,
 			         usec = ((unsigned long)(1e6 * t)) % 1000, nsec = ((unsigned long)(1e9 * t)) % 1000;
-			if (min > 0)
-				oss << _W2 << min << ":" << _W2 << sec << "." << _W3 << msec << "m" << _W3 << usec << "u" << _W3 << nsec << "n";
+			if (min > 0) oss << _W2 << min << ":" << _W2 << sec << "." << _W3 << msec << "m" << _W3 << usec << "u" << _W3 << nsec << "n";
 			else if (sec > 0)
 				oss << _W2 << sec << "." << _W3 << msec << "m" << _W3 << usec << "u" << _W3 << nsec << "n";
 			else if (msec > 0)
@@ -464,8 +449,7 @@ void GLViewer::postDraw()
 			glColor3v(Vector3r(1, 1, 0));
 			std::ostringstream oss;
 			oss << "grid: " << setprecision(4) << gridStep;
-			if (gridSubdivide)
-				oss << " (minor " << setprecision(3) << gridStep * .1 << ")";
+			if (gridSubdivide) oss << " (minor " << setprecision(3) << gridStep * .1 << ")";
 			QGLViewer::drawText(x, y, oss.str().c_str());
 			y -= lineHt;
 		}

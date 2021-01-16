@@ -38,8 +38,7 @@ MicroMacroAnalyser::~MicroMacroAnalyser()
 void MicroMacroAnalyser::postLoad(MicroMacroAnalyser&)
 {
 	ofile.open(outputFile.c_str(), std::ios::app);
-	if (!boost::filesystem::exists(outputFile.c_str()))
-		ofile << "iteration eps1w eps2w eps3w eps11g eps22g eps33g eps12g eps13g eps23g" << endl;
+	if (!boost::filesystem::exists(outputFile.c_str())) ofile << "iteration eps1w eps2w eps3w eps11g eps22g eps33g eps12g eps13g eps23g" << endl;
 }
 
 void MicroMacroAnalyser::action()
@@ -54,17 +53,14 @@ void MicroMacroAnalyser::action()
 				triaxialCompressionEngine = YADE_PTR_CAST<TriaxialCompressionEngine>(*itFirst);
 			}
 		}
-		if (!triaxialCompressionEngine)
-			LOG_ERROR("stress controller engine not found");
+		if (!triaxialCompressionEngine) LOG_ERROR("stress controller engine not found");
 	}
-	if (triaxialCompressionEngine->strain[0] == 0)
-		return; // no deformation yet
+	if (triaxialCompressionEngine->strain[0] == 0) return; // no deformation yet
 	if (!initialized) {
 		setState(1, true, false);
 		//Check file here again, to make sure we write to the correct file when filename is modified after the scene is loaded
 		ofile.open(outputFile.c_str(), std::ios::app);
-		if (!boost::filesystem::exists(outputFile.c_str()))
-			ofile << "iteration eps1w eps2w eps3w eps11g eps22g eps33g eps12g eps13g eps23g" << endl;
+		if (!boost::filesystem::exists(outputFile.c_str())) ofile << "iteration eps1w eps2w eps3w eps11g eps22g eps33g eps12g eps13g eps23g" << endl;
 		initialized = true;
 	} else if (scene->iter % interval == 0) {
 		setState(2, true, compIncrt);
@@ -111,8 +107,7 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 	Scene*                     scene  = Omega::instance().getScene().get();
 	shared_ptr<BodyContainer>& bodies = scene->bodies;
 	CGT::TriaxialState*        ts     = 0;
-	if (state == 1)
-		ts = analyser->TS0;
+	if (state == 1) ts = analyser->TS0;
 	else if (state == 2)
 		ts = analyser->TS1;
 	else
@@ -129,8 +124,7 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 		const Body::id_t Idg = bi->getId();
 		TS.grains[Idg].id    = Idg;
 		if (!bi->isDynamic()) {
-			if (!nonSphereAsFictious)
-				continue;
+			if (!nonSphereAsFictious) continue;
 			TS.grains[Idg].isSphere = false;
 			fictiousVtx.push_back(Idg);
 		} else { //then it is a sphere (not a wall)
@@ -232,8 +226,7 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 				triaxialCompressionEngine = YADE_PTR_CAST<TriaxialCompressionEngine>(*itFirst);
 			}
 		}
-		if (!triaxialCompressionEngine)
-			LOG_INFO("stress controller engine not found");
+		if (!triaxialCompressionEngine) LOG_INFO("stress controller engine not found");
 	}
 
 	if (triaxialCompressionEngine) {
@@ -250,8 +243,7 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 		TS.ratio_f = triaxialCompressionEngine->ComputeUnbalancedForce(scene); //find_parameter("ratio_f=", Statefile);
 	} else
 		TS.wszzh = TS.wsxxd = TS.wsyyfa = TS.eps3 = TS.eps1 = TS.eps2 = TS.haut = TS.larg = TS.prof = TS.porom = TS.ratio_f = 0;
-	if (filename != NULL)
-		TS.to_file(filename);
+	if (filename != NULL) TS.to_file(filename);
 	return TS;
 }
 

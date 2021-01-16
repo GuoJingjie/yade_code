@@ -280,7 +280,5 @@ public:                                                                         
 // https://stackoverflow.com/questions/10809429/what-kind-of-dead-code-can-gcc-eliminate-from-the-final-output , added -fdce flag, to be sure.
 #define _IGNORE_LOG(msg)                                                                                                                                       \
 	{                                                                                                                                                      \
-		if (false) {                                                                                                                                   \
-			std::cerr << msg;                                                                                                                      \
-		}                                                                                                                                              \
+		if (false) { std::cerr << msg; }                                                                                                               \
 	}

@@ -46,8 +46,7 @@ void Gl1_Box::go(const shared_ptr<Shape>& cg, const shared_ptr<State>&, bool wir
 	glColor3v(cg->color);
 	Vector3r& extents = (static_cast<Box*>(cg.get()))->extents;
 	glScale(2 * extents[0], 2 * extents[1], 2 * extents[2]);
-	if (wire)
-		glutWireCube(1);
+	if (wire) glutWireCube(1);
 	else
 		glutSolidCube(1);
 }
@@ -71,8 +70,7 @@ void Gl1_Facet::go(const shared_ptr<Shape>& cm, const shared_ptr<State>&, bool w
 			glVertex3v(vertices[1]);
 			glVertex3v(vertices[2]);
 		glEnd();
-		if (!normals)
-			return;
+		if (!normals) return;
 		// facet's normal
 		glBegin(GL_LINES)
 			;

@@ -36,22 +36,18 @@ void NewtonIntegrator::cundallDamp2nd(const Real& dt, const Vector3r& vel, Vecto
 
 Vector3r NewtonIntegrator::computeAccel(const Vector3r& force, const Real& mass, int blockedDOFs)
 {
-	if (blockedDOFs == 0)
-		return (force / mass + gravity);
+	if (blockedDOFs == 0) return (force / mass + gravity);
 	Vector3r ret(Vector3r::Zero());
 	for (int i = 0; i < 3; i++)
-		if (!(blockedDOFs & State::axisDOF(i, false)))
-			ret[i] += force[i] / mass + gravity[i];
+		if (!(blockedDOFs & State::axisDOF(i, false))) ret[i] += force[i] / mass + gravity[i];
 	return ret;
 }
 Vector3r NewtonIntegrator::computeAngAccel(const Vector3r& torque, const Vector3r& inertia, int blockedDOFs)
 {
-	if (blockedDOFs == 0)
-		return torque.cwiseQuotient(inertia);
+	if (blockedDOFs == 0) return torque.cwiseQuotient(inertia);
 	Vector3r ret(Vector3r::Zero());
 	for (int i = 0; i < 3; i++)
-		if (!(blockedDOFs & State::axisDOF(i, true)))
-			ret[i] += torque[i] / inertia[i];
+		if (!(blockedDOFs & State::axisDOF(i, true))) ret[i] += torque[i] / inertia[i];
 	return ret;
 }
 
@@ -80,8 +76,7 @@ void NewtonIntegrator::updateEnergy(const shared_ptr<Body>& b, const State* stat
 	} else {
 		Erot = 0.5 * state->angVel.dot(state->inertia.cwiseProduct(state->angVel));
 	}
-	if (!kinSplit)
-		scene->energy->add(Etrans + Erot, "kinetic", kinEnergyIx, /*non-incremental*/ true);
+	if (!kinSplit) scene->energy->add(Etrans + Erot, "kinetic", kinEnergyIx, /*non-incremental*/ true);
 	else {
 		scene->energy->add(Etrans, "kinTrans", kinEnergyTransIx, true);
 		scene->energy->add(Erot, "kinRot", kinEnergyRotIx, true);
@@ -103,8 +98,7 @@ void NewtonIntegrator::saveMaximaVelocity(const Body::id_t& /*id*/, State* state
 
 void NewtonIntegrator::saveMaximaDisplacement(const shared_ptr<Body>& b)
 {
-	if (!b->bound)
-		return; //clumps for instance, have no bounds, hence not saved
+	if (!b->bound) return; //clumps for instance, have no bounds, hence not saved
 	Vector3r disp    = b->state->pos - b->bound->refPos;
 	Real     maxDisp = max(math::abs(disp[0]), max(math::abs(disp[1]), math::abs(disp[2])));
 	if (!maxDisp
@@ -176,10 +170,8 @@ void NewtonIntegrator::action()
 	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 	{
 		// clump members are handled inside clumps
-		if (b->isClumpMember())
-			continue;
-		if ((mask > 0) and not b->maskCompatible(mask))
-			continue;
+		if (b->isClumpMember()) continue;
+		if ((mask > 0) and not b->maskCompatible(mask)) continue;
 #ifdef YADE_MPI
 		if (scene->subdomain != b->subdomain or (b->getIsSubdomain() or b->getIsFluidDomainBbox()))
 			continue; //this thread will not move bodies from other subdomains
@@ -223,8 +215,7 @@ void NewtonIntegrator::action()
 		Vector3r fluctVel = isPeriodic ? scene->cell->bodyFluctuationVel(b->state->pos, b->state->vel, prevVelGrad) : state->vel;
 
 		// numerical damping & kinetic energy
-		if (trackEnergy)
-			updateEnergy(b, state, fluctVel, f, m);
+		if (trackEnergy) updateEnergy(b, state, fluctVel, f, m);
 
 		// whether to use aspherical rotation integration for this body; as soon as one axis of rotation is blocked the spherical integrator is "exact" (and faster),
 		// we then switch to it. It also enables imposing clumps angVel directly (rather than momentum of the aspherical case)
@@ -234,29 +225,22 @@ void NewtonIntegrator::action()
 		if (state->blockedDOFs != State::DOF_ALL) {
 			// linear acceleration
 			Vector3r linAccel = computeAccel(f, state->mass, state->blockedDOFs);
-			if (densityScaling)
-				linAccel *= state->densityScaling;
-			if (state->isDamped)
-				cundallDamp2nd(dt, fluctVel, linAccel);
+			if (densityScaling) linAccel *= state->densityScaling;
+			if (state->isDamped) cundallDamp2nd(dt, fluctVel, linAccel);
 			//This is the convective term, appearing in the time derivation of Cundall/Thornton expression (dx/dt=velGrad*pos -> d²x/dt²=dvelGrad/dt*pos+velGrad*vel), negligible in many cases but not for high speed large deformations (gaz or turbulent flow).
-			if (isPeriodic && homoDeform > 1)
-				linAccel += prevVelGrad * state->vel;
+			if (isPeriodic && homoDeform > 1) linAccel += prevVelGrad * state->vel;
 			//finally update velocity
 			state->vel += dt * linAccel;
 			// angular acceleration
 			if (!useAspherical) { // uses angular velocity
 				Vector3r angAccel = computeAngAccel(m, state->inertia, state->blockedDOFs);
-				if (densityScaling)
-					angAccel *= state->densityScaling;
-				if (state->isDamped)
-					cundallDamp2nd(dt, state->angVel, angAccel);
+				if (densityScaling) angAccel *= state->densityScaling;
+				if (state->isDamped) cundallDamp2nd(dt, state->angVel, angAccel);
 				state->angVel += dt * angAccel;
 			} else { // uses torque
 				for (int i = 0; i < 3; i++)
-					if (state->blockedDOFs & State::axisDOF(i, true))
-						m[i] = 0; // block DOFs here
-				if (state->isDamped)
-					cundallDamp1st(m, state->angVel);
+					if (state->blockedDOFs & State::axisDOF(i, true)) m[i] = 0; // block DOFs here
+				if (state->isDamped) cundallDamp1st(m, state->angVel);
 			}
 			// reflect macro-deformation even for non-dynamic bodies
 		} else if (isPeriodic && homoDeform > 1)
@@ -264,23 +248,20 @@ void NewtonIntegrator::action()
 
 		// update positions from velocities (or torque, for the aspherical integrator)
 		leapfrogTranslate(state, dt);
-		if (!useAspherical)
-			leapfrogSphericalRotate(state, dt);
+		if (!useAspherical) leapfrogSphericalRotate(state, dt);
 		else
 			leapfrogAsphericalRotate(state, dt, m);
 
 		saveMaximaDisplacement(b);
 		// move individual members of the clump, save maxima velocity (for collider stride)
-		if (b->isClump())
-			Clump::moveMembers(b, scene, this);
+		if (b->isClump()) Clump::moveMembers(b, scene, this);
 
 #ifdef YADE_BODY_CALLBACK
 		// process callbacks
 		for (size_t i = 0; i < callbacksSize; i++) {
 			cerr << "<" << b->id << ",cb=" << callbacks[i] << ",scene=" << callbacks[i]->scene
 			     << ">"; // <<",force="<<callbacks[i]->scene->forces.getForce(b->id)<<">";
-			if (callbackPtrs[i] != NULL)
-				(*(callbackPtrs[i]))(callbacks[i].get(), b.get());
+			if (callbackPtrs[i] != NULL) (*(callbackPtrs[i]))(callbacks[i].get(), b.get());
 		}
 #endif
 	}
@@ -312,9 +293,7 @@ void NewtonIntegrator::leapfrogTranslate(State* state, const Real& dt)
 
 void NewtonIntegrator::leapfrogSphericalRotate(State* state, const Real& dt)
 {
-	if (scene->isPeriodic && homoDeform) {
-		state->angVel += dSpin;
-	}
+	if (scene->isPeriodic && homoDeform) { state->angVel += dSpin; }
 	Real angle2 = state->angVel.squaredNorm();
 	if (angle2 != 0) { //If we have an angular velocity, we make a rotation
 		Real        angle = sqrt(angle2);
@@ -332,15 +311,13 @@ void NewtonIntegrator::leapfrogAsphericalRotate(State* state, const Real& dt, co
 	const Vector3r l_n        = state->angMom + dt / 2. * M;               // global angular momentum at time n
 	const Vector3r l_b_n      = A * l_n;                                   // local angular momentum at time n
 	Vector3r       angVel_b_n = l_b_n.cwiseQuotient(state->inertia);       // local angular velocity at time n
-	if (densityScaling)
-		angVel_b_n *= state->densityScaling;
+	if (densityScaling) angVel_b_n *= state->densityScaling;
 	const Quaternionr dotQ_n = DotQ(angVel_b_n, state->ori);                                 // dQ/dt at time n
 	const Quaternionr Q_half = Quaternionr(state->ori.coeffs() + dt / 2. * dotQ_n.coeffs()); // Q at time n+1/2
 	state->angMom += dt * M;                                                                 // global angular momentum at time n+1/2
 	const Vector3r l_b_half      = A * state->angMom;                                        // local angular momentum at time n+1/2
 	Vector3r       angVel_b_half = l_b_half.cwiseQuotient(state->inertia);                   // local angular velocity at time n+1/2
-	if (densityScaling)
-		angVel_b_half *= state->densityScaling;
+	if (densityScaling) angVel_b_half *= state->densityScaling;
 	const Quaternionr dotQ_half = DotQ(angVel_b_half, Q_half);                                // dQ/dt at time n+1/2
 	state->ori                  = Quaternionr(state->ori.coeffs() + dt * dotQ_half.coeffs()); // Q at time n+1
 	state->angVel               = state->ori * angVel_b_half;                                 // global angular velocity at time n+1/2

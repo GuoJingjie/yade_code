@@ -114,8 +114,7 @@ namespace CGT {
 		RTriangulation& Tri = Tes.Triangulation();
 		for (VCellIterator cellIt = NewTes.cellHandles.begin(); cellIt != NewTes.cellHandles.end(); cellIt++) {
 			CellHandle& newCell = *cellIt;
-			if (newCell->info().Pcondition || newCell->info().isGhost)
-				continue;
+			if (newCell->info().Pcondition || newCell->info().isGhost) continue;
 			CVector center(0, 0, 0);
 			if (newCell->info().fictious() == 0)
 				for (int k = 0; k < 4; k++)
@@ -146,8 +145,7 @@ namespace CGT {
 		RTriangulation&        Tri = T[currentTes].Triangulation();
 		CVector                nullVect(0, 0, 0);
 		static vector<CVector> oldForces;
-		if (oldForces.size() <= Tri.number_of_vertices())
-			oldForces.resize(Tri.number_of_vertices() + 1);
+		if (oldForces.size() <= Tri.number_of_vertices()) oldForces.resize(Tri.number_of_vertices() + 1);
 		//reset forces
 		for (FiniteVerticesIterator v = Tri.finite_vertices_begin(); v != Tri.finite_vertices_end(); ++v) {
 			if (noCache) {
@@ -208,8 +206,7 @@ namespace CGT {
 			}
 
 			noCache = false; //cache should always be defined after execution of this function
-			if (onlyCache)
-				return;
+			if (onlyCache) return;
 		} // end if(noCache)
 
 		//use cached values
@@ -235,8 +232,7 @@ namespace CGT {
 				if (!v->info().isFictious /*&& !v->info().isGhost*/) {
 					totalForce = totalForce + v->info().forces;
 				} else /*if (!v->info().isGhost)*/ {
-					if (boundary(v->info().id()).flowCondition == 1)
-						totalForce = totalForce + v->info().forces;
+					if (boundary(v->info().id()).flowCondition == 1) totalForce = totalForce + v->info().forces;
 				}
 			}
 			cout << "totalForce = " << totalForce << endl;
@@ -245,8 +241,7 @@ namespace CGT {
 
 	template <class _Tesselation> void PeriodicFlow<_Tesselation>::computePermeability()
 	{
-		if (debugOut)
-			cout << "----Computing_Permeability (Periodic)------" << endl;
+		if (debugOut) cout << "----Computing_Permeability (Periodic)------" << endl;
 		RTriangulation& Tri = T[currentTes].Triangulation();
 		VSolidTot = 0, Vtotalissimo = 0, vPoral = 0, sSolidTot = 0, vTotalPorosity = 0, vPoralPorosity = 0;
 		CellHandle neighbourCell;
@@ -261,9 +256,7 @@ namespace CGT {
 		for (VCellIterator cellIt = T[currentTes].cellHandles.begin(); cellIt != T[currentTes].cellHandles.end(); cellIt++) {
 			CellHandle& cell = *cellIt;
 			Point&      p1   = cell->info();
-			if (cell->info().blocked) {
-				this->setBlocked(cell);
-			}
+			if (cell->info().blocked) { this->setBlocked(cell); }
 			if (cell->info().isGhost) {
 				cerr << "skipping a ghost" << endl;
 				continue;
@@ -316,39 +309,31 @@ namespace CGT {
 					pass += 1;
 					CVector l = p1 - p2;
 					distance  = sqrt(l.squared_length());
-					if (!rAverage)
-						radius = 2 * this->computeHydraulicRadius(cell, j);
+					if (!rAverage) radius = 2 * this->computeHydraulicRadius(cell, j);
 					else
 						radius = (this->computeEffectiveRadius(cell, j) + this->computeEquivalentRadius(cell, j)) * 0.5;
-					if (radius < 0)
-						NEG++;
+					if (radius < 0) NEG++;
 					else
 						POS++;
-					if (radius == 0) {
-						cout << "INS-INS PROBLEM!!!!!!!" << endl;
-					}
+					if (radius == 0) { cout << "INS-INS PROBLEM!!!!!!!" << endl; }
 					Real fluidArea = 0;
 					int  test      = 0;
 					if (distance != 0) {
-						if (minPermLength > 0 && distanceCorrection)
-							distance = math::max(minPermLength * radius, distance);
+						if (minPermLength > 0 && distanceCorrection) distance = math::max(minPermLength * radius, distance);
 						const CVector& Surfk         = cell->info().facetSurfaces[j];
 						Real           area          = sqrt(Surfk.squared_length());
 						const CVector& crossSections = cell->info().facetSphereCrossSections[j];
 						Real           S0            = 0;
 						S0                           = checkSphereFacetOverlap(v0, v1, v2);
-						if (S0 == 0)
-							S0 = checkSphereFacetOverlap(v1, v2, v0);
-						if (S0 == 0)
-							S0 = checkSphereFacetOverlap(v2, v0, v1);
+						if (S0 == 0) S0 = checkSphereFacetOverlap(v1, v2, v0);
+						if (S0 == 0) S0 = checkSphereFacetOverlap(v2, v0, v1);
 						//take absolute value, since in rare cases the surface can be negative (overlaping spheres)
 						using math::
 						        abs; // It has to be added because on ubuntu xenial 16.04 g++ 5.3.1 Argument Depended Lookup does not work in cases when function from one namespace is used inside another namespace to be found by ADL
 						fluidArea = abs(area - crossSections[0] - crossSections[1] - crossSections[2] + S0);
 						cell->info().facetFluidSurfacesRatio[j] = fluidArea / area;
 						// kFactor<0 means we replace Poiseuille by Darcy localy, yielding a particle size-independent bulk conductivity
-						if (kFactor > 0)
-							cell->info().kNorm()[j] = kFactor * (fluidArea * pow(radius, 2)) / (8 * viscosity * distance);
+						if (kFactor > 0) cell->info().kNorm()[j] = kFactor * (fluidArea * pow(radius, 2)) / (8 * viscosity * distance);
 						else
 							cell->info().kNorm()[j] = -kFactor * area / distance;
 						meanDistance += distance;
@@ -394,8 +379,7 @@ namespace CGT {
 		}
 
 
-		if (debugOut)
-			cout << "surfneg est " << surfneg << endl;
+		if (debugOut) cout << "surfneg est " << surfneg << endl;
 		meanK /= pass;
 		meanRadius /= pass;
 		meanDistance /= pass;
@@ -434,11 +418,9 @@ namespace CGT {
 					}
 				}
 			}
-		if (debugOut)
-			cout << "PassKcorrect = " << pass << endl;
+		if (debugOut) cout << "PassKcorrect = " << pass << endl;
 
-		if (debugOut)
-			cout << "POS = " << POS << " NEG = " << NEG << " pass = " << pass << endl;
+		if (debugOut) cout << "POS = " << POS << " NEG = " << NEG << " pass = " << pass << endl;
 
 		// A loop to compute the standard deviation of the local K distribution, and use it to include/exclude K values higher then (meanK +/- K_opt_factor*STDEV)
 		if (meanKStat) {
@@ -455,8 +437,7 @@ namespace CGT {
 				}
 			}
 			STDEV = sqrt(STDEV / pass);
-			if (debugOut)
-				cout << "PassSTDEV = " << pass << endl;
+			if (debugOut) cout << "PassSTDEV = " << pass << endl;
 			cout << "STATISTIC K" << endl;
 			Real k_min = 0, k_max = meanK + KOptFactor * STDEV;
 			cout << "Kmoy = " << meanK << " Standard Deviation = " << STDEV << endl;
@@ -475,8 +456,7 @@ namespace CGT {
 					}
 				}
 			}
-			if (debugOut)
-				cout << "PassKopt = " << pass << endl;
+			if (debugOut) cout << "PassKopt = " << pass << endl;
 		}
 		if (debugOut) {
 			FiniteVerticesIterator verticesEnd = Tri.finite_vertices_end();
@@ -495,8 +475,7 @@ namespace CGT {
 			     << " sSolidTot = " << sSolidTot << endl
 			     << endl;
 
-			if (!rAverage)
-				cout << "------Hydraulic Radius is used for permeability computation------" << endl << endl;
+			if (!rAverage) cout << "------Hydraulic Radius is used for permeability computation------" << endl << endl;
 			else
 				cout << "------Average Radius is used for permeability computation------" << endl << endl;
 			cout << "-----computed_Permeability Periodic-----" << endl;
@@ -532,32 +511,28 @@ namespace CGT {
 				bb++;
 				if (!cell->info().Pcondition && !cell->info().isGhost) {
 					cell2++;
-					if (compressible && j == 0)
-						previousP[bb] = cell->info().shiftedP();
+					if (compressible && j == 0) previousP[bb] = cell->info().shiftedP();
 					m = 0, n = 0;
 					for (int j2 = 0; j2 < 4; j2++) {
 						if (!Tri.is_infinite(cell->neighbor(j2))) {
 							if (compressible) {
 								compFlowFactor = fluidBulkModulus * dt * cell->info().invVoidVolume();
 								m += compFlowFactor * (cell->info().kNorm())[j2] * cell->neighbor(j2)->info().shiftedP();
-								if (j == 0)
-									n += compFlowFactor * (cell->info().kNorm())[j2];
+								if (j == 0) n += compFlowFactor * (cell->info().kNorm())[j2];
 							} else {
 								m += (cell->info().kNorm())[j2] * cell->neighbor(j2)->info().shiftedP();
 								if (math::isinf(m) && j < 10)
 									cout << "(cell->info().kNorm())[j2] = " << (cell->info().kNorm())[j2]
 									     << " cell->neighbor(j2)->info().shiftedP() = "
 									     << cell->neighbor(j2)->info().shiftedP() << endl;
-								if (j == 0)
-									n += (cell->info().kNorm())[j2];
+								if (j == 0) n += (cell->info().kNorm())[j2];
 							}
 						}
 					}
 					dp = cell->info().p();
 					if (n != 0 || j != 0) {
 						if (j == 0) {
-							if (compressible)
-								cell->info().invSumK = 1 / (1 + n);
+							if (compressible) cell->info().invSumK = 1 / (1 + n);
 							else
 								cell->info().invSumK = 1 / n;
 						}
@@ -584,8 +559,7 @@ namespace CGT {
 			}
 			j++;
 
-			if (j >= 40000)
-				cerr << "\r GS not converged after 40k iterations, break";
+			if (j >= 40000) cerr << "\r GS not converged after 40k iterations, break";
 
 		} while ((dp_max / p_max) > tolerance && j < 40000 /*&& ( dp_max > tolerance )*/ /* &&*/ /*( j<50 )*/);
 
@@ -606,23 +580,18 @@ namespace CGT {
 		for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
 			int zeros = 0;
 			for (int j = 0; j != 4; j++)
-				if ((cell->info().kNorm())[j] == 0)
-					zeros += 1;
-			if (zeros == 4)
-				Zero += 1;
-			if (!cell->info().fictious())
-				Inside += 1;
+				if ((cell->info().kNorm())[j] == 0) zeros += 1;
+			if (zeros == 4) Zero += 1;
+			if (!cell->info().fictious()) Inside += 1;
 			else
 				Fictious += 1;
-			if (cell->info().isGhost)
-				ghostC += 1;
+			if (cell->info().isGhost) ghostC += 1;
 			else
 				realC += 1;
 		}
 		int fict = 0, real = 0;
 		for (FiniteVerticesIterator v = Tri.finite_vertices_begin(); v != Tri.finite_vertices_end(); ++v) {
-			if (v->info().isFictious)
-				fict += 1;
+			if (v->info().isFictious) fict += 1;
 			else
 				real += 1;
 		}

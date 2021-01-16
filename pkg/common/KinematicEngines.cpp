@@ -20,8 +20,7 @@ void KinematicEngine::action()
 		{
 			assert(id < (Body::id_t)scene->bodies->size());
 			Body* b = Body::byId(id, scene).get();
-			if (b)
-				b->state->vel = b->state->angVel = Vector3r::Zero();
+			if (b) b->state->vel = b->state->angVel = Vector3r::Zero();
 		}
 		apply(ids);
 	} else {
@@ -37,14 +36,12 @@ void CombinedKinematicEngine::action()
 		{
 			assert(id < (Body::id_t)scene->bodies->size());
 			Body* b = Body::byId(id, scene).get();
-			if (b)
-				b->state->vel = b->state->angVel = Vector3r::Zero();
+			if (b) b->state->vel = b->state->angVel = Vector3r::Zero();
 		}
 		// apply one engine after another
 		FOREACH(const shared_ptr<KinematicEngine>& e, comb)
 		{
-			if (e->dead)
-				continue;
+			if (e->dead) continue;
 			e->scene = scene;
 			e->apply(ids);
 		}
@@ -77,8 +74,7 @@ void TranslationEngine::apply(const vector<Body::id_t>& ids)
 #endif
 			assert(id < (Body::id_t)scene->bodies->size());
 			Body* b = Body::byId(id, scene).get();
-			if (!b)
-				continue;
+			if (!b) continue;
 			b->state->vel += velocity * translationAxis;
 		}
 	} else {
@@ -97,8 +93,7 @@ void HarmonicMotionEngine::apply(const vector<Body::id_t>& ids)
 		{
 			assert(id < (Body::id_t)scene->bodies->size());
 			Body* b = Body::byId(id, scene).get();
-			if (!b)
-				continue;
+			if (!b) continue;
 			b->state->vel += velocity;
 		}
 	} else {
@@ -125,8 +120,7 @@ void HelixEngine::apply(const vector<Body::id_t>& ids)
 		{
 			assert(id < (Body::id_t)bodies->size());
 			Body* b = Body::byId(id, scene).get();
-			if (!b)
-				continue;
+			if (!b) continue;
 			b->state->vel += linearVelocity * rotationAxis;
 		}
 		rotateAroundZero = true;
@@ -150,8 +144,7 @@ void RotationEngine::apply(const vector<Body::id_t>& ids)
 #endif
 			assert(id < (Body::id_t)scene->bodies->size());
 			Body* b = Body::byId(id, scene).get();
-			if (!b)
-				continue;
+			if (!b) continue;
 			b->state->angVel += rotationAxis * angularVelocity;
 			if (rotateAroundZero) {
 				const Vector3r l = b->state->pos - zeroPoint;
@@ -200,9 +193,7 @@ void ServoPIDController::apply(const vector<Body::id_t>& ids)
 
 		curVel = (pTerm + iTerm + dTerm); // Calculate current velocity
 
-		if (math::abs(curVel) > math::abs(maxVelocity)) {
-			curVel *= math::abs(maxVelocity) / math::abs(curVel);
-		}
+		if (math::abs(curVel) > math::abs(maxVelocity)) { curVel *= math::abs(maxVelocity) / math::abs(curVel); }
 
 		iterPrevStart = scene->iter;
 		current       = tmpForce;
@@ -239,8 +230,7 @@ void BicyclePedalEngine::apply(const vector<Body::id_t>& ids)
 #endif
 			assert(id < (Body::id_t)scene->bodies->size());
 			Body* b = Body::byId(id, scene).get();
-			if (!b)
-				continue;
+			if (!b) continue;
 			b->state->vel += newVel;
 		}
 	} else {

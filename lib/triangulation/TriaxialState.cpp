@@ -31,8 +31,7 @@ namespace CGT {
 	{
 		ContactIterator last = contacts_end();
 		for (ContactIterator it = contacts_begin(); it != last; ++it) {
-			if (*it)
-				delete *it;
+			if (*it) delete *it;
 		}
 	}
 
@@ -47,8 +46,7 @@ namespace CGT {
 			file >> buffer;
 			test = (buffer == string(parameter_name) || file.eof());
 		}
-		if (!file.eof())
-			file >> value;
+		if (!file.eof()) file >> value;
 		else
 			value = 0;
 		// 	cout << string(parameter_name) << value << endl;
@@ -66,8 +64,7 @@ namespace CGT {
 			file >> buffer;
 			test = (buffer == string(parameter_name) || file.eof());
 		}
-		if (!file.eof())
-			file >> value;
+		if (!file.eof()) file >> value;
 		else
 			value = 0;
 		// 	cout << string(parameter_name) << value << endl;
@@ -99,8 +96,7 @@ namespace CGT {
 	TriaxialState::GrainIterator TriaxialState::grains_begin(void)
 	{
 		GrainIterator git = grains.begin();
-		if (NO_ZERO_ID)
-			return ++git;
+		if (NO_ZERO_ID) return ++git;
 		else
 			return git;
 	}
@@ -241,8 +237,7 @@ namespace CGT {
 			c->fs              = fs;
 			c->frictional_work = frictional_work;
 			c->status          = (Contact::Status)stat;
-			if (contacts[j])
-				delete contacts[j];
+			if (contacts[j]) delete contacts[j];
 			contacts[j] = c;
 		}
 

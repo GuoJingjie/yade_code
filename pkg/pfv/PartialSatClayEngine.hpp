@@ -191,20 +191,20 @@ public:
 	        bool                                   gasPermFlag,
 	        FlowSolver&                            flow);
 	void circulateFacets(RTriangulation::Finite_edges_iterator& edge, Real aperture, const Real openingPressure, bool gasPermFlag, FlowSolver& flow);
-	//void saveFractureNetworkVTK(string fileName);
-	#ifdef YADE_VTK
-	void       savePermeabilityNetworkVTK(string fileName);
-	void 	   saveUnsatVtk(const char* folder, bool withBoundaries);
-	#endif
-	void       blockCellsAbovePoroThreshold(FlowSolver& flow);
-	void       blockIsolatedCells(FlowSolver& flow);
-	void       simulateConfinement();
-	void       removeForceOnVertices(RTriangulation::Facet_circulator& facet, RTriangulation::Finite_edges_iterator& ed_it);
-	void       circulateFacetstoRemoveForces(RTriangulation::Finite_edges_iterator& edge);
-	void       removeForcesOnBrokenBonds();
-	void       timeStepControl();
-	void       computeVertexSphericalArea();
-	void       resetParticleSuctions();
+//void saveFractureNetworkVTK(string fileName);
+#ifdef YADE_VTK
+	void savePermeabilityNetworkVTK(string fileName);
+	void saveUnsatVtk(const char* folder, bool withBoundaries);
+#endif
+	void blockCellsAbovePoroThreshold(FlowSolver& flow);
+	void blockIsolatedCells(FlowSolver& flow);
+	void simulateConfinement();
+	void removeForceOnVertices(RTriangulation::Facet_circulator& facet, RTriangulation::Finite_edges_iterator& ed_it);
+	void circulateFacetstoRemoveForces(RTriangulation::Finite_edges_iterator& edge);
+	void removeForcesOnBrokenBonds();
+	void timeStepControl();
+	void computeVertexSphericalArea();
+	void resetParticleSuctions();
 	Real getEnteredRatio();
 
 	//	void setPositionsBuffer(bool current);
@@ -245,7 +245,7 @@ public:
 	Real getWaterVolume() const { return waterVolume; }
 	Real getNumCracks() const { return numCracks; }
 	Real getAverageAperture() const { return averageAperture; }
-	void       printPorosity(string file) { printPorosityToFile(file); }
+	void printPorosity(string file) { printPorosityToFile(file); }
 	Real getCellSaturation(Vector3r pos) const { return solver->getCellSaturation(pos[0], pos[1], pos[2]); }
 	//Real getCellVelocity(Vector3r pos){return solver->getCellVelocity(pos[0], pos[1], pos[2]);}
 	std::vector<Real> getCellVelocity(Vector3r pos) const { return solver->getCellVelocity(pos[0], pos[1], pos[2]); }

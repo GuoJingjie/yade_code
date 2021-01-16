@@ -67,16 +67,11 @@ void RockLiningGlobal::action()
 			vector<int>  IDs;
 			Real         outerRadius = openingRad + 1.0;
 			for (const auto& b : *scene->bodies) {
-				if (!b)
-					continue;
-				if (b->isClump() == true)
-					continue;
+				if (!b) continue;
+				if (b->isClump() == true) continue;
 				PotentialBlock* pb = static_cast<PotentialBlock*>(b->shape.get());
-				if (!pb)
-					continue;
-				if (pb->isBoundary == true || pb->erase == true || pb->isLining == true) {
-					continue;
-				}
+				if (!pb) continue;
+				if (pb->isBoundary == true || pb->erase == true || pb->isLining == true) { continue; }
 				State*   state1 = b->state.get();
 				Vector3r intersectionPt(0, 0, 0);
 				if (installLining(pb, state1, startingPoint, searchDir, outerRadius, intersectionPt)) {
@@ -124,9 +119,7 @@ void RockLiningGlobal::action()
 					}
 				}
 			}
-			if (nodeGlobalPos.norm() > 1.03 * openingRad) {
-				nodeGlobalPos = 1.03 * openingRad * searchDir;
-			}
+			if (nodeGlobalPos.norm() > 1.03 * openingRad) { nodeGlobalPos = 1.03 * openingRad * searchDir; }
 			//if(nodeGlobalPos.norm() < 0.98*openingRad){ continue;}
 			//initOverlap = interfaceTension/interfaceStiffness;
 			nodeGlobalPos = nodeGlobalPos + searchDir * initOverlap;
@@ -151,9 +144,7 @@ void RockLiningGlobal::action()
 		/* Assembling global stiffness matrix */
 		for (int n = 0; n < totalNodes; n++) {
 			int nextID = n + 1;
-			if (nextID == totalNodes) {
-				nextID = 0;
-			}
+			if (nextID == totalNodes) { nextID = 0; }
 			Real Length = (refPos[nextID] - refPos[n]).norm();
 			lengthNode.push_back(Length);
 
@@ -163,9 +154,7 @@ void RockLiningGlobal::action()
 			Real     angle     = acos(localDir.dot(Vector3r(1, 0, 0)));
 			Vector3r signAngle = Vector3r(1, 0.0, 0).cross(localDir);
 
-			if (signAngle.dot(Vector3r(0, -1.0, 0)) < 0.0) {
-				angle = 2.0 * PI - angle;
-			}
+			if (signAngle.dot(Vector3r(0, -1.0, 0)) < 0.0) { angle = 2.0 * PI - angle; }
 			refAngle.push_back(angle);
 			std::cout << "angle " << n << " : " << angle / PI * 180.0 << endl;
 		}
@@ -187,21 +176,15 @@ void RockLiningGlobal::action()
 
 		for (int j = 0; j < blockNo; j++) {
 			int nextNode = j + 1;
-			if (nextNode == blockNo) {
-				nextNode = 0;
-			}
+			if (nextNode == blockNo) { nextNode = 0; }
 			State*      state1 = Body::byId(blockIDs[j], scene)->state.get();
 			State*      state2 = Body::byId(blockIDs[nextNode], scene)->state.get();
 			Quaternionr qA     = (state1->ori);
 			Real        thetaA = 2.0 * acos(qA.w());
-			if (qA.y() < 0.0) {
-				thetaA = -thetaA;
-			}
+			if (qA.y() < 0.0) { thetaA = -thetaA; }
 			Quaternionr qB     = (state2->ori);
 			Real        thetaB = 2.0 * acos(qB.w());
-			if (qB.y() < 0.0) {
-				thetaB = -thetaB;
-			}
+			if (qB.y() < 0.0) { thetaB = -thetaB; }
 
 			Real deformedAngle = refAngle[j]; // - thetaA;
 
@@ -375,9 +358,7 @@ void RockLiningGlobal::action()
 		//#if 0
 		for (int i = 0; i < blockNo; i++) {
 			int nextID = i + 1;
-			if (nextID == blockNo) {
-				nextID = 0;
-			}
+			if (nextID == blockNo) { nextID = 0; }
 			State*          state1 = Body::byId(blockIDs[i], scene)->state.get();
 			State*          state2 = Body::byId(blockIDs[nextID], scene)->state.get();
 			PotentialBlock* pb     = static_cast<PotentialBlock*>(Body::byId(blockIDs[i], scene)->shape.get());
@@ -532,16 +513,12 @@ Real RockLiningGlobal::evaluateFNoSphereVol(const PotentialBlock* s1, const Stat
 	int  insideCount = 0;
 	for (int i = 0; i < planeNo; i++) {
 		Real plane = s1->a[i] * x + s1->b[i] * y + s1->c[i] * z - s1->d[i] - 1.0002 * r; //-pow(10,-10);
-		if (math::sign(plane) * 1.0 < 0.0) {
-			insideCount++;
-		}
+		if (math::sign(plane) * 1.0 < 0.0) { insideCount++; }
 	}
 
 	/* Complete potential particle */
 	Real f = 1.0;
-	if (insideCount == planeNo) {
-		f = -1.0;
-	}
+	if (insideCount == planeNo) { f = -1.0; }
 	return f;
 }
 

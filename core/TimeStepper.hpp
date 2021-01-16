@@ -24,9 +24,7 @@ public:
 	void         setActive(bool a, int nb = -1)
 	{
 		active = a;
-		if (nb > 0) {
-			timeStepUpdateInterval = (unsigned int)nb;
-		}
+		if (nb > 0) { timeStepUpdateInterval = (unsigned int)nb; }
 	}
 
 	// clang-format off

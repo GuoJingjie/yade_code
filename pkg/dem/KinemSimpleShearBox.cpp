@@ -49,8 +49,7 @@ void KinemSimpleShearBox::computeScontact()
 
 void KinemSimpleShearBox::letMove(Real dX, Real dY)
 {
-	if (LOG)
-		cout << "It : " << scene->iter << endl;
+	if (LOG) cout << "It : " << scene->iter << endl;
 
 	// 	const Real& dt = scene->dt; // dt value obtained by getBoxes_Dt
 
@@ -62,8 +61,7 @@ void KinemSimpleShearBox::letMove(Real dX, Real dY)
 	leftbox->state->vel  = Vector3r(dX / (2.0 * dt), dY / (2.0 * dt), 0);
 	rightbox->state->vel = Vector3r(dX / (2.0 * dt), dY / (2.0 * dt), 0);
 
-	if (LOG)
-		cout << "dY that will be applied by NewtonIntegrator :" << dY << endl;
+	if (LOG) cout << "dY that will be applied by NewtonIntegrator :" << dY << endl;
 
 	Real Ysup_mod = Ysup + dY;
 	Real Ylat_mod = Ylat + dY;
@@ -122,10 +120,8 @@ void KinemSimpleShearBox::computeStiffness()
 			}
 		}
 	}
-	if (LOG)
-		cout << "nbre billes en contacts : " << nbre_contacts << endl;
-	if (LOG)
-		cout << "rigidite echantillon calculee : " << stiffness << endl;
+	if (LOG) cout << "nbre billes en contacts : " << nbre_contacts << endl;
+	if (LOG) cout << "rigidite echantillon calculee : " << stiffness << endl;
 }
 
 void KinemSimpleShearBox::getBoxes_Dt()
@@ -166,19 +162,15 @@ void KinemSimpleShearBox::computeDY(Real KnC)
 		deltaH = (fSup.y() - fDesired) / (stiffness);
 	}
 
-	if (LOG)
-		cout << "Alors q je veux KnC = " << KnC << " depuis f0 = " << f0 << " et y0 = " << y0 << endl;
-	if (LOG)
-		cout << "deltaH a permettre normalement :" << deltaH << endl;
+	if (LOG) cout << "Alors q je veux KnC = " << KnC << " depuis f0 = " << f0 << " et y0 = " << y0 << endl;
+	if (LOG) cout << "deltaH a permettre normalement :" << deltaH << endl;
 
 	deltaH = (1 - wallDamping) * deltaH;
-	if (LOG)
-		cout << "deltaH apres amortissement :" << deltaH << endl;
+	if (LOG) cout << "deltaH apres amortissement :" << deltaH << endl;
 
 	if (math::abs(deltaH) > max_vel * scene->dt) {
 		deltaH = deltaH / math::abs(deltaH) * max_vel * scene->dt;
-		if (LOG)
-			cout << "Correction appliquee pour ne pas depasser vmax(comp)" << endl;
+		if (LOG) cout << "Correction appliquee pour ne pas depasser vmax(comp)" << endl;
 	}
 }
 

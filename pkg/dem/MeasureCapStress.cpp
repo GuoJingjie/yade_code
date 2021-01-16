@@ -23,8 +23,7 @@ void MeasureCapStress::action()
 
 	FOREACH(const shared_ptr<Interaction>& interaction, *scene->interactions)
 	{ // not possible or meaningfull to use parallel loops here.. (http://www.mail-archive.com/yade-dev@lists.launchpad.net/msg11018.html)
-		if (!interaction->isReal())
-			continue;
+		if (!interaction->isReal()) continue;
 		const shared_ptr<CapillaryPhys> phys = YADE_PTR_CAST<CapillaryPhys>(interaction->phys);
 		const shared_ptr<ScGeom>        geom = YADE_PTR_CAST<ScGeom>(interaction->geom);
 		if (phys->meniscus) {
@@ -66,16 +65,13 @@ void MeasureCapStress::action()
 	muVw = vW * Matrix3r::Identity();
 
 	Real volume = 0;
-	if (scene->isPeriodic)
-		volume = scene->cell->hSize.determinant();
+	if (scene->isPeriodic) volume = scene->cell->hSize.determinant();
 	else {
 		const auto extrema = Shop::aabbExtrema();
 		volume             = (extrema.second[0] - extrema.first[0]) * (extrema.second[1] - extrema.first[1]) * (extrema.second[2] - extrema.first[2]);
 	}
-	if (debug)
-		cout << "c++ : volume = " << volume << endl;
-	if (volume == 0)
-		LOG_ERROR("Could not get a non-zero volume value");
+	if (debug) cout << "c++ : volume = " << volume << endl;
+	if (volume == 0) LOG_ERROR("Could not get a non-zero volume value");
 	//   else { // error: ‘else’ without a previous ‘if’ ?????????!!!!!##########
 
 	sigmaCap = 1 / volume * (capillaryPressure * (muVw + muSsw) + surfaceTension * (muGamma + muSnw));
@@ -126,8 +122,7 @@ Matrix3r MeasureCapStress::matGlobToLoc(Vector3r vecN)
 	else {
 		Real cosPhi;
 		cosPhi = vecN[0] / sin(theta);
-		if (cosPhi > 1)
-			cosPhi = 1; // might occur. Because of numeric precision ?
+		if (cosPhi > 1) cosPhi = 1; // might occur. Because of numeric precision ?
 		else if (cosPhi < -1)
 			cosPhi = -1;
 		if (vecN[1] > 0) // <=> here sinPhi > 0 <=> phi in ]0,pi[

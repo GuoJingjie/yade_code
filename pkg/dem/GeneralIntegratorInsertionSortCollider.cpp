@@ -25,21 +25,16 @@ bool GeneralIntegratorInsertionSortCollider::isActivated()
 {
 	// activated if number of bodies changes (hence need to refresh collision information)
 	// or the time of scheduled run already came, or we were never scheduled yet
-	if (!strideActive)
-		return true;
-	if (!integrator)
-		return true;
+	if (!strideActive) return true;
+	if (!integrator) return true;
 	if (fastestBodyMaxDist < 0) {
 		fastestBodyMaxDist = 0;
 		return true;
 	}
 	fastestBodyMaxDist = integrator->maxVelocitySq;
-	if (fastestBodyMaxDist >= 1 || fastestBodyMaxDist == 0)
-		return true;
-	if (BB[0].size() != 2 * scene->bodies->size())
-		return true;
-	if (scene->interactions->dirty)
-		return true;
+	if (fastestBodyMaxDist >= 1 || fastestBodyMaxDist == 0) return true;
+	if (BB[0].size() != 2 * scene->bodies->size()) return true;
+	if (scene->interactions->dirty) return true;
 	if (scene->doSort) {
 		scene->doSort = false;
 		return true;
@@ -81,8 +76,7 @@ void GeneralIntegratorInsertionSortCollider::action()
 		}
 		// more than 100 bodies was added, do initial sort again
 		// maybe: should rather depend on ratio of added bodies to those already present...?
-		if (2 * nBodies - BBsize > 200 || BBsize == 0)
-			doInitSort = true;
+		if (2 * nBodies - BBsize > 200 || BBsize == 0) doInitSort = true;
 		assert((BBsize % 2) == 0);
 		for (int i = 0; i < 3; i++) {
 			BB[i].reserve(2 * nBodies);
@@ -110,11 +104,9 @@ void GeneralIntegratorInsertionSortCollider::action()
 	if (verletDist < 0) {
 		Real minR = std::numeric_limits<Real>::infinity();
 		for (const auto& b : *scene->bodies) {
-			if (!b || !b->shape)
-				continue;
+			if (!b || !b->shape) continue;
 			Sphere* s = dynamic_cast<Sphere*>(b->shape.get());
-			if (!s)
-				continue;
+			if (!s) continue;
 			minR = min(s->radius, minR);
 		}
 		if (math::isinf(minR))
@@ -145,12 +137,9 @@ void GeneralIntegratorInsertionSortCollider::action()
 			FOREACH(shared_ptr<Engine> & e, scene->engines)
 			{
 				integrator = YADE_PTR_DYN_CAST<Integrator>(e);
-				if (integrator)
-					break;
+				if (integrator) break;
 			}
-			if (!integrator) {
-				throw runtime_error("InsertionSortCollider.verletDist>0, but unable to locate any Integrator within O.engines.");
-			}
+			if (!integrator) { throw runtime_error("InsertionSortCollider.verletDist>0, but unable to locate any Integrator within O.engines."); }
 		}
 	}
 	ISC_CHECKPOINT("init");
@@ -189,9 +178,7 @@ void GeneralIntegratorInsertionSortCollider::action()
 				BBj[i].flags.hasBB = false; /* for vanished body, keep the coordinate as-is, to minimize inversions. */
 			}
 			// if initializing periodic, shift coords & record the period into BBj[i].period
-			if (doInitSort && periodic) {
-				BBj[i].coord = cellWrap(BBj[i].coord, 0, BBj.cellDim, BBj[i].period);
-			}
+			if (doInitSort && periodic) { BBj[i].coord = cellWrap(BBj[i].coord, 0, BBj.cellDim, BBj[i].period); }
 		}
 	}
 	// for each body, copy its minima and maxima, for quick checks of overlaps later
@@ -293,15 +280,13 @@ void GeneralIntegratorInsertionSortCollider::action()
 			for (size_t i = 0; i < 2 * nBodies; i++) {
 				// start from the lower bound (i.e. skipping upper bounds)
 				// skip bodies without bbox, because they don't collide
-				if (!(V[i].flags.isMin && V[i].flags.hasBB))
-					continue;
+				if (!(V[i].flags.isMin && V[i].flags.hasBB)) continue;
 				const Body::id_t& iid = V[i].id;
 				// go up until we meet the upper bound
 				for (size_t j = i + 1; /* handle case 2. of swapped min/max */ j < 2 * nBodies && V[j].id != iid; j++) {
 					const Body::id_t& jid = V[j].id;
 					// take 2 of the same condition (only handle collision [min_i..max_i]+min_j, not [min_i..max_i]+min_i (symmetric)
-					if (!V[j].flags.isMin)
-						continue;
+					if (!V[j].flags.isMin) continue;
 					/* abuse the same function here; since it does spatial overlap check first, it is OK to use it */
 					handleBoundInversion(iid, jid, interactions, scene);
 					assert(j < 2 * nBodies - 1);
@@ -309,15 +294,13 @@ void GeneralIntegratorInsertionSortCollider::action()
 			}
 		} else { // periodic case: see comments above
 			for (size_t i = 0; i < 2 * nBodies; i++) {
-				if (!(V[i].flags.isMin && V[i].flags.hasBB))
-					continue;
+				if (!(V[i].flags.isMin && V[i].flags.hasBB)) continue;
 				const Body::id_t& iid = V[i].id;
 				long              cnt = 0;
 				// we might wrap over the periodic boundary here; that's why the condition is different from the aperiodic case
 				for (long j = V.norm(i + 1); V[j].id != iid; j = V.norm(j + 1)) {
 					const Body::id_t& jid = V[j].id;
-					if (!V[j].flags.isMin)
-						continue;
+					if (!V[j].flags.isMin) continue;
 					handleBoundInversionPeri(iid, jid, interactions, scene);
 					if (cnt++ > 2 * (long)nBodies) {
 						LOG_FATAL("Uninterrupted loop in the initial sort?");

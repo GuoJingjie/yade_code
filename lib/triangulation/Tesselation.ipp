@@ -41,13 +41,11 @@ namespace CGT {
 
 	template <class TT> _Tesselation<TT>::~_Tesselation(void)
 	{
-		if (Tri)
-			delete Tri;
+		if (Tri) delete Tri;
 	}
 	template <class TT> void _Tesselation<TT>::Clear(void)
 	{
-		if (Tri)
-			Tri->clear();
+		if (Tri) Tri->clear();
 		vertexHandles.clear();
 		maxId = 0;
 	}
@@ -152,8 +150,7 @@ namespace CGT {
 		CVector       surface = 0.5 * cross_product(S0.point() - S1.point(), S0.point() - S2.point());
 		//check if the surface vector is inward or outward
 		Real dotP = surface * (S0.point() - Sin.point());
-		if (dotP < 0)
-			surface = -surface;
+		if (dotP < 0) surface = -surface;
 		Real area = sqrt(surface.squared_length());
 		normal    = surface / area; //unit normal
 		                            // 	p1 = setCircumCenter(cell1);//starting point of the polygon
@@ -179,8 +176,7 @@ namespace CGT {
 		CVector       surface = 0.5 * cross_product(S0.point() - S1.point(), S0.point() - S2.point());
 		//check if the surface vector is inward or outward
 		Real dotP = surface * (S0.point() - Sin.point());
-		if (dotP < 0)
-			surface = -surface;
+		if (dotP < 0) surface = -surface;
 		//         Real area = sqrt ( surface.squared_length() );
 		//         CVector normal = surface/area; //unit normal
 		//      p1 = setCircumCenter(cell1);//starting point of the polygon
@@ -200,8 +196,7 @@ namespace CGT {
 	}
 	template <class TT> Point _Tesselation<TT>::setCircumCenter(const CellHandle& cell, bool force)
 	{
-		if (force or cell->info() == CGAL::ORIGIN)
-			cell->info().setPoint(circumCenter(cell));
+		if (force or cell->info() == CGAL::ORIGIN) cell->info().setPoint(circumCenter(cell));
 		return (Point)cell->info();
 	}
 
@@ -211,8 +206,7 @@ namespace CGT {
 		cerr << "Warning: this is extremely slow - only for experiments" << endl;
 		RTriangulation temp(*Tri);
 		AlphaShape     as(temp);
-		if (!alpha)
-			alpha = as.find_alpha_solid();
+		if (!alpha) alpha = as.find_alpha_solid();
 		as.set_alpha(alpha);
 		std::list<VertexHandle> alphaVertices;
 		as.get_alpha_shape_vertices(std::back_inserter(alphaVertices), AlphaShape::REGULAR);
@@ -229,8 +223,7 @@ namespace CGT {
 
 		RTriangulation temp(*Tri);
 		AlphaShape     as(temp);
-		if (!alpha)
-			alpha = as.find_alpha_solid();
+		if (!alpha) alpha = as.find_alpha_solid();
 		as.set_alpha(alpha);
 		cerr << "Alpha shape computed. alpha_solid=" << alpha << endl;
 
@@ -290,8 +283,7 @@ namespace CGT {
 			Point vv;
 			if (as.classify(f->first) == AlphaShape::INTERIOR) {
 				pp = f->first->vertex(f->second)->point().point();
-				if (not computed)
-					f->first->info().setPoint(circumCenter(f->first));
+				if (not computed) f->first->info().setPoint(circumCenter(f->first));
 				// 			std::cerr<< "alpha cell:"<<(Point) f->first->info()<<std::endl;
 				vv = f->first->info();
 				// 			std::cerr << "vv="<<vv<<std::endl;
@@ -302,8 +294,7 @@ namespace CGT {
 					std::cerr << "_____________BIG PROB. HERE ___________" << std::endl;
 
 				pp = f->first->neighbor(f->second)->vertex(Tri->mirror_index(f->first, f->second))->point().point();
-				if (not computed)
-					f->first->neighbor(f->second)->info().setPoint(circumCenter(f->first->neighbor(f->second)));
+				if (not computed) f->first->neighbor(f->second)->info().setPoint(circumCenter(f->first->neighbor(f->second)));
 				// 			std::cerr<< "alpha cell:"<<(Point) f->first->neighbor(f->second)->info()<<std::endl;
 				vv = f->first->neighbor(f->second)->info();
 				// 			std::cerr << "vv="<<vv<<std::endl;
@@ -312,8 +303,7 @@ namespace CGT {
 			}
 			//check if the surface vector is inward or outward
 			Real dotP = surface * (f->first->vertex(facetVertices[f->second][0])->point().point() - pp);
-			if (dotP < 0)
-				surface = -surface;
+			if (dotP < 0) surface = -surface;
 			Real    area   = sqrt(surface.squared_length());
 			CVector normal = surface / area; //unit normal
 			                                 // 		std::cerr <<"dotP="<<dotP<<std::endl<<"surface: "<<surface<<std::endl;
@@ -329,9 +319,8 @@ namespace CGT {
 				temp = 0;
 				std::cerr << "NEGATIVE TEMP!" << std::endl;
 			}
-			if (temp > maxWeight)
-				temp = maxWeight; //if alpha vertex is too far, crop
-			Real h2 = sqrt(temp);     // this is now the distance from Voronoi vertex to "alpha" vertex (after cropping if needed)
+			if (temp > maxWeight) temp = maxWeight; //if alpha vertex is too far, crop
+			Real h2 = sqrt(temp);                   // this is now the distance from Voronoi vertex to "alpha" vertex (after cropping if needed)
 			V       = V + h2 * normal;
 			std::cerr << "dist alpha center:" << sqrt((V - Point(0, 0, 0)).squared_length()) << "(vs. Liu:" << distLiu << ")" << std::endl;
 		}
@@ -361,14 +350,12 @@ namespace CGT {
 			                  f->first->vertex(facetVertices[idx][0])->point().point() - f->first->vertex(facetVertices[idx][1])->point().point(),
 			                  f->first->vertex(facetVertices[idx][0])->point().point() - f->first->vertex(facetVertices[idx][2])->point().point());
 			Point pp;
-			if (as.classify(f->first) == AlphaShape::INTERIOR)
-				pp = f->first->vertex(f->second)->point().point();
+			if (as.classify(f->first) == AlphaShape::INTERIOR) pp = f->first->vertex(f->second)->point().point();
 			else
 				pp = f->first->neighbor(f->second)->vertex(Tri->mirror_index(f->first, f->second))->point().point();
 			//check if the normal vector is inward or outward
 			Real dotP = normal * (f->first->vertex(facetVertices[f->second][0])->point().point() - pp);
-			if (dotP < 0)
-				normal = -normal;
+			if (dotP < 0) normal = -normal;
 			// set the face in the global list
 			for (int ii = 0; ii < 3; ii++)
 				faces[k].ids[ii] = f->first->vertex(facetVertices[idx][ii])->info().id();
@@ -382,28 +369,24 @@ namespace CGT {
 		RTriangulation        temp(*Tri);
 		AlphaShape            as(temp);
 		Real                  minAlpha = as.find_alpha_solid();
-		if (!alpha)
-			as.set_alpha(minAlpha);
+		if (!alpha) as.set_alpha(minAlpha);
 		else {
 			as.set_alpha(alpha);
-			if (alpha < minAlpha)
-				cerr << "TesselationWrapper: Using alpha<minAlpha will not work. Consider using default alpha (=0)" << endl;
+			if (alpha < minAlpha) cerr << "TesselationWrapper: Using alpha<minAlpha will not work. Consider using default alpha (=0)" << endl;
 		}
 		if (fixedAlpha) { //insert one sphere per regular facet, with a fixed size shrinkedAlpha
 			std::list<Facet> facets;
 			as.get_alpha_shape_facets(std::back_inserter(facets), AlphaShape::REGULAR);
 			for (auto fp = facets.begin(); fp != facets.end(); fp++) {
 				Facet f = *fp;
-				if (as.classify(f.first) != AlphaShape::INTERIOR)
-					f = as.mirror_facet(f);
+				if (as.classify(f.first) != AlphaShape::INTERIOR) f = as.mirror_facet(f);
 				Sphere  sph;
 				bool    b;
 				CVector n;
 				//FIXME: suboptimal, we are calculating/returning a point for no good
 				/*Point p =*/circumCenter(f.first, f.second, alpha, b, sph, n);
 				VertexHandle Vh = Tri->insert(Sphere(sph.point(), shrinkedAlpha));
-				if (Vh != NULL)
-					Vh->info().isFictious = true;
+				if (Vh != NULL) Vh->info().isFictious = true;
 				else
 					cerr << " : __Vh==NULL__ :(" << endl;
 			}
@@ -417,8 +400,7 @@ namespace CGT {
 			as.get_alpha_shape_facets(std::back_inserter(facets), AlphaShape::REGULAR);
 			for (auto fp = facets.begin(); fp != facets.end(); fp++) {
 				Facet f = *fp;
-				if (as.classify(f.first) != AlphaShape::INTERIOR)
-					f = as.mirror_facet(f);
+				if (as.classify(f.first) != AlphaShape::INTERIOR) f = as.mirror_facet(f);
 				const CellHandle& outerCell = f.first->neighbor(f.second);
 				if (as.is_infinite(outerCell)) {
 					Sphere  sph;
@@ -426,8 +408,7 @@ namespace CGT {
 					CVector n;
 					/*Point p =*/circumCenter(f.first, f.second, alpha * 4, b, sph, n);
 					VertexHandle Vh = Tri->insert(Sphere(sph.point(), pow(2 * alphaRad - deltaAlpha, 2)));
-					if (Vh != NULL)
-						Vh->info().isFictious = true;
+					if (Vh != NULL) Vh->info().isFictious = true;
 					else
 						cerr << " : __Vh==NULL__ :(" << endl;
 				} else {
@@ -437,8 +418,7 @@ namespace CGT {
 						Real  weight
 						        = (p - outerCell->vertex(0)->point().point()).squared_length() - outerCell->vertex(0)->point().weight();
 						VertexHandle Vh = Tri->insert(Sphere(p, pow(sqrt(weight) - deltaAlpha, 2)));
-						if (Vh != NULL)
-							Vh->info().isFictious = true;
+						if (Vh != NULL) Vh->info().isFictious = true;
 						else
 							cerr << " : __Vh==NULL__ :(" << endl;
 					}
@@ -469,27 +449,23 @@ namespace CGT {
 		RTriangulation temp(*Tri);
 		AlphaShape     as(temp);
 		Real           minAlpha = as.find_alpha_solid();
-		if (!alpha)
-			as.set_alpha(minAlpha);
+		if (!alpha) as.set_alpha(minAlpha);
 		else {
 			as.set_alpha(alpha);
-			if (alpha < minAlpha)
-				cerr << "TesselationWrapper: Using alpha<minAlpha will not work. Consider using default alpha (=0)" << endl;
+			if (alpha < minAlpha) cerr << "TesselationWrapper: Using alpha<minAlpha will not work. Consider using default alpha (=0)" << endl;
 		}
 		std::list<Facet> facets;
 		as.get_alpha_shape_facets(std::back_inserter(facets), AlphaShape::REGULAR);
 		if (fixedAlpha) { //insert one sphere per regular facet, with a fixed size shrinkedAlpha
 			for (auto fp = facets.begin(); fp != facets.end(); fp++) {
 				Facet f = *fp;
-				if (as.classify(f.first) != AlphaShape::INTERIOR)
-					f = as.mirror_facet(f);
+				if (as.classify(f.first) != AlphaShape::INTERIOR) f = as.mirror_facet(f);
 				Sphere  sph;
 				bool    b;
 				CVector n;
 				circumCenter(f.first, f.second, alpha, b, sph, n);
 				VertexHandle Vh = Tri->insert(Sphere(sph.point(), shrinkedAlpha));
-				if (Vh != NULL)
-					Vh->info().isFictious = true;
+				if (Vh != NULL) Vh->info().isFictious = true;
 				else
 					cerr << " : __Vh==NULL__ :(" << endl;
 			}
@@ -498,8 +474,7 @@ namespace CGT {
 			Real deltaAlpha = alphaRad - sqrt(shrinkedAlpha);
 			for (auto fp = facets.begin(); fp != facets.end(); fp++) {
 				Facet f = *fp;
-				if (as.classify(f.first) != AlphaShape::INTERIOR)
-					f = as.mirror_facet(f);
+				if (as.classify(f.first) != AlphaShape::INTERIOR) f = as.mirror_facet(f);
 				const CellHandle& outerCell = f.first->neighbor(f.second);
 				if (as.is_infinite(outerCell)) {
 					Sphere  sph;
@@ -507,8 +482,7 @@ namespace CGT {
 					CVector n;
 					/*Point p =*/circumCenter(f.first, f.second, alpha * 4, b, sph, n);
 					VertexHandle Vh = Tri->insert(Sphere(sph.point(), pow(2 * alphaRad - deltaAlpha, 2)));
-					if (Vh != NULL)
-						Vh->info().isFictious = true;
+					if (Vh != NULL) Vh->info().isFictious = true;
 					else
 						cerr << " : __Vh==NULL__ :(" << endl;
 				} else if (!outerCell->info().isFictious) {
@@ -516,8 +490,7 @@ namespace CGT {
 					Point p                      = setCircumCenter(outerCell);
 					Real  weight    = (p - outerCell->vertex(0)->point().point()).squared_length() - outerCell->vertex(0)->point().weight();
 					VertexHandle Vh = Tri->insert(Sphere(p, pow(sqrt(weight) - deltaAlpha, 2)));
-					if (Vh != NULL)
-						Vh->info().isFictious = true;
+					if (Vh != NULL) Vh->info().isFictious = true;
 					else
 						cerr << " : __Vh==NULL__ :(" << endl;
 				}
@@ -567,8 +540,7 @@ namespace CGT {
 		cell2 = cell0;
 		while (as.classify(cell2) != AlphaShape::INTERIOR) {
 			++cell2;
-			if (cell2 == cell0)
-				cerr << "infinite loop on an edge, probably singular" << endl;
+			if (cell2 == cell0) cerr << "infinite loop on an edge, probably singular" << endl;
 		}
 		cell1 = cell2;
 
@@ -598,16 +570,14 @@ namespace CGT {
 					baseCell = cell2;
 					baseCell++;
 					vv0 = vv;
-					if (as.classify(baseCell) != AlphaShape::INTERIOR)
-						cerr << "3 consecutive EXTERIOR cells in a loop";
+					if (as.classify(baseCell) != AlphaShape::INTERIOR) cerr << "3 consecutive EXTERIOR cells in a loop";
 				}
 				vv = setCircumCenter(baseCell);
 				// finding the facet from baseCell to cell2 ...
 				int idx = 0;
 				while (baseCell->neighbor(idx) != cell2) {
 					idx++;
-					if (idx > 3)
-						cerr << "HUUUUUUUH";
+					if (idx > 3) cerr << "HUUUUUUUH";
 				}
 				// ... then its surface vector
 				CVector surface = 0.5
@@ -622,8 +592,7 @@ namespace CGT {
 				            baseCell->vertex(facetVertices[idx][2])->point().weight()));
 				//check if the surface vector is inward or outward
 				Real dotP = surface * (baseCell->vertex(facetVertices[idx][0])->point().point() - baseCell->vertex(idx)->point().point());
-				if (dotP < 0)
-					surface = -surface;
+				if (dotP < 0) surface = -surface;
 				Real area = sqrt(surface.squared_length());
 				normal    = surface / area; //unit normal
 				Real h1   = (baseCell->vertex(facetVertices[idx][0])->point().point() - vv)
@@ -636,9 +605,8 @@ namespace CGT {
 					temp = 0;
 					std::cerr << "NEGATIVE TEMP!" << std::endl;
 				}
-				if (temp > maxWeight)
-					temp = maxWeight; //if alpha vertex is too far, crop
-				Real h2 = sqrt(temp);     // this is now the distance from Voronoi vertex to "alpha" vertex (after cropping if needed)
+				if (temp > maxWeight) temp = maxWeight; //if alpha vertex is too far, crop
+				Real h2 = sqrt(temp); // this is now the distance from Voronoi vertex to "alpha" vertex (after cropping if needed)
 				p2      = p2 + h2 * normal;
 
 				bool coplanar = false;
@@ -692,8 +660,7 @@ namespace CGT {
 		while (as.classify(cell1) != AlphaShape::INTERIOR
 		       or as.classify(cell2) == AlphaShape::INTERIOR) { //we want interior->exterior starting sequence
 			++cell1;
-			if (cell0 == cell2++)
-				cerr << "infinite loop on an edge, probably singular" << endl;
+			if (cell0 == cell2++) cerr << "infinite loop on an edge, probably singular" << endl;
 		}
 		cell0 = cell1++; //keep the starting sequence as 0->1, cell1 is now equal to cell2
 		cell3 = cell2;
@@ -702,8 +669,7 @@ namespace CGT {
 		while (as.classify(cell3) != AlphaShape::INTERIOR) { //we want an exterior->interior end-point, could be that cell3=cell0 and that's ok
 			++cell2;
 			++cell3;
-			if (cell2 == cell0)
-				cerr << "infinite loop on an edge, probably singular(2)" << endl;
+			if (cell2 == cell0) cerr << "infinite loop on an edge, probably singular(2)" << endl;
 		}
 		//now cell0 < cell1 < ... < cell2 < cell3
 
@@ -739,15 +705,13 @@ namespace CGT {
 			idx      = 0;
 			while (baseCell->neighbor(idx) != outerCell) {
 				idx++;
-				if (idx > 3)
-					cerr << "HUUUUUUUH";
+				if (idx > 3) cerr << "HUUUUUUUH";
 			}
 			short thirdSphere = 0;
 			while (baseCell->vertex(facetVertices[idx][thirdSphere]) == (ed_it.first)->vertex(ed_it.second)
 			       or baseCell->vertex(facetVertices[idx][thirdSphere]) == (ed_it.first)->vertex(ed_it.third)) {
 				thirdSphere++;
-				if (thirdSphere > 3)
-					cerr << "HUAAAUUH";
+				if (thirdSphere > 3) cerr << "HUAAAUUH";
 			}
 			Sphere& sC = first ? sC1 : sC2;
 			sC         = baseCell->vertex(facetVertices[idx][thirdSphere])->point(); //forming the regular facet with sA and sB
@@ -798,8 +762,7 @@ namespace CGT {
 			// 			}
 			if (violate) {
 				Point ppp = circumCenter(baseCell->vertex(idx)->point(), sA, sB, SAlphaSmall);
-				if ((ppp - pppInv) * (sA.point() - sC.point()) < 0)
-					infCenter = true;
+				if ((ppp - pppInv) * (sA.point() - sC.point()) < 0) infCenter = true;
 
 
 				p = ppp;
@@ -888,8 +851,7 @@ namespace CGT {
 		branchArea = branchArea + cross_product(p2 - p1, p1 - CGAL::ORIGIN);
 
 		//check the orientation (we need to accumulate along the polyline with a given direction)
-		if (clockWise)
-			return 0.5 * branchArea;
+		if (clockWise) return 0.5 * branchArea;
 		else
 			return -0.5 * branchArea;
 		//                         }
@@ -917,8 +879,7 @@ namespace CGT {
 		bool    internal = true;
 		short   externalEdge;
 
-		if (as.classify(facet.first) != AlphaShape::INTERIOR)
-			facet = as.mirror_facet(facet);
+		if (as.classify(facet.first) != AlphaShape::INTERIOR) facet = as.mirror_facet(facet);
 		adjactF[0] = facet;
 
 		Point p     = circumCenter(facet.first, facet.second, alpha, violate[0], alphaSph[0], norml[0]);
@@ -943,11 +904,9 @@ namespace CGT {
 
 			do {
 				f++;
-				if (f == f0)
-					cerr << "PROB PROB1" << endl;
+				if (f == f0) cerr << "PROB PROB1" << endl;
 			} while (as.classify(*f) != AlphaShape::REGULAR);
-			if (as.classify(f->first) == AlphaShape::INTERIOR)
-				adjactF[k] = (*f);
+			if (as.classify(f->first) == AlphaShape::INTERIOR) adjactF[k] = (*f);
 			else
 				adjactF[k] = as.mirror_facet(*f);
 			const Facet& af = adjactF[k];
@@ -1150,14 +1109,12 @@ namespace CGT {
 					ll.push_back(iCircumC[k]);
 				}
 			}
-			if (ll.size() > 0)
-				vSegments.push_back(makeVector3r(ll[0]));
+			if (ll.size() > 0) vSegments.push_back(makeVector3r(ll[0]));
 			for (short n = 0; n < (ll.size() - 1); n++) {
 				vSegments.push_back(makeVector3r(ll[n + 1]));
 				vSegments.push_back(makeVector3r(ll[n + 1]));
 			}
-			if (ll.size() > 0)
-				vSegments.push_back(makeVector3r(ll[0]));
+			if (ll.size() > 0) vSegments.push_back(makeVector3r(ll[0]));
 		}
 		return CVector(0, 0, 0);
 	}
@@ -1178,8 +1135,7 @@ namespace CGT {
 			++cell2;
 			while (Tri->is_infinite(cell2) && cell2 != cell0)
 				++cell2;
-			if (cell2 == cell0)
-				return 0;
+			if (cell2 == cell0) return 0;
 		}
 		cell0                = cell2++;
 		CellCirculator cell1 = cell2++;
@@ -1202,8 +1158,7 @@ namespace CGT {
 			++cell2;
 			while (Tri->is_infinite(cell2) && cell2 != cell0)
 				++cell2;
-			if (cell2 == cell0)
-				return;
+			if (cell2 == cell0) return;
 		}
 		cell0                      = cell2++;
 		CellCirculator cell1       = cell2++;
@@ -1242,8 +1197,7 @@ namespace CGT {
 
 	template <class TT> void _Tesselation<TT>::computeVolumes(void)
 	{
-		if (!computed)
-			compute();
+		if (!computed) compute();
 		ResetVCellVolumes();
 		for (FiniteEdgesIterator ed_it = Tri->finite_edges_begin(); ed_it != Tri->finite_edges_end(); ed_it++) {
 			AssignPartialVolume(ed_it);
@@ -1278,8 +1232,7 @@ namespace CGT {
 	PeriodicTesselation<Tesselation>::insert(Real x, Real y, Real z, Real rad, unsigned int id, bool isFictious, int duplicateOfId)
 	{
 		VertexHandle Vh;
-		if (!Tri)
-			cerr << "!Tri!" << endl;
+		if (!Tri) cerr << "!Tri!" << endl;
 		Vh = Tri->insert(Sphere(Point(x, y, z), pow(rad, 2)));
 		if (Vh != NULL) {
 			Vh->info()            = id;

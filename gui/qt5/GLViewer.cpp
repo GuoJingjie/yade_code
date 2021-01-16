@@ -88,15 +88,13 @@ GLViewer::GLViewer(int _viewId, const shared_ptr<OpenGLRenderer>& _renderer, QGL
 	gridDecimalPlaces = 4;
 	resize(550, 550);
 	last = -1;
-	if (viewId == 0)
-		setWindowTitle("Primary view");
+	if (viewId == 0) setWindowTitle("Primary view");
 	else
 		setWindowTitle(("Secondary view #" + boost::lexical_cast<string>(viewId)).c_str());
 
 	manipulatedClipPlane = -1;
 
-	if (manipulatedFrame() == 0)
-		setManipulatedFrame(new qglviewer::ManipulatedFrame());
+	if (manipulatedFrame() == 0) setManipulatedFrame(new qglviewer::ManipulatedFrame());
 
 	xyPlaneConstraint = shared_ptr<qglviewer::LocalConstraint>(new qglviewer::LocalConstraint());
 	manipulatedFrame()->setConstraint(NULL);
@@ -251,18 +249,15 @@ void GLViewer::keyPressEvent(QKeyEvent* e)
 	/* function keys */
 	else if (e->key() == Qt::Key_F1 || e->key() == Qt::Key_F2 || e->key() == Qt::Key_F3 /* || ... */) {
 		int n = 0;
-		if (e->key() == Qt::Key_F1)
-			n = 1;
+		if (e->key() == Qt::Key_F1) n = 1;
 		else if (e->key() == Qt::Key_F2)
 			n = 2;
 		else if (e->key() == Qt::Key_F3)
 			n = 3;
 		assert(n > 0);
 		int planeId = n - 1;
-		if (planeId >= renderer->numClipPlanes)
-			return;
-		if (planeId != manipulatedClipPlane)
-			startClipPlaneManipulation(planeId);
+		if (planeId >= renderer->numClipPlanes) return;
+		if (planeId != manipulatedClipPlane) startClipPlaneManipulation(planeId);
 	}
 	/* numbers */
 	else if (e->key() == Qt::Key_0 && (e->modifiers() & Qt::AltModifier)) {
@@ -270,16 +265,14 @@ void GLViewer::keyPressEvent(QKeyEvent* e)
 		displayMessage("Cleared bound planes group.");
 	} else if (e->key() == Qt::Key_1 || e->key() == Qt::Key_2 || e->key() == Qt::Key_3 /* || ... */) {
 		int n = 0;
-		if (e->key() == Qt::Key_1)
-			n = 1;
+		if (e->key() == Qt::Key_1) n = 1;
 		else if (e->key() == Qt::Key_2)
 			n = 2;
 		else if (e->key() == Qt::Key_3)
 			n = 3;
 		assert(n > 0);
 		int planeId = n - 1;
-		if (planeId >= renderer->numClipPlanes)
-			return; // no such clipping plane
+		if (planeId >= renderer->numClipPlanes) return; // no such clipping plane
 		if (e->modifiers() & Qt::AltModifier) {
 			if (boundClipPlanes.count(planeId) == 0) {
 				boundClipPlanes.insert(planeId);
@@ -296,16 +289,14 @@ void GLViewer::keyPressEvent(QKeyEvent* e)
 		}
 	} else if (e->key() == Qt::Key_7 || e->key() == Qt::Key_8 || e->key() == Qt::Key_9) {
 		int nn = -1;
-		if (e->key() == Qt::Key_7)
-			nn = 0;
+		if (e->key() == Qt::Key_7) nn = 0;
 		else if (e->key() == Qt::Key_8)
 			nn = 1;
 		else if (e->key() == Qt::Key_9)
 			nn = 2;
 		assert(nn >= 0);
 		size_t n = (size_t)nn;
-		if (e->modifiers() & Qt::AltModifier)
-			saveDisplayParameters(n);
+		if (e->modifiers() & Qt::AltModifier) saveDisplayParameters(n);
 		else
 			useDisplayParameters(n);
 	}
@@ -315,8 +306,7 @@ void GLViewer::keyPressEvent(QKeyEvent* e)
 		centerMedianQuartile();
 	} else if (e->key() == Qt::Key_C) {
 		// center around selected body
-		if (selectedName() >= 0 && (*(Omega::instance().getScene()->bodies)).exists(selectedName()))
-			setSceneCenter(manipulatedFrame()->position());
+		if (selectedName() >= 0 && (*(Omega::instance().getScene()->bodies)).exists(selectedName())) setSceneCenter(manipulatedFrame()->position());
 		// make all bodies visible
 		else
 			centerScene();
@@ -329,8 +319,7 @@ void GLViewer::keyPressEvent(QKeyEvent* e)
 		}
 	} else if (e->key() == Qt::Key_D) {
 		timeDispMask += 1;
-		if (timeDispMask > (TIME_REAL | TIME_VIRT | TIME_ITER))
-			timeDispMask = 0;
+		if (timeDispMask > (TIME_REAL | TIME_VIRT | TIME_ITER)) timeDispMask = 0;
 	} else if (e->key() == Qt::Key_G) {
 		if (e->modifiers() & Qt::ShiftModifier) {
 			drawGrid          = 0;
@@ -340,8 +329,7 @@ void GLViewer::keyPressEvent(QKeyEvent* e)
 			return;
 		} else
 			drawGrid++;
-		if (drawGrid >= 8)
-			drawGrid = 0;
+		if (drawGrid >= 8) drawGrid = 0;
 	} else if (e->key() == Qt::Key_M && selectedName() >= 0) {
 		if (!(isMoving = !isMoving)) {
 			displayMessage("Moving done.");
@@ -423,8 +411,7 @@ void GLViewer::keyPressEvent(QKeyEvent* e)
 		autoGrid = false;
 		requestedGridStep *= 10;
 	} else if (e->key() == Qt::Key_Return) {
-		if (Omega::instance().isRunning())
-			Omega::instance().pause();
+		if (Omega::instance().isRunning()) Omega::instance().pause();
 		else
 			Omega::instance().run();
 		LOG_INFO("Running...");
@@ -501,8 +488,7 @@ void GLViewer::centerMedianQuartile()
 	for (int i = 0; i < 3; i++)
 		coords[i].reserve(nBodies);
 	for (const auto& b : *scene->bodies) {
-		if (!b)
-			continue;
+		if (!b) continue;
 		for (int i = 0; i < 3; i++)
 			coords[i].push_back(b->state->pos[i]);
 	}
@@ -521,17 +507,14 @@ void GLViewer::centerMedianQuartile()
 void GLViewer::centerScene(const Real& suggestedRadius, const Vector3r& setGridOrigin, const Vector3r& suggestedCenter, int setGridDecimalPlaces)
 {
 	Scene* rb = Omega::instance().getScene().get();
-	if (!rb)
-		return;
+	if (!rb) return;
 	if (rb->isPeriodic) {
 		centerPeriodic();
 		return;
 	}
 	LOG_INFO("Select with shift, press 'm' to move.");
 	Vector3r min, max;
-	if (not(rb->bound)) {
-		rb->updateBound();
-	}
+	if (not(rb->bound)) { rb->updateBound(); }
 
 	min         = rb->bound->min;
 	max         = rb->bound->max;
@@ -544,8 +527,7 @@ void GLViewer::centerScene(const Real& suggestedRadius, const Vector3r& setGridO
 		min      = Vector3r(inf, inf, inf);
 		max      = Vector3r(-inf, -inf, -inf);
 		for (const auto& b : *rb->bodies) {
-			if (!b)
-				continue;
+			if (!b) continue;
 			max         = max.cwiseMax(b->state->pos);
 			min         = min.cwiseMin(b->state->pos);
 			Bound* aabb = dynamic_cast<Bound*>(b->bound.get());
@@ -659,8 +641,7 @@ string GLViewer::getRealTimeString()
 	boost::posix_time::time_duration t = Omega::instance().getRealTime_duration();
 	unsigned                         d = t.hours() / 24, h = t.hours() % 24, m = t.minutes(), s = t.seconds();
 	oss << "clock ";
-	if (d > 0)
-		oss << d << "days " << _W2 << h << ":" << _W2 << m << ":" << _W2 << s;
+	if (d > 0) oss << d << "days " << _W2 << h << ":" << _W2 << m << ":" << _W2 << s;
 	else if (h > 0)
 		oss << _W2 << h << ":" << _W2 << m << ":" << _W2 << s;
 	else
@@ -675,12 +656,9 @@ QDomElement GLViewer::domElement(const QString& name, QDomDocument& document) co
 {
 	QDomElement de = document.createElement("grid");
 	string      val;
-	if (drawGrid & 1)
-		val += "x";
-	if (drawGrid & 2)
-		val += "y";
-	if (drawGrid & 4)
-		val += "z";
+	if (drawGrid & 1) val += "x";
+	if (drawGrid & 2) val += "y";
+	if (drawGrid & 4) val += "z";
 	de.setAttribute("normals", val.c_str());
 	QDomElement de2 = document.createElement("timeDisplay");
 	de2.setAttribute("mask", timeDispMask);
@@ -699,15 +677,11 @@ void GLViewer::initFromDOMElement(const QDomElement& element)
 		if (child.tagName() == "gridXYZ" && child.hasAttribute("normals")) {
 			string val = child.attribute("normals").toLower().toStdString();
 			drawGrid   = 0;
-			if (val.find("x") != string::npos)
-				drawGrid += 1;
-			if (val.find("y") != string::npos)
-				drawGrid += 2;
-			if (val.find("z") != string::npos)
-				drawGrid += 4;
+			if (val.find("x") != string::npos) drawGrid += 1;
+			if (val.find("y") != string::npos) drawGrid += 2;
+			if (val.find("z") != string::npos) drawGrid += 4;
 		}
-		if (child.tagName() == "timeDisplay" && child.hasAttribute("mask"))
-			timeDispMask = atoi(child.attribute("mask").toLatin1());
+		if (child.tagName() == "timeDisplay" && child.hasAttribute("mask")) timeDispMask = atoi(child.attribute("mask").toLatin1());
 		child = child.nextSibling().toElement();
 	}
 }

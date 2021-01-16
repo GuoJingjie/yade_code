@@ -216,8 +216,7 @@ public:
 	virtual bool operator()(const Vector3r& pt, Real pad = 0.) const
 	{
 		for (int i = 0; i < 6; i++)
-			if ((pt - pts[i]).dot(n[i]) > -pad)
-				return false;
+			if ((pt - pts[i]).dot(n[i]) > -pad) return false;
 		return true;
 	}
 	virtual py::tuple aabb() const { return vvec2tuple(mn, mx); }
@@ -239,12 +238,10 @@ public:
 	}
 	bool operator()(const Vector3r& pt, Real pad = 0.) const
 	{
-		Real u = (pt.dot(c12) - c1.dot(c12)) / (ht * ht); // normalized coordinate along the c1--c2 axis
-		if ((u * ht < 0 + pad) || (u * ht > ht - pad))
-			return false; // out of cylinder along the axis
+		Real u = (pt.dot(c12) - c1.dot(c12)) / (ht * ht);            // normalized coordinate along the c1--c2 axis
+		if ((u * ht < 0 + pad) || (u * ht > ht - pad)) return false; // out of cylinder along the axis
 		Real axisDist = ((pt - c1).cross(pt - c2)).norm() / ht;
-		if (axisDist > radius - pad)
-			return false;
+		if (axisDist > radius - pad) return false;
 		return true;
 	}
 	py::tuple aabb() const
@@ -284,14 +281,12 @@ public:
 	// WARN: this is not accurate, since padding is taken as perpendicular to the axis, not the the surface
 	bool operator()(const Vector3r& pt, Real pad = 0.) const
 	{
-		Real v = (pt.dot(c12) - c1.dot(c12)) / (ht * ht); // normalized coordinate along the c1--c2 axis
-		if ((v * ht < 0 + pad) || (v * ht > ht - pad))
-			return false;                // out of cylinder along the axis
-		Real u        = (v - .5) * ht / c;   // u from the wolfram parametrization; u is 0 in the center
-		Real rHere    = a * sqrt(1 + u * u); // pad is taken perpendicular to the axis, not to the surface (inaccurate)
+		Real v = (pt.dot(c12) - c1.dot(c12)) / (ht * ht);            // normalized coordinate along the c1--c2 axis
+		if ((v * ht < 0 + pad) || (v * ht > ht - pad)) return false; // out of cylinder along the axis
+		Real u        = (v - .5) * ht / c;                           // u from the wolfram parametrization; u is 0 in the center
+		Real rHere    = a * sqrt(1 + u * u);                         // pad is taken perpendicular to the axis, not to the surface (inaccurate)
 		Real axisDist = ((pt - c1).cross(pt - c2)).norm() / ht;
-		if (axisDist > rHere - pad)
-			return false;
+		if (axisDist > rHere - pad) return false;
 		return true;
 	}
 	py::tuple aabb() const
@@ -319,8 +314,7 @@ public:
 		        + c[0];
 		Vector3r edgeEllipsoid(x, pt[1], pt[2]); // create a vector of these 3 coordinates
 		//check whether given coordinates lie inside ellipsoid or not
-		if ((pt - c).norm() <= (edgeEllipsoid - c).norm())
-			return true;
+		if ((pt - c).norm() <= (edgeEllipsoid - c).norm()) return true;
 		else
 			return false;
 	}
@@ -378,18 +372,12 @@ public:
 	{
 		Real distUp = normal.dot(pt - c) - aperture / 2, distDown = -normal.dot(pt - c) - aperture / 2, distInPlane = -inside.dot(pt - c);
 		// LOG_DEBUG("pt="<<pt<<", distUp="<<distUp<<", distDown="<<distDown<<", distInPlane="<<distInPlane);
-		if (distInPlane >= pad)
-			return true;
-		if (distUp >= pad)
-			return true;
-		if (distDown >= pad)
-			return true;
-		if (distInPlane < 0)
-			return false;
-		if (distUp > 0)
-			return sqrt(pow(distInPlane, 2) + pow(distUp, 2)) >= pad;
-		if (distDown > 0)
-			return sqrt(pow(distInPlane, 2) + pow(distUp, 2)) >= pad;
+		if (distInPlane >= pad) return true;
+		if (distUp >= pad) return true;
+		if (distDown >= pad) return true;
+		if (distInPlane < 0) return false;
+		if (distUp > 0) return sqrt(pow(distInPlane, 2) + pow(distUp, 2)) >= pad;
+		if (distDown > 0) return sqrt(pow(distInPlane, 2) + pow(distUp, 2)) >= pad;
 		// between both notch planes, closer to the edge than pad (distInPlane<pad)
 		return false;
 	}
@@ -443,14 +431,11 @@ public:
 	        , noPad(_noPad)
 	        , noPadWarned(false)
 	{
-		if (!pygts_surface_check(_surf.ptr()))
-			throw std::invalid_argument("Ctor must receive a gts.Surface() instance.");
+		if (!pygts_surface_check(_surf.ptr())) throw std::invalid_argument("Ctor must receive a gts.Surface() instance.");
 		surf = PYGTS_SURFACE_AS_GTS_SURFACE(PYGTS_SURFACE(_surf.ptr()));
-		if (!gts_surface_is_closed(surf))
-			throw std::invalid_argument("Surface is not closed.");
+		if (!gts_surface_is_closed(surf)) throw std::invalid_argument("Surface is not closed.");
 		is_open = gts_surface_volume(surf) < 0.;
-		if ((tree = gts_bb_tree_surface(surf)) == NULL)
-			throw std::runtime_error("Could not create GTree.");
+		if ((tree = gts_bb_tree_surface(surf)) == NULL) throw std::runtime_error("Could not create GTree.");
 	}
 	~inGtsSurface() { g_node_destroy(tree); }
 	py::tuple aabb() const
@@ -477,8 +462,7 @@ public:
 	bool operator()(const Vector3r& pt, Real pad = 0.) const
 	{
 		if (noPad) {
-			if (pad != 0. && noPadWarned)
-				LOG_WARN("inGtsSurface constructed with noPad; requested non-zero pad set to zero.");
+			if (pad != 0. && noPadWarned) LOG_WARN("inGtsSurface constructed with noPad; requested non-zero pad set to zero.");
 			return ptCheck(pt);
 		}
 		return ptCheck(pt) && ptCheck(pt - Vector3r(pad, 0, 0)) && ptCheck(pt + Vector3r(pad, 0, 0)) && ptCheck(pt - Vector3r(0, pad, 0))

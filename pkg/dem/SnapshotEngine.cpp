@@ -9,13 +9,11 @@ CREATE_LOGGER(SnapshotEngine);
 
 void SnapshotEngine::action()
 {
-	if (!OpenGLManager::self)
-		throw logic_error("No OpenGLManager instance?!");
+	if (!OpenGLManager::self) throw logic_error("No OpenGLManager instance?!");
 	if (OpenGLManager::self->views.size() == 0) {
 		int viewNo = OpenGLManager::self->waitForNewView(static_cast<double>(deadTimeout));
 		if (viewNo < 0) {
-			if (!ignoreErrors)
-				throw runtime_error("SnapshotEngine: Timeout waiting for new 3d view.");
+			if (!ignoreErrors) throw runtime_error("SnapshotEngine: Timeout waiting for new 3d view.");
 			else {
 				LOG_WARN("Making myself Engine::dead, as I can not live without a 3d view (timeout).");
 				dead = true;
@@ -37,8 +35,7 @@ void SnapshotEngine::action()
 	while (!glv->nextFrameSnapshotFilename.empty()) {
 		nanosleep(&t1, &t2);
 		waiting++;
-		if (((waiting) % 1000) == 0)
-			LOG_WARN("Already waiting " << waiting / 100 << "s for snapshot to be saved. Something went wrong?");
+		if (((waiting) % 1000) == 0) LOG_WARN("Already waiting " << waiting / 100 << "s for snapshot to be saved. Something went wrong?");
 		if (waiting / 100. > deadTimeout) {
 			if (ignoreErrors) {
 				LOG_WARN("Timeout waiting for snapshot to be saved, making byself Engine::dead");

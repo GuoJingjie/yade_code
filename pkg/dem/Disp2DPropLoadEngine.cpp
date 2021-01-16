@@ -33,8 +33,7 @@ void Disp2DPropLoadEngine::postLoad(Disp2DPropLoadEngine&)
 
 void Disp2DPropLoadEngine::action()
 {
-	if (LOG)
-		cerr << "debut applyCondi !!" << endl;
+	if (LOG) cerr << "debut applyCondi !!" << endl;
 	leftbox  = Body::byId(id_boxleft);
 	rightbox = Body::byId(id_boxright);
 	frontbox = Body::byId(id_boxfront);
@@ -62,8 +61,7 @@ void Disp2DPropLoadEngine::action()
 				TotInt += 1;
 				const shared_ptr<Body>& b1 = Body::byId((*ii)->getId1());
 				const shared_ptr<Body>& b2 = Body::byId((*ii)->getId2());
-				if ((b1->isDynamic()) && (b2->isDynamic()))
-					OnlySsInt += 1;
+				if ((b1->isDynamic()) && (b2->isDynamic())) OnlySsInt += 1;
 			}
 		}
 
@@ -120,8 +118,7 @@ void Disp2DPropLoadEngine::letDisturb()
 	}
 
 	Quaternionr qcorr(AngleAxisr(dalpha, Vector3r::UnitZ()));
-	if (LOG)
-		cout << "Quaternion associe a la rotation incrementale : " << qcorr.w() << " " << qcorr.x() << " " << qcorr.y() << " " << qcorr.z() << endl;
+	if (LOG) cout << "Quaternion associe a la rotation incrementale : " << qcorr.w() << " " << qcorr.x() << " " << qcorr.y() << " " << qcorr.z() << endl;
 
 	// On applique la rotation en changeant l'orientation des plaques, leurs vang et en affectant donc alpha
 	leftbox->state->ori    = qcorr * leftbox->state->ori;
@@ -185,8 +182,7 @@ void Disp2DPropLoadEngine::saveData()
 			TotInt += 1;
 			const shared_ptr<Body>& b1 = Body::byId((*ii)->getId1());
 			const shared_ptr<Body>& b2 = Body::byId((*ii)->getId2());
-			if ((b1->isDynamic()) && (b2->isDynamic()))
-				OnlySsInt += 1;
+			if ((b1->isDynamic()) && (b2->isDynamic())) OnlySsInt += 1;
 		}
 	}
 

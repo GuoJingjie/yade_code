@@ -16,9 +16,7 @@ YADE_PLUGIN((SpatialQuickSortCollider));
 
 void SpatialQuickSortCollider::action()
 {
-	if (scene->isPeriodic) {
-		throw runtime_error("SpatialQuickSortCollider doesn't handle periodic boundaries.");
-	}
+	if (scene->isPeriodic) { throw runtime_error("SpatialQuickSortCollider doesn't handle periodic boundaries."); }
 
 	// update bounds
 	boundDispatcher->scene = scene;
@@ -41,8 +39,7 @@ void SpatialQuickSortCollider::action()
 	Vector3r min, max;
 	int      n = 0;
 	for (const auto& b : *bodies) {
-		if (!b->bound)
-			continue;
+		if (!b->bound) continue;
 		min          = b->bound->min;
 		max          = b->bound->max;
 		rank[n]->id  = b->getId();
@@ -65,8 +62,7 @@ void SpatialQuickSortCollider::action()
 		max = rank[i]->max;
 		j   = i;
 		while (++j < nbElements) {
-			if (rank[j]->min[0] > max[0])
-				break; // skip all others, because it's sorted along X
+			if (rank[j]->min[0] > max[0]) break; // skip all others, because it's sorted along X
 			id2 = rank[j]->id;
 #ifdef YADE_MPI
 			if (not Collider::mayCollide(Body::byId(id, scene).get(), Body::byId(id2, scene).get(), scene->subdomain))

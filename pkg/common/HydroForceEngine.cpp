@@ -27,15 +27,12 @@ void HydroForceEngine::action()
 {
 	/* Application of hydrodynamical forces */
 	Vector3r gravityBuoyancy = gravity;
-	if (steadyFlow == true)
-		gravityBuoyancy[0] = 0.; // If the fluid flow is steady, no streamwise buoyancy contribution from gravity
+	if (steadyFlow == true) gravityBuoyancy[0] = 0.; // If the fluid flow is steady, no streamwise buoyancy contribution from gravity
 	FOREACH(Body::id_t id, ids)
 	{
 		Body* b = Body::byId(id, scene).get();
-		if (!b)
-			continue;
-		if (!(scene->bodies->exists(id)))
-			continue;
+		if (!b) continue;
+		if (!(scene->bodies->exists(id))) continue;
 		const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
 		if (sphere) {
 			Vector3r posSphere = b->state->pos;                                    //position vector of the sphere
@@ -64,9 +61,7 @@ void HydroForceEngine::action()
 				}
 				//buoyant weight force calculation
 				Vector3r buoyantForce = -4.0 / 3.0 * Mathr::PI * pow(sphere->radius, 3.0) * densFluid * gravityBuoyancy;
-				if (convAccOption == true) {
-					convAccForce[0] = -convAcc[p];
-				}
+				if (convAccOption == true) { convAccForce[0] = -convAcc[p]; }
 				//add the hydro forces to the particle
 				scene->forces.addForce(id, dragForce + liftForce + buoyantForce + convAccForce);
 			}
@@ -107,8 +102,7 @@ void HydroForceEngine::averageProfile()
 	//Loop over the particles
 	for (const auto& b : *Omega::instance().getScene()->bodies) {
 		shared_ptr<Sphere> s = YADE_PTR_DYN_CAST<Sphere>(b->shape);
-		if (!s)
-			continue;
+		if (!s) continue;
 		const Real zPos = b->state->pos[2] - zRef;
 		int        Np   = int(math::floor(
                         zPos
@@ -136,10 +130,8 @@ void HydroForceEngine::averageProfile()
 			        < nMax)) { //average under zRef does not interest us, avoid also negative values not compatible with the evaluation of volPart
 				zInf = (numLayer - Np - 1) * deltaZ + deltaCenter;
 				zSup = (numLayer - Np) * deltaZ + deltaCenter;
-				if (zInf < -s->radius)
-					zInf = -s->radius;
-				if (zSup > s->radius)
-					zSup = s->radius;
+				if (zInf < -s->radius) zInf = -s->radius;
+				if (zSup > s->radius) zSup = s->radius;
 
 				//Analytical formulation of the volume of a slice of sphere
 				volPart = Mathr::PI * pow(s->radius, 2) * (zSup - zInf + (pow(zInf, 3) - pow(zSup, 3)) / (3 * pow(s->radius, 2)));
@@ -259,8 +251,7 @@ void HydroForceEngine::averageProfilePP()
 	//Loop over the particles
 	for (const auto& b : *Omega::instance().getScene()->bodies) {
 		shared_ptr<Sphere> s = YADE_PTR_DYN_CAST<Sphere>(b->shape);
-		if (!s)
-			continue;
+		if (!s) continue;
 		const Real zPos = b->state->pos[2] - zRef;
 		int        Np   = int(math::floor(
                         zPos
@@ -344,10 +335,8 @@ void HydroForceEngine::turbulentFluctuation()
 	FOREACH(Body::id_t id, ids)
 	{
 		Body* b = Body::byId(id, scene).get();
-		if (!b)
-			continue;
-		if (!(scene->bodies->exists(id)))
-			continue;
+		if (!b) continue;
+		if (!(scene->bodies->exists(id))) continue;
 		const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
 		if (sphere) {
 			Vector3r posSphere = b->state->pos;                                    //position vector of the sphere
@@ -402,17 +391,14 @@ void HydroForceEngine::turbulentFluctuationBIS()
 		if (fluctTime[idPart] <= 0) {
 			fluctTime[idPart] = 10 * dtFluct; //Initialisation of the application time
 			Body* b           = Body::byId(idPart, scene).get();
-			if (!b)
-				continue;
-			if (!(scene->bodies->exists(idPart)))
-				continue;
+			if (!b) continue;
+			if (!(scene->bodies->exists(idPart))) continue;
 			const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
 			Real          uStar  = 0.0;
 			if (sphere) {
 				Vector3r posSphere = b->state->pos;                                    //position vector of the sphere
 				int      p         = int(math::floor((posSphere[2] - zRef) / deltaZ)); //cell number in which the particle is
-				if (ReynoldStresses[p] > 0.0)
-					uStar = sqrt(ReynoldStresses[p] / densFluid);
+				if (ReynoldStresses[p] > 0.0) uStar = sqrt(ReynoldStresses[p] / densFluid);
 				// Remove the particles outside of the flow and inside the granular bed, they are not submitted to turbulent fluctuations.
 				if ((p < nCell) && (posSphere[2] - zRef > bedElevation)) {
 					rand1 = rnd();
@@ -425,8 +411,7 @@ void HydroForceEngine::turbulentFluctuationBIS()
 					// Limit the value to avoid the application of fluctuations in the viscous sublayer
 					const Real zPos = max(b->state->pos[2] - zRef - bedElevation, 11.6 * viscoDyn / densFluid / uStar);
 					// Time of application of the fluctuation as a function of depth from kepsilon model
-					if (uStar > 0.0)
-						fluctTime[idPart] = min(0.33 * 0.41 * zPos / uStar, 10.);
+					if (uStar > 0.0) fluctTime[idPart] = min(0.33 * 0.41 * zPos / uStar, 10.);
 				} else {
 					vFluctZ[idPart]   = 0.0;
 					vFluctY[idPart]   = 0.0;
@@ -475,10 +460,8 @@ void HydroForceEngine::turbulentFluctuationFluidizedBed()
 	FOREACH(Body::id_t id, ids)
 	{
 		Body* b = Body::byId(id, scene).get();
-		if (!b)
-			continue;
-		if (!(scene->bodies->exists(id)))
-			continue;
+		if (!b) continue;
+		if (!(scene->bodies->exists(id))) continue;
 		const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
 		if (sphere) {
 			Vector3r posSphere = b->state->pos;                                    //position vector of the sphere
@@ -673,8 +656,7 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 			ustar = sqrt(fabs(gravity[0]) * sig[nCell - 1]);
 			if (viscousSubLayer == 1) {
 				for (j = 1; j < nCell; j++)
-					if (sig[j] * ustar / viscof < 11.3)
-						viscoft[j] = 0.;
+					if (sig[j] * ustar / viscof < 11.3) viscoft[j] = 0.;
 			}
 		}
 
@@ -699,8 +681,7 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 					delta = fabs(ff - ffold) / ffold;
 					ffold = ff;
 				}
-				if (q == maxiter)
-					ff = 0.;
+				if (q == maxiter) ff = 0.;
 				wallFriction[j] = fluidFrictionCoef * ff;
 			}
 		}

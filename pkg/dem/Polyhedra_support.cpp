@@ -135,8 +135,7 @@ bool Is_inside_Polyhedron(Polyhedron P, CGALpoint inside)
 {
 	Polyhedron::Plane_iterator pi;
 	for (pi = P.planes_begin(); pi != P.planes_end(); ++pi) {
-		if (!pi->has_on_negative_side(inside))
-			return false;
+		if (!pi->has_on_negative_side(inside)) return false;
 	}
 	return true;
 }
@@ -148,8 +147,7 @@ bool Is_inside_Polyhedron(Polyhedron P, CGALpoint inside, Real lim)
 	Polyhedron::Plane_iterator pi;
 	lim = pow(lim, 2);
 	for (pi = P.planes_begin(); pi != P.planes_end(); ++pi) {
-		if (Oriented_squared_distance(*pi, inside) > -lim)
-			return false;
+		if (Oriented_squared_distance(*pi, inside) > -lim) return false;
 	}
 	return true;
 }
@@ -172,8 +170,7 @@ bool do_intersect(Polyhedron A, Polyhedron B, std::vector<int>& sep_plane)
 	switch (sep_plane[0]) {
 		case 1: //separation plane was previously determined as sep_plane[2]-th plane of A polyhedron
 		{
-			if (unlikely((unsigned)sep_plane[2] >= A.size_of_facets()))
-				break;
+			if (unlikely((unsigned)sep_plane[2] >= A.size_of_facets())) break;
 			Polyhedron::Facet_iterator fIter = A.facets_begin();
 			for (int i = 0; i < sep_plane[2]; i++)
 				++fIter;
@@ -184,13 +181,11 @@ bool do_intersect(Polyhedron A, Polyhedron B, std::vector<int>& sep_plane)
 					break;
 				};
 			}
-			if (found)
-				return false;
+			if (found) return false;
 		} break;
 		case 2: //separation plane was previously determined as sep_plane[2]-th plane of B polyhedron
 		{
-			if (unlikely((unsigned)sep_plane[2] >= B.size_of_facets()))
-				break;
+			if (unlikely((unsigned)sep_plane[2] >= B.size_of_facets())) break;
 			Polyhedron::Facet_iterator fIter = B.facets_begin();
 			for (int i = 0; i < sep_plane[2]; i++)
 				++fIter;
@@ -201,15 +196,12 @@ bool do_intersect(Polyhedron A, Polyhedron B, std::vector<int>& sep_plane)
 					break;
 				};
 			}
-			if (found)
-				return false;
+			if (found) return false;
 		} break;
 		case 3: //separation plane was previously given by sep_plane[1]-th and sep_plane[2]-th edge of A & B polyhedrons
 		{
-			if (unlikely((unsigned)sep_plane[1] >= A.size_of_halfedges() / 2))
-				break;
-			if (unlikely((unsigned)sep_plane[2] >= B.size_of_halfedges() / 2))
-				break;
+			if (unlikely((unsigned)sep_plane[1] >= A.size_of_halfedges() / 2)) break;
+			if (unlikely((unsigned)sep_plane[2] >= B.size_of_halfedges() / 2)) break;
 			Polyhedron::Edge_iterator eIter1 = A.edges_begin();
 			Polyhedron::Edge_iterator eIter2 = B.edges_begin();
 			for (int i = 0; i < sep_plane[1]; i++)
@@ -221,8 +213,7 @@ bool do_intersect(Polyhedron A, Polyhedron B, std::vector<int>& sep_plane)
 			        CGAL::cross_product(
 			                (eIter1->vertex()->point() - eIter1->opposite()->vertex()->point()),
 			                (eIter2->vertex()->point() - eIter2->opposite()->vertex()->point())));
-			if (!X.has_on_positive_side(B.vertices_begin()->point()))
-				X = X.opposite();
+			if (!X.has_on_positive_side(B.vertices_begin()->point())) X = X.opposite();
 
 			Real lim = pow(DISTANCE_LIMIT, 2);
 			for (Polyhedron::Vertex_iterator vIter = A.vertices_begin(); vIter != A.vertices_end(); ++vIter) {
@@ -237,8 +228,7 @@ bool do_intersect(Polyhedron A, Polyhedron B, std::vector<int>& sep_plane)
 					break;
 				};
 			}
-			if (found)
-				return false;
+			if (found) return false;
 		} break;
 	}
 
@@ -288,8 +278,7 @@ bool do_intersect(Polyhedron A, Polyhedron B, std::vector<int>& sep_plane)
 		for (Polyhedron::Edge_iterator eIter2 = B.edges_begin(); eIter2 != B.edges_end(); ++eIter2, j++) {
 			found = true;
 			X     = Plane(eIter1->vertex()->point(), CGAL::cross_product(vA, (eIter2->vertex()->point() - eIter2->opposite()->vertex()->point())));
-			if (!X.has_on_positive_side(B.vertices_begin()->point()))
-				X = X.opposite();
+			if (!X.has_on_positive_side(B.vertices_begin()->point())) X = X.opposite();
 			for (Polyhedron::Vertex_iterator vIter = A.vertices_begin(); vIter != A.vertices_end(); ++vIter) {
 				if (Oriented_squared_distance(X, vIter->point()) > lim) {
 					found = false;
@@ -336,8 +325,7 @@ Polyhedron Simplify(Polyhedron P, Real limit)
 		elimination = false;
 		for (Polyhedron::Edge_iterator hei = P.edges_begin(); hei != P.edges_end(); ++hei) {
 			if (PlaneDifference(hei->facet()->plane(), hei->opposite()->facet()->plane()) < limit) {
-				if (hei->vertex()->vertex_degree() < 3)
-					hei = P.erase_center_vertex(hei);
+				if (hei->vertex()->vertex_degree() < 3) hei = P.erase_center_vertex(hei);
 				else if (hei->opposite()->vertex()->vertex_degree() < 3)
 					hei = P.erase_center_vertex(hei->opposite());
 				else
@@ -347,8 +335,7 @@ Polyhedron Simplify(Polyhedron P, Real limit)
 			}
 		}
 	}
-	if (P.size_of_facets() < 4)
-		P.clear();
+	if (P.size_of_facets() < 4) P.clear();
 	return P;
 }
 
@@ -455,11 +442,9 @@ Polyhedron ConvexHull(vector<CGALpoint>& planes)
 {
 	Polyhedron Int;
 	for (const auto p : planes) {
-		if (math::isnan(p.x()) || math::isnan(p.y()) || math::isnan(p.z()))
-			return Int;
+		if (math::isnan(p.x()) || math::isnan(p.y()) || math::isnan(p.z())) return Int;
 	}
-	if (planes.size() > 3)
-		CGAL::convex_hull_3(planes.begin(), planes.end(), Int);
+	if (planes.size() > 3) CGAL::convex_hull_3(planes.begin(), planes.end(), Int);
 	return Int;
 }
 
@@ -492,16 +477,14 @@ Vector3r FindNormal(Polyhedron Int, Polyhedron PA, Polyhedron PB)
 				} //already satisfactory
 			}
 		}
-		if (minA < FIND_NORMAL_LIMIT)
-			continue;
+		if (minA < FIND_NORMAL_LIMIT) continue;
 		for (pj = PB.planes_begin(); pj != PB.planes_end(); ++pj) {
 			k = PlaneDifference(*pi, *pj);
 
 			if (k < minB) {
 				minB     = k;
 				minsB[i] = minB;
-				if (minB < FIND_NORMAL_LIMIT || minB < minA)
-					break; //already satisfactory
+				if (minB < FIND_NORMAL_LIMIT || minB < minA) break; //already satisfactory
 			}
 		}
 		from_A[i] = ((minA < minB) ? true : false);
@@ -551,8 +534,7 @@ vector<Plane> MergePlanes(vector<Plane> planes1, vector<Plane> planes2, Real lim
 				break;
 			}
 		}
-		if (add)
-			P.push_back(*i);
+		if (add) P.push_back(*i);
 	}
 	return P;
 }
@@ -587,14 +569,12 @@ Polyhedron Polyhedron_Plane_intersection(Polyhedron A, Plane B, CGALpoint centro
 						LOG_WARN("Error in line-plane intersection");
 					}
 				}
-				if (Is_inside_Polyhedron(A, inside, DISTANCE_LIMIT) && Oriented_squared_distance(B, inside) <= -lim)
-					intersection_found = true;
+				if (Is_inside_Polyhedron(A, inside, DISTANCE_LIMIT) && Oriented_squared_distance(B, inside) <= -lim) intersection_found = true;
 			}
 		}
 	}
 	//no intersectiong point => no intersection polyhedron
-	if (!intersection_found)
-		return Intersection;
+	if (!intersection_found) return Intersection;
 
 	//set the intersection point to origin
 	Transformation transl_back(CGAL::TRANSLATION, inside - CGALpoint(0., 0., 0.));
@@ -619,8 +599,7 @@ Polyhedron Polyhedron_Plane_intersection(Polyhedron A, Plane B, CGALpoint centro
 
 	//compute convex hull of it
 	Intersection = ConvexHull(dual_planes);
-	if (Intersection.empty())
-		return Intersection;
+	if (Intersection.empty()) return Intersection;
 
 	//simplify
 	std::transform(Intersection.facets_begin(), Intersection.facets_end(), Intersection.planes_begin(), Plane_equation());
@@ -634,14 +613,12 @@ Polyhedron Polyhedron_Plane_intersection(Polyhedron A, Plane B, CGALpoint centro
 
 	//compute convex hull of it
 	Intersection = ConvexHull(dual_planes);
-	if (Intersection.empty())
-		return Intersection;
+	if (Intersection.empty()) return Intersection;
 
 	//return to original position
 	std::transform(Intersection.points_begin(), Intersection.points_end(), Intersection.points_begin(), transl_back);
 
-	if (Intersection.size_of_facets() < 4)
-		Intersection.clear();
+	if (Intersection.size_of_facets() < 4) Intersection.clear();
 	return Intersection;
 }
 
@@ -675,8 +652,7 @@ Polyhedron Polyhedron_Polyhedron_intersection(Polyhedron A, Polyhedron B, CGALpo
 		intersection_found = true;
 		inside             = X;
 	} else {
-		if (!do_intersect(A, B, sep_plane))
-			return Intersection;
+		if (!do_intersect(A, B, sep_plane)) return Intersection;
 		//some intersection point
 		Real       dist_S, dist_T;
 		Real       lim2 = pow(DISTANCE_LIMIT, 2);
@@ -700,8 +676,7 @@ Polyhedron Polyhedron_Polyhedron_intersection(Polyhedron A, Polyhedron B, CGALpo
 			for (Polyhedron::Facet_iterator fIter = B.facets_begin(); fIter != B.facets_end() && !intersection_found; fIter++) {
 				dist_S = Oriented_squared_distance(fIter->plane(), eIter->vertex()->point());
 				dist_T = Oriented_squared_distance(fIter->plane(), eIter->opposite()->vertex()->point());
-				if (dist_S * dist_T >= 0 || math::abs(dist_S) < lim2 || math::abs(dist_T) < lim2)
-					continue;
+				if (dist_S * dist_T >= 0 || math::abs(dist_S) < lim2 || math::abs(dist_T) < lim2) continue;
 				inside = eIter->vertex()->point()
 				        + (eIter->opposite()->vertex()->point() - eIter->vertex()->point()) * sqrt(math::abs(dist_S))
 				                / (sqrt(math::abs(dist_S)) + sqrt(math::abs(dist_T)));
@@ -721,8 +696,7 @@ Polyhedron Polyhedron_Polyhedron_intersection(Polyhedron A, Polyhedron B, CGALpo
 	}
 
 	//Polyhedrons do not intersect
-	if (!intersection_found)
-		return Intersection;
+	if (!intersection_found) return Intersection;
 
 	//set the intersection point to origin
 	Transformation transl_back(CGAL::TRANSLATION, inside - CGALpoint(0., 0., 0.));
@@ -747,8 +721,7 @@ Polyhedron Polyhedron_Polyhedron_intersection(Polyhedron A, Polyhedron B, CGALpo
 
 	//compute convex hull of it
 	Intersection = ConvexHull(dual_planes);
-	if (Intersection.empty())
-		return Intersection;
+	if (Intersection.empty()) return Intersection;
 
 	//simplify
 	std::transform(Intersection.facets_begin(), Intersection.facets_end(), Intersection.planes_begin(), Plane_equation());
@@ -770,13 +743,11 @@ Polyhedron Polyhedron_Polyhedron_intersection(Polyhedron A, Polyhedron B, CGALpo
 	}
 	//compute convex hull of it
 	Intersection = ConvexHull(dual_planes);
-	if (Intersection.empty())
-		return Intersection;
+	if (Intersection.empty()) return Intersection;
 	//return to original position
 	std::transform(Intersection.points_begin(), Intersection.points_end(), Intersection.points_begin(), transl_back);
 
-	if (Intersection.size_of_facets() < 4)
-		Intersection.clear();
+	if (Intersection.size_of_facets() < 4) Intersection.clear();
 	return Intersection;
 }
 

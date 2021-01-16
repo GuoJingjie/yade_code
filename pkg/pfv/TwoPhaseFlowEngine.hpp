@@ -171,8 +171,7 @@ public:
 		tes = &t;
 		LC  = NULL;
 		ex  = NULL;
-		if (not tes)
-			LOG_WARN("invalid initialization");
+		if (not tes) LOG_WARN("invalid initialization");
 	}
 	// 		PhaseCluster () {tes=NULL; LOG_WARN("avoid default constructor, 'tes' not initialized");}
 	Tesselation*       tes; //point back to the full data structure
@@ -189,10 +188,8 @@ public:
 	void solvePressure();
 	void resetSolver()
 	{
-		if (LC)
-			cholmod_l_free_factor(&LC, &comC);
-		if (ex)
-			cholmod_l_free_dense(&ex, &comC);
+		if (LC) cholmod_l_free_factor(&LC, &comC);
+		if (ex) cholmod_l_free_dense(&ex, &comC);
 		factorized = false;
 	}
 #endif
@@ -216,8 +213,7 @@ public:
 		// 			for (auto i=otherCluster.interfaces.begin();i!=otherCluster.interfaces.end();i++) i->first.firstlabel=label;
 		pores.insert(pores.end(), otherCluster.pores.begin(), otherCluster.pores.end());
 		for (auto itf = otherCluster.interfaces.begin(); itf != otherCluster.interfaces.end(); itf++)
-			if (itf->first.second != start->info().id)
-				interfaces.push_back(*itf);
+			if (itf->first.second != start->info().id) interfaces.push_back(*itf);
 		otherCluster.reset();
 	}
 
@@ -404,8 +400,7 @@ public:
 			for (FiniteVerticesIterator v = solver->tesselation().Triangulation().finite_vertices_begin();
 			     v != solver->tesselation().Triangulation().finite_vertices_end();
 			     ++v) {
-				if (permanently)
-					scene->forces.setPermForce(v->info().id(), makeVector3r(v->info().forces));
+				if (permanently) scene->forces.setPermForce(v->info().id(), makeVector3r(v->info().forces));
 				else
 					scene->forces.addForce(v->info().id(), makeVector3r(v->info().forces));
 			}
@@ -554,8 +549,7 @@ public:
 		}
 		for (unsigned int i = 0; i < 4; i++) {
 			const CellHandle& neighbourCell = solver->tesselation().cellHandles[id]->neighbor(i);
-			if (withInfCell == true)
-				ids.append(neighbourCell->info().id);
+			if (withInfCell == true) ids.append(neighbourCell->info().id);
 			else if (!Tri.is_infinite(neighbourCell))
 				ids.append(neighbourCell->info().id);
 		}
@@ -582,8 +576,7 @@ public:
 	void computeOnePhaseFlow()
 	{
 		scene = Omega::instance().getScene().get();
-		if (!solver)
-			cerr << "no solver!" << endl;
+		if (!solver) cerr << "no solver!" << endl;
 		solver->gaussSeidel(scene->dt);
 		initSolver(*solver);
 	}

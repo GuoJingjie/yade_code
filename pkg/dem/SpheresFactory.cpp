@@ -32,11 +32,9 @@ void SpheresFactory::action()
 		FOREACH(const shared_ptr<Engine>& e, scene->engines)
 		{
 			collider = YADE_PTR_DYN_CAST<Collider>(e);
-			if (collider)
-				break;
+			if (collider) break;
 		}
-		if (!collider)
-			throw runtime_error("SpheresFactory: No Collider instance found in engines (needed for collision detection).");
+		if (!collider) throw runtime_error("SpheresFactory: No Collider instance found in engines (needed for collision detection).");
 	}
 
 	goalMass += massFlowRate * scene->dt; // totalMass that we want to attain in the current step
@@ -162,8 +160,7 @@ void SpheresFactory::action()
 				}
 			}
 
-			if (collidingParticles.size() == 0 and not(collideWithNewBodies))
-				break;
+			if (collidingParticles.size() == 0 and not(collideWithNewBodies)) break;
 #ifdef YADE_DEBUG
 			FOREACH(const Body::id_t& id, collidingParticles) LOG_TRACE(scene->iter << ":" << attempt << ": collision with #" << id);
 #endif
@@ -191,9 +188,7 @@ void SpheresFactory::action()
 		shared_ptr<State>           state(material->newAssocState());
 		sphere->radius = r;
 		state->pos = state->refPos = c;
-		if (color[0] >= 0 and color[1] >= 0 and color[2] >= 0) {
-			sphere->color = color;
-		}
+		if (color[0] >= 0 and color[1] >= 0 and color[2] >= 0) { sphere->color = color; }
 
 		state->vel     = initVel;
 		Real vol       = (4 / 3.) * Mathr::PI * pow(r, 3);
@@ -204,9 +199,7 @@ void SpheresFactory::action()
 		b->shape    = sphere;
 		b->state    = state;
 		b->material = material;
-		if (mask > 0) {
-			b->groupMask = mask;
-		}
+		if (mask > 0) { b->groupMask = mask; }
 		// insert particle in the simulation
 		scene->bodies->insert(b);
 		ids.push_back(b->getId());

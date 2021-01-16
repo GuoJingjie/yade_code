@@ -58,9 +58,7 @@ bool TriaxialTest::generate(string& message)
 		message = "Biaxial test can be generated only if Z size is more than 8 times smaller than X size";
 		return false;
 	}
-	if (facetWalls && wallWalls) {
-		LOG_WARN("Turning TriaxialTest::facetWalls off, since wallWalls were selected as well.");
-	}
+	if (facetWalls && wallWalls) { LOG_WARN("Turning TriaxialTest::facetWalls off, since wallWalls were selected as well."); }
 
 	shared_ptr<Body> body;
 
@@ -73,8 +71,7 @@ bool TriaxialTest::generate(string& message)
 		Vector3r dimensions = upperCorner - lowerCorner;
 		Real     volume     = dimensions.x() * dimensions.y() * dimensions.z();
 		long     num;
-		if (radiusMean <= 0)
-			num = sphere_pack.makeCloud(lowerCorner, upperCorner, -1, radiusStdDev, numberOfGrains, false /*periodic?*/, porosity);
+		if (radiusMean <= 0) num = sphere_pack.makeCloud(lowerCorner, upperCorner, -1, radiusStdDev, numberOfGrains, false /*periodic?*/, porosity);
 		else {
 			bool fixedDims[3];
 			fixedDims[0] = fixedBoxDims.find('x') != string::npos;
@@ -97,8 +94,7 @@ bool TriaxialTest::generate(string& message)
 		        + boost::lexical_cast<string>(upperCorner[0] - lowerCorner[0]) + "," + boost::lexical_cast<string>(upperCorner[1] - lowerCorner[1])
 		        + "," + boost::lexical_cast<string>(upperCorner[2] - lowerCorner[2]) + ").";
 	} else {
-		if (radiusMean > 0)
-			LOG_WARN("radiusMean ignored, since importFilename specified.");
+		if (radiusMean > 0) LOG_WARN("radiusMean ignored, since importFilename specified.");
 		sphere_pack.fromFile(importFilename);
 		sphere_pack.aabb(lowerCorner, upperCorner);
 	}
@@ -107,10 +103,8 @@ bool TriaxialTest::generate(string& message)
 	positionRootBody(scene);
 	createActors(scene);
 
-	if (thickness < 0)
-		thickness = radiusMean;
-	if (facetWalls || wallWalls)
-		thickness = 0;
+	if (thickness < 0) thickness = radiusMean;
+	if (facetWalls || wallWalls) thickness = 0;
 	if (!facetWalls && !wallWalls) {
 		// bottom box
 		Vector3r center   = Vector3r((lowerCorner[0] + upperCorner[0]) / 2, lowerCorner[1] - thickness / 2.0, (lowerCorner[2] + upperCorner[2]) / 2);
@@ -173,9 +167,7 @@ bool TriaxialTest::generate(string& message)
 		const SpherePack::Sph& sp(sphere_pack.pack[i]);
 		LOG_DEBUG("sphere (" << sp.c << " " << sp.r << ")");
 		createSphere(body, sp.c, sp.r, false, true);
-		if (biaxial2dTest) {
-			body->state->blockedDOFs = State::DOF_Z;
-		}
+		if (biaxial2dTest) { body->state->blockedDOFs = State::DOF_Z; }
 		scene->bodies->insert(body);
 	}
 	if (defaultDt < 0) {
@@ -332,8 +324,7 @@ void TriaxialTest::createActors(shared_ptr<Scene>& scene)
 	scene->engines.push_back(ids);
 	scene->engines.push_back(globalStiffnessTimeStepper);
 	scene->engines.push_back(triaxialcompressionEngine);
-	if (recordIntervalIter > 0 && !noFiles)
-		scene->engines.push_back(triaxialStateRecorder);
+	if (recordIntervalIter > 0 && !noFiles) scene->engines.push_back(triaxialStateRecorder);
 
 	shared_ptr<NewtonIntegrator> newton(new NewtonIntegrator);
 	newton->damping = dampingForce;

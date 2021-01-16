@@ -94,51 +94,31 @@ void MarchingCube::polygonize(const vector<vector<vector<Real>>>& scalarField, i
 
 	/* compute index in edgeArray that tells how the surface intersect the cell */
 	int index = 0;
-	if (cellValues[0] > isoValue)
-		index |= 1;
-	if (cellValues[1] > isoValue)
-		index |= 2;
-	if (cellValues[2] > isoValue)
-		index |= 4;
-	if (cellValues[3] > isoValue)
-		index |= 8;
-	if (cellValues[4] > isoValue)
-		index |= 16;
-	if (cellValues[5] > isoValue)
-		index |= 32;
-	if (cellValues[6] > isoValue)
-		index |= 64;
-	if (cellValues[7] > isoValue)
-		index |= 128;
+	if (cellValues[0] > isoValue) index |= 1;
+	if (cellValues[1] > isoValue) index |= 2;
+	if (cellValues[2] > isoValue) index |= 4;
+	if (cellValues[3] > isoValue) index |= 8;
+	if (cellValues[4] > isoValue) index |= 16;
+	if (cellValues[5] > isoValue) index |= 32;
+	if (cellValues[6] > isoValue) index |= 64;
+	if (cellValues[7] > isoValue) index |= 128;
 
 	/* compute position of vertices where the surface interesct the cell*/
 	int config = edgeArray[index];
 	if (config == 0) /* the cell is not intersected by surface */
 		return;
-	if (config & 1)
-		interpolate(cellPositions[0], cellPositions[1], cellValues[0], cellValues[1], vertexList[0]);
-	if (config & 2)
-		interpolate(cellPositions[1], cellPositions[2], cellValues[1], cellValues[2], vertexList[1]);
-	if (config & 4)
-		interpolate(cellPositions[2], cellPositions[3], cellValues[2], cellValues[3], vertexList[2]);
-	if (config & 8)
-		interpolate(cellPositions[3], cellPositions[0], cellValues[3], cellValues[0], vertexList[3]);
-	if (config & 16)
-		interpolate(cellPositions[4], cellPositions[5], cellValues[4], cellValues[5], vertexList[4]);
-	if (config & 32)
-		interpolate(cellPositions[5], cellPositions[6], cellValues[5], cellValues[6], vertexList[5]);
-	if (config & 64)
-		interpolate(cellPositions[6], cellPositions[7], cellValues[6], cellValues[7], vertexList[6]);
-	if (config & 128)
-		interpolate(cellPositions[7], cellPositions[4], cellValues[7], cellValues[4], vertexList[7]);
-	if (config & 256)
-		interpolate(cellPositions[0], cellPositions[4], cellValues[0], cellValues[4], vertexList[8]);
-	if (config & 512)
-		interpolate(cellPositions[1], cellPositions[5], cellValues[1], cellValues[5], vertexList[9]);
-	if (config & 1024)
-		interpolate(cellPositions[2], cellPositions[6], cellValues[2], cellValues[6], vertexList[10]);
-	if (config & 2048)
-		interpolate(cellPositions[3], cellPositions[7], cellValues[3], cellValues[7], vertexList[11]);
+	if (config & 1) interpolate(cellPositions[0], cellPositions[1], cellValues[0], cellValues[1], vertexList[0]);
+	if (config & 2) interpolate(cellPositions[1], cellPositions[2], cellValues[1], cellValues[2], vertexList[1]);
+	if (config & 4) interpolate(cellPositions[2], cellPositions[3], cellValues[2], cellValues[3], vertexList[2]);
+	if (config & 8) interpolate(cellPositions[3], cellPositions[0], cellValues[3], cellValues[0], vertexList[3]);
+	if (config & 16) interpolate(cellPositions[4], cellPositions[5], cellValues[4], cellValues[5], vertexList[4]);
+	if (config & 32) interpolate(cellPositions[5], cellPositions[6], cellValues[5], cellValues[6], vertexList[5]);
+	if (config & 64) interpolate(cellPositions[6], cellPositions[7], cellValues[6], cellValues[7], vertexList[6]);
+	if (config & 128) interpolate(cellPositions[7], cellPositions[4], cellValues[7], cellValues[4], vertexList[7]);
+	if (config & 256) interpolate(cellPositions[0], cellPositions[4], cellValues[0], cellValues[4], vertexList[8]);
+	if (config & 512) interpolate(cellPositions[1], cellPositions[5], cellValues[1], cellValues[5], vertexList[9]);
+	if (config & 1024) interpolate(cellPositions[2], cellPositions[6], cellValues[2], cellValues[6], vertexList[10]);
+	if (config & 2048) interpolate(cellPositions[3], cellPositions[7], cellValues[3], cellValues[7], vertexList[11]);
 
 	/* compute triangles and normals*/
 	int        offset, i;

@@ -39,8 +39,7 @@ void TriaxialCompressionEngine::doStateTransition(stateNum nextState)
 		sigma_iso          = sigmaLateralConfinement;
 		previousSigmaIso   = sigma_iso;
 		internalCompaction = false;
-		if (frictionAngleDegree > 0)
-			setContactProperties(frictionAngleDegree);
+		if (frictionAngleDegree > 0) setContactProperties(frictionAngleDegree);
 		height0 = height;
 		depth0  = depth;
 		width0  = width;
@@ -51,36 +50,29 @@ void TriaxialCompressionEngine::doStateTransition(stateNum nextState)
 			LOG_INFO("Speres -> /tmp/unloaded.spheres");
 			Shop::saveSpheresToFile("/tmp/unloaded.spheres");
 		}
-		if (!firstRun && !noFiles)
-			saveSimulation = true; // saving snapshot .xml will actually be done in ::action
+		if (!firstRun && !noFiles) saveSimulation = true; // saving snapshot .xml will actually be done in ::action
 		Phase1End = "Unloaded";
 	} else if (currentState == STATE_ISO_COMPACTION && nextState == STATE_ISO_UNLOADING) {
 		sigma_iso          = sigmaLateralConfinement;
 		sigmaIsoCompaction = sigmaLateralConfinement;
 		previousSigmaIso   = sigma_iso;
 		internalCompaction = false; // unloading will not change grain sizes
-		if (frictionAngleDegree > 0)
-			setContactProperties(frictionAngleDegree);
-		if (!firstRun && !noFiles)
-			saveSimulation = true;
+		if (frictionAngleDegree > 0) setContactProperties(frictionAngleDegree);
+		if (!firstRun && !noFiles) saveSimulation = true;
 		Phase1End = "Compacted";
 	} else if ((currentState == STATE_ISO_COMPACTION || currentState == STATE_ISO_UNLOADING) && nextState == STATE_LIMBO) {
 		//urrentState==STATE_DIE_COMPACTION
 		internalCompaction = false;
-		if (frictionAngleDegree > 0)
-			setContactProperties(frictionAngleDegree);
+		if (frictionAngleDegree > 0) setContactProperties(frictionAngleDegree);
 		height0 = height;
 		depth0  = depth;
 		width0  = width;
-		if (!noFiles)
-			saveSimulation = true; // saving snapshot .xml will actually be done in ::action
+		if (!noFiles) saveSimulation = true; // saving snapshot .xml will actually be done in ::action
 		// stop simulation here, since nothing will happen from now on
 		Phase1End = (currentState == STATE_ISO_COMPACTION ? "compacted" : "unloaded");
-		if (!noFiles)
-			Shop::saveSpheresToFile("/tmp/limbo.spheres");
+		if (!noFiles) Shop::saveSpheresToFile("/tmp/limbo.spheres");
 		// Please keep this saving process intact, I'm tired of running 3 days simulations and getting nothing at the end!
-		if (!firstRun && !noFiles)
-			saveSimulation = true; // saving snapshot .xml will actually be done in ::action
+		if (!firstRun && !noFiles) saveSimulation = true; // saving snapshot .xml will actually be done in ::action
 	} else if (nextState == STATE_FIXED_POROSITY_COMPACTION) {
 		internalCompaction    = false;
 		wall_bottom_activated = false;
@@ -125,18 +117,15 @@ void TriaxialCompressionEngine::updateParameters()
 
 void TriaxialCompressionEngine::action()
 {
-	if (!warn++)
-		LOG_WARN("This engine is deprecated, please switch to TriaxialStressController if you expect long term support.")
+	if (!warn++) LOG_WARN("This engine is deprecated, please switch to TriaxialStressController if you expect long term support.")
 	// here, we make sure to get consistent parameters, in case someone fiddled with the scene .xml manually
 	if (firstRun) {
 		LOG_INFO("First run, will initialize!");
 		if ((sigmaIsoCompaction != previousSigmaIso || currentState == STATE_UNINITIALIZED || currentState == STATE_LIMBO)
 		    && currentState != STATE_TRIAX_LOADING && !fixedPoroCompaction)
 			doStateTransition(STATE_ISO_COMPACTION);
-		if (previousState != STATE_TRIAX_LOADING && currentState == STATE_TRIAX_LOADING)
-			doStateTransition(STATE_TRIAX_LOADING);
-		if (fixedPorosity < 1 && currentState == STATE_UNINITIALIZED && fixedPoroCompaction)
-			doStateTransition(STATE_FIXED_POROSITY_COMPACTION);
+		if (previousState != STATE_TRIAX_LOADING && currentState == STATE_TRIAX_LOADING) doStateTransition(STATE_TRIAX_LOADING);
+		if (fixedPorosity < 1 && currentState == STATE_UNINITIALIZED && fixedPoroCompaction) doStateTransition(STATE_FIXED_POROSITY_COMPACTION);
 		previousState    = currentState;
 		previousSigmaIso = sigma_iso;
 		firstRun         = false; // change this only _after_ state transitions
@@ -160,12 +149,9 @@ void TriaxialCompressionEngine::action()
 		saveSimulation = false;
 	}
 	if (isAxisymetric || internalCompaction) {
-		if (stressMask & 1)
-			goal1 = sigma_iso;
-		if (stressMask & 2)
-			goal2 = sigma_iso;
-		if (stressMask & 3)
-			goal3 = sigma_iso;
+		if (stressMask & 1) goal1 = sigma_iso;
+		if (stressMask & 2) goal2 = sigma_iso;
+		if (stressMask & 3) goal3 = sigma_iso;
 	}
 
 	TriaxialStressController::action();
@@ -176,16 +162,12 @@ void TriaxialCompressionEngine::action()
 
 
 	if (currentState == STATE_TRIAX_LOADING) {
-		if (scene->iter % 100 == 0) {
-			LOG_INFO("Triax Compression started");
-		}
-		if (scene->iter % 100 == 0)
-			LOG_DEBUG("Compression active.");
+		if (scene->iter % 100 == 0) { LOG_INFO("Triax Compression started"); }
+		if (scene->iter % 100 == 0) LOG_DEBUG("Compression active.");
 		const Real& dt = scene->dt;
 
 		if (math::abs(epsilonMax) > math::abs(strain[1])) {
-			if (currentStrainRate != strainRate)
-				currentStrainRate += (strainRate - currentStrainRate) * 0.0003;
+			if (currentStrainRate != strainRate) currentStrainRate += (strainRate - currentStrainRate) * 0.0003;
 			/* Move top and bottom wall according to strain rate */
 			State* p_bottom = Body::byId(wall_bottom_id, scene)->state.get();
 			p_bottom->pos += 0.5 * currentStrainRate * height * translationAxis * dt;
@@ -194,8 +176,7 @@ void TriaxialCompressionEngine::action()
 		}
 	}
 	if (currentState == STATE_FIXED_POROSITY_COMPACTION) {
-		if (scene->iter % 100 == 0)
-			LOG_INFO("Compression started");
+		if (scene->iter % 100 == 0) LOG_INFO("Compression started");
 		const Real& dt       = scene->dt;
 		State*      p_bottom = Body::byId(wall_bottom_id, scene)->state.get();
 		State*      p_top    = Body::byId(wall_top_id, scene)->state.get();

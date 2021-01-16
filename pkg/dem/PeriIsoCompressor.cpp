@@ -23,8 +23,7 @@ void PeriIsoCompressor::action()
 		LOG_FATAL("Being used on non-periodic simulation!");
 		throw;
 	}
-	if (state >= stresses.size())
-		return;
+	if (state >= stresses.size()) return;
 	// initialize values
 	if (charLen <= 0) {
 		Bound* bv = Body::byId(0, scene)->bound.get();
@@ -38,21 +37,17 @@ void PeriIsoCompressor::action()
 	}
 	if (maxSpan <= 0) {
 		for (const auto& b : *scene->bodies) {
-			if (!b || !b->bound)
-				continue;
+			if (!b || !b->bound) continue;
 			for (int i = 0; i < 3; i++)
 				maxSpan = max(maxSpan, b->bound->max[i] - b->bound->min[i]);
 		}
 	}
-	if (maxDisplPerStep < 0)
-		maxDisplPerStep = 1e-2 * charLen; // this should be tuned somehow…
+	if (maxDisplPerStep < 0) maxDisplPerStep = 1e-2 * charLen; // this should be tuned somehow…
 	const long& step     = scene->iter;
 	Vector3r    cellSize = scene->cell->getSize(); //unused: Real cellVolume=cellSize[0]*cellSize[1]*cellSize[2];
 	Vector3r    cellArea = Vector3r(cellSize[1] * cellSize[2], cellSize[0] * cellSize[2], cellSize[0] * cellSize[1]);
 	Real        minSize = min(cellSize[0], min(cellSize[1], cellSize[2])), maxSize = max(cellSize[0], max(cellSize[1], cellSize[2]));
-	if (minSize < 2.1 * maxSpan) {
-		throw runtime_error("Minimum cell size is smaller than 2.1*span_of_the_biggest_body! (periodic collider requirement)");
-	}
+	if (minSize < 2.1 * maxSpan) { throw runtime_error("Minimum cell size is smaller than 2.1*span_of_the_biggest_body! (periodic collider requirement)"); }
 	if (((step % globalUpdateInt) == 0) || avgStiffness < 0 || sigma[0] < 0 || sigma[1] < 0 || sigma[2] < 0) {
 		Vector3r sumForces = Shop::totalForceInVolume(avgStiffness, scene);
 		sigma              = -Vector3r(sumForces[0] / cellArea[0], sumForces[1] / cellArea[1], sumForces[2] / cellArea[2]);
@@ -69,8 +64,7 @@ void PeriIsoCompressor::action()
 		     avgSize  = (cellSize[0] + cellSize[1] + cellSize[2]) / 3.;
 		Real avgGrow  = 1e-4 * (sigmaGoal - sigAvg) * avgArea / (avgStiffness > 0 ? avgStiffness : 1);
 		Real maxToAvg = maxSize / avgSize;
-		if (math::abs(maxToAvg * avgGrow) > maxDisplPerStep)
-			avgGrow = math::sign(avgGrow) * maxDisplPerStep / maxToAvg;
+		if (math::abs(maxToAvg * avgGrow) > maxDisplPerStep) avgGrow = math::sign(avgGrow) * maxDisplPerStep / maxToAvg;
 		Real okGrow = -(minSize - 2.1 * maxSpan) / maxToAvg;
 		if (avgGrow < okGrow)
 			throw runtime_error("Unable to shrink cell due to maximum body size (although required by stress condition). Increase particle "
@@ -80,8 +74,7 @@ void PeriIsoCompressor::action()
 			sigma += (avgGrow * avgStiffness) * Vector3r::Ones();
 			sigAvg += avgGrow * avgStiffness;
 		}
-		if (math::abs((sigAvg - sigmaGoal) / sigmaGoal) > 5e-3)
-			allStressesOK = false;
+		if (math::abs((sigAvg - sigmaGoal) / sigmaGoal) > 5e-3) allStressesOK = false;
 		cellGrow = (avgGrow / avgSize) * cellSize;
 	} else { // handle each dimension separately
 		for (int axis = 0; axis < 3; axis++) {
@@ -91,14 +84,11 @@ void PeriIsoCompressor::action()
 			// FIXME: or perhaps maxDisplaPerStep=1e-2*charLen is too big??
 			cellGrow[axis] = 1e-4 * (sigmaGoal - sigma[axis]) * cellArea[axis]
 			        / (avgStiffness > 0 ? avgStiffness : 1); // FIXME: wrong dimensions? See PeriTriaxController
-			if (math::abs(cellGrow[axis]) > maxDisplPerStep)
-				cellGrow[axis] = math::sign(cellGrow[axis]) * maxDisplPerStep;
+			if (math::abs(cellGrow[axis]) > maxDisplPerStep) cellGrow[axis] = math::sign(cellGrow[axis]) * maxDisplPerStep;
 			cellGrow[axis] = max(cellGrow[axis], -(cellSize[axis] - 2.1 * maxSpan));
 			// crude way of predicting sigma, for steps when it is not computed from intrs
-			if (avgStiffness > 0)
-				sigma[axis] += cellGrow[axis] * avgStiffness; // FIXME: dimensions
-			if (math::abs((sigma[axis] - sigmaGoal) / sigmaGoal) > 5e-3)
-				allStressesOK = false;
+			if (avgStiffness > 0) sigma[axis] += cellGrow[axis] * avgStiffness; // FIXME: dimensions
+			if (math::abs((sigma[axis] - sigmaGoal) / sigmaGoal) > 5e-3) allStressesOK = false;
 		}
 	}
 	TRVAR4(cellGrow, sigma, sigmaGoal, avgStiffness);
@@ -109,8 +99,7 @@ void PeriIsoCompressor::action()
 
 	// handle state transitions
 	if (allStressesOK) {
-		if ((step % globalUpdateInt) == 0)
-			currUnbalanced = Shop::unbalancedForce(/*useMaxForce=*/false, scene);
+		if ((step % globalUpdateInt) == 0) currUnbalanced = Shop::unbalancedForce(/*useMaxForce=*/false, scene);
 		if (currUnbalanced < maxUnbalanced) {
 			state += 1;
 			// sigmaGoal reached and packing stable
@@ -124,8 +113,7 @@ void PeriIsoCompressor::action()
 				LOG_INFO("Loaded to " << sigmaGoal << " done, going to " << stresses[state] << " now");
 			}
 		} else {
-			if ((step % globalUpdateInt) == 0)
-				LOG_DEBUG("Stress=" << sigma << ", goal=" << sigmaGoal << ", unbalanced=" << currUnbalanced);
+			if ((step % globalUpdateInt) == 0) LOG_DEBUG("Stress=" << sigma << ", goal=" << sigmaGoal << ", unbalanced=" << currUnbalanced);
 		}
 	}
 }
@@ -148,8 +136,7 @@ void PeriTriaxController::strainStressStiffUpdate()
 	// → a vector with functors so we can law->functs->pushback(myThing), and access to the fundamental members (forces, stiffness, normal, etc.). Implementing the second part is less clear in my mind. Inheriting from law::funct(force&, stiffness&, ...)?
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		NormShearPhys*         nsi = YADE_CAST<NormShearPhys*>(I->phys.get());
 		GenericSpheresContact* gsc = YADE_CAST<GenericSpheresContact*>(I->geom.get());
 		//Contact force
@@ -174,8 +161,7 @@ void PeriTriaxController::strainStressStiffUpdate()
 	                          << stressTensor(2, 0) << " " << stressTensor(2, 1) << " " << stressTensor(2, 2) << endl
 	                          << "unbalanced = " << Shop::unbalancedForce(/*useMaxForce=*/false, scene));
 
-	if (n > 0)
-		stiff = (1. / n) * sumStiff;
+	if (n > 0) stiff = (1. / n) * sumStiff;
 	else
 		stiff = Vector3r::Zero();
 }
@@ -186,17 +172,14 @@ CREATE_LOGGER(PeriTriaxController);
 
 void PeriTriaxController::action()
 {
-	if (!scene->isPeriodic) {
-		throw runtime_error("PeriTriaxController run on aperiodic simulation.");
-	}
+	if (!scene->isPeriodic) { throw runtime_error("PeriTriaxController run on aperiodic simulation."); }
 	const Vector3r& cellSize = scene->cell->getSize();
 	//FIXME : this is wrong I think (almost sure, B.)
 	Vector3r cellArea = Vector3r(cellSize[1] * cellSize[2], cellSize[0] * cellSize[2], cellSize[0] * cellSize[1]);
 	// initial updates
 	if (maxBodySpan[0] <= 0) {
 		for (const auto& b : *scene->bodies) {
-			if (!b || !b->bound)
-				continue;
+			if (!b || !b->bound) continue;
 			for (int i = 0; i < 3; i++)
 				if ((b->bound->max[i] - b->bound->min[i]) < cellSize[i])
 					maxBodySpan[i] = max(maxBodySpan[i], b->bound->max[i] - b->bound->min[i]);
@@ -208,16 +191,13 @@ void PeriTriaxController::action()
 		throw runtime_error("Minimum cell size is smaller than 2.1*maxBodySpan (periodic collider requirement)");
 	}
 	bool doUpdate((scene->iter % globUpdate) == 0);
-	if (doUpdate || min(stiff[0], min(stiff[1], stiff[2])) <= 0 || dynCell) {
-		strainStressStiffUpdate();
-	}
+	if (doUpdate || min(stiff[0], min(stiff[1], stiff[2])) <= 0 || dynCell) { strainStressStiffUpdate(); }
 
 	// set mass to be sum of masses, if not set by the user
 	if (dynCell && math::isnan(mass)) {
 		mass = 0;
 		for (const auto& b : *scene->bodies) {
-			if (b && b->state)
-				mass += b->state->mass;
+			if (b && b->state) mass += b->state->mass;
 		}
 		LOG_INFO("Setting cell mass to " << mass << " automatically.");
 	}
@@ -245,17 +225,14 @@ void PeriTriaxController::action()
 			LOG_TRACE(axis << ": strain=" << strain[axis] << ", goal=" << goal[axis] << ", cellGrow=" << strain_rate * scene->dt);
 		}
 		// steady evolution with fluctuations; see TriaxialStressController
-		if (!dynCell)
-			strain_rate = (1 - growDamping) * strain_rate + .8 * prevGrow[axis];
+		if (!dynCell) strain_rate = (1 - growDamping) * strain_rate + .8 * prevGrow[axis];
 		// limit maximum strain rate
-		if (math::abs(strain_rate) > maxStrainRate[axis])
-			strain_rate = math::sign(strain_rate) * maxStrainRate[axis];
+		if (math::abs(strain_rate) > maxStrainRate[axis]) strain_rate = math::sign(strain_rate) * maxStrainRate[axis];
 		// do not shrink below minimum cell size (periodic collider condition), although it is suboptimal WRT resulting stress
 		strain_rate = max(strain_rate, -(cellSize[axis] - 2.1 * maxBodySpan[axis]) / scene->dt);
 
 		// crude way of predicting stress, for steps when it is not computed from intrs
-		if (doUpdate)
-			LOG_DEBUG(axis << ": cellGrow=" << strain_rate * scene->dt << ", new stress=" << stress[axis] << ", new strain=" << strain[axis]);
+		if (doUpdate) LOG_DEBUG(axis << ": cellGrow=" << strain_rate * scene->dt << ", new stress=" << stress[axis] << ", new strain=" << strain[axis]);
 		// used only for temporary goal comparisons. The exact value is assigned in strainStressStiffUpdate
 		strain[axis] += strain_rate * scene->dt;
 		// signal if condition not satisfied
@@ -268,8 +245,7 @@ void PeriTriaxController::action()
 			// since strain is prescribed exactly, tolerances need just to accomodate rounding issues
 			if ((goal[axis] != 0 && math::abs((curr - goal[axis]) / goal[axis]) > 1e-6) || math::abs(curr - goal[axis]) > 1e-6) {
 				allOk = false;
-				if (doUpdate)
-					LOG_DEBUG("Strain not OK; " << math::abs(curr - goal[axis]) << ">1e-6");
+				if (doUpdate) LOG_DEBUG("Strain not OK; " << math::abs(curr - goal[axis]) << ">1e-6");
 			}
 		}
 	}
@@ -279,8 +255,7 @@ void PeriTriaxController::action()
 			// take in account something like poisson's effect here…
 			//Real bogusPoisson=0.25; int ax1=(axis+1)%3,ax2=(axis+2)%3;
 			//don't modify stress if dynCell, testing only stiff[axis]>0 would not allow switching the control mode in simulations,
-			if (stiff[axis] > 0)
-				stress[axis] += (scene->cell->velGrad(axis, axis) * scene->dt / cellSize[axis]) * (stiff[axis] / cellArea[axis]);
+			if (stiff[axis] > 0) stress[axis] += (scene->cell->velGrad(axis, axis) * scene->dt / cellSize[axis]) * (stiff[axis] / cellArea[axis]);
 			//-bogusPoisson*(cellGrow[ax1]/refSize[ax1])*(stiff[ax1]/cellArea[ax1])-bogusPoisson*(cellGrow[ax2]/refSize[ax2])*(stiff[ax2]/cellArea[ax2]);
 		}
 	for (int k = 0; k < 3; k++)
@@ -288,8 +263,7 @@ void PeriTriaxController::action()
 	//Update energy input FIXME: replace trace by norm, so it works for any kind of deformation
 	Real dW = (0.5 * (scene->cell->prevVelGrad + scene->cell->velGrad) * stressTensor).trace() * scene->dt * (scene->cell->hSize.determinant());
 	externalWork += dW;
-	if (scene->trackEnergy)
-		scene->energy->add(-dW, "velGradWork", velGradWorkIx, /*non-incremental*/ false);
+	if (scene->trackEnergy) scene->energy->add(-dW, "velGradWork", velGradWorkIx, /*non-incremental*/ false);
 	prevGrow = strainRate;
 
 	if (allOk) {
@@ -398,9 +372,7 @@ void Peri3dController::action()
 
 	// increase the pathCounter by one if we cross to the next part of path
 	for (int i = 0; i < 6; i++) {
-		if (progress >= PATH_OP_OP(i, pathsCounter[i], 0)) {
-			pathsCounter[i]++;
-		}
+		if (progress >= PATH_OP_OP(i, pathsCounter[i], 0)) { pathsCounter[i]++; }
 	}
 
 	/* values of prescribed stress (strain) rate in respect to prescribed path.

@@ -374,8 +374,7 @@ template <typename Type> inline void glOneFace(Type& t, unsigned int a, unsigned
 	yade::Vector3r       n      = (t->v[b] - t->v[a]).cross(t->v[c] - t->v[a]);
 	n.normalize();
 	const yade::Vector3r faceCenter = (t->v[a] + t->v[b] + t->v[c]) / 3.;
-	if ((faceCenter - center).dot(n) < 0)
-		n = -n;
+	if ((faceCenter - center).dot(n) < 0) n = -n;
 	glNormal3v(n);
 	glVertex3v(t->v[a]);
 	glVertex3v(t->v[b]);

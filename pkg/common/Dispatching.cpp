@@ -26,8 +26,7 @@ void BoundDispatcher::action()
 	updateScenePtr();
 	shared_ptr<BodyContainer>& bodies   = scene->bodies;
 	const bool                 redirect = bodies->useRedirection;
-	if (redirect)
-		bodies->updateShortLists();
+	if (redirect) bodies->updateShortLists();
 	const long numBodies = redirect ? (long)bodies->realBodies.size() : (long)bodies->size();
 #ifdef YADE_MPI
 	Body::id_t subdomainId = 0;
@@ -36,8 +35,7 @@ void BoundDispatcher::action()
 #pragma omp parallel for num_threads(ompThreads > 0 ? min(ompThreads, omp_get_max_threads()) : omp_get_max_threads())
 #endif
 	for (int id = 0; id < numBodies; id++) {
-		if (not redirect and not bodies->exists(id))
-			continue; // don't delete this check  - Janek
+		if (not redirect and not bodies->exists(id)) continue; // don't delete this check  - Janek
 		const shared_ptr<Body>& b = (*bodies)[redirect ? bodies->realBodies[id] : id];
 		processBody(b);
 #ifndef YADE_MPI
@@ -56,20 +54,17 @@ void BoundDispatcher::action()
 void BoundDispatcher::processBody(const shared_ptr<Body>& b)
 {
 	shared_ptr<Shape>& shape = b->shape;
-	if (!b->isBounded() || !shape)
-		return;
+	if (!b->isBounded() || !shape) return;
 #ifdef BV_FUNCTOR_CACHE
 	if (!shape->boundFunctor) {
 		shape->boundFunctor = this->getFunctor1D(shape);
-		if (!shape->boundFunctor)
-			return;
+		if (!shape->boundFunctor) return;
 	}
 	shape->boundFunctor->go(shape, b->bound, b->state->se3, b.get());
 #else
 	operator()(shape, b->bound, b->state->se3, b.get());
 #endif
-	if (!b->bound)
-		return; // the functor did not create new bound
+	if (!b->bound) return; // the functor did not create new bound
 	Real& sweepLength = b->bound->sweepLength;
 	if (targetInterv > 0 and scene->iter > b->bound->lastUpdateIter) { //at iteration zero checking displacement makes no sense
 		Vector3r disp = b->state->pos - b->bound->refPos;
@@ -83,11 +78,9 @@ void BoundDispatcher::processBody(const shared_ptr<Body>& b)
 	} else
 		sweepLength = sweepDist;
 #ifdef YADE_MPI
-	if (b->getIsSubdomain())
-		sweepLength = 0;
+	if (b->getIsSubdomain()) sweepLength = 0;
 	// skip fluid mesh bounding box from being extended
-	if (b->getIsFluidDomainBbox())
-		sweepLength = 0;
+	if (b->getIsFluidDomainBbox()) sweepLength = 0;
 #endif
 	b->bound->refPos         = b->state->pos;
 	b->bound->lastUpdateIter = scene->iter;
@@ -126,9 +119,7 @@ shared_ptr<Interaction> IGeomDispatcher::explicitAction(const shared_ptr<Body>& 
 		throw invalid_argument(
 		        "IGeomDispatcher::explicitAction could not dispatch for given types (" + b1->shape->getClassName() + "," + b2->shape->getClassName()
 		        + ").");
-	if (swap) {
-		I->swapOrder();
-	}
+	if (swap) { I->swapOrder(); }
 	const shared_ptr<Body>& b1Swp = Body::byId(I->getId1(), scene);
 	const shared_ptr<Body>& b2Swp = Body::byId(I->getId2(), scene);
 	bool                    succ  = I->functorCache.geom->go(b1Swp->shape, b2Swp->shape, *b1Swp->state, *b2Swp->state, shift2, /*force*/ true, I);
@@ -145,8 +136,7 @@ void IGeomDispatcher::action()
 	shared_ptr<BodyContainer>& bodies = scene->bodies;
 	const bool                 isPeriodic(scene->isPeriodic);
 	Matrix3r                   cellHsize;
-	if (isPeriodic)
-		cellHsize = scene->cell->hSize;
+	if (isPeriodic) cellHsize = scene->cell->hSize;
 	bool removeUnseenIntrs = (scene->interactions->iterColliderLastRun >= 0 && scene->interactions->iterColliderLastRun == scene->iter);
 #ifdef YADE_OPENMP
 	const long size = scene->interactions->size();
@@ -185,9 +175,7 @@ void IGeomDispatcher::action()
 			geomCreated     = I->functorCache.geom->go(b1->shape, b2->shape, *b1->state, *b2->state, shift2, /*force*/ false, I);
 		}
 		// reset && erase interaction that existed but now has no geometry anymore
-		if (wasReal && !geomCreated) {
-			scene->interactions->requestErase(I);
-		}
+		if (wasReal && !geomCreated) { scene->interactions->requestErase(I); }
 	}
 }
 
@@ -199,8 +187,7 @@ void IGeomDispatcher::action()
 void IPhysDispatcher::explicitAction(shared_ptr<Material>& pp1, shared_ptr<Material>& pp2, shared_ptr<Interaction>& I)
 {
 	updateScenePtr();
-	if (!I->geom)
-		throw invalid_argument(string(__FILE__) + ": explicitAction received interaction without geom.");
+	if (!I->geom) throw invalid_argument(string(__FILE__) + ": explicitAction received interaction without geom.");
 	if (!I->functorCache.phys) {
 		bool dummy;
 		I->functorCache.phys = getFunctor2D(pp1, pp2, dummy);
@@ -231,8 +218,7 @@ void IPhysDispatcher::action()
 			bool              hadPhys = (interaction->phys.get() != 0);
 			                  operator()(b1->material, b2->material, interaction);
 			assert(interaction->phys);
-			if (!hadPhys)
-				interaction->iterMadeReal = scene->iter;
+			if (!hadPhys) interaction->iterMadeReal = scene->iter;
 		}
 	}
 }

@@ -46,8 +46,7 @@ Polyhedra::Polyhedra(const Vector3r&& xsize, const int&& xseed)
 }
 void Polyhedra::Initialize()
 {
-	if (init)
-		return;
+	if (init) return;
 	bool isRandom = false;
 
 	//get vertices
@@ -110,8 +109,7 @@ void Polyhedra::Initialize()
 	for (int i = 0; i < N; i++) {
 		v[i] = v[i] - centroid;
 	}
-	if (isRandom)
-		centroid = Vector3r::Zero();
+	if (isRandom) centroid = Vector3r::Zero();
 
 	Vector3r origin(0, 0, 0);
 
@@ -243,8 +241,7 @@ void Polyhedra::GenerateRandomGeometry()
 		trial = CGALpoint(Real(rand()) / RAND_MAX * 5. + 2.5, Real(rand()) / RAND_MAX * 5. + 2.5, Real(rand()) / RAND_MAX * 5. + 2.5);
 		for (int i = 0; i < (int)nuclei.size(); i++) {
 			isOK = pow(nuclei[i].x() - trial.x(), 2) + pow(nuclei[i].y() - trial.y(), 2) + pow(nuclei[i].z() - trial.z(), 2) > dist_min2;
-			if (!isOK)
-				break;
+			if (!isOK) break;
 		}
 		if (isOK) {
 			iter = 0;
@@ -362,11 +359,8 @@ PolyhedraGeom::~PolyhedraGeom() { }
 void Bo1_Polyhedra_Aabb::go(const shared_ptr<Shape>& ig, shared_ptr<Bound>& bv, const Se3r& se3, const Body*)
 {
 	Polyhedra* t = static_cast<Polyhedra*>(ig.get());
-	if (!t->IsInitialized())
-		t->Initialize();
-	if (!bv) {
-		bv = shared_ptr<Bound>(new Aabb);
-	}
+	if (!t->IsInitialized()) t->Initialize();
+	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 	Aabb* aabb = static_cast<Aabb*>(bv.get());
 	//Quaternionr invRot=se3.orientation.conjugate();
 	int      N = (int)t->v.size();
@@ -421,8 +415,7 @@ void Gl1_Polyhedra::go(const shared_ptr<Shape>& cm, const shared_ptr<State>&, bo
 				Vector3r n = (t->v[b] - t->v[a]).cross(t->v[c] - t->v[a]);
 				n.normalize();
 				Vector3r faceCenter = (t->v[a] + t->v[b] + t->v[c]) / 3.;
-				if ((faceCenter - centroid).dot(n) < 0)
-					n = -n;
+				if ((faceCenter - centroid).dot(n) < 0) n = -n;
 
 				glNormal3v(n);
 				glVertex3v(t->v[a]);
@@ -450,17 +443,14 @@ void Gl1_PolyhedraPhys::go(
 {
 	if (!gluQuadric) {
 		gluQuadric = gluNewQuadric();
-		if (!gluQuadric)
-			throw runtime_error("Gl1_PolyhedraPhys::go unable to allocate new GLUquadric object (out of memory?).");
+		if (!gluQuadric) throw runtime_error("Gl1_PolyhedraPhys::go unable to allocate new GLUquadric object (out of memory?).");
 	}
 	PolyhedraPhys*    np = static_cast<PolyhedraPhys*>(ip.get());
 	shared_ptr<IGeom> ig(i->geom);
-	if (!ig)
-		return; // changed meanwhile?
+	if (!ig) return; // changed meanwhile?
 	PolyhedraGeom* geom   = YADE_CAST<PolyhedraGeom*>(ig.get());
 	Real           fnNorm = np->normalForce.dot(geom->normal);
-	if ((signFilter > 0 && fnNorm < 0) || (signFilter < 0 && fnNorm > 0))
-		return;
+	if ((signFilter > 0 && fnNorm < 0) || (signFilter < 0 && fnNorm > 0)) return;
 	int fnSign       = fnNorm > 0 ? 1 : -1;
 	fnNorm           = math::abs(fnNorm);
 	Real radiusScale = 1.;
@@ -472,8 +462,7 @@ void Gl1_PolyhedraPhys::go(
 	} else
 		realMaxRadius = maxRadius;
 	Real radius = radiusScale * realMaxRadius * (fnNorm / maxFn);
-	if (radius <= 0.)
-		radius = 1E-8;
+	if (radius <= 0.) radius = 1E-8;
 	Vector3r color = Shop::scalarOnColorScale(fnNorm * fnSign, -maxFn, maxFn);
 
 	Vector3r p1 = b1->state->pos, p2 = b2->state->pos;
@@ -539,8 +528,7 @@ Vector3r& PolyhedraGeom::rotate(Vector3r& shearForce) const
 
 void Ip2_PolyhedraMat_PolyhedraMat_PolyhedraPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 	const shared_ptr<PolyhedraMat>& mat1            = YADE_PTR_CAST<PolyhedraMat>(b1);
 	const shared_ptr<PolyhedraMat>& mat2            = YADE_PTR_CAST<PolyhedraMat>(b2);
 	interaction->phys                               = shared_ptr<PolyhedraPhys>(new PolyhedraPhys());
@@ -574,12 +562,9 @@ Real Law2_PolyhedraGeom_PolyhedraPhys_Volumetric::elasticEnergy()
 	Real energy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		FrictPhys* phys = dynamic_cast<FrictPhys*>(I->phys.get());
-		if (phys) {
-			energy += 0.5 * (phys->normalForce.squaredNorm() / phys->kn + phys->shearForce.squaredNorm() / phys->ks);
-		}
+		if (phys) { energy += 0.5 * (phys->normalForce.squaredNorm() / phys->kn + phys->shearForce.squaredNorm() / phys->ks); }
 	}
 	return energy;
 }
@@ -588,13 +573,9 @@ Real Law2_PolyhedraGeom_PolyhedraPhys_Volumetric::elasticEnergy()
 // Apply forces on polyhedrons in collision based on geometric configuration
 bool Law2_PolyhedraGeom_PolyhedraPhys_Volumetric::go(shared_ptr<IGeom>& /*ig*/, shared_ptr<IPhys>& /*ip*/, Interaction* I)
 {
-	if (!I->geom) {
-		return true;
-	}
+	if (!I->geom) { return true; }
 	const shared_ptr<PolyhedraGeom>& contactGeom(YADE_PTR_DYN_CAST<PolyhedraGeom>(I->geom));
-	if (!contactGeom) {
-		return true;
-	}
+	if (!contactGeom) { return true; }
 	const Body::id_t       idA = I->getId1(), idB = I->getId2();
 	const shared_ptr<Body>&A = Body::byId(idA), B = Body::byId(idB);
 
@@ -620,8 +601,7 @@ bool Law2_PolyhedraGeom_PolyhedraPhys_Volumetric::go(shared_ptr<IGeom>& /*ig*/, 
 
 	//shear force: in case the polyhdras are separated and come to contact again, one
 	//should not use the previous shear force
-	if (contactGeom->isShearNew)
-		shearForce = Vector3r::Zero();
+	if (contactGeom->isShearNew) shearForce = Vector3r::Zero();
 	else
 		shearForce = contactGeom->rotate(shearForce);
 
@@ -648,8 +628,7 @@ bool Law2_PolyhedraGeom_PolyhedraPhys_Volumetric::go(shared_ptr<IGeom>& /*ig*/, 
 		if (scene->trackEnergy && traceEnergy) {
 			const Real dissip = ((1 / phys->ks) * (trialForce - shearForce)).dot(shearForce);
 
-			if (traceEnergy)
-				plasticDissipation += dissip;
+			if (traceEnergy) plasticDissipation += dissip;
 			else if (dissip > 0)
 				scene->energy->add(dissip, "plastDissip", plastDissipIx, false);
 
@@ -658,14 +637,12 @@ bool Law2_PolyhedraGeom_PolyhedraPhys_Volumetric::go(shared_ptr<IGeom>& /*ig*/, 
 			        0.5 * (normalForce.squaredNorm() / phys->kn + shearForce.squaredNorm() / phys->ks), "elastPotential", elastPotentialIx, true);
 		}
 	} else {
-		if (maxFs == 0)
-			shearForce = Vector3r::Zero();
+		if (maxFs == 0) shearForce = Vector3r::Zero();
 		scene->energy->add(
 		        0.5 * (normalForce.squaredNorm() / phys->kn + shearForce.squaredNorm() / phys->ks), "elastPotential", elastPotentialIx, true);
 	}
 	Vector3r F = -normalForce - shearForce;
-	if (contactGeom->equivalentPenetrationDepth != contactGeom->equivalentPenetrationDepth)
-		exit(1);
+	if (contactGeom->equivalentPenetrationDepth != contactGeom->equivalentPenetrationDepth) exit(1);
 
 	scene->forces.addForce(idA, F);
 	scene->forces.addForce(idB, -F);

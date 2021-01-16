@@ -62,8 +62,7 @@ template <typename ArbitraryReal> struct ArbitraryReal_from_python {
 		// this can not work with val=0.123123123123123123123333312312333333123123123, the extra digits are cut-off by python before it reaches this function
 		PyFloat_AsDouble(obj_ptr);
 		// This quickly returns when argument wasn't a string.
-		if (PyErr_Occurred() == nullptr)
-			return obj_ptr;
+		if (PyErr_Occurred() == nullptr) return obj_ptr;
 		PyErr_Clear();
 		// The quick way didn't work. There was an error, so let's clear it. And check if that is a string with a valid number inside.
 		// This is a little more expensive. But it is used very rarely - only when user writes a python line like val="0.123123123123123123123333312312333333123123123"
@@ -113,8 +112,7 @@ template <typename ArbitraryComplex> struct ArbitraryComplex_from_python {
 		// only python complex or mpmath.mpc(…) objects are supoprted. Strings are not parsed.
 		// However a simple workaround is to write mpmath.mpc("1.211213123123123123123123123","-124234234.111")
 		PyComplex_AsCComplex(obj_ptr);
-		if (PyErr_Occurred() == nullptr)
-			return obj_ptr;
+		if (PyErr_Occurred() == nullptr) return obj_ptr;
 		PyErr_Clear();
 		return nullptr;
 	}

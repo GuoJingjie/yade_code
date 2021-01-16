@@ -69,32 +69,28 @@ public:
 	bool isBounded() const { return flags & FLAG_BOUNDED; }
 	void setBounded(bool d)
 	{
-		if (d)
-			flags |= FLAG_BOUNDED;
+		if (d) flags |= FLAG_BOUNDED;
 		else
 			flags &= ~(FLAG_BOUNDED);
 	}
 	bool getIsSubdomain() const { return flags & FLAG_SUBDOMAIN; }
 	void setIsSubdomain(bool d)
 	{
-		if (d)
-			flags |= FLAG_SUBDOMAIN;
+		if (d) flags |= FLAG_SUBDOMAIN;
 		else
 			flags &= ~(FLAG_SUBDOMAIN);
 	}
 	bool isAspherical() const { return flags & FLAG_ASPHERICAL; }
 	void setAspherical(bool d)
 	{
-		if (d)
-			flags |= FLAG_ASPHERICAL;
+		if (d) flags |= FLAG_ASPHERICAL;
 		else
 			flags &= ~(FLAG_ASPHERICAL);
 	}
 	bool getIsFluidDomainBbox() const { return flags & FLAG_FLUIDDOMAINBBOX; }
 	void setIsFluidDomainBbox(bool d)
 	{
-		if (d)
-			flags |= FLAG_FLUIDDOMAINBBOX;
+		if (d) flags |= FLAG_FLUIDDOMAINBBOX;
 		else
 			flags &= ~(FLAG_FLUIDDOMAINBBOX);
 	}

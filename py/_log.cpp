@@ -72,9 +72,7 @@ py::dict getUsedLevels()
 {
 	py::dict ret {};
 	for (const auto& a : Logging::instance().getClassLogLevels()) {
-		if (a.second != -1) {
-			ret[a.first] = a.second;
-		}
+		if (a.second != -1) { ret[a.first] = a.second; }
 	}
 	return ret;
 }

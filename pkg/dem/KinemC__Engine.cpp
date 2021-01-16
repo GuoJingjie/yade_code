@@ -23,15 +23,13 @@ void KinemCTDEngine::action()
 	current_sigma = current_NormalForce / (1000.0 * Scontact); // so we have the current value of sigma, in kPa
 
 	if (((compSpeed > 0) && (current_sigma < targetSigma)) || ((compSpeed < 0) && (current_sigma > targetSigma))) {
-		if (temoin != 0)
-			temoin = 0;
+		if (temoin != 0) temoin = 0;
 
 		letMove(0.0, -compSpeed * dt);
 	} else if (temoin == 0) {
 		stopMovement();
 		string f;
-		if (compSpeed > 0)
-			f = "Sigmax_";
+		if (compSpeed > 0) f = "Sigmax_";
 		else
 			f = "Sigmin_";
 
@@ -54,8 +52,7 @@ void KinemCNDEngine::action()
 	KinemSimpleShearBox::getBoxes_Dt();
 
 	if (((shearSpeed > 0) && (gamma <= gammalim)) || ((shearSpeed < 0) /*&& (gamma>=gammalim)*/)) {
-		if (temoinfin != 0)
-			temoinfin = 0;
+		if (temoinfin != 0) temoinfin = 0;
 		letMove(shearSpeed * dt, 0);
 		gamma += shearSpeed * dt;
 	} else {
@@ -77,20 +74,16 @@ void KinemCNDEngine::action()
 
 void KinemCNLEngine::action()
 {
-	if (LOG)
-		cout << "debut applyCondi du CNCEngine !!" << endl;
+	if (LOG) cout << "debut applyCondi du CNCEngine !!" << endl;
 	KinemSimpleShearBox::getBoxes_Dt();
 
-	if (LOG)
-		cout << "gamma = " << boost::lexical_cast<string>(gamma) << "  et gammalim = " << boost::lexical_cast<string>(gammalim) << endl;
+	if (LOG) cout << "gamma = " << boost::lexical_cast<string>(gamma) << "  et gammalim = " << boost::lexical_cast<string>(gammalim) << endl;
 	if (gamma <= gammalim) {
-		if (LOG)
-			cout << "Je suis bien dans la partie gamma < gammalim" << endl;
+		if (LOG) cout << "Je suis bien dans la partie gamma < gammalim" << endl;
 		if (temoin == 0)
 
 		{
-			if (LOG)
-				cout << "Je veux maintenir la Force a f0 = : " << f0 << endl;
+			if (LOG) cout << "Je veux maintenir la Force a f0 = : " << f0 << endl;
 			temoin = 1;
 		}
 		computeDY(0.0);
@@ -121,17 +114,14 @@ void KinemCNLEngine::action()
 
 void KinemCNSEngine::action()
 {
-	if (LOG)
-		cerr << "debut applyCondi !!" << endl;
+	if (LOG) cerr << "debut applyCondi !!" << endl;
 	KinemSimpleShearBox::getBoxes_Dt();
 
 	if (gamma <= gammalim) {
 		computeDY(KnC);
 		letMove(shearSpeed * dt, deltaH);
 		gamma += shearSpeed * dt;
-		if (temoin == 0) {
-			temoin = 1;
-		}
+		if (temoin == 0) { temoin = 1; }
 	} else if (temoin < 2) {
 		stopMovement();
 		it_stop = scene->iter;

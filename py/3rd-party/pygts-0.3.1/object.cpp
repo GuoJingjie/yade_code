@@ -115,8 +115,7 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 
 	/* Chain up object allocation */
 	self = PYGTS_OBJECT(type->tp_alloc(type, 0));
-	if (self == NULL)
-		return NULL;
+	if (self == NULL) return NULL;
 
 	/* Object initialization */
 	self->gtsobj        = NULL;
@@ -151,8 +150,7 @@ static PyObject* rich_compare(PygtsObject* o1, PygtsObject* o2, int op)
 		case Py_GE: ret = (o1->gtsobj >= o2->gtsobj); break;
 		default: Py_RETURN_NOTIMPLEMENTED;
 	}
-	if (ret)
-		Py_RETURN_TRUE;
+	if (ret) Py_RETURN_TRUE;
 	Py_RETURN_FALSE;
 };
 #else
@@ -249,18 +247,14 @@ GHashTable* obj_table; /* GtsObject key, associated PyObject value */
 
 void pygts_object_register(PygtsObject* o)
 {
-	if (g_hash_table_lookup(obj_table, o->gtsobj) == NULL) {
-		g_hash_table_insert(obj_table, o->gtsobj, o);
-	}
+	if (g_hash_table_lookup(obj_table, o->gtsobj) == NULL) { g_hash_table_insert(obj_table, o->gtsobj, o); }
 }
 
 
 void pygts_object_deregister(PygtsObject* o)
 {
 	if (o->gtsobj != NULL) {
-		if (g_hash_table_lookup(obj_table, o->gtsobj) == o) {
-			g_hash_table_remove(obj_table, o->gtsobj);
-		}
+		if (g_hash_table_lookup(obj_table, o->gtsobj) == o) { g_hash_table_remove(obj_table, o->gtsobj); }
 	}
 }
 

@@ -119,8 +119,7 @@ bool Ig2_Box_Sphere_ScGeom::go(
 		Vector3r normal2 = pt1 - pt2;
 		normal2.normalize();
 		bool isNew = !c->geom;
-		if (isNew)
-			scm = shared_ptr<ScGeom>(new ScGeom());
+		if (isNew) scm = shared_ptr<ScGeom>(new ScGeom());
 		else
 			scm = YADE_PTR_CAST<ScGeom>(c->geom);
 
@@ -138,8 +137,7 @@ bool Ig2_Box_Sphere_ScGeom::go(
 		        * cOnBox_boxLocal; // projection of sphere's center on closest box surface - relative to box's origin, but GLOBAL orientation!
 		Vector3r cOnBox_sphere = cOnBox_box - relPos21; // same, but origin in sphere's center
 		depth                  = s->radius - cOnBox_sphere.norm();
-		if (-depth > s->radius * (interactionDetectionFactor - 1.) && !c->isReal() && !force)
-			return false;
+		if (-depth > s->radius * (interactionDetectionFactor - 1.) && !c->isReal() && !force) return false;
 
 		/*
 		 *  +-----------------------------------+
@@ -166,8 +164,7 @@ bool Ig2_Box_Sphere_ScGeom::go(
 		pt2 = se32.position + shift2 + cOnBox_sphere * s->radius;
 
 		bool isNew = !c->geom;
-		if (isNew)
-			scm = shared_ptr<ScGeom>(new ScGeom());
+		if (isNew) scm = shared_ptr<ScGeom>(new ScGeom());
 		else
 			scm = YADE_PTR_CAST<ScGeom>(c->geom);
 		scm->contactPoint     = 0.5 * (pt1 + pt2);

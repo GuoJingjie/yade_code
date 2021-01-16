@@ -130,8 +130,7 @@ public:
 			size_t initSize = currSize;
 			for (size_t linPos = 0; linPos < currSize;) {
 				const shared_ptr<Interaction>& i = linIntrs[linPos];
-				if (!i->isReal() && t.shouldBeErased(i->getId1(), i->getId2(), rb))
-					erase(i->getId1(), i->getId2(), linPos);
+				if (!i->isReal() && t.shouldBeErased(i->getId1(), i->getId2(), rb)) erase(i->getId1(), i->getId2(), linPos);
 				else
 					linPos++;
 			}
@@ -177,8 +176,7 @@ public:
 			min2 = inter2->id2;
 			max2 = inter2->id1;
 		}
-		if (min1 < min2)
-			return true;
+		if (min1 < min2) return true;
 		else if (min1 > min2)
 			return false;
 		else

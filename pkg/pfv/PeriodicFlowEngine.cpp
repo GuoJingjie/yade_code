@@ -148,14 +148,12 @@ PeriodicFlowEngine::~PeriodicFlowEngine() { }
 
 void PeriodicFlowEngine::action()
 {
-	if (!isActivated)
-		return;
+	if (!isActivated) return;
 	timingDeltas->start();
 	preparePShifts();
 	setPositionsBuffer(true);
 	if (first) {
-		if (multithread)
-			setPositionsBuffer(false);
+		if (multithread) setPositionsBuffer(false);
 		cachedCell = Cell(*(scene->cell));
 		buildTriangulation(pZero, *solver);
 		if (solver->errorCode > 0) {
@@ -202,14 +200,11 @@ void PeriodicFlowEngine::action()
 		if (shearLubrication || viscousShear) {
 			force  = force + solver->shearLubricationForces[v_info.id()];
 			torque = torque + solver->shearLubricationTorques[v_info.id()];
-			if (pumpTorque)
-				torque = torque + solver->pumpLubricationTorques[v_info.id()];
-			if (twistTorque)
-				torque = torque + solver->twistLubricationTorques[v_info.id()];
+			if (pumpTorque) torque = torque + solver->pumpLubricationTorques[v_info.id()];
+			if (twistTorque) torque = torque + solver->twistLubricationTorques[v_info.id()];
 		}
 
-		if (normalLubrication)
-			force = force + solver->normalLubricationForce[v_info.id()];
+		if (normalLubrication) force = force + solver->normalLubricationForce[v_info.id()];
 		scene->forces.addForce(v_info.id(), force);
 		scene->forces.addTorque(v_info.id(), torque);
 	}
@@ -220,8 +215,7 @@ void PeriodicFlowEngine::action()
 			boost::this_thread::sleep(boost::posix_time::microseconds(1000));
 		}
 		if (updateTriangulation || (meshUpdateInterval > 0 && ellapsedIter > (0.5 * meshUpdateInterval))) {
-			if (useSolver == 0)
-				LOG_ERROR("background calculations not available for Gauss-Seidel");
+			if (useSolver == 0) LOG_ERROR("background calculations not available for Gauss-Seidel");
 			if (fluidBulkModulus > 0 || doInterpolate)
 				solver->interpolate(solver->T[solver->currentTes], backgroundSolver->T[backgroundSolver->currentTes]);
 			solver           = backgroundSolver;
@@ -240,8 +234,7 @@ void PeriodicFlowEngine::action()
 			initializeVolumes(*solver);
 			computeViscousForces(*solver);
 		} else if (debug && !first) {
-			if (debug && !backgroundCompleted)
-				cerr << "still computing solver in the background" << endl;
+			if (debug && !backgroundCompleted) cerr << "still computing solver in the background" << endl;
 			ellapsedIter++;
 		}
 	} else {
@@ -278,8 +271,7 @@ void PeriodicFlowEngine::triangulate(FlowSolver& flow)
 	vector<posData>& buffer = multithread ? positionBufferParallel : positionBufferCurrent;
 	FOREACH(const posData& b, buffer)
 	{
-		if (!b.exists || !b.isSphere || b.id == ignoredBody)
-			continue;
+		if (!b.exists || !b.isSphere || b.id == ignoredBody) continue;
 		Vector3i period;
 		Vector3r wpos;
 		// FIXME: use "sheared" variant if the cell is sheared
@@ -346,8 +338,7 @@ Real PeriodicFlowEngine::volumeCell(CellHandle cell)
 	const Vector3r    p2     = positionBufferCurrent[cell->vertex(2)->info().id()].pos + makeVector3r(cell->vertex(2)->info().ghostShift());
 	const Vector3r    p3     = positionBufferCurrent[cell->vertex(3)->info().id()].pos + makeVector3r(cell->vertex(3)->info().ghostShift());
 	Real              volume = inv6 * ((p0 - p1).cross(p0 - p2)).dot(p0 - p3);
-	if (!(cell->info().volumeSign))
-		cell->info().volumeSign = (volume > 0) ? 1 : -1;
+	if (!(cell->info().volumeSign)) cell->info().volumeSign = (volume > 0) ? 1 : -1;
 	return volume;
 }
 
@@ -390,8 +381,7 @@ void PeriodicFlowEngine::locateCell(CellHandle baseCell, unsigned int& index, in
 	}
 	PeriFlowTesselation::CellInfo& baseInfo = baseCell->info();
 	//already located, return FIXME: is inline working correctly? else move this test outside the function, just before the calls
-	if (baseInfo.index > 0 || baseInfo.isGhost)
-		return;
+	if (baseInfo.index > 0 || baseInfo.isGhost) return;
 	RTriangulation& Tri = flow.tesselation().Triangulation();
 	Vector3r        center(0, 0, 0);
 	Vector3i        period;
@@ -403,8 +393,7 @@ void PeriodicFlowEngine::locateCell(CellHandle baseCell, unsigned int& index, in
 		Real boundPos = 0;
 		int  coord    = 0;
 		for (int k = 0; k < 4; k++) {
-			if (!baseCell->vertex(k)->info().isFictious)
-				center += 0.3333333333 * makeVector3r(baseCell->vertex(k)->point().point());
+			if (!baseCell->vertex(k)->info().isFictious) center += 0.3333333333 * makeVector3r(baseCell->vertex(k)->point().point());
 			else {
 				coord    = flow.boundary(baseCell->vertex(k)->info().id()).coordinate;
 				boundPos = flow.boundary(baseCell->vertex(k)->info().id()).p[coord];
@@ -425,20 +414,17 @@ void PeriodicFlowEngine::locateCell(CellHandle baseCell, unsigned int& index, in
 		baseInfo.period[2] = period[2];
 		//call recursively, since the returned cell could be also a ghost (especially if baseCell is a non-periodic type from the external contour
 		locateCell(ch, index, baseIndex, flow, ++count);
-		if (ch == baseCell)
-			cerr << "WTF!!" << endl;
+		if (ch == baseCell) cerr << "WTF!!" << endl;
 		//check consistency
 		bool checkC = false;
 		for (int kk = 0; kk < 4; kk++)
-			if ((!baseCell->vertex(kk)->info().isGhost) && ((!baseCell->vertex(kk)->info().isFictious)))
-				checkC = true;
+			if ((!baseCell->vertex(kk)->info().isGhost) && ((!baseCell->vertex(kk)->info().isFictious))) checkC = true;
 		if (checkC) {
 			bool checkV = true;
 			for (int kk = 0; kk < 4; kk++) {
 				checkV = false;
 				for (int jj = 0; jj < 4; jj++)
-					if (baseCell->vertex(kk)->info().id() == ch->vertex(jj)->info().id())
-						checkV = true;
+					if (baseCell->vertex(kk)->info().id() == ch->vertex(jj)->info().id()) checkV = true;
 				if (!checkV) {
 					cerr << "periodicity is broken" << endl;
 					for (int jj = 0; jj < 4; jj++)
@@ -473,16 +459,14 @@ void PeriodicFlowEngine::locateCell(CellHandle baseCell, unsigned int& index, in
 		//index is 1-based, if it is zero it is not initialized, we define it here
 		if (baseInfo.baseIndex < 0) {
 			baseInfo.baseIndex = ++baseIndex;
-			if (!baseInfo.Pcondition)
-				baseInfo.index = ++index;
+			if (!baseInfo.Pcondition) baseInfo.index = ++index;
 		}
 	}
 }
 
 void PeriodicFlowEngine::updateVolumes(FlowSolver& flow)
 { //FIXME: replace by the non-periodic version
-	if (debug)
-		cout << "Updating volumes.............." << endl;
+	if (debug) cout << "Updating volumes.............." << endl;
 	Real invDeltaT = 1 / scene->dt;
 	Real newVol, dVol;
 	epsVolMax    = 0;
@@ -507,9 +491,7 @@ void PeriodicFlowEngine::updateVolumes(FlowSolver& flow)
 		totVol += newVol;
 		dVol = cell->info().volumeSign * (newVol - cell->info().volume());
 		totDVol += dVol;
-		if (newVol != 0) {
-			epsVolMax = max(epsVolMax, math::abs(dVol / newVol));
-		}
+		if (newVol != 0) { epsVolMax = max(epsVolMax, math::abs(dVol / newVol)); }
 		cell->info().dv()     = dVol * invDeltaT;
 		cell->info().volume() = newVol;
 	}
@@ -517,8 +499,7 @@ void PeriodicFlowEngine::updateVolumes(FlowSolver& flow)
 		flow.IFCells[n]->info().dv() += flow.imposedF[n].second;
 		flow.IFCells[n]->info().Pcondition = false;
 	}
-	if (debug)
-		cout << "Updated volumes, total =" << totVol << ", dVol=" << totDVol << " " << totVol0 << " " << totVol1 << endl;
+	if (debug) cout << "Updated volumes, total =" << totVol << ", dVol=" << totDVol << " " << totVol0 << " " << totVol1 << endl;
 }
 
 
@@ -542,36 +523,29 @@ void PeriodicFlowEngine::initializeVolumes(FlowSolver& flow)
 			        = 1. / (max(minimumPorosity * cell->info().volume(), math::abs(cell->info().volume()) - flow.volumeSolidPore(cell)));
 		}
 	}
-	if (debug)
-		cout << "Volumes initialised." << endl;
+	if (debug) cout << "Volumes initialised." << endl;
 }
 
 void PeriodicFlowEngine::buildTriangulation(Real pZero, FlowSolver& flow)
 {
-	if (first)
-		flow.currentTes = 0;
+	if (first) flow.currentTes = 0;
 	else {
 		flow.currentTes = !flow.currentTes;
-		if (debug)
-			cout << "--------RETRIANGULATION-----------" << endl;
+		if (debug) cout << "--------RETRIANGULATION-----------" << endl;
 	}
 	flow.resetNetwork();
 	initSolver(flow);
 	addBoundary(flow);
-	if (debug)
-		cout << endl << "Added boundaries------" << endl << endl;
+	if (debug) cout << endl << "Added boundaries------" << endl << endl;
 	triangulate(flow);
-	if (debug)
-		cout << endl << "Tesselating------" << endl << endl;
+	if (debug) cout << endl << "Tesselating------" << endl << endl;
 	flow.tesselation().compute();
 	flow.defineFictiousCells();
 	//FIXME: this is already done in addBoundary(?)
 	boundaryConditions(flow);
-	if (debug)
-		cout << endl << "boundaryConditions------" << endl << endl;
+	if (debug) cout << endl << "boundaryConditions------" << endl << endl;
 	flow.initializePressure(pZero);
-	if (debug)
-		cout << endl << "initializePressure------" << endl << endl;
+	if (debug) cout << endl << "initializePressure------" << endl << endl;
 	// Define the ghost cells and add indexes to the cells inside the period (the ones that will contain the pressure unknowns)
 	//This must be done after boundary conditions and initialize pressure, else the indexes are not good (not accounting imposedP): FIXME
 	unsigned int             index     = 0;
@@ -586,8 +560,7 @@ void PeriodicFlowEngine::buildTriangulation(Real pZero, FlowSolver& flow)
 			return;
 		}
 		//Fill this vector than can be later used to speedup loops
-		if (!cell->info().isGhost)
-			Tes.cellHandles[cell->info().baseIndex] = cell;
+		if (!cell->info().isGhost) Tes.cellHandles[cell->info().baseIndex] = cell;
 		cell->info().id = cell->info().baseIndex;
 	}
 	Tes.cellHandles.resize(baseIndex + 1);
@@ -596,8 +569,7 @@ void PeriodicFlowEngine::buildTriangulation(Real pZero, FlowSolver& flow)
 		LOG_INFO("Running blockHook: " << blockHook);
 		pyRunString(blockHook);
 	}
-	if (debug)
-		cout << endl << "locateCell------" << endl << endl;
+	if (debug) cout << endl << "locateCell------" << endl << endl;
 	flow.computePermeability();
 	porosity       = flow.vPoralPorosity / flow.vTotalPorosity;
 	flow.tolerance = tolerance;
@@ -605,17 +577,13 @@ void PeriodicFlowEngine::buildTriangulation(Real pZero, FlowSolver& flow)
 
 	flow.displayStatistics();
 	//FIXME: check interpolate() for the periodic case, at least use the mean pressure from previous step.
-	if (!first && !multithread && (useSolver == 0 || fluidBulkModulus > 0 || doInterpolate))
-		flow.interpolate(flow.T[!flow.currentTes], Tes);
+	if (!first && !multithread && (useSolver == 0 || fluidBulkModulus > 0 || doInterpolate)) flow.interpolate(flow.T[!flow.currentTes], Tes);
 	// 	if ( !first && (useSolver==0 || fluidBulkModulus>0)) flow.interpolate ( flow.T[!flow.currentTes], flow.tesselation() );
 
-	if (waveAction)
-		flow.applySinusoidalPressure(Tes.Triangulation(), sineMagnitude, sineAverage, 30);
+	if (waveAction) flow.applySinusoidalPressure(Tes.Triangulation(), sineMagnitude, sineAverage, 30);
 
-	if (normalLubrication || shearLubrication || viscousShear)
-		flow.computeEdgesSurfaces();
-	if (debug)
-		cout << endl << "end buildTri------" << endl << endl;
+	if (normalLubrication || shearLubrication || viscousShear) flow.computeEdgesSurfaces();
+	if (debug) cout << endl << "end buildTri------" << endl << endl;
 }
 
 void PeriodicFlowEngine::preparePShifts()

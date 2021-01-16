@@ -11,10 +11,8 @@ CREATE_LOGGER(InteractionLoop);
 
 void InteractionLoop::pyHandleCustomCtorArgs(boost::python::tuple& t, boost::python::dict& /*d*/)
 {
-	if (boost::python::len(t) == 0)
-		return; // nothing to do
-	if (boost::python::len(t) != 3)
-		throw invalid_argument("Exactly 3 lists of functors must be given");
+	if (boost::python::len(t) == 0) return; // nothing to do
+	if (boost::python::len(t) != 3) throw invalid_argument("Exactly 3 lists of functors must be given");
 	// parse custom arguments (3 lists) and do in-place modification of args
 	using vecGeom = std::vector<shared_ptr<IGeomFunctor>>;
 	using vecPhys = std::vector<shared_ptr<IPhysFunctor>>;
@@ -62,9 +60,7 @@ void InteractionLoop::action()
 
 	// cache transformed cell size
 	Matrix3r cellHsize = Matrix3r::Zero();
-	if (scene->isPeriodic) {
-		cellHsize = scene->cell->hSize;
-	}
+	if (scene->isPeriodic) { cellHsize = scene->cell->hSize; }
 
 	// force removal of interactions that were not encountered by the collider
 	// (only for some kinds of colliders; see comment for InteractionContainer::iterColliderLastRun)
@@ -106,9 +102,7 @@ void InteractionLoop::action()
 #endif
 
 		// Skip interaction with clumps
-		if (b1_->isClump() || b2_->isClump()) {
-			continue;
-		}
+		if (b1_->isClump() || b2_->isClump()) { continue; }
 
 		// we know there is no geometry functor already, take the short path
 		if (!I->functorCache.geomExists) {
@@ -135,9 +129,7 @@ void InteractionLoop::action()
 		// arguments for the geom functor are in the reverse order (dispatcher would normally call goReverse).
 		// we don't remember the fact that is reverse, so we swap bodies within the interaction
 		// and can call go in all cases
-		if (swap) {
-			I->swapOrder();
-		}
+		if (swap) { I->swapOrder(); }
 		// body pointers must be updated, in case we swapped
 		const shared_ptr<Body>& b1 = swap ? b2_ : b1_;
 		const shared_ptr<Body>& b2 = swap ? b1_ : b2_;
@@ -155,8 +147,7 @@ void InteractionLoop::action()
 			geomCreated = I->functorCache.geom->go(b1->shape, b2->shape, *b1->state, *b2->state, shift2, /*force*/ false, I);
 		}
 		if (!geomCreated) {
-			if (wasReal)
-				LOG_WARN("IGeomFunctor returned false on existing interaction!");
+			if (wasReal) LOG_WARN("IGeomFunctor returned false on existing interaction!");
 			if (wasReal)
 				scene->interactions->requestErase(I); // fully created interaction without geometry is reset and perhaps erased in the next step
 			continue;                                     // in any case don't care about this one anymore
@@ -176,8 +167,7 @@ void InteractionLoop::action()
 		I->functorCache.phys->go(b1->material, b2->material, I);
 		assert(I->phys);
 
-		if (!wasReal)
-			I->iterMadeReal = scene->iter; // mark the interaction as created right now
+		if (!wasReal) I->iterMadeReal = scene->iter; // mark the interaction as created right now
 
 		// LawDispatcher
 		// populating constLaw cache must be done after geom and physics dispatchers have been called, since otherwise the interaction
@@ -197,16 +187,13 @@ void InteractionLoop::action()
 		assert(I->functorCache.constLaw);
 
 		//If the functor return false, the interaction is reset
-		if (!I->functorCache.constLaw->go(I->geom, I->phys, I.get()))
-			scene->interactions->requestErase(I);
+		if (!I->functorCache.constLaw->go(I->geom, I->phys, I.get())) scene->interactions->requestErase(I);
 
 		// process callbacks for this interaction
 		// 		Note: the following condition is algorithmicaly safe, however a possible use of callbacks is to do something special when interactions are deleted, which is impossible if we skip them. The test should be commented out
-		if (!I->isReal())
-			continue; // it is possible that Law2_ functor called requestErase, hence this check
+		if (!I->isReal()) continue; // it is possible that Law2_ functor called requestErase, hence this check
 		for (size_t j = 0; j < callbacksSize; j++) {
-			if (callbackPtrs[j] != NULL)
-				(*(callbackPtrs[j]))(callbacks[j].get(), I.get());
+			if (callbackPtrs[j] != NULL) (*(callbackPtrs[j]))(callbacks[j].get(), I.get());
 		}
 	}
 }

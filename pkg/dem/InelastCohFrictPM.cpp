@@ -77,12 +77,9 @@ Real Law2_ScGeom6D_InelastCohFrictPhys_CohesionMoment::normElastEnergy()
 	Real normEnergy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		InelastCohFrictPhys* phys = YADE_CAST<InelastCohFrictPhys*>(I->phys.get());
-		if (phys) {
-			normEnergy += 0.5 * (phys->normalForce.squaredNorm() / phys->kn);
-		}
+		if (phys) { normEnergy += 0.5 * (phys->normalForce.squaredNorm() / phys->kn); }
 	}
 	return normEnergy;
 }
@@ -92,12 +89,9 @@ Real Law2_ScGeom6D_InelastCohFrictPhys_CohesionMoment::shearElastEnergy()
 	Real shearEnergy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		InelastCohFrictPhys* phys = YADE_CAST<InelastCohFrictPhys*>(I->phys.get());
-		if (phys) {
-			shearEnergy += 0.5 * (phys->shearForce.squaredNorm() / phys->ks);
-		}
+		if (phys) { shearEnergy += 0.5 * (phys->shearForce.squaredNorm() / phys->ks); }
 	}
 	return shearEnergy;
 }
@@ -111,8 +105,7 @@ bool Law2_ScGeom6D_InelastCohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig,
 	const Real&          dt   = scene->dt;
 	ScGeom6D*            geom = YADE_CAST<ScGeom6D*>(ig.get());
 	InelastCohFrictPhys* phys = YADE_CAST<InelastCohFrictPhys*>(ip.get());
-	if (contact->isFresh(scene))
-		phys->shearForce = Vector3r::Zero();
+	if (contact->isFresh(scene)) phys->shearForce = Vector3r::Zero();
 
 	Real un = geom->penetrationDepth - phys->unp;
 	Real Fn;
@@ -187,8 +180,7 @@ bool Law2_ScGeom6D_InelastCohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig,
 	shearForce += phys->ks * dus;
 	Real Fs    = shearForce.norm();
 	Real maxFs = phys->shearAdhesion;
-	if (maxFs == 0)
-		maxFs = Fn * phys->tangensOfFrictionAngle;
+	if (maxFs == 0) maxFs = Fn * phys->tangensOfFrictionAngle;
 	maxFs = math::max((Real)0, maxFs);
 	if (Fs > maxFs) { //Plasticity condition on shear force
 		if (!phys->cohesionBroken) {
@@ -206,8 +198,7 @@ bool Law2_ScGeom6D_InelastCohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig,
 		Real twist      = geom->getTwist() - phys->twp;
 		Real twistM     = twist * phys->ktw; //elastic twist moment.
 		bool sgnChanged = 0;                 //whether the twist moment just passed the equilibrium state.
-		if (!contact->isFresh(scene) && phys->moment_twist.dot(twistM * geom->normal) < 0)
-			sgnChanged = 1;
+		if (!contact->isFresh(scene) && phys->moment_twist.dot(twistM * geom->normal) < 0) sgnChanged = 1;
 		if (math::abs(twist) > phys->maxTwist) {
 			phys->cohesionBroken = 1;
 			twistM               = 0;
@@ -260,9 +251,8 @@ bool Law2_ScGeom6D_InelastCohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig,
 				Vector3r newPureCreep = phys->pureCreep - phys->kRCrp * relRotBend;
 				phys->pureCreep       = newPureCreep.norm() > phys->pureCreep.norm()
 				              ? newPureCreep
-				              : phys->pureCreep + phys->kRCrp * relRotBend; // while loading, pure creep must increase.
-				if (phys->pureCreep.norm() < bendM.norm())
-					bendM = phys->pureCreep; // bending moment can't be greather than pure creep.
+				              : phys->pureCreep + phys->kRCrp * relRotBend;         // while loading, pure creep must increase.
+				if (phys->pureCreep.norm() < bendM.norm()) bendM = phys->pureCreep; // bending moment can't be greather than pure creep.
 				if (phys->pureCreep.norm() > phys->maxCrpRchdB.norm())
 					phys->maxCrpRchdB = phys->pureCreep; // maxCrpRchdB must follow the maximum of pure creep.
 				if (phys->pureCreep.norm() > phys->maxBendMom) {

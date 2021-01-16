@@ -10,9 +10,7 @@ namespace yade { // Cannot have #include directive inside.
 void PotentialBlock2AABB::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body*)
 {
 	PotentialBlock* pp = static_cast<PotentialBlock*>(cm.get());
-	if (!bv) {
-		bv = shared_ptr<Bound>(new Aabb);
-	}
+	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 	Aabb* aabb = static_cast<Aabb*>(bv.get());
 
 	if (pp->AabbMinMax == false) {

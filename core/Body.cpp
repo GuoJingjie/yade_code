@@ -19,8 +19,7 @@ boost::python::list Body::py_intrs()
 {
 	boost::python::list ret;
 	for (Body::MapId2IntrT::iterator it = this->intrs.begin(), end = this->intrs.end(); it != end; ++it) { //Iterate over all bodie's interactions
-		if (!(*it).second->isReal())
-			continue;
+		if (!(*it).second->isReal()) continue;
 		ret.append((*it).second);
 	}
 	return ret;
@@ -31,8 +30,7 @@ unsigned int Body::coordNumber() const
 {
 	unsigned int intrSize = 0;
 	for (auto it = this->intrs.begin(), end = this->intrs.end(); it != end; ++it) { //Iterate over all bodie's interactions
-		if (!(*it).second->isReal())
-			continue;
+		if (!(*it).second->isReal()) continue;
 		intrSize++;
 	}
 	return intrSize;

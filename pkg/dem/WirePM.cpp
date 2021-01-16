@@ -36,25 +36,21 @@ void WireMat::postLoad(WireMat&)
 	as = pow(diameter * 0.5, 2) * Mathr::PI;
 
 	// check for stress strain curve for single wire
-	if (strainStressValues.empty())
-		return; // uninitialized object, don't do nothing at all
-	if (strainStressValues.size() < 2)
-		throw std::invalid_argument("WireMat.strainStressValues: at least two points must be given.");
+	if (strainStressValues.empty()) return; // uninitialized object, don't do nothing at all
+	if (strainStressValues.size() < 2) throw std::invalid_argument("WireMat.strainStressValues: at least two points must be given.");
 	if (strainStressValues[0](0) == 0. && strainStressValues[0](1) == 0.)
 		throw std::invalid_argument("WireMat.strainStressValues: Definition must start with values greater than zero (strain>0,stress>0)");
 
 	switch (type) {
 		case 0:
 			LOG_DEBUG("WireMat - Bertrand's approach");
-			if (!strainStressValuesDT.empty())
-				throw std::invalid_argument("Use of WireMat.strainStressValuesDT has no effect!");
+			if (!strainStressValuesDT.empty()) throw std::invalid_argument("Use of WireMat.strainStressValuesDT has no effect!");
 			break;
 		case 1:
 			// check stress strain curve four double twist if type=1
 			LOG_DEBUG("WireMat - New approach with two curves");
 			if (isDoubleTwist) {
-				if (strainStressValuesDT.empty())
-					throw runtime_error("WireMat.strainStressValuesDT not defined");
+				if (strainStressValuesDT.empty()) throw runtime_error("WireMat.strainStressValuesDT not defined");
 				if (strainStressValuesDT.size() < 2)
 					throw std::invalid_argument("WireMat.strainStressValuesDT: at least two points must be given.");
 				if (strainStressValuesDT[0](0) == 0. && strainStressValuesDT[0](1))
@@ -66,8 +62,7 @@ void WireMat::postLoad(WireMat&)
 			// check stress strain curve four double twist if type=2
 			LOG_DEBUG("WireMat - New approach with two curves and initial shift");
 			if (isDoubleTwist) {
-				if (strainStressValuesDT.empty())
-					throw runtime_error("WireMat.strainStressValuesDT not defined");
+				if (strainStressValuesDT.empty()) throw runtime_error("WireMat.strainStressValuesDT not defined");
 				if (strainStressValuesDT.size() < 2)
 					throw std::invalid_argument("WireMat.strainStressValuesDT: at least two points must be given.");
 				if (strainStressValuesDT[0](0) == 0. && strainStressValuesDT[0](1))
@@ -137,8 +132,7 @@ bool Law2_ScGeom_WirePhys_WirePM::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& i
 	}
 
 	/* compression forces cannot be applied to wires */
-	if (Fn > 0.)
-		Fn = 0.;
+	if (Fn > 0.) Fn = 0.;
 
 	TRVAR3(displN, D, Fn);
 
@@ -146,8 +140,7 @@ bool Law2_ScGeom_WirePhys_WirePM::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& i
 
 	/* compute a limit value to check how far the interaction is from failing */
 	Real limitFactor = 0.;
-	if (Fn < 0.)
-		limitFactor = math::abs(D / (DFValues.back()(0)));
+	if (Fn < 0.) limitFactor = math::abs(D / (DFValues.back()(0)));
 	phys->limitFactor = limitFactor;
 
 	State* st1 = Body::byId(id1, scene)->state.get();
@@ -156,8 +149,7 @@ bool Law2_ScGeom_WirePhys_WirePM::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& i
 	/* apply forces */
 	Vector3r f = phys->normalForce;
 	// these lines to adapt to periodic boundary conditions
-	if (!scene->isPeriodic)
-		applyForceAtContactPoint(f, geom->contactPoint, id2, st2->se3.position, id1, st1->se3.position);
+	if (!scene->isPeriodic) applyForceAtContactPoint(f, geom->contactPoint, id2, st2->se3.position, id1, st1->se3.position);
 	else { // in scg we do not wrap particles positions, hence "applyForceAtContactPoint" cannot be used when scene is periodic
 		scene->forces.addForce(id1, -f);
 		scene->forces.addForce(id2, f);
@@ -174,8 +166,7 @@ CREATE_LOGGER(Ip2_WireMat_WireMat_WirePhys);
 void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
 	/* avoid any updates if interactions which already exist */
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 	//TODO: make boolean to make sure physics are never updated, optimisation of contact detection mesh (no contact detection after link is created)
 
 	LOG_TRACE("Ip2_WireMat_WireMat_WirePhys::go - create interaction physics");
@@ -234,8 +225,7 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 	/* account for random distortion if type=2 */
 	if (mat1->type == 2) {
 		isShifted = true;
-		if (mat1->seed == -1)
-			dl = l0 * mat1->lambdau;
+		if (mat1->seed == -1) dl = l0 * mat1->lambdau;
 		else {
 			// initialize random number generator
 			static boost::minstd_rand randGen(mat1->seed != 0 ? mat1->seed : (int)TimingInfo::getNow(true));
@@ -248,8 +238,7 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 		}
 	} else if (mat2->type == 2) {
 		isShifted = true;
-		if (mat2->seed == -1)
-			dl = l0 * mat2->lambdau;
+		if (mat2->seed == -1) dl = l0 * mat2->lambdau;
 		else {
 			// initialize random number generator
 			static boost::minstd_rand randGen(mat2->seed != 0 ? mat2->seed : (int)TimingInfo::getNow(true));
@@ -307,15 +296,13 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 		values(0)       = -dl + mat1->lambdaF * (DFValues[0](0) + dl);
 		values(1)       = DFValues[0](1) * mat1->lambdaF;
 		k               = values(1) / values(0);
-		if (mat1->lambdaF < 1.)
-			DFValues.insert(DFValues.begin(), values);
+		if (mat1->lambdaF < 1.) DFValues.insert(DFValues.begin(), values);
 	} else if (mat2->type == 2) {
 		Vector2r values = Vector2r::Zero();
 		values(0)       = -dl + mat2->lambdaF * (DFValues[0](0) + dl);
 		values(1)       = DFValues[0](1) * mat2->lambdaF;
 		k               = values(1) / values(0);
-		if (mat2->lambdaF < 1.)
-			DFValues.insert(DFValues.begin(), values);
+		if (mat2->lambdaF < 1.) DFValues.insert(DFValues.begin(), values);
 	}
 
 	/* compute stiffness-values of wire */
@@ -335,8 +322,7 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 	contactPhysics->stiffnessValues  = kValues;
 
 	/* set particles as linked */
-	if ((scene->iter < linkThresholdIteration))
-		contactPhysics->isLinked = true;
+	if ((scene->iter < linkThresholdIteration)) contactPhysics->isLinked = true;
 	else
 		contactPhysics->isLinked = false;
 

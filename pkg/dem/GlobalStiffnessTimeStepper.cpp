@@ -58,16 +58,14 @@ void GlobalStiffnessTimeStepper::findTimeStepFromBody(const shared_ptr<Body>& bo
 			if (body->material and body->shape) {
 				shared_ptr<ElastMat> ebp = YADE_PTR_DYN_CAST<ElastMat>(body->material);
 				shared_ptr<Sphere>   s   = YADE_PTR_DYN_CAST<Sphere>(body->shape);
-				if (!ebp || !s)
-					dt = defaultDt;
+				if (!ebp || !s) dt = defaultDt;
 				Real density = body->state->mass / ((4 / 3.) * Mathr::PI * pow(s->radius, 3));
 				dt           = s->radius / sqrt(ebp->young / density);
 				// 				dt=defaultDt;
 			} else {
 				dt = defaultDt;
 			}
-			if (sdec->densityScaling <= 0)
-				sdec->densityScaling = timestepSafetyCoefficient * pow(dt / targetDt, 2.0);
+			if (sdec->densityScaling <= 0) sdec->densityScaling = timestepSafetyCoefficient * pow(dt / targetDt, 2.0);
 			else
 				sdec->densityScaling = min(1.01 * sdec->densityScaling, timestepSafetyCoefficient * pow(dt / targetDt, 2.0));
 		}
@@ -143,8 +141,7 @@ void GlobalStiffnessTimeStepper::findTimeStepFromBody(const shared_ptr<Body>& bo
 
 	//if there is a target dt, then we apply density scaling on the body, the inertia used in Newton will be mass/scaling, the weight is unmodified
 	if (densityScaling) {
-		if (sdec->densityScaling > 0)
-			sdec->densityScaling = min(sdec->densityScaling * 1.05, pow(dt / targetDt, 2.0));
+		if (sdec->densityScaling > 0) sdec->densityScaling = min(sdec->densityScaling * 1.05, pow(dt / targetDt, 2.0));
 		else
 			sdec->densityScaling = pow(dt / targetDt, 2.0);
 		newDt = targetDt;
@@ -165,22 +162,17 @@ void GlobalStiffnessTimeStepper::computeTimeStep(Scene* ncb)
 	// for some reason, this line is necessary to have correct functioning (no idea _why_)
 	// see scripts/test/compare-identical.py, run with or without active=active.
 	active = active;
-	if (defaultDt < 0)
-		defaultDt = timestepSafetyCoefficient * Shop::PWaveTimeStep(Omega::instance().getScene());
+	if (defaultDt < 0) defaultDt = timestepSafetyCoefficient * Shop::PWaveTimeStep(Omega::instance().getScene());
 	computeStiffnesses(ncb);
 
 	shared_ptr<BodyContainer>& bodies = ncb->bodies;
 	newDt                             = Mathr::MAX_REAL;
 	computedSomething                 = false;
 	for (const auto& b : *bodies) {
-		if (!b) {
-			continue;
-		}
-		if (b->isDynamic() && !b->isClumpMember())
-			findTimeStepFromBody(b, ncb);
+		if (!b) { continue; }
+		if (b->isDynamic() && !b->isClumpMember()) findTimeStepFromBody(b, ncb);
 	}
-	if (densityScaling)
-		(newDt = targetDt);
+	if (densityScaling) (newDt = targetDt);
 	if (computedSomething || densityScaling) {
 		previousDt = min(
 		        min(newDt, maxDt),
@@ -244,8 +236,7 @@ void GlobalStiffnessTimeStepper::computeStiffnesses(Scene* rb)
 
 	FOREACH(const shared_ptr<Interaction>& contact, *rb->interactions)
 	{
-		if (!contact->isReal())
-			continue;
+		if (!contact->isReal()) continue;
 
 		GenericSpheresContact* geom = YADE_CAST<GenericSpheresContact*>(contact->geom.get());
 		assert(geom);
@@ -259,8 +250,7 @@ void GlobalStiffnessTimeStepper::computeStiffnesses(Scene* rb)
 		Real&     radius1 = geom->refR1;
 		Real&     radius2 = geom->refR2;
 		Real      fn      = (static_cast<NormShearPhys*>(contact->phys.get()))->normalForce.squaredNorm();
-		if (fn == 0)
-			continue; //Is it a problem with some laws? I still don't see why.
+		if (fn == 0) continue; //Is it a problem with some laws? I still don't see why.
 
 		//Diagonal terms of the translational stiffness matrix
 		Vector3r diag_stiffness = Vector3r(math::pow(normal.x(), 2), math::pow(normal.y(), 2), math::pow(normal.z(), 2));

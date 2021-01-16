@@ -31,8 +31,7 @@ void Ip2_FrictMat_FrictMat_CapillaryPhys1::go(
 			const shared_ptr<FrictMat>& sdec1 = YADE_PTR_CAST<FrictMat>(b1);
 			const shared_ptr<FrictMat>& sdec2 = YADE_PTR_CAST<FrictMat>(b2);
 
-			if (!interaction->phys)
-				interaction->phys = shared_ptr<CapillaryPhys1>(new CapillaryPhys1());
+			if (!interaction->phys) interaction->phys = shared_ptr<CapillaryPhys1>(new CapillaryPhys1());
 			const shared_ptr<CapillaryPhys1>& contactPhysics = YADE_PTR_CAST<CapillaryPhys1>(interaction->phys);
 
 			Real Ea = sdec1->young;

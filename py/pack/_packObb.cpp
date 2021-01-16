@@ -92,8 +92,7 @@ void bestFitOBB(const std::vector<Vector3r>& pts, Vector3r& center, Vector3r& ha
 boost::python::tuple bestFitOBB_py(const boost::python::tuple& _pts)
 {
 	int l = boost::python::len(_pts);
-	if (l <= 1)
-		throw std::runtime_error("Cloud must have at least 2 points.");
+	if (l <= 1) throw std::runtime_error("Cloud must have at least 2 points.");
 	std::vector<Vector3r> pts;
 	pts.resize(l);
 	for (int i = 0; i < l; i++)

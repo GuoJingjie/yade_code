@@ -56,8 +56,7 @@ void                               Gl1_DeformableElement::go(const shared_ptr<Sh
 				Vector3r normal = (vertex1 - vertex0).cross(vertex2 - vertex0);
 				normal.normalize();
 
-				if ((vertex3 - vertex0).dot(normal) > 0)
-					normal = -normal;
+				if ((vertex3 - vertex0).dot(normal) > 0) normal = -normal;
 
 
 				glNormal3v(normal); // this makes every triangle different WRT the light

@@ -74,7 +74,6 @@ namespace CGT {
 		using _N::surfaceSolidThroatInPore;
 		using _N::tesselation;
 
-		using BaseFlowSolver::getGasPerm;
 		using BaseFlowSolver::bIntrinsicPerm;
 		using BaseFlowSolver::checkSphereFacetOverlap;
 		using BaseFlowSolver::clampKValues;
@@ -88,6 +87,7 @@ namespace CGT {
 		using BaseFlowSolver::freeSwelling;
 		using BaseFlowSolver::freezePorosity;
 		using BaseFlowSolver::freezeSaturation;
+		using BaseFlowSolver::getGasPerm;
 		using BaseFlowSolver::kFactor;
 		using BaseFlowSolver::KOptFactor;
 		using BaseFlowSolver::manualCrackPerm;
@@ -166,7 +166,7 @@ namespace CGT {
 		using BaseFlowSolver::xodv;
 
 		// vector<int> indices; //redirection vector containing the rank of cell so that T_cells[indices[cell->info().index]]=cell
-		Real        averageK = 0;
+		Real averageK = 0;
 		virtual ~PartialSatLinSolv();
 		PartialSatLinSolv();
 

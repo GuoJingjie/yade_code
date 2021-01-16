@@ -94,8 +94,7 @@ private:
 
 	ClassFactory()
 	{
-		if (getenv("YADE_DEBUG"))
-			fprintf(stderr, "Constructing ClassFactory.\n");
+		if (getenv("YADE_DEBUG")) fprintf(stderr, "Constructing ClassFactory.\n");
 	}
 	ClassFactory(const ClassFactory&);
 	ClassFactory& operator=(const ClassFactory&);

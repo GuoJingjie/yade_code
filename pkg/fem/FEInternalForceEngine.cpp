@@ -19,11 +19,9 @@ CREATE_LOGGER(FEInternalForceEngine);
 void FEInternalForceEngine::pyHandleCustomCtorArgs(boost::python::tuple& t, boost::python::dict& /*d*/)
 {
 	cout << "Entered the initialization function";
-	if (boost::python::len(t) == 0)
-		return; // nothing to do
+	if (boost::python::len(t) == 0) return; // nothing to do
 
-	if (boost::python::len(t) != 1)
-		throw invalid_argument("At least 1 functors must be given");
+	if (boost::python::len(t) != 1) throw invalid_argument("At least 1 functors must be given");
 
 
 	boost::python::list vv = boost::python::extract<boost::python::list>(t[0])();

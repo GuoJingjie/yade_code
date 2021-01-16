@@ -43,8 +43,7 @@ CREATE_LOGGER(Ip2_CpmMat_CpmMat_CpmPhys);
 void Ip2_CpmMat_CpmMat_CpmPhys::go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction)
 {
 	// no updates of an already existing contact necessary
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 	TIMING_DELTAS_START();
 	shared_ptr<CpmPhys> cpmPhys(new CpmPhys());
 	interaction->phys = cpmPhys;
@@ -131,8 +130,7 @@ Real CpmPhys::solveBeta(const Real c, const Real N)
 #endif
 		Real aux = c * exp(N * ret) + exp(ret);
 		f        = log(aux);
-		if (math::abs(f) < maxError)
-			return ret;
+		if (math::abs(f) < maxError) return ret;
 		Real df = (c * N * exp(N * ret) + exp(ret)) / aux;
 		ret -= f / df;
 	}
@@ -158,8 +156,7 @@ Real CpmPhys::computeDmgOverstress(Real dt)
 
 Real CpmPhys::computeViscoplScalingFactor(Real sigmaTNorm, Real sigmaTYield, Real dt)
 {
-	if (sigmaTNorm < sigmaTYield)
-		return 1.;
+	if (sigmaTNorm < sigmaTYield) return 1.;
 	Real c    = undamagedCohesion * pow(plTau / (G * dt), plRateExp) * pow(sigmaTNorm - sigmaTYield, plRateExp - 1.);
 	Real beta = solveBeta(c, plRateExp);
 	//LOG_DEBUG("scaling factor "<<1.-exp(beta)*(1-sigmaTYield/sigmaTNorm));
@@ -168,8 +165,7 @@ Real CpmPhys::computeViscoplScalingFactor(Real sigmaTNorm, Real sigmaTYield, Rea
 
 Real CpmPhys::funcG(const Real& kappaD, const Real& epsCrackOnset, const Real& epsFracture, const bool& neverDamage, const int& damLaw)
 {
-	if (kappaD < epsCrackOnset || neverDamage)
-		return 0;
+	if (kappaD < epsCrackOnset || neverDamage) return 0;
 	switch (damLaw) {
 		case 0: // linear
 			return (1. - epsCrackOnset / kappaD) / (1. - epsCrackOnset / epsFracture);
@@ -192,8 +188,7 @@ Real CpmPhys::funcGDKappa(const Real& kappaD, const Real& epsCrackOnset, const R
 
 Real CpmPhys::funcGInv(const Real& omega, const Real& epsCrackOnset, const Real& epsFracture, const bool& neverDamage, const int& damLaw)
 {
-	if (omega == 0. || neverDamage)
-		return 0;
+	if (omega == 0. || neverDamage) return 0;
 	switch (damLaw) {
 		case 0: // linear
 			return epsCrackOnset / (1. - omega * (1. - epsCrackOnset / epsFracture));
@@ -207,9 +202,7 @@ Real CpmPhys::funcGInv(const Real& omega, const Real& epsCrackOnset, const Real&
 				dfg  = CpmPhys::funcGDKappa(ret, epsCrackOnset, epsFracture, neverDamage, damLaw);
 				decr = fg / dfg;
 				ret -= decr;
-				if (math::abs(decr / epsCrackOnset) < tol) {
-					return ret;
-				}
+				if (math::abs(decr / epsCrackOnset) < tol) { return ret; }
 			}
 			throw runtime_error("CpmPhys::funcGInv: no convergence\n");
 	}
@@ -218,18 +211,14 @@ Real CpmPhys::funcGInv(const Real& omega, const Real& epsCrackOnset, const Real&
 
 void CpmPhys::setDamage(Real dmg)
 {
-	if (neverDamage) {
-		return;
-	}
+	if (neverDamage) { return; }
 	omega  = dmg;
 	kappaD = CpmPhys::funcGInv(dmg, epsCrackOnset, epsFracture, neverDamage, damLaw);
 }
 
 void CpmPhys::setRelResidualStrength(Real r)
 {
-	if (neverDamage) {
-		return;
-	}
+	if (neverDamage) { return; }
 	if (r == 1.) {
 		relResidualStrength = r;
 		kappaD = omega = 0.;
@@ -275,8 +264,7 @@ Real Law2_ScGeom_CpmPhys_Cpm::elasticEnergy()
 	Real ret = 0.;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		CpmPhys* phys = dynamic_cast<CpmPhys*>(I->phys.get());
 		if (phys) {
 			ret += 0.5 * phys->normalForce.squaredNorm() / ((1 - (phys->epsN > 0 ? phys->omega : 0)) * phys->kn);
@@ -523,8 +511,7 @@ void Gl1_CpmPhys::go(
 	//Vector3r lineColor(phys->omega,1-phys->omega,0.0); /* damaged links red, undamaged green */
 	Vector3r lineColor = Shop::scalarOnColorScale(1. - phys->relResidualStrength);
 
-	if (colorStrainRatio > 0)
-		lineColor = Shop::scalarOnColorScale(phys->epsN / (phys->epsCrackOnset * colorStrainRatio));
+	if (colorStrainRatio > 0) lineColor = Shop::scalarOnColorScale(phys->epsN / (phys->epsCrackOnset * colorStrainRatio));
 
 	// FIXME: should be computed by the renderer; for now, use the real values
 	//Vector3r pos1=geom->se31.position, pos2=geom->se32.position;
@@ -545,8 +532,7 @@ void Gl1_CpmPhys::go(
 		}
 		*/
 
-	if (contactLine)
-		GLUtils::GLDrawLine(pos1, pos2, lineColor);
+	if (contactLine) GLUtils::GLDrawLine(pos1, pos2, lineColor);
 	if (dmgLabel) {
 		GLUtils::GLDrawNum(phys->omega, 0.5 * (pos1 + pos2), lineColor);
 	} else if (epsNLabel) {
@@ -576,9 +562,7 @@ void Gl1_CpmPhys::go(
 	}
 
 	Vector3r cp = boost::static_pointer_cast<GenericSpheresContact>(i->geom)->contactPoint;
-	if (scene->isPeriodic) {
-		cp = scene->cell->wrapShearedPt(cp);
-	}
+	if (scene->isPeriodic) { cp = scene->cell->wrapShearedPt(cp); }
 	if (epsT) {
 		Real     maxShear = (phys->undamagedCohesion - phys->sigmaN * phys->tanFrictionAngle) / phys->G;
 		Real     relShear = phys->epsT.norm() / maxShear;
@@ -618,13 +602,10 @@ void CpmStateUpdater::update(Scene* _scene)
 	Matrix3r incr;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I)
-			continue;
-		if (!I->isReal())
-			continue;
+		if (!I) continue;
+		if (!I->isReal()) continue;
 		shared_ptr<CpmPhys> phys = YADE_PTR_DYN_CAST<CpmPhys>(I->phys);
-		if (!phys)
-			continue;
+		if (!phys) continue;
 		const Body::id_t       id1 = I->getId1(), id2 = I->getId2();
 		GenericSpheresContact* geom = YADE_CAST<GenericSpheresContact*>(I->geom.get());
 
@@ -640,8 +621,7 @@ void CpmStateUpdater::update(Scene* _scene)
 		bodyStats[id1].nLinks++;
 		bodyStats[id2].nLinks++;
 
-		if (!phys->isCohesive)
-			continue;
+		if (!phys->isCohesive) continue;
 		bodyStats[id1].nCohLinks++;
 		bodyStats[id1].dmgSum += (1 - phys->relResidualStrength); // bodyStats[id1].epsPlSum += phys->epsPlSum;
 		bodyStats[id2].nCohLinks++;
@@ -661,13 +641,11 @@ void CpmStateUpdater::update(Scene* _scene)
 	// 	Real tr;
 	FOREACH(shared_ptr<Body> B, *scene->bodies)
 	{
-		if (!B)
-			continue;
+		if (!B) continue;
 		const Body::id_t& id = B->getId();
 		// add damaged contacts that have already been deleted
 		CpmState* state = dynamic_cast<CpmState*>(B->state.get());
-		if (!state)
-			continue;
+		if (!state) continue;
 		state->stress        = bodyStats[id].stress;
 		int cohLinksWhenever = bodyStats[id].nCohLinks + state->numBrokenCohesive;
 		if (cohLinksWhenever > 0) {
@@ -686,8 +664,7 @@ void CpmStateUpdater::update(Scene* _scene)
 		B->shape->color = Vector3r(state->normDmg, 1 - state->normDmg, B->state->blockedDOFs == State::DOF_ALL ? 0 : 1);
 		nAvgRelResidual += 0.5 * state->numBrokenCohesive; // add half or broken interactions, other body has the other half
 		Sphere* sphere = dynamic_cast<Sphere*>(B->shape.get());
-		if (!sphere)
-			continue;
+		if (!sphere) continue;
 		Real& r       = sphere->radius;
 		state->stress = bodyStats[id].stress / (4 / 3. * Mathr::PI * r * r * r / .62) * .5;
 	}

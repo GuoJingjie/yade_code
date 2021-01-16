@@ -125,16 +125,12 @@ double UnsaturatedEngine::getSpecificInterfacialArea()
 
 	for (FiniteCellsIterator cell = tri.finite_cells_begin(); cell != cellEnd; cell++) {
 		//             if (cell->info().Pcondition==true) continue;//NOTE:reservoirs cells interfacialArea should not be included.
-		if (cell->info().isFictious)
-			continue;
+		if (cell->info().isFictious) continue;
 		if (cell->info().isNWRes == true) {
 			for (int facet = 0; facet < 4; facet++) {
-				if (tri.is_infinite(cell->neighbor(facet)))
-					continue;
-				if (cell->neighbor(facet)->info().Pcondition == true)
-					continue;
-				if ((cell->neighbor(facet)->info().isFictious) && (!isInvadeBoundary))
-					continue;
+				if (tri.is_infinite(cell->neighbor(facet))) continue;
+				if (cell->neighbor(facet)->info().Pcondition == true) continue;
+				if ((cell->neighbor(facet)->info().isFictious) && (!isInvadeBoundary)) continue;
 				if (cell->neighbor(facet)->info().isNWRes == false)
 					interfacialArea = interfacialArea + computeCellInterfacialArea(cell, facet, cell->info().poreThroatRadius[facet]);
 			}
@@ -152,8 +148,7 @@ double UnsaturatedEngine::computeCellInterfacialArea(CellHandle cell, int j, dou
 
 	if (facetNFictious == 0) {
 		RTriangulation& tri = solver->T[solver->currentTes].Triangulation();
-		if (tri.is_infinite(cell->neighbor(j)))
-			return 0;
+		if (tri.is_infinite(cell->neighbor(j))) return 0;
 
 		Vector3r pos[3];    //solid pos
 		double   r[3];      //solid radius
@@ -226,8 +221,7 @@ void UnsaturatedEngine::checkLatticeNodeY(double y)
 				int      M           = 0;
 				Vector3r LatticeNode = Vector3r(x, y, z);
 				for (FiniteVerticesIterator V_it = tri.finite_vertices_begin(); V_it != tri.finite_vertices_end(); V_it++) {
-					if (V_it->info().isFictious)
-						continue;
+					if (V_it->info().isFictious) continue;
 					Vector3r SphereCenter = makeVector3r(V_it->point().point());
 					if ((LatticeNode - SphereCenter).squaredNorm() < V_it->point().weight()) {
 						M = 1;
@@ -274,48 +268,37 @@ void UnsaturatedEngine::initializeCellWindowsID()
 
 double UnsaturatedEngine::getWindowsSaturation(int i, bool isSideBoundaryIncluded)
 {
-	if ((!isInvadeBoundary) && (isSideBoundaryIncluded))
-		cerr << "In isInvadeBoundary=false drainage, isSideBoundaryIncluded can't set true." << endl;
+	if ((!isInvadeBoundary) && (isSideBoundaryIncluded)) cerr << "In isInvadeBoundary=false drainage, isSideBoundaryIncluded can't set true." << endl;
 	double              poresVolume = 0.0; //total pores volume
 	double              wVolume     = 0.0; //W-phase volume
 	RTriangulation&     tri         = solver->T[solver->currentTes].Triangulation();
 	FiniteCellsIterator cellEnd     = tri.finite_cells_end();
 
 	for (FiniteCellsIterator cell = tri.finite_cells_begin(); cell != cellEnd; cell++) {
-		if (cell->info().Pcondition)
-			continue;
-		if ((cell->info().isFictious) && (!isSideBoundaryIncluded))
-			continue;
-		if (cell->info().windowsID != i)
-			continue;
+		if (cell->info().Pcondition) continue;
+		if ((cell->info().isFictious) && (!isSideBoundaryIncluded)) continue;
+		if (cell->info().windowsID != i) continue;
 		poresVolume = poresVolume + cell->info().poreBodyVolume;
-		if (cell->info().saturation > 0.0) {
-			wVolume = wVolume + cell->info().poreBodyVolume * cell->info().saturation;
-		}
+		if (cell->info().saturation > 0.0) { wVolume = wVolume + cell->info().poreBodyVolume * cell->info().saturation; }
 	}
 	return wVolume / poresVolume;
 }
 
 double UnsaturatedEngine::getCuboidSubdomainSaturation(Vector3r pos1, Vector3r pos2, bool isSideBoundaryIncluded)
 {
-	if ((!isInvadeBoundary) && (isSideBoundaryIncluded))
-		cerr << "In isInvadeBoundary=false drainage, isSideBoundaryIncluded can't set true." << endl;
+	if ((!isInvadeBoundary) && (isSideBoundaryIncluded)) cerr << "In isInvadeBoundary=false drainage, isSideBoundaryIncluded can't set true." << endl;
 	double              poresVolume = 0.0; //total pores volume
 	double              wVolume     = 0.0; //W-phase volume
 	RTriangulation&     tri         = solver->T[solver->currentTes].Triangulation();
 	FiniteCellsIterator cellEnd     = tri.finite_cells_end();
 
 	for (FiniteCellsIterator cell = tri.finite_cells_begin(); cell != cellEnd; cell++) {
-		if (cell->info().Pcondition)
-			continue;
-		if ((cell->info().isFictious) && (!isSideBoundaryIncluded))
-			continue;
+		if (cell->info().Pcondition) continue;
+		if ((cell->info().isFictious) && (!isSideBoundaryIncluded)) continue;
 		if (((pos1[0] - cell->info()[0]) * (pos2[0] - cell->info()[0]) < 0) && ((pos1[1] - cell->info()[1]) * (pos2[1] - cell->info()[1]) < 0)
 		    && ((pos1[2] - cell->info()[2]) * (pos2[2] - cell->info()[2]) < 0)) {
 			poresVolume = poresVolume + cell->info().poreBodyVolume;
-			if (cell->info().saturation > 0.0) {
-				wVolume = wVolume + cell->info().poreBodyVolume * cell->info().saturation;
-			}
+			if (cell->info().saturation > 0.0) { wVolume = wVolume + cell->info().poreBodyVolume * cell->info().saturation; }
 		}
 	}
 	return wVolume / poresVolume;
@@ -323,26 +306,22 @@ double UnsaturatedEngine::getCuboidSubdomainSaturation(Vector3r pos1, Vector3r p
 
 double UnsaturatedEngine::getCuboidSubdomainPorosity(Vector3r pos1, Vector3r pos2, bool isSideBoundaryIncluded)
 {
-	if ((!isInvadeBoundary) && (isSideBoundaryIncluded))
-		cerr << "In isInvadeBoundary=false drainage, isSideBoundaryIncluded can't set true." << endl;
+	if ((!isInvadeBoundary) && (isSideBoundaryIncluded)) cerr << "In isInvadeBoundary=false drainage, isSideBoundaryIncluded can't set true." << endl;
 	double              totalCellVolume = 0.0;
 	double              totalVoidVolume = 0.0;
 	RTriangulation&     tri             = solver->T[solver->currentTes].Triangulation();
 	FiniteCellsIterator cellEnd         = tri.finite_cells_end();
 
 	for (FiniteCellsIterator cell = tri.finite_cells_begin(); cell != cellEnd; cell++) {
-		if (cell->info().Pcondition)
-			continue;
-		if ((cell->info().isFictious) && (!isSideBoundaryIncluded))
-			continue;
+		if (cell->info().Pcondition) continue;
+		if ((cell->info().isFictious) && (!isSideBoundaryIncluded)) continue;
 		if (((pos1[0] - cell->info()[0]) * (pos2[0] - cell->info()[0]) < 0) && ((pos1[1] - cell->info()[1]) * (pos2[1] - cell->info()[1]) < 0)
 		    && ((pos1[2] - cell->info()[2]) * (pos2[2] - cell->info()[2]) < 0)) {
 			totalCellVolume = totalCellVolume + std::abs(cell->info().volume());
 			totalVoidVolume = totalVoidVolume + cell->info().poreBodyVolume;
 		}
 	}
-	if (totalVoidVolume == 0 || totalCellVolume == 0)
-		cerr << "subdomain too small!" << endl;
+	if (totalVoidVolume == 0 || totalCellVolume == 0) cerr << "subdomain too small!" << endl;
 	return totalVoidVolume / totalCellVolume;
 }
 
@@ -370,16 +349,13 @@ double UnsaturatedEngine::getSphericalSubdomainSaturation(Vector3r pos, double r
 	for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
 		Vector3r cellPos = makeVector3r(cell->info());
 		double   dist    = (pos - cellPos).norm();
-		if (dist > radius)
-			continue;
+		if (dist > radius) continue;
 		if (cell->info().isFictious) {
 			cerr << "The radius of subdomain is too large, or the center of subdomain is out of packing. Please reset subdomain again." << endl;
 			return -1;
 		}
 		poresVolume = poresVolume + cell->info().poreBodyVolume;
-		if (cell->info().saturation > 0.0) {
-			wVolume = wVolume + cell->info().poreBodyVolume * cell->info().saturation;
-		}
+		if (cell->info().saturation > 0.0) { wVolume = wVolume + cell->info().poreBodyVolume * cell->info().saturation; }
 	}
 	return wVolume / poresVolume;
 }

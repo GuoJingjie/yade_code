@@ -30,8 +30,7 @@ bool FileGenerator::generateAndSave(const string& outputFileName, string& messag
 		return false;
 	}
 	// generation wasn't successful
-	if (status == false)
-		return false;
+	if (status == false) return false;
 
 	else {
 		boost::posix_time::ptime         now2           = boost::posix_time::second_clock::local_time();
@@ -58,8 +57,7 @@ void FileGenerator::pyGenerate(const string& out)
 	string message;
 	bool   ret = generateAndSave(out, message);
 	LOG_INFO((ret ? "SUCCESS:\n" : "FAILURE:\n") << message);
-	if (ret == false)
-		throw runtime_error(getClassName() + " reported error: " + message);
+	if (ret == false) throw runtime_error(getClassName() + " reported error: " + message);
 }
 void FileGenerator::pyLoad()
 {

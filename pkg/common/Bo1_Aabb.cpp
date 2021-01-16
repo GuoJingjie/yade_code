@@ -15,9 +15,7 @@ YADE_PLUGIN((Bo1_Sphere_Aabb)(Bo1_Facet_Aabb)(Bo1_Box_Aabb));
 void Bo1_Sphere_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body* /*b*/)
 {
 	Sphere* sphere = static_cast<Sphere*>(cm.get());
-	if (!bv) {
-		bv = shared_ptr<Bound>(new Aabb);
-	}
+	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 	Aabb*    aabb     = static_cast<Aabb*>(bv.get());
 	Vector3r halfSize = (aabbEnlargeFactor > 0 ? aabbEnlargeFactor : 1.) * Vector3r(sphere->radius, sphere->radius, sphere->radius);
 	if (!scene->isPeriodic) {
@@ -43,9 +41,7 @@ void Bo1_Sphere_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, con
 
 void Bo1_Facet_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body* /*b*/)
 {
-	if (!bv) {
-		bv = shared_ptr<Bound>(new Aabb);
-	}
+	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 	Aabb*                   aabb       = static_cast<Aabb*>(bv.get());
 	Facet*                  facet      = static_cast<Facet*>(cm.get());
 	const Vector3r&         O          = se3.position;
@@ -73,13 +69,10 @@ void Bo1_Facet_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, cons
 void Bo1_Box_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body* /*b*/)
 {
 	Box* box = static_cast<Box*>(cm.get());
-	if (!bv) {
-		bv = shared_ptr<Bound>(new Aabb);
-	}
+	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 	Aabb* aabb = static_cast<Aabb*>(bv.get());
 
-	if (scene->isPeriodic && scene->cell->hasShear())
-		throw logic_error(__FILE__ "Boxes not (yet?) supported in sheared cell.");
+	if (scene->isPeriodic && scene->cell->hasShear()) throw logic_error(__FILE__ "Boxes not (yet?) supported in sheared cell.");
 
 	Matrix3r r = se3.orientation.toRotationMatrix();
 	Vector3r halfSize(Vector3r::Zero());

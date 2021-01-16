@@ -32,8 +32,7 @@ Real Ip2_ViscElMat_ViscElMat_ViscElPhys::epsilon = 1.0e-8;
 void Ip2_ViscElMat_ViscElMat_ViscElPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
 	// no updates of an existing contact
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 	shared_ptr<ViscElPhys> phys(new ViscElPhys());
 	Calculate_ViscElMat_ViscElMat_ViscElPhys(b1, b2, interaction, phys);
 
@@ -105,8 +104,7 @@ bool computeForceTorqueViscEl(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys
 		const State&         de2    = *static_cast<State*>(bodies[id2]->state.get());
 #endif
 		Vector3r& shearForce = phys.shearForce;
-		if (I->isFresh(scene))
-			shearForce = Vector3r(0, 0, 0);
+		if (I->isFresh(scene)) shearForce = Vector3r(0, 0, 0);
 		const Real& dt = scene->dt;
 		shearForce     = geom.rotate(shearForce);
 
@@ -232,14 +230,10 @@ void Ip2_ViscElMat_ViscElMat_ViscElPhys::Calculate_ViscElMat_ViscElMat_ViscElPhy
 		// Thanks to Dominik Boemer for pointing this out
 		// http://www.mail-archive.com/yade-users@lists.launchpad.net/msg08741.html
 
-		if (math::abs(cn1) <= Mathr::ZERO_TOLERANCE)
-			cn1 = 0;
-		if (math::abs(cn2) <= Mathr::ZERO_TOLERANCE)
-			cn2 = 0;
-		if (math::abs(cs1) <= Mathr::ZERO_TOLERANCE)
-			cs1 = 0;
-		if (math::abs(cs2) <= Mathr::ZERO_TOLERANCE)
-			cs2 = 0;
+		if (math::abs(cn1) <= Mathr::ZERO_TOLERANCE) cn1 = 0;
+		if (math::abs(cn2) <= Mathr::ZERO_TOLERANCE) cn2 = 0;
+		if (math::abs(cs1) <= Mathr::ZERO_TOLERANCE) cs1 = 0;
+		if (math::abs(cs2) <= Mathr::ZERO_TOLERANCE) cs2 = 0;
 	} else if ((isfinite(mat1->kn)) and (isfinite(mat1->ks)) and (isfinite(mat1->cn)) and (isfinite(mat1->cs))) {
 		//Set parameters explicitly
 		kn1 = mat1->kn;
@@ -316,8 +310,7 @@ Real contactParameterCalculation(const Real& l1, const Real& l2)
 {
 	// If one of paramaters > 0. we DO NOT return 0
 	Real a = (l1 ? 1 / l1 : 0) + (l2 ? 1 / l2 : 0);
-	if (a)
-		return 1 / a;
+	if (a) return 1 / a;
 	else
 		return 0;
 }
@@ -354,8 +347,7 @@ Real get_en_from_cn(const Real& cn, const Real& m, const Real& kn)
 	Real omega0 = sqrt(kn / m);
 	Real omega  = sqrt(omega0 * omega0 - beta * beta);
 	Real Omega  = sqrt(beta * beta - omega0 * omega0);
-	if (beta < omega0 / sqrt(2.))
-		return exp(-beta / omega * (Mathr::PI - atan(2. * beta * omega / (omega * omega - beta * beta))));
+	if (beta < omega0 / sqrt(2.)) return exp(-beta / omega * (Mathr::PI - atan(2. * beta * omega / (omega * omega - beta * beta))));
 	else if (beta > omega0 / sqrt(2.) and beta < omega0)
 		return exp(-beta / omega * atan(-2. * beta * omega / (omega * omega - beta * beta)));
 	else if (beta > omega0)
@@ -426,8 +418,7 @@ void DeformControl::action()
 			double s1dR     = s1_state->dR;
 
 			for (Body::MapId2IntrT::iterator it = b[i]->intrs.begin(), end = b[i]->intrs.end(); it != end; ++it) {
-				if (!it->second->isReal())
-					continue;
+				if (!it->second->isReal()) continue;
 
 				unsigned int partnerID;
 				if (it->second->getId1() == Body::id_t(i)) {

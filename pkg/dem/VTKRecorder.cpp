@@ -98,9 +98,7 @@ void VTKRecorder::action()
 			recActive[REC_STRESS]      = true;
 			recActive[REC_FORCE]       = true;
 			recActive[REC_COORDNUMBER] = true;
-			if (scene->isPeriodic) {
-				recActive[REC_PERICELL] = true;
-			}
+			if (scene->isPeriodic) { recActive[REC_PERICELL] = true; }
 			recActive[REC_BSTRESS] = true;
 		} else if (rec == "spheres") {
 			recActive[REC_SPHERES] = true;
@@ -166,25 +164,19 @@ void VTKRecorder::action()
 			                                      "clumpId, materialId, jcfpm, cracks, moments, pericell, liquidcontrol, bstresses). Ignored.");
 	}
 #ifdef YADE_MPI
-	if (parallelMode) {
-		recActive[REC_SUBDOMAIN] = true;
-	}
+	if (parallelMode) { recActive[REC_SUBDOMAIN] = true; }
 #endif
 	// cpm needs interactions
-	if (recActive[REC_CPM])
-		recActive[REC_INTR] = true;
+	if (recActive[REC_CPM]) recActive[REC_INTR] = true;
 
 	// jcfpm needs interactions
-	if (recActive[REC_JCFPM])
-		recActive[REC_INTR] = true;
+	if (recActive[REC_JCFPM]) recActive[REC_INTR] = true;
 
 	// wpm needs interactions
-	if (recActive[REC_WPM])
-		recActive[REC_INTR] = true;
+	if (recActive[REC_WPM]) recActive[REC_INTR] = true;
 
 	// liquid control needs interactions
-	if (recActive[REC_LIQ])
-		recActive[REC_INTR] = true;
+	if (recActive[REC_LIQ]) recActive[REC_INTR] = true;
 
 	// spheres
 	vtkSmartPointer<vtkPointsReal> spheresPos   = vtkSmartPointer<vtkPointsReal>::New();
@@ -569,9 +561,7 @@ void VTKRecorder::action()
 	if (recActive[REC_INTR]) {
 		// holds information about cell distance between spatial and displayed position of each particle
 		vector<Vector3i> wrapCellDist;
-		if (scene->isPeriodic) {
-			wrapCellDist.resize(scene->bodies->size());
-		}
+		if (scene->isPeriodic) { wrapCellDist.resize(scene->bodies->size()); }
 		// save body positions, referenced by ids by vtkLine
 
 		// map to keep real body ids and their number in a vector (intrBodyPos)
@@ -591,24 +581,18 @@ void VTKRecorder::action()
 		}
 		FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 		{
-			if (!I->isReal())
-				continue;
+			if (!I->isReal()) continue;
 			if (skipFacetIntr) {
-				if (!(Body::byId(I->getId1())))
-					continue;
-				if (!(Body::byId(I->getId2())))
-					continue;
-				if (!(dynamic_cast<Sphere*>(Body::byId(I->getId1())->shape.get())))
-					continue;
-				if (!(dynamic_cast<Sphere*>(Body::byId(I->getId2())->shape.get())))
-					continue;
+				if (!(Body::byId(I->getId1()))) continue;
+				if (!(Body::byId(I->getId2()))) continue;
+				if (!(dynamic_cast<Sphere*>(Body::byId(I->getId1())->shape.get()))) continue;
+				if (!(dynamic_cast<Sphere*>(Body::byId(I->getId2())->shape.get()))) continue;
 			}
 
 			const auto iterId1 = bIdVector.find(I->getId1());
 			const auto iterId2 = bIdVector.find(I->getId2());
 
-			if (iterId2 == bIdVector.end() || iterId2 == bIdVector.end())
-				continue;
+			if (iterId2 == bIdVector.end() || iterId2 == bIdVector.end()) continue;
 
 			const auto setId1Line = iterId1->second;
 			const auto setId2Line = iterId2->second;
@@ -702,13 +686,10 @@ void VTKRecorder::action()
 
 	//Additional Vector for storing forces
 	vector<Shop::bodyState> bodyStates;
-	if (recActive[REC_STRESS])
-		Shop::getStressForEachBody(bodyStates);
+	if (recActive[REC_STRESS]) Shop::getStressForEachBody(bodyStates);
 
 	vector<Matrix3r> bStresses;
-	if (recActive[REC_BSTRESS]) {
-		Shop::getStressLWForEachBody(bStresses);
-	}
+	if (recActive[REC_BSTRESS]) { Shop::getStressLWForEachBody(bStresses); }
 
 	vector<Matrix3r> NCStresses, SCStresses, NLStresses, SLStresses, NPStresses;
 	if (recActive[REC_LUBRICATION]) {
@@ -724,15 +705,12 @@ void VTKRecorder::action()
 #else
 	for (const auto& b : *scene->bodies) {
 #endif
-		if (!b)
-			continue;
-		if (mask != 0 && !b->maskCompatible(mask))
-			continue;
+		if (!b) continue;
+		if (mask != 0 && !b->maskCompatible(mask)) continue;
 		if (recActive[REC_SPHERES]) {
 			const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
 			if (sphere) {
-				if (skipNondynamic && b->state->blockedDOFs == State::DOF_ALL)
-					continue;
+				if (skipNondynamic && b->state->blockedDOFs == State::DOF_ALL) continue;
 				vtkIdType pid[1];
 				Vector3r  pos(scene->isPeriodic ? scene->cell->wrapShearedPt(b->state->pos) : b->state->pos);
 				pid[0] = spheresPos->InsertNextPoint(pos);
@@ -755,15 +733,11 @@ void VTKRecorder::action()
 					spheresDirII->InsertNextTuple(dirII);
 					spheresDirIII->InsertNextTuple(dirIII);
 				}
-				if (recActive[REC_ID])
-					spheresId->InsertNextValue(b->getId());
-				if (recActive[REC_MASK])
-					spheresMask->InsertNextValue(GET_MASK(b));
-				if (recActive[REC_MASS])
-					spheresMass->InsertNextValue(b->state->mass);
+				if (recActive[REC_ID]) spheresId->InsertNextValue(b->getId());
+				if (recActive[REC_MASK]) spheresMask->InsertNextValue(GET_MASK(b));
+				if (recActive[REC_MASS]) spheresMass->InsertNextValue(b->state->mass);
 #ifdef YADE_MPI
-				if (recActive[REC_SUBDOMAIN])
-					spheresSubdomain->InsertNextValue(b->subdomain);
+				if (recActive[REC_SUBDOMAIN]) spheresSubdomain->InsertNextValue(b->subdomain);
 #endif
 
 #ifdef THERMAL
@@ -780,8 +754,7 @@ void VTKRecorder::action()
 					spheresIncidentCells->InsertNextValue(state->lastIncidentCells);
 				}
 #endif
-				if (recActive[REC_CLUMPID])
-					clumpId->InsertNextValue(b->clumpId);
+				if (recActive[REC_CLUMPID]) clumpId->InsertNextValue(b->clumpId);
 				if (recActive[REC_COLORS]) {
 					const Vector3r& color = sphere->color;
 					spheresColors->InsertNextTuple(color);
@@ -844,9 +817,7 @@ void VTKRecorder::action()
 					jcfpmDamage->InsertNextValue(YADE_PTR_CAST<JCFpmState>(b->state)->damageIndex);
 				}
 
-				if (recActive[REC_COORDNUMBER]) {
-					spheresCoordNumb->InsertNextValue(b->coordNumber());
-				}
+				if (recActive[REC_COORDNUMBER]) { spheresCoordNumb->InsertNextValue(b->coordNumber()); }
 #ifdef YADE_SPH
 				if (recActive[REC_SPH]) {
 					spheresRhoSPH->InsertNextValue(b->state->rho);
@@ -870,8 +841,7 @@ void VTKRecorder::action()
 					spheresLiqVolTotal->InsertNextValue(tmpVolIter + b->state->Vf);
 				}
 #endif
-				if (recActive[REC_MATERIALID])
-					spheresMaterialId->InsertNextValue(b->material->id);
+				if (recActive[REC_MATERIALID]) spheresMaterialId->InsertNextValue(b->material->id);
 				continue;
 			}
 		} // end rec sphere.
@@ -910,13 +880,9 @@ void VTKRecorder::action()
 					facetsTorqueVec->InsertNextTuple(t);
 				}
 
-				if (recActive[REC_MATERIALID])
-					facetsMaterialId->InsertNextValue(b->material->id);
-				if (recActive[REC_MASK])
-					facetsMask->InsertNextValue(GET_MASK(b));
-				if (recActive[REC_COORDNUMBER]) {
-					facetsCoordNumb->InsertNextValue(b->coordNumber());
-				}
+				if (recActive[REC_MATERIALID]) facetsMaterialId->InsertNextValue(b->material->id);
+				if (recActive[REC_MASK]) facetsMask->InsertNextValue(GET_MASK(b));
+				if (recActive[REC_COORDNUMBER]) { facetsCoordNumb->InsertNextValue(b->coordNumber()); }
 				continue;
 			}
 		}
@@ -985,10 +951,8 @@ void VTKRecorder::action()
 						boxesForceLen->InsertNextValue(fn);
 						boxesTorqueLen->InsertNextValue(tn);
 					}
-					if (recActive[REC_MATERIALID])
-						boxesMaterialId->InsertNextValue(b->material->id);
-					if (recActive[REC_MASK])
-						boxesMask->InsertNextValue(GET_MASK(b));
+					if (recActive[REC_MATERIALID]) boxesMaterialId->InsertNextValue(b->material->id);
+					if (recActive[REC_MASK]) boxesMask->InsertNextValue(GET_MASK(b));
 				}
 				continue;
 			}
@@ -1027,8 +991,7 @@ void VTKRecorder::action()
 
 
 	vtkSmartPointer<vtkDataCompressor> compressor;
-	if (compress)
-		compressor = vtkSmartPointer<vtkZLibDataCompressor>::New();
+	if (compress) compressor = vtkSmartPointer<vtkZLibDataCompressor>::New();
 
 
 /* In mpiruns, spheres and other types of bodies are held by workers */
@@ -1042,18 +1005,12 @@ void VTKRecorder::action()
 		spheresUg->SetPoints(spheresPos);
 		spheresUg->SetCells(VTK_VERTEX, spheresCells);
 		spheresUg->GetPointData()->AddArray(radii);
-		if (recActive[REC_ID])
-			spheresUg->GetPointData()->AddArray(spheresId);
-		if (recActive[REC_MASK])
-			spheresUg->GetPointData()->AddArray(spheresMask);
-		if (recActive[REC_MASS])
-			spheresUg->GetPointData()->AddArray(spheresMass);
-		if (recActive[REC_TEMP])
-			spheresUg->GetPointData()->AddArray(spheresTemp);
-		if (recActive[REC_CLUMPID])
-			spheresUg->GetPointData()->AddArray(clumpId);
-		if (recActive[REC_COLORS])
-			spheresUg->GetPointData()->AddArray(spheresColors);
+		if (recActive[REC_ID]) spheresUg->GetPointData()->AddArray(spheresId);
+		if (recActive[REC_MASK]) spheresUg->GetPointData()->AddArray(spheresMask);
+		if (recActive[REC_MASS]) spheresUg->GetPointData()->AddArray(spheresMass);
+		if (recActive[REC_TEMP]) spheresUg->GetPointData()->AddArray(spheresTemp);
+		if (recActive[REC_CLUMPID]) spheresUg->GetPointData()->AddArray(clumpId);
+		if (recActive[REC_COLORS]) spheresUg->GetPointData()->AddArray(spheresColors);
 		if (recActive[REC_VELOCITY]) {
 			spheresUg->GetPointData()->AddArray(spheresLinVelVec);
 			spheresUg->GetPointData()->AddArray(spheresAngVelVec);
@@ -1061,8 +1018,7 @@ void VTKRecorder::action()
 			spheresUg->GetPointData()->AddArray(spheresAngVelLen);
 		}
 #ifdef YADE_MPI
-		if (recActive[REC_SUBDOMAIN])
-			spheresUg->GetPointData()->AddArray(spheresSubdomain);
+		if (recActive[REC_SUBDOMAIN]) spheresUg->GetPointData()->AddArray(spheresSubdomain);
 #endif
 #ifdef YADE_SPH
 		if (recActive[REC_SPH]) {
@@ -1073,9 +1029,7 @@ void VTKRecorder::action()
 #endif
 
 #ifdef YADE_DEFORM
-		if (recActive[REC_DEFORM]) {
-			spheresUg->GetPointData()->AddArray(spheresRealRad);
-		}
+		if (recActive[REC_DEFORM]) { spheresUg->GetPointData()->AddArray(spheresRealRad); }
 #endif
 
 #ifdef YADE_LIQMIGRATION
@@ -1128,10 +1082,8 @@ void VTKRecorder::action()
 			spheresUg->GetPointData()->AddArray(spheresDirII);
 			spheresUg->GetPointData()->AddArray(spheresDirIII);
 		}
-		if (recActive[REC_MATERIALID])
-			spheresUg->GetPointData()->AddArray(spheresMaterialId);
-		if (recActive[REC_COORDNUMBER])
-			spheresUg->GetCellData()->AddArray(spheresCoordNumb);
+		if (recActive[REC_MATERIALID]) spheresUg->GetPointData()->AddArray(spheresMaterialId);
+		if (recActive[REC_COORDNUMBER]) spheresUg->GetCellData()->AddArray(spheresCoordNumb);
 
 #ifdef YADE_VTK_MULTIBLOCK
 		if (!multiblock)
@@ -1140,10 +1092,8 @@ void VTKRecorder::action()
 #ifdef YADE_MPI
 		{
 			vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-			if (compress)
-				writer->SetCompressor(compressor);
-			if (ascii)
-				writer->SetDataModeToAscii();
+			if (compress) writer->SetCompressor(compressor);
+			if (ascii) writer->SetDataModeToAscii();
 			std::string fn;
 			if (!parallelMode) {
 				fn = fileName + "spheres." + boost::lexical_cast<string>(scene->iter) + ".vtu";
@@ -1170,10 +1120,8 @@ void VTKRecorder::action()
 #else
 		{
 			vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-			if (compress)
-				writer->SetCompressor(compressor);
-			if (ascii)
-				writer->SetDataModeToAscii();
+			if (compress) writer->SetCompressor(compressor);
+			if (ascii) writer->SetDataModeToAscii();
 			string fn = fileName + "spheres." + boost::lexical_cast<string>(scene->iter) + ".vtu";
 			writer->SetFileName(fn.c_str());
 			writer->SetInputData(spheresUg);
@@ -1188,8 +1136,7 @@ void VTKRecorder::action()
 	if (recActive[REC_FACETS]) {
 		facetsUg->SetPoints(facetsPos);
 		facetsUg->SetCells(VTK_TRIANGLE, facetsCells);
-		if (recActive[REC_COLORS])
-			facetsUg->GetCellData()->AddArray(facetsColors);
+		if (recActive[REC_COLORS]) facetsUg->GetCellData()->AddArray(facetsColors);
 		if (recActive[REC_STRESS]) {
 			facetsUg->GetCellData()->AddArray(facetsStressVec);
 			facetsUg->GetCellData()->AddArray(facetsStressLen);
@@ -1200,22 +1147,17 @@ void VTKRecorder::action()
 			facetsUg->GetCellData()->AddArray(facetsTorqueVec);
 			facetsUg->GetCellData()->AddArray(facetsTorqueLen);
 		}
-		if (recActive[REC_MATERIALID])
-			facetsUg->GetCellData()->AddArray(facetsMaterialId);
-		if (recActive[REC_MASK])
-			facetsUg->GetCellData()->AddArray(facetsMask);
-		if (recActive[REC_COORDNUMBER])
-			facetsUg->GetCellData()->AddArray(facetsCoordNumb);
+		if (recActive[REC_MATERIALID]) facetsUg->GetCellData()->AddArray(facetsMaterialId);
+		if (recActive[REC_MASK]) facetsUg->GetCellData()->AddArray(facetsMask);
+		if (recActive[REC_COORDNUMBER]) facetsUg->GetCellData()->AddArray(facetsCoordNumb);
 #ifdef YADE_VTK_MULTIBLOCK
 		if (!multiblock)
 #endif
 #ifdef YADE_MPI
 		{
 			vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-			if (compress)
-				writer->SetCompressor(compressor);
-			if (ascii)
-				writer->SetDataModeToAscii();
+			if (compress) writer->SetCompressor(compressor);
+			if (ascii) writer->SetDataModeToAscii();
 			std::string fn;
 			if (!parallelMode) {
 				fn = fileName + "facets." + boost::lexical_cast<string>(scene->iter) + ".vtu";
@@ -1242,10 +1184,8 @@ void VTKRecorder::action()
 #else
 		{
 			vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-			if (compress)
-				writer->SetCompressor(compressor);
-			if (ascii)
-				writer->SetDataModeToAscii();
+			if (compress) writer->SetCompressor(compressor);
+			if (ascii) writer->SetDataModeToAscii();
 			string fn = fileName + "facets." + boost::lexical_cast<string>(scene->iter) + ".vtu";
 			writer->SetFileName(fn.c_str());
 			writer->SetInputData(facetsUg);
@@ -1263,8 +1203,7 @@ void VTKRecorder::action()
 #endif
 		boxesUg->SetPoints(boxesPos);
 		boxesUg->SetCells(VTK_QUAD, boxesCells);
-		if (recActive[REC_COLORS])
-			boxesUg->GetCellData()->AddArray(boxesColors);
+		if (recActive[REC_COLORS]) boxesUg->GetCellData()->AddArray(boxesColors);
 		if (recActive[REC_STRESS]) {
 			boxesUg->GetCellData()->AddArray(boxesStressVec);
 			boxesUg->GetCellData()->AddArray(boxesStressLen);
@@ -1275,19 +1214,15 @@ void VTKRecorder::action()
 			boxesUg->GetCellData()->AddArray(boxesTorqueVec);
 			boxesUg->GetCellData()->AddArray(boxesTorqueLen);
 		}
-		if (recActive[REC_MATERIALID])
-			boxesUg->GetCellData()->AddArray(boxesMaterialId);
-		if (recActive[REC_MASK])
-			boxesUg->GetCellData()->AddArray(boxesMask);
+		if (recActive[REC_MATERIALID]) boxesUg->GetCellData()->AddArray(boxesMaterialId);
+		if (recActive[REC_MASK]) boxesUg->GetCellData()->AddArray(boxesMask);
 #ifdef YADE_VTK_MULTIBLOCK
 		if (!multiblock)
 #endif
 		{
 			vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-			if (compress)
-				writer->SetCompressor(compressor);
-			if (ascii)
-				writer->SetDataModeToAscii();
+			if (compress) writer->SetCompressor(compressor);
+			if (ascii) writer->SetDataModeToAscii();
 			string fn = fileName + "boxes." + boost::lexical_cast<string>(scene->iter) + ".vtu";
 			writer->SetFileName(fn.c_str());
 			writer->SetInputData(boxesUg);
@@ -1331,10 +1266,8 @@ void VTKRecorder::action()
 #ifdef YADE_MPI
 		{
 			vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-			if (compress)
-				writer->SetCompressor(compressor);
-			if (ascii)
-				writer->SetDataModeToAscii();
+			if (compress) writer->SetCompressor(compressor);
+			if (ascii) writer->SetDataModeToAscii();
 			std::string fn;
 			if (!parallelMode) {
 				fn = fileName + "intrs." + boost::lexical_cast<string>(scene->iter) + ".vtp";
@@ -1361,10 +1294,8 @@ void VTKRecorder::action()
 #else
 		{
 			vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-			if (compress)
-				writer->SetCompressor(compressor);
-			if (ascii)
-				writer->SetDataModeToAscii();
+			if (compress) writer->SetCompressor(compressor);
+			if (ascii) writer->SetDataModeToAscii();
 			string fn = fileName + "intrs." + boost::lexical_cast<string>(scene->iter) + ".vtp";
 			writer->SetFileName(fn.c_str());
 			writer->SetInputData(intrPd);
@@ -1387,10 +1318,8 @@ void VTKRecorder::action()
 #endif
 		{
 			vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-			if (compress)
-				writer->SetCompressor(compressor);
-			if (ascii)
-				writer->SetDataModeToAscii();
+			if (compress) writer->SetCompressor(compressor);
+			if (ascii) writer->SetDataModeToAscii();
 			string fn = fileName + "pericell." + boost::lexical_cast<string>(scene->iter) + ".vtu";
 			writer->SetFileName(fn.c_str());
 			writer->SetInputData(pericellUg);
@@ -1443,10 +1372,8 @@ void VTKRecorder::action()
 		crackUg->GetPointData()->AddArray(crackOnJnt);
 
 		vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-		if (compress)
-			writer->SetCompressor(compressor);
-		if (ascii)
-			writer->SetDataModeToAscii();
+		if (compress) writer->SetCompressor(compressor);
+		if (ascii) writer->SetDataModeToAscii();
 		string fn = fileName + "cracks." + boost::lexical_cast<string>(scene->iter) + ".vtu";
 		writer->SetFileName(fn.c_str());
 		writer->SetInputData(crackUg);
@@ -1491,10 +1418,8 @@ void VTKRecorder::action()
 		momentUg->GetPointData()->AddArray(momentEventNum);
 
 		vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-		if (compress)
-			writer->SetCompressor(compressor);
-		if (ascii)
-			writer->SetDataModeToAscii();
+		if (compress) writer->SetCompressor(compressor);
+		if (ascii) writer->SetDataModeToAscii();
 		string fn = fileName + "moments." + boost::lexical_cast<string>(scene->iter) + ".vtu";
 		writer->SetFileName(fn.c_str());
 		writer->SetInputData(momentUg);
@@ -1504,22 +1429,15 @@ void VTKRecorder::action()
 #ifdef YADE_VTK_MULTIBLOCK
 #ifdef YADE_MPI
 	if (multiblock) {
-		if (parallelMode) {
-			LOG_WARN("Multiblock feature in MPI case untested.");
-		}
+		if (parallelMode) { LOG_WARN("Multiblock feature in MPI case untested."); }
 		vtkSmartPointer<vtkMultiBlockDataSet> multiblockDataset = vtkSmartPointer<vtkMultiBlockDataSet>::New();
 		int                                   i                 = 0;
-		if (recActive[REC_SPHERES])
-			multiblockDataset->SetBlock(i++, spheresUg);
-		if (recActive[REC_FACETS])
-			multiblockDataset->SetBlock(i++, facetsUg);
-		if (recActive[REC_INTR])
-			multiblockDataset->SetBlock(i++, intrPd);
-		if (recActive[REC_PERICELL])
-			multiblockDataset->SetBlock(i++, pericellUg);
+		if (recActive[REC_SPHERES]) multiblockDataset->SetBlock(i++, spheresUg);
+		if (recActive[REC_FACETS]) multiblockDataset->SetBlock(i++, facetsUg);
+		if (recActive[REC_INTR]) multiblockDataset->SetBlock(i++, intrPd);
+		if (recActive[REC_PERICELL]) multiblockDataset->SetBlock(i++, pericellUg);
 		vtkSmartPointer<vtkXMLMultiBlockDataWriter> writer = vtkSmartPointer<vtkXMLMultiBlockDataWriter>::New();
-		if (ascii)
-			writer->SetDataModeToAscii();
+		if (ascii) writer->SetDataModeToAscii();
 		std::string fn;
 		if (!parallelMode) {
 			fn = fileName + boost::lexical_cast<string>(scene->iter) + ".vtm";
@@ -1545,18 +1463,13 @@ void VTKRecorder::action()
 #else
 	if (multiblock) {
 		vtkSmartPointer<vtkMultiBlockDataSet> multiblockDataset = vtkSmartPointer<vtkMultiBlockDataSet>::New();
-		int i = 0;
-		if (recActive[REC_SPHERES])
-			multiblockDataset->SetBlock(i++, spheresUg);
-		if (recActive[REC_FACETS])
-			multiblockDataset->SetBlock(i++, facetsUg);
-		if (recActive[REC_INTR])
-			multiblockDataset->SetBlock(i++, intrPd);
-		if (recActive[REC_PERICELL])
-			multiblockDataset->SetBlock(i++, pericellUg);
+		int                                   i                 = 0;
+		if (recActive[REC_SPHERES]) multiblockDataset->SetBlock(i++, spheresUg);
+		if (recActive[REC_FACETS]) multiblockDataset->SetBlock(i++, facetsUg);
+		if (recActive[REC_INTR]) multiblockDataset->SetBlock(i++, intrPd);
+		if (recActive[REC_PERICELL]) multiblockDataset->SetBlock(i++, pericellUg);
 		vtkSmartPointer<vtkXMLMultiBlockDataWriter> writer = vtkSmartPointer<vtkXMLMultiBlockDataWriter>::New();
-		if (ascii)
-			writer->SetDataModeToAscii();
+		if (ascii) writer->SetDataModeToAscii();
 		string fn = fileName + boost::lexical_cast<string>(scene->iter) + ".vtm";
 		writer->SetFileName(fn.c_str());
 		writer->SetInputData(multiblockDataset);

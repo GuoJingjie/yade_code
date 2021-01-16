@@ -22,8 +22,7 @@ void Facet::postLoad(Facet&)
 	if (vertices.size() != 3) {
 		throw runtime_error(("Facet must have exactly 3 vertices (not " + boost::lexical_cast<string>(vertices.size()) + ")").c_str());
 	}
-	if (math::isnan(vertices[0][0]))
-		return; // not initialized, nothing to do
+	if (math::isnan(vertices[0][0])) return; // not initialized, nothing to do
 	Vector3r e[3] = { vertices[1] - vertices[0], vertices[2] - vertices[1], vertices[0] - vertices[2] };
 #define CHECK_EDGE(i)                                                                                                                                          \
 	if (e[i].squaredNorm() == 0) {                                                                                                                         \

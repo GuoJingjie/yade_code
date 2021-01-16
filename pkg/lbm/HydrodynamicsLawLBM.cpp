@@ -58,8 +58,7 @@ bool HydrodynamicsLawLBM::isActivated()
 			}
 			return (true);
 		} else {
-			if (applyForcesAndTorques)
-				CalculateAndApplyForcesAndTorquesOnBodies(false, true);
+			if (applyForcesAndTorques) CalculateAndApplyForcesAndTorquesOnBodies(false, true);
 			return (false);
 		}
 	} else
@@ -82,24 +81,19 @@ void HydrodynamicsLawLBM::action()
 	if (firstRun) {
 		// createNewFiles();  //this line is move further to create files only when the recording configuration chosen by the operator is known
 		bool initVbCutOff = false;
-		if (VbCutOff == -1)
-			initVbCutOff = true;
+		if (VbCutOff == -1) initVbCutOff = true;
 		halfWallthickness = 1000000.;
 		NB_WALLS          = 0;
 		//NB_DYNWALLS=0;
 		NB_DYNGRAINS = 0;
 		LBMbody tmpbody;
 		for (const auto& b : *scene->bodies) {
-			if (!b)
-				continue; // deleted bodies
+			if (!b) continue; // deleted bodies
 			if (b->shape->getClassName() == "Box") {
 				Vector3r ext(YADE_PTR_CAST<Box>(b->shape)->extents);
-				if (ext[0] < halfWallthickness)
-					halfWallthickness = ext[0];
-				if (ext[1] < halfWallthickness)
-					halfWallthickness = ext[1];
-				if (ext[2] < halfWallthickness)
-					halfWallthickness = ext[2];
+				if (ext[0] < halfWallthickness) halfWallthickness = ext[0];
+				if (ext[1] < halfWallthickness) halfWallthickness = ext[1];
+				if (ext[2] < halfWallthickness) halfWallthickness = ext[2];
 				NB_WALLS++;
 				tmpbody.setAsBox();
 				tmpbody.saveProperties = false;
@@ -107,23 +101,19 @@ void HydrodynamicsLawLBM::action()
 			}
 			if (b->shape->getClassName() == "Sphere") {
 				const shared_ptr<Sphere>& sph = YADE_PTR_CAST<Sphere>(b->shape);
-				if (IdFirstSphere == -1)
-					IdFirstSphere = b->getId();
+				if (IdFirstSphere == -1) IdFirstSphere = b->getId();
 				tmpbody.setAsPtc();
 				Real r = sph->radius;
 				if (b->isDynamic()) {
 					NB_DYNGRAINS++;
 					/*--- computation of the initial volume ---*/
-					if (!strcmp(model.c_str(), "d2q9"))
-						Vo += Mathr::PI * (r * r);
+					if (!strcmp(model.c_str(), "d2q9")) Vo += Mathr::PI * (r * r);
 					else
 						Vo += 4. / 3. * Mathr::PI * (r * r * r);
-					if (initVbCutOff)
-						VbCutOff = max(VbCutOff, b->state->vel.norm() + r * b->state->angVel.norm());
+					if (initVbCutOff) VbCutOff = max(VbCutOff, b->state->vel.norm() + r * b->state->angVel.norm());
 					tmpbody.saveProperties = true;
 				} else {
-					if (b->state->pos[1] > 0.)
-						tmpbody.saveProperties = true;
+					if (b->state->pos[1] > 0.) tmpbody.saveProperties = true;
 					else
 						tmpbody.saveProperties = false;
 				}
@@ -272,26 +262,19 @@ void HydrodynamicsLawLBM::action()
 			CreateLbmDir   = true;
 		}
 		res = LBMSavedData.find("bz2");
-		if (res >= 0 && res < ll)
-			COMPRESS_DATA = true;
+		if (res >= 0 && res < ll) COMPRESS_DATA = true;
 		res = LBMSavedData.find("ObservedPtc");
-		if (res >= 0 && res < ll)
-			SAVE_OBSERVEDPTC = true;
+		if (res >= 0 && res < ll) SAVE_OBSERVEDPTC = true;
 		res = LBMSavedData.find("observedptc");
-		if (res >= 0 && res < ll)
-			SAVE_OBSERVEDPTC = true;
+		if (res >= 0 && res < ll) SAVE_OBSERVEDPTC = true;
 		res = LBMSavedData.find("observedPtc");
-		if (res >= 0 && res < ll)
-			SAVE_OBSERVEDPTC = true;
+		if (res >= 0 && res < ll) SAVE_OBSERVEDPTC = true;
 		res = LBMSavedData.find("ObservedNode");
-		if (res >= 0 && res < ll)
-			SAVE_OBSERVEDNODE = true; // does not activate any recording in a a file currently
+		if (res >= 0 && res < ll) SAVE_OBSERVEDNODE = true; // does not activate any recording in a a file currently
 		res = LBMSavedData.find("observednode");
-		if (res >= 0 && res < ll)
-			SAVE_OBSERVEDNODE = true;
+		if (res >= 0 && res < ll) SAVE_OBSERVEDNODE = true;
 		res = LBMSavedData.find("observedNode");
-		if (res >= 0 && res < ll)
-			SAVE_OBSERVEDNODE = true;
+		if (res >= 0 && res < ll) SAVE_OBSERVEDNODE = true;
 		res = LBMSavedData.find("contacts");
 		if (res >= 0 && res < ll) {
 			SAVE_CONTACTINFO = true;
@@ -334,14 +317,11 @@ void HydrodynamicsLawLBM::action()
 		/*--------------------------------------------------------------*/
 		ll  = periodicity.size();
 		res = periodicity.find("x");
-		if (res >= 0 && res < ll)
-			Xperiodicity = true;
+		if (res >= 0 && res < ll) Xperiodicity = true;
 		res = periodicity.find("y");
-		if (res >= 0 && res < ll)
-			Yperiodicity = true;
+		if (res >= 0 && res < ll) Yperiodicity = true;
 		res = periodicity.find("z");
-		if (res >= 0 && res < ll)
-			Zperiodicity = true;
+		if (res >= 0 && res < ll) Zperiodicity = true;
 		cerr << "Periodicity (XYZ): " << Xperiodicity << " " << Yperiodicity << " " << Zperiodicity << endl;
 
 
@@ -440,8 +420,7 @@ void HydrodynamicsLawLBM::action()
 		int  j        = 0;
 		for (int nidx = 0; nidx < Nx * Ny; nidx++) {
 			int i = nidx - j * Nx;
-			if ((nidx + 1) % Nx == 0)
-				j_update = true;
+			if ((nidx + 1) % Nx == 0) j_update = true;
 			int k = 0;
 
 			nodes[nidx].SetCellIndexesAndPosition(i, j, k);
@@ -472,20 +451,17 @@ void HydrodynamicsLawLBM::action()
 			int Ia = nodes[nidx].i;
 			int Ja = nodes[nidx].j;
 			for (int dndx = 0; dndx < NbDir; dndx++) {
-				if (dndx == 0)
-					continue;
+				if (dndx == 0) continue;
 				bb.PointingOutside = false;
 				if ((!strcmp(model.c_str(), "d2q9")) && ((dndx == 1) || (dndx == 2) || (dndx == 5) || (dndx == 6))) {
 					link_id++;
 					bb.i    = dndx;
 					bb.nid1 = nidx;
 					bb.nid2 = nodes[nidx].neighbour_id[dndx];
-					if (bb.nid2 == -1)
-						bb.PointingOutside = true;
+					if (bb.nid2 == -1) bb.PointingOutside = true;
 					links.push_back(bb);
 					nodes[bb.nid1].links_id[dndx] = link_id;
-					if (bb.nid2 != -1)
-						nodes[bb.nid2].links_id[opp[dndx]] = link_id;
+					if (bb.nid2 != -1) nodes[bb.nid2].links_id[opp[dndx]] = link_id;
 				} else if (!strcmp(model.c_str(), "d2q9")) {
 					if ((Ia == 0) && (Ja != 0) && ((dndx == 3) || (dndx == 7))) {
 						link_id++;
@@ -499,8 +475,7 @@ void HydrodynamicsLawLBM::action()
 						}
 						links.push_back(bb);
 						nodes[bb.nid1].links_id[dndx] = link_id;
-						if (bb.nid2 != -1)
-							nodes[bb.nid2].links_id[opp[dndx]] = link_id;
+						if (bb.nid2 != -1) nodes[bb.nid2].links_id[opp[dndx]] = link_id;
 					} else if ((Ja == 0) && (Ia != 0) && ((dndx == 4) || (dndx == 7) || (dndx == 8))) {
 						link_id++;
 						bb.i               = dndx;
@@ -513,8 +488,7 @@ void HydrodynamicsLawLBM::action()
 						}
 						links.push_back(bb);
 						nodes[bb.nid1].links_id[dndx] = link_id;
-						if (bb.nid2 != -1)
-							nodes[bb.nid2].links_id[opp[dndx]] = link_id;
+						if (bb.nid2 != -1) nodes[bb.nid2].links_id[opp[dndx]] = link_id;
 					} else if ((Ia == 0) && (Ja == 0) && ((dndx == 3) || (dndx == 4) || (dndx == 7) || (dndx == 8))) {
 						link_id++;
 						bb.i               = dndx;
@@ -527,8 +501,7 @@ void HydrodynamicsLawLBM::action()
 						}
 						links.push_back(bb);
 						nodes[bb.nid1].links_id[dndx] = link_id;
-						if (bb.nid2 != -1)
-							nodes[bb.nid2].links_id[opp[dndx]] = link_id;
+						if (bb.nid2 != -1) nodes[bb.nid2].links_id[opp[dndx]] = link_id;
 					}
 				} else {
 					cerr << "ERROR: Unknow model type: " << model << endl;
@@ -538,8 +511,7 @@ void HydrodynamicsLawLBM::action()
 		}
 		////////////////////////////////////////////////////////////////////////////////////
 
-		if ((ConvergenceThreshold == -1) || (ConvergenceThreshold == 0))
-			use_ConvergenceCriterion = false;
+		if ((ConvergenceThreshold == -1) || (ConvergenceThreshold == 0)) use_ConvergenceCriterion = false;
 		else {
 			use_ConvergenceCriterion = true;
 			ErrorCriterion           = int(math::round(ConvergenceThreshold));
@@ -643,20 +615,16 @@ void HydrodynamicsLawLBM::action()
 			NbSolidNodes++;
 		}
 
-		if (firstRun) {
-			nodes[nidx].wasObstacle = nodes[nidx].isObstacle;
-		}
+		if (firstRun) { nodes[nidx].wasObstacle = nodes[nidx].isObstacle; }
 	}
 
 	/*---------------------------------------------------------------*/
 	/*- Solid particle detection and recording of their properties --*/
 	/*---------------------------------------------------------------*/
 	NumberOfDynamicParticles = 0;
-	if (removingCriterion != 0)
-		IdOfNextErodedPtc.clear();
+	if (removingCriterion != 0) IdOfNextErodedPtc.clear();
 	for (const auto& b : *scene->bodies) {
-		if (!b)
-			continue; // deleted bodies
+		if (!b) continue; // deleted bodies
 		State*    state = b->state.get();
 		const int id    = b->getId();
 		//if ((b->shape->getClassName()=="Sphere")&&(b->isDynamic())){  //ModLuc: removing of b->isDynamic() in order that non dynamic particle can be seen by the LBM
@@ -677,12 +645,9 @@ void HydrodynamicsLawLBM::action()
 			Vector3r dist = Vector3r::Zero();
 			for (int ii = int(math::round(posMin[0])) - 1; ii <= int(math::round(posMax[0])) + 1; ii++)
 				for (int jj = int(math::round(posMin[1])) - 1; jj <= int(math::round(posMax[1])) + 1; jj++) {
-					if ((ii == -1) || (ii == Nx) || (jj == -1) || (jj == Ny))
-						continue;
-					if ((ii < -1) || (ii > Nx) || (jj < -1) || (jj > Ny))
-						continue;
-					if (LBbodies[id].radius < Rmin)
-						Rmin = LBbodies[id].radius;
+					if ((ii == -1) || (ii == Nx) || (jj == -1) || (jj == Ny)) continue;
+					if ((ii < -1) || (ii > Nx) || (jj < -1) || (jj > Ny)) continue;
+					if (LBbodies[id].radius < Rmin) Rmin = LBbodies[id].radius;
 					int nidx = ii + jj * Nx;
 					dist     = nodes[nidx].posb - LBbodies[id].pos;
 					if (dist.norm() < LBbodies[id].radius) {
@@ -691,9 +656,7 @@ void HydrodynamicsLawLBM::action()
 						NbSolidNodes++;
 						NbParticleNodes++;
 					}
-					if (firstRun) {
-						nodes[nidx].wasObstacle = nodes[nidx].isObstacle;
-					}
+					if (firstRun) { nodes[nidx].wasObstacle = nodes[nidx].isObstacle; }
 				}
 			/*-------------------------------------------------------------------*/
 			/* ///NOTE : this should be removed since it can be done with python */
@@ -720,8 +683,7 @@ void HydrodynamicsLawLBM::action()
 				}
 			}
 			//NumberOfDynamicParticles++;   //ModLuc: to still count only dynamic particles and not all particles
-			if (b->isDynamic())
-				NumberOfDynamicParticles++;
+			if (b->isDynamic()) NumberOfDynamicParticles++;
 		}
 
 		LBbodies[id].force    = Vector3r::Zero();
@@ -752,8 +714,7 @@ void HydrodynamicsLawLBM::action()
 						if (LBbodies[BodyId].isPtc()) {
 							links[lid].DistMid = nodes[nidx].posb - 0.5 * eib[links[lid].idx_sigma_i] - LBbodies[BodyId].pos;
 							links[lid].VbMid   = LBbodies[BodyId].vel + LBbodies[BodyId].AVel.cross(links[lid].DistMid);
-							if (links[lid].VbMid.norm() < VbCutOff)
-								links[lid].VbMid = Vector3r::Zero();
+							if (links[lid].VbMid.norm() < VbCutOff) links[lid].VbMid = Vector3r::Zero();
 						}
 						if (LBbodies[BodyId].isBox()) {
 							links[lid].DistMid = Vector3r::Zero();
@@ -770,8 +731,7 @@ void HydrodynamicsLawLBM::action()
 		if ((nodes[nidx].isObstacle) && (!nodes[nidx].isObstacleBoundary)) {
 			nodes[nidx].setAsFluid();
 			NbSolidNodes--;
-			if (firstRun)
-				nodes[nidx].wasObstacle = nodes[nidx].isObstacle;
+			if (firstRun) nodes[nidx].wasObstacle = nodes[nidx].isObstacle;
 		}
 
 	NbFluidNodes = NbNodes - NbSolidNodes;
@@ -781,12 +741,9 @@ void HydrodynamicsLawLBM::action()
 		/*------------------------------------------------------------------*/
 		/*------------------------------- MODE -----------------------------*/
 		/*------------------------------------------------------------------*/
-		if ((IterSubCyclingStart <= 0) && (IterMax > 1))
-			MODE = 1;
-		if ((IterSubCyclingStart <= 0) && (IterMax == 1))
-			MODE = 2;
-		if (IterSubCyclingStart > 0)
-			MODE = 3;
+		if ((IterSubCyclingStart <= 0) && (IterMax > 1)) MODE = 1;
+		if ((IterSubCyclingStart <= 0) && (IterMax == 1)) MODE = 2;
+		if (IterSubCyclingStart > 0) MODE = 3;
 
 		/*------------------------------------------------------------------*/
 		/*---------------------------- SUBCYCLING --------------------------*/
@@ -796,8 +753,7 @@ void HydrodynamicsLawLBM::action()
 			exit(-1);
 		}
 		if (DemIterLbmIterRatio == -1) {
-			if (MODE == 1)
-				DemIterLbmIterRatio = 1;
+			if (MODE == 1) DemIterLbmIterRatio = 1;
 			else
 				DemIterLbmIterRatio = int(dt / DEMdt0);
 			newDEMdt = dt / DemIterLbmIterRatio;
@@ -849,8 +805,7 @@ void HydrodynamicsLawLBM::action()
 		/*------------------------------------------------------------------*/
 		if (MODE == 1) {
 			for (const auto& b : *scene->bodies) {
-				if (!b)
-					continue;
+				if (!b) continue;
 				const int id          = b->getId();
 				LBbodies[id].force    = Vector3r::Zero();
 				LBbodies[id].momentum = Vector3r::Zero();
@@ -878,9 +833,7 @@ void HydrodynamicsLawLBM::action()
 			if (nodes[nidx].checkIsNewObstacle()) {
 				newObstacleCells_couter++;
 			} else {
-				if (nodes[nidx].checkIsNewFluid()) {
-					newFluidCells_couter++;
-				}
+				if (nodes[nidx].checkIsNewFluid()) { newFluidCells_couter++; }
 			}
 			if (nodes[nidx].applyBC) {
 				Vector3r U       = Vector3r::Zero();
@@ -1006,9 +959,7 @@ void HydrodynamicsLawLBM::action()
 			nodes[nidx].rhob   = 0.;
 			nodes[nidx].velb   = Vector3r::Zero();
 			nodes[nidx].IsolNb = 0;
-			if (nodes[nidx].isFluidBoundary) {
-				nodes[nidx].IsolNb = 8;
-			}
+			if (nodes[nidx].isFluidBoundary) { nodes[nidx].IsolNb = 8; }
 
 			for (int dndx = 0; dndx < NbDir; dndx++) {
 				nodes[nidx].fprecol[dndx] = nodes[nidx].f[dndx];
@@ -1016,8 +967,7 @@ void HydrodynamicsLawLBM::action()
 				nodes[nidx].rhob += nodes[nidx].f[dndx];
 				if ((nodes[nidx].isFluidBoundary) && (nodes[nidx].neighbour_id[dndx] != -1)) {
 					int ns = nodes[nidx].neighbour_id[dndx];
-					if (!nodes[ns].isObstacle)
-						nodes[nidx].IsolNb = nodes[nidx].IsolNb - 1;
+					if (!nodes[ns].isObstacle) nodes[nidx].IsolNb = nodes[nidx].IsolNb - 1;
 					if (nodes[nidx].IsolNb < 0) {
 						cerr << "isolNb<0" << endl;
 						exit(-1);
@@ -1036,16 +986,11 @@ void HydrodynamicsLawLBM::action()
 			nodes[nidx].f[0]        = nodes[nidx].fpostcol[0];
 			RhoTot += nodes[nidx].rhob;
 			if (nodes[nidx].body_id == -1)
-				if (VmaxC < c * nodes[nidx].velb.norm())
-					VmaxC = c * nodes[nidx].velb.norm();
-			if (VminC > c * nodes[nidx].velb.norm())
-				VminC = c * nodes[nidx].velb.norm();
-			if (RhomaxC < Rho * nodes[nidx].rhob)
-				RhomaxC = Rho * nodes[nidx].rhob;
-			if (RhominC > Rho * nodes[nidx].rhob)
-				RhominC = Rho * nodes[nidx].rhob;
-			if (!nodes[nidx].isObstacle)
-				VmeanFluidC += c * nodes[nidx].velb.norm();
+				if (VmaxC < c * nodes[nidx].velb.norm()) VmaxC = c * nodes[nidx].velb.norm();
+			if (VminC > c * nodes[nidx].velb.norm()) VminC = c * nodes[nidx].velb.norm();
+			if (RhomaxC < Rho * nodes[nidx].rhob) RhomaxC = Rho * nodes[nidx].rhob;
+			if (RhominC > Rho * nodes[nidx].rhob) RhominC = Rho * nodes[nidx].rhob;
+			if (!nodes[nidx].isObstacle) VmeanFluidC += c * nodes[nidx].velb.norm();
 		}
 
 #ifdef YADE_OPENMP
@@ -1092,18 +1037,14 @@ void HydrodynamicsLawLBM::action()
 					if (I == Nx) {
 						I = 0;
 					} else {
-						if (I == -1) {
-							I = Nx - 1;
-						}
+						if (I == -1) { I = Nx - 1; }
 					}
 				}
 				if (Yperiodicity) {
 					if (J == Ny) {
 						J = 0;
 					} else {
-						if (J == -1) {
-							J = Ny - 1;
-						}
+						if (J == -1) { J = Ny - 1; }
 					}
 				}
 			} else {
@@ -1111,8 +1052,7 @@ void HydrodynamicsLawLBM::action()
 				nodes[nidx2].f[dndx1] = nodes[nidx1].fpostcol[dndx1];
 			}
 
-			if (links[lid].isBd == false)
-				continue;
+			if (links[lid].isBd == false) continue;
 
 			int idx_sigma_i = links[lid].idx_sigma_i;
 			int sid         = links[lid].sid;
@@ -1139,9 +1079,7 @@ void HydrodynamicsLawLBM::action()
 			}
 			nodes[fid].f[opp[idx_sigma_i]] = nodes[fid].fpostcol[idx_sigma_i] - 2.0 * links[lid].ct;
 			nodes[sid].f[idx_sigma_i]      = nodes[sid].fpostcol[opp[idx_sigma_i]] + 2.0 * links[lid].ct;
-			if ((MODE == 2) || ((MODE == 3) && (IterMax == 1))) {
-				links[lid].ReinitDynamicalProperties();
-			}
+			if ((MODE == 2) || ((MODE == 3) && (IterMax == 1))) { links[lid].ReinitDynamicalProperties(); }
 		}
 		VmeanFluidC = VmeanFluidC / NbFluidNodes;
 
@@ -1238,29 +1176,22 @@ void HydrodynamicsLawLBM::action()
 		/*------------- RESULT RECORDING DURING COMPUTATION  (MODE 1)--------------------*/
 		/*-------------------------------------------------------------------------------*/
 		if (((iter % (IterSave * DemIterLbmIterRatio) == 0) || (firstRun)) && MODE == 1) {
-			if (((iter % (IterSave * SaveGridRatio * DemIterLbmIterRatio) == 0) || (firstRun)) && MODE == 1)
-				save(iter, dt);
+			if (((iter % (IterSave * SaveGridRatio * DemIterLbmIterRatio) == 0) || (firstRun)) && MODE == 1) save(iter, dt);
 			saveStats(iter, dt);
 			if (SAVE_OBSERVEDPTC) {
 				CalculateAndApplyForcesAndTorquesOnBodies(true, false);
 				saveObservedPtc(iter, dt);
 			}
-			if (SAVE_OBSERVEDNODE)
-				saveObservedNode(iter, dt);
+			if (SAVE_OBSERVEDNODE) saveObservedNode(iter, dt);
 		}
 
 
-		if ((IterSubCyclingStart > 0) && (iter + 1 >= IterSubCyclingStart)) {
-			modeTransition();
-		}
+		if ((IterSubCyclingStart > 0) && (iter + 1 >= IterSubCyclingStart)) { modeTransition(); }
 		if ((Error < ConvergenceThreshold) && (use_ConvergenceCriterion)) {
-			if (MODE == 1)
-				break;
-			if (MODE == 3)
-				modeTransition();
+			if (MODE == 1) break;
+			if (MODE == 3) modeTransition();
 		}
-		if ((EndTime > 0) && (LBM_TIME > EndTime))
-			LbmEnd();
+		if ((EndTime > 0) && (LBM_TIME > EndTime)) LbmEnd();
 		//if((InitialNumberOfDynamicParticles!=0)&&(NumberPtcEroded==InitialNumberOfDynamicParticles)) LbmEnd();
 	}
 	/*------------------- End of the LBM loop (iterations) --------------------*/
@@ -1274,8 +1205,7 @@ void HydrodynamicsLawLBM::action()
 	/*--------------------------------------------------------------------------------*/
 	/*-------------- APPLICATION OF HYDRODYNAMIC FORCES ON SPHERES -------------------*/
 	/*--------------------------------------------------------------------------------*/
-	if (applyForcesAndTorques)
-		CalculateAndApplyForcesAndTorquesOnBodies(true, true);
+	if (applyForcesAndTorques) CalculateAndApplyForcesAndTorquesOnBodies(true, true);
 
 	/*----------------------------------------------------------------------------*/
 	/*----------------- SPHERES ARE MOVED OUTSIDE THE SIMULATION DOMAIN --------- */
@@ -1305,14 +1235,11 @@ void HydrodynamicsLawLBM::action()
 	/*------------- RESULT RECORDING AT THE END OF THE COMPUTATION ---------------*/
 	/*----------------------------------------------------------------------------*/
 	if (((DEM_ITER % (IterSave * DemIterLbmIterRatio) == 0) || (firstRun)) && IterMax == 1) {
-		if (((DEM_ITER % (IterSave * SaveGridRatio * DemIterLbmIterRatio) == 0) || (firstRun)) && IterMax == 1)
-			save(DEM_ITER, DEMdt);
+		if (((DEM_ITER % (IterSave * SaveGridRatio * DemIterLbmIterRatio) == 0) || (firstRun)) && IterMax == 1) save(DEM_ITER, DEMdt);
 		saveStats(DEM_ITER, DEMdt);
 		//saveEroded(DEM_ITER,DEMdt);
-		if (SAVE_OBSERVEDPTC)
-			saveObservedPtc(DEM_ITER, DEMdt);
-		if (SAVE_OBSERVEDNODE)
-			saveObservedNode(DEM_ITER, DEMdt);
+		if (SAVE_OBSERVEDPTC) saveObservedPtc(DEM_ITER, DEMdt);
+		if (SAVE_OBSERVEDNODE) saveObservedNode(DEM_ITER, DEMdt);
 	}
 }
 
@@ -1462,10 +1389,8 @@ void HydrodynamicsLawLBM::save(int iter_number, Real /*timestep*/)
 		cerr << "| Saving (" << iter_number << ")" << endl;
 
 		for (int nidx = 0; nidx < Nx * Ny; nidx++) {
-			if (SAVE_BODIES)
-				Bodiesfile << nodes[nidx].body_id << " ";
-			if (SAVE_VELOCITY)
-				Vfile << c * nodes[nidx].velb.norm() << " ";
+			if (SAVE_BODIES) Bodiesfile << nodes[nidx].body_id << " ";
+			if (SAVE_VELOCITY) Vfile << c * nodes[nidx].velb.norm() << " ";
 			if (SAVE_VELOCITYCOMP) {
 				Vxfile << c * nodes[nidx].velb.x() << " ";
 				Vyfile << c * nodes[nidx].velb.y() << " ";
@@ -1481,30 +1406,23 @@ void HydrodynamicsLawLBM::save(int iter_number, Real /*timestep*/)
 					MzLBMfile << 0. << " ";
 				}
 			}
-			if (SAVE_RHO)
-				Rhofile << Rho * nodes[nidx].rhob << " ";
+			if (SAVE_RHO) Rhofile << Rho * nodes[nidx].rhob << " ";
 			if (SAVE_NODEBD) {
 				int tmp = 0;
-				if (nodes[nidx].isObstacleBoundary)
-					tmp = nodes[nidx].isObstacleBoundary;
-				if (nodes[nidx].isFluidBoundary)
-					tmp = -1;
+				if (nodes[nidx].isObstacleBoundary) tmp = nodes[nidx].isObstacleBoundary;
+				if (nodes[nidx].isFluidBoundary) tmp = -1;
 				NodeBoundaryfile << tmp << " ";
 			}
 			if (SAVE_NODEISNEW) {
 				int tmp = 0;
-				if (nodes[nidx].isNewObstacle)
-					tmp = nodes[nidx].isNewObstacle;
-				if (nodes[nidx].isNewFluid)
-					tmp = -1;
+				if (nodes[nidx].isNewObstacle) tmp = nodes[nidx].isNewObstacle;
+				if (nodes[nidx].isNewFluid) tmp = -1;
 				NewNodefile << tmp << " ";
 			}
 
 			if (nodes[nidx].i == Nx - 1) {
-				if (SAVE_BODIES)
-					Bodiesfile << endl;
-				if (SAVE_VELOCITY)
-					Vfile << endl;
+				if (SAVE_BODIES) Bodiesfile << endl;
+				if (SAVE_VELOCITY) Vfile << endl;
 				if (SAVE_VELOCITYCOMP) {
 					Vxfile << endl;
 					Vyfile << endl;
@@ -1514,12 +1432,9 @@ void HydrodynamicsLawLBM::save(int iter_number, Real /*timestep*/)
 					FyLBMfile << endl;
 					MzLBMfile << endl;
 				}
-				if (SAVE_RHO)
-					Rhofile << endl;
-				if (SAVE_NODEBD)
-					NodeBoundaryfile << endl;
-				if (SAVE_NODEISNEW)
-					NewNodefile << endl;
+				if (SAVE_RHO) Rhofile << endl;
+				if (SAVE_NODEBD) NodeBoundaryfile << endl;
+				if (SAVE_NODEISNEW) NewNodefile << endl;
 			}
 		}
 	}
@@ -1559,8 +1474,7 @@ void HydrodynamicsLawLBM::save(int iter_number, Real /*timestep*/)
 	}
 	//cmd<<"&";
 	if (COMPRESS_DATA) {
-		if (std::system(cmd.str().c_str()))
-			cerr << "bzip error" << endl;
+		if (std::system(cmd.str().c_str())) cerr << "bzip error" << endl;
 	}
 
 
@@ -1683,14 +1597,11 @@ void HydrodynamicsLawLBM::createNewFiles()
 void HydrodynamicsLawLBM::createDirectories(bool dirLBM, bool dirDem, bool dirCntct)
 {
 	//bfs::create_directory(bfs::path(lbm_dir));  //ModLuc: to create only necessary directory
-	if (dirLBM)
-		bfs::create_directory(bfs::path(lbm_dir));
+	if (dirLBM) bfs::create_directory(bfs::path(lbm_dir));
 	//if(NB_GRAINS>0) bfs::create_directory(bfs::path(dem_dir));  //ModLuc: to create only necessary directory
-	if (dirDem)
-		bfs::create_directory(bfs::path(dem_dir));
+	if (dirDem) bfs::create_directory(bfs::path(dem_dir));
 	//if(SAVE_CONTACTINFO) bfs::create_directory(bfs::path(cntct_dir)); //ModLuc: to create only necessary directory
-	if (dirCntct)
-		bfs::create_directory(bfs::path(cntct_dir));
+	if (dirCntct) bfs::create_directory(bfs::path(cntct_dir));
 
 	return;
 }
@@ -1729,8 +1640,7 @@ void HydrodynamicsLawLBM::writelogfile()
 	file << "\t NB_BODIES= " << NB_BODIES << " NB_GRAINS= " << NB_GRAINS << endl;
 	file << "\t NB_DYNBODIES= " << NB_DYNBODIES << " NB_DYNGRAINS= " << NB_DYNGRAINS << endl;
 	file << "\t Rmin / Rmax / Rmean = " << dx * MinBodyRadius << " / " << dx * MaxBodyRadius << " / " << dx * MeanBodyRadius << endl;
-	if (NB_GRAINS > 0)
-		file << "\t NbNodePerPtc= " << NbParticleNodes / NB_GRAINS << endl;
+	if (NB_GRAINS > 0) file << "\t NbNodePerPtc= " << NbParticleNodes / NB_GRAINS << endl;
 	else
 		file << "\t NbNodePerPtc= " << -1 << endl;
 	file << "\t Vo= " << Vo << endl;
@@ -1757,8 +1667,7 @@ void HydrodynamicsLawLBM::modeTransition()
 
 void HydrodynamicsLawLBM::LbmEnd()
 {
-	if (MODE == 1)
-		IterMax = iter;
+	if (MODE == 1) IterMax = iter;
 	Omega::instance().stop();
 	Omega::instance().saveSimulation("end.xml");
 }
@@ -1768,11 +1677,9 @@ void HydrodynamicsLawLBM::CalculateAndApplyForcesAndTorquesOnBodies(bool mean, b
 	/*--------------------------------------------------------------------------------*/
 	/*---------------- APPLICATION OF HYDRODYNAMIC FORCES ON SPHERES -----------------*/
 	/*--------------------------------------------------------------------------------*/
-	if (mean)
-		FhTotale = Vector3r::Zero();
+	if (mean) FhTotale = Vector3r::Zero();
 	for (const auto& b : *scene->bodies) {
-		if (!b)
-			continue;
+		if (!b) continue;
 		const int id = b->getId();
 		//if ( ((b->isDynamic())&&(b->shape->getClassName()=="Sphere")) || (b->shape->getClassName()=="Box") ){  //ModLuc: remove the condition (b->isDynamic()) to be able to apply force and torque on non dynamic bodies, by this way hydrodynamic force and torque on bodies can be read through python even if bodies are non dynamic.
 		if ((b->shape->getClassName() == "Sphere") || (b->shape->getClassName() == "Box")) {

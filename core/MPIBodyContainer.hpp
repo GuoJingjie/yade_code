@@ -29,13 +29,9 @@ public:
 			int c = 0;
 			for (std::vector<shared_ptr<Body>>::iterator bodyIter = bContainer.begin(); bodyIter != bContainer.end(); ++bodyIter) {
 				const shared_ptr<Body>& inContainerBody = *(bodyIter);
-				if (inContainerBody->id == b->id) {
-					c += 1;
-				}
+				if (inContainerBody->id == b->id) { c += 1; }
 			}
-			if (c == 0) {
-				bContainer.push_back(b);
-			}
+			if (c == 0) { bContainer.push_back(b); }
 		}
 	}
 

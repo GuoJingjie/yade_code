@@ -33,9 +33,7 @@ Vector3r& ScGeom::rotateNonSpherical(Vector3r& shearForce) const
 	//shearForce -= shearForce.cross(twist_axis);
 	//NOTE : make sure it is in the tangent plane? It's never been done before. Is it not adding rounding errors at the same time in fact?...
 	//shearForce -= normal.dot(shearForce)*normal;
-	if (math::isnan(shearForce.norm())) {
-		std::cout << "orthonormal_axis: " << orthonormal_axis << ", normal: " << normal << endl;
-	}
+	if (math::isnan(shearForce.norm())) { std::cout << "orthonormal_axis: " << orthonormal_axis << ", normal: " << normal << endl; }
 	return shearForce;
 }
 
@@ -106,8 +104,7 @@ Vector3r ScGeom::getIncidentVel(const State* rbp1, const State* rbp2, Real dt, b
 
 Vector3r ScGeom::getIncidentVel_py(shared_ptr<Interaction> i, bool avoidGranularRatcheting)
 {
-	if (i->geom.get() != this)
-		throw invalid_argument("ScGeom object is not the same as Interaction.geom.");
+	if (i->geom.get() != this) throw invalid_argument("ScGeom object is not the same as Interaction.geom.");
 	Scene* scene = Omega::instance().getScene().get();
 	return getIncidentVel(
 	        Body::byId(i->getId1(), scene)->state.get(),
@@ -126,8 +123,7 @@ Vector3r ScGeom::getRelAngVel(const State* rbp1, const State* rbp2, Real /*dt*/)
 
 Vector3r ScGeom::getRelAngVel_py(shared_ptr<Interaction> i)
 {
-	if (i->geom.get() != this)
-		throw invalid_argument("ScGeom object is not the same as Interaction.geom.");
+	if (i->geom.get() != this) throw invalid_argument("ScGeom object is not the same as Interaction.geom.");
 	Scene* scene = Omega::instance().getScene().get();
 	return getRelAngVel(Body::byId(i->getId1(), scene)->state.get(), Body::byId(i->getId2(), scene)->state.get(), scene->dt);
 }
@@ -140,8 +136,7 @@ void ScGeom6D::precomputeRotations(const State& rbp1, const State& rbp2, bool is
 	} else {
 		Quaternionr delta((rbp1.ori * (initialOrientation1.conjugate())) * (initialOrientation2 * (rbp2.ori.conjugate())));
 		delta.normalize();
-		if (creep)
-			delta = delta * twistCreep;
+		if (creep) delta = delta * twistCreep;
 		AngleAxisr aa(delta); // axis of rotation - this is the Moment direction UNIT vector; // angle represents the power of resistant ELASTIC moment
 		                      //Eigen::AngleAxisr(q) returns nan's when q close to identity, next tline fixes the pb.
 // add -DYADE_SCGEOM_DEBUG to CXXFLAGS to enable this piece or just do
@@ -160,11 +155,9 @@ void ScGeom6D::precomputeRotations(const State& rbp1, const State& rbp2, bool is
 			cerr << delta << " " << bb.angle() << endl;
 		}
 #else
-		if (math::isnan(aa.angle()))
-			aa.angle() = 0;
+		if (math::isnan(aa.angle())) aa.angle() = 0;
 #endif
-		if (aa.angle() > Mathr::PI)
-			aa.angle() -= Mathr::TWO_PI; // angle is between 0 and 2*pi, but should be between -pi and pi
+		if (aa.angle() > Mathr::PI) aa.angle() -= Mathr::TWO_PI; // angle is between 0 and 2*pi, but should be between -pi and pi
 		twist   = (aa.angle() * aa.axis().dot(normal));
 		bending = Vector3r(aa.angle() * aa.axis() - twist * normal);
 	}

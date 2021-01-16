@@ -85,9 +85,7 @@ static PyObject* is_boundary(PygtsVertex* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &s_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &s_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (!pygts_surface_check(s_)) {
@@ -115,9 +113,7 @@ static PyObject* contacts(PygtsVertex* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "|O", &sever_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "|O", &sever_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (sever_ != NULL) {
@@ -125,9 +121,7 @@ static PyObject* contacts(PygtsVertex* self, PyObject* args)
 			PyErr_SetString(PyExc_TypeError, "expected a Boolean");
 			return NULL;
 		}
-		if (sever_ == Py_True) {
-			sever = TRUE;
-		}
+		if (sever_ == Py_True) { sever = TRUE; }
 	}
 
 	n = gts_vertex_is_contact(PYGTS_VERTEX_AS_GTS_VERTEX(self), sever);
@@ -143,9 +137,7 @@ static PyObject* is_connected(PygtsVertex* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &v_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &v_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (!pygts_vertex_check(v_)) {
@@ -173,9 +165,7 @@ static PyObject* replace(PygtsVertex* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &p2_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &p2_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (!pygts_vertex_check(p2_)) {
@@ -228,9 +218,7 @@ static PyObject* neighbors(PygtsVertex* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "|O", &s_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "|O", &s_)) { return NULL; }
 
 	/* Convert */
 	if (s_ != NULL) {
@@ -258,8 +246,7 @@ static PyObject* neighbors(PygtsVertex* self, PyObject* args)
 		while (v != NULL && PYGTS_IS_PARENT_VERTEX(GTS_VERTEX(v->data))) {
 			v = g_slist_next(v);
 		}
-		if (v == NULL)
-			break;
+		if (v == NULL) break;
 
 		if ((vertex = pygts_vertex_new(GTS_VERTEX(v->data))) == NULL) {
 			Py_DECREF((PyObject*)tuple);
@@ -292,9 +279,7 @@ static PyObject* faces(PygtsVertex* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "|O", &s_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "|O", &s_)) { return NULL; }
 
 	/* Convert */
 	if (s_ != NULL) {
@@ -340,9 +325,7 @@ static PyObject* encroaches(PygtsVertex* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &e_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &e_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (!pygts_edge_check(e_)) {
@@ -502,12 +485,8 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	/* Parse the args */
 	if (kwds) {
 		o = PyDict_GetItemString(kwds, "alloc_gtsobj");
-		if (o == Py_False) {
-			alloc_gtsobj = FALSE;
-		}
-		if (o != NULL) {
-			PyDict_DelItemString(kwds, "alloc_gtsobj");
-		}
+		if (o == Py_False) { alloc_gtsobj = FALSE; }
+		if (o != NULL) { PyDict_DelItemString(kwds, "alloc_gtsobj"); }
 	}
 	if (kwds) {
 		Py_INCREF(Py_False);
@@ -544,9 +523,7 @@ static int init(PygtsVertex* self, PyObject* args, PyObject* kwds)
 	gint ret;
 
 	/* Chain up */
-	if ((ret = PygtsPointType.tp_init((PyObject*)self, args, kwds)) != 0) {
-		return ret;
-	}
+	if ((ret = PygtsPointType.tp_init((PyObject*)self, args, kwds)) != 0) { return ret; }
 
 	return 0;
 }
@@ -604,9 +581,7 @@ gboolean pygts_vertex_check(PyObject* o)
 	PyObject* obj;
 
 	/* Check for a Vertex */
-	if (PyObject_TypeCheck(o, &PygtsVertexType)) {
-		check = TRUE;
-	}
+	if (PyObject_TypeCheck(o, &PygtsVertexType)) { check = TRUE; }
 
 	/* Convert list into tuple */
 	if (PyList_Check(o)) {
@@ -621,9 +596,7 @@ gboolean pygts_vertex_check(PyObject* o)
 			check = TRUE;
 			for (i = 0; i < N; i++) {
 				obj = PyTuple_GET_ITEM(o, i);
-				if (!PyFloat_Check(obj) && !PyLong_Check(obj)) {
-					check = FALSE;
-				}
+				if (!PyFloat_Check(obj) && !PyLong_Check(obj)) { check = FALSE; }
 			}
 		}
 	}
@@ -633,9 +606,7 @@ gboolean pygts_vertex_check(PyObject* o)
 		return FALSE;
 	} else {
 #if PYGTS_DEBUG
-		if (PyObject_TypeCheck(o, &PygtsVertexType)) {
-			return pygts_vertex_is_ok(PYGTS_VERTEX(o));
-		}
+		if (PyObject_TypeCheck(o, &PygtsVertexType)) { return pygts_vertex_is_ok(PYGTS_VERTEX(o)); }
 #endif
 		return TRUE;
 	}
@@ -649,8 +620,7 @@ gboolean pygts_vertex_is_ok(PygtsVertex* v)
 
 	obj = PYGTS_OBJECT(v);
 
-	if (!pygts_point_is_ok(PYGTS_POINT(v)))
-		return FALSE;
+	if (!pygts_point_is_ok(PYGTS_POINT(v))) return FALSE;
 
 	/* Check for a valid parent */
 	g_return_val_if_fail(obj->gtsobj_parent != NULL, FALSE);
@@ -758,20 +728,17 @@ PygtsVertex* pygts_vertex_from_sequence(PyObject* tuple)
 			return NULL;
 		}
 		if (i == 0) {
-			if (PyFloat_Check(obj))
-				x = PyFloat_AsDouble(obj);
+			if (PyFloat_Check(obj)) x = PyFloat_AsDouble(obj);
 			else
 				x = (double)PyLong_AsLong(obj);
 		}
 		if (i == 1) {
-			if (PyFloat_Check(obj))
-				y = PyFloat_AsDouble(obj);
+			if (PyFloat_Check(obj)) y = PyFloat_AsDouble(obj);
 			else
 				y = (double)PyLong_AsLong(obj);
 		}
 		if (i == 2) {
-			if (PyFloat_Check(obj))
-				z = PyFloat_AsDouble(obj);
+			if (PyFloat_Check(obj)) z = PyFloat_AsDouble(obj);
 			else
 				z = (double)PyLong_AsLong(obj);
 		}
@@ -779,9 +746,7 @@ PygtsVertex* pygts_vertex_from_sequence(PyObject* tuple)
 	Py_DECREF(tuple);
 
 	/* Create the vertex */
-	if ((v = gts_vertex_new(gts_vertex_class(), x, y, z)) == NULL) {
-		PyErr_SetString(PyExc_MemoryError, "could not create Vertex");
-	}
+	if ((v = gts_vertex_new(gts_vertex_class(), x, y, z)) == NULL) { PyErr_SetString(PyExc_MemoryError, "could not create Vertex"); }
 	if ((vertex = pygts_vertex_new(v)) == NULL) {
 		gts_object_destroy(GTS_OBJECT(v));
 		return NULL;

@@ -45,8 +45,7 @@ void Serializable::pyUpdateAttrs(const boost::python::dict& d)
 {
 	boost::python::list l  = d.items();
 	size_t              ll = boost::python::len(l);
-	if (ll == 0)
-		return;
+	if (ll == 0) return;
 	for (size_t i = 0; i < ll; i++) {
 		boost::python::tuple t   = boost::python::extract<boost::python::tuple>(l[i]);
 		string               key = boost::python::extract<string>(t[0]);

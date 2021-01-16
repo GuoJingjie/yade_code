@@ -9,8 +9,7 @@ OpenGLManager* OpenGLManager::self = NULL;
 OpenGLManager::OpenGLManager(QObject* parent)
         : QObject(parent)
 {
-	if (self)
-		throw runtime_error("OpenGLManager instance already exists, uses OpenGLManager::self to retrieve it.");
+	if (self) throw runtime_error("OpenGLManager instance already exists, uses OpenGLManager::self to retrieve it.");
 	self     = this;
 	renderer = shared_ptr<OpenGLRenderer>(new OpenGLRenderer);
 	renderer->init();
@@ -29,8 +28,7 @@ void OpenGLManager::timerEvent(QTimerEvent* /*event*/)
 #if 1
 	FOREACH(const shared_ptr<GLViewer>& view, views)
 	{
-		if (view)
-			view->updateGLViewer();
+		if (view) view->updateGLViewer();
 	}
 #endif
 }
@@ -90,8 +88,7 @@ void OpenGLManager::centerAllViews(const Real& suggestedRadius, const Vector3r& 
 {
 	const std::lock_guard<std::mutex> lock(viewsMutex);
 	for (const auto& g : views) {
-		if (!g)
-			continue;
+		if (!g) continue;
 		g->centerScene(suggestedRadius, gridOrigin, suggestedCenter, gridDecimalPlaces);
 	}
 }
@@ -100,8 +97,7 @@ Real OpenGLManager::getSuggestedRadius() const
 {
 	const std::lock_guard<std::mutex> lock(viewsMutex);
 	for (const auto& g : views) {
-		if (!g)
-			continue;
+		if (!g) continue;
 		return g->getSuggestedRadius();
 	};
 	return -1;
@@ -110,8 +106,7 @@ Vector3r OpenGLManager::getGridOrigin() const
 {
 	const std::lock_guard<std::mutex> lock(viewsMutex);
 	for (const auto& g : views) {
-		if (!g)
-			continue;
+		if (!g) continue;
 		return g->getGridOrigin();
 	};
 	return Vector3r(0, 0, 0);
@@ -120,8 +115,7 @@ Vector3r OpenGLManager::getSuggestedCenter() const
 {
 	const std::lock_guard<std::mutex> lock(viewsMutex);
 	for (const auto& g : views) {
-		if (!g)
-			continue;
+		if (!g) continue;
 		return g->getSuggestedCenter();
 	};
 	return Vector3r(0, 0, 0);
@@ -130,8 +124,7 @@ int OpenGLManager::getGridDecimalPlaces() const
 {
 	const std::lock_guard<std::mutex> lock(viewsMutex);
 	for (const auto& g : views) {
-		if (!g)
-			continue;
+		if (!g) continue;
 		return g->getGridDecimalPlaces();
 	};
 	return 4;
@@ -153,8 +146,7 @@ int OpenGLManager::waitForNewView(double timeout, bool center)
 			return -1;
 		}
 	}
-	if (center)
-		(*views.rbegin())->centerScene();
+	if (center) (*views.rbegin())->centerScene();
 	return (*views.rbegin())->viewId;
 }
 

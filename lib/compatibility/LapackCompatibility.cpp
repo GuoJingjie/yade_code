@@ -146,16 +146,12 @@ void dgemv_(
         const int*          incy)
 {
 	// DGEMV  performs one of the matrix-vector operations - FIXME use Eigen instead.
-	if (*incx != 1)
-		throw std::runtime_error("dgemv_ wrapper: incx should be 1");
-	if (*incy != 1)
-		throw std::runtime_error("dgemv_ wrapper: incy should be 1");
+	if (*incx != 1) throw std::runtime_error("dgemv_ wrapper: incx should be 1");
+	if (*incy != 1) throw std::runtime_error("dgemv_ wrapper: incy should be 1");
 	const double alpha_double = static_cast<double>(*alpha_Real);
 	const double beta_double  = static_cast<double>(*beta_Real);
 	bool         blasN        = false;
-	if (((*trans) == 'n') or ((*trans) == 'N')) {
-		blasN = true;
-	}
+	if (((*trans) == 'n') or ((*trans) == 'N')) { blasN = true; }
 	std::vector<double> A_double = toDoubleVec(A_Real, (*m) * (*n));
 	std::vector<double> x_double = toDoubleVec(x_Real, blasN ? (*n) : (*m));
 	std::vector<double> y_double = toDoubleVec(y_Real, blasN ? (*m) : (*n));
@@ -168,10 +164,8 @@ void dgemv_(
 void dcopy_(const int* N, ::yade::Real* from_x, const int* incx, ::yade::Real* to_y, const int* incy)
 {
 	// DCOPY copies a vector, x, to a vector, y.
-	if (*incx != 1)
-		throw std::runtime_error("dcopy_ wrapper: incx should be 1");
-	if (*incy != 1)
-		throw std::runtime_error("dcopy_ wrapper: incy should be 1");
+	if (*incx != 1) throw std::runtime_error("dcopy_ wrapper: incx should be 1");
+	if (*incy != 1) throw std::runtime_error("dcopy_ wrapper: incy should be 1");
 	// FIXME: that should be just a simple assignment
 	//   Y=X;
 	// with normal VectorXr
@@ -192,10 +186,8 @@ void dcopy_(const int* N, ::yade::Real* from_x, const int* incx, ::yade::Real* t
 ::yade::Real ddot_(const int* N, const ::yade::Real* x, const int* incx, const ::yade::Real* y, const int* incy)
 {
 	// DDOT forms the dot product of two vectors.
-	if (*incx != 1)
-		throw std::runtime_error("ddot_ wrapper: incx should be 1");
-	if (*incy != 1)
-		throw std::runtime_error("ddot_ wrapper: incy should be 1");
+	if (*incx != 1) throw std::runtime_error("ddot_ wrapper: incx should be 1");
+	if (*incy != 1) throw std::runtime_error("ddot_ wrapper: incy should be 1");
 	::yade::VectorXr xx = toVectorXr(x, *N);
 	::yade::VectorXr yy = toVectorXr(y, *N);
 	return xx.dot(yy);
@@ -203,10 +195,8 @@ void dcopy_(const int* N, ::yade::Real* from_x, const int* incx, ::yade::Real* t
 
 void daxpy_(const int* N, const ::yade::Real* da_Real, ::yade::Real* dx_Real, const int* incx, ::yade::Real* dy_Real, const int* incy)
 {
-	if (*incx != 1)
-		throw std::runtime_error("daxpy_ wrapper: incx should be 1");
-	if (*incy != 1)
-		throw std::runtime_error("daxpy_ wrapper: incy should be 1");
+	if (*incx != 1) throw std::runtime_error("daxpy_ wrapper: incx should be 1");
+	if (*incy != 1) throw std::runtime_error("daxpy_ wrapper: incy should be 1");
 	const double        da_double = static_cast<double>(*da_Real);
 	std::vector<double> dx_double = toDoubleVec(dx_Real, *N);
 	std::vector<double> dy_double = toDoubleVec(dy_Real, *N);
@@ -217,8 +207,7 @@ void daxpy_(const int* N, const ::yade::Real* da_Real, ::yade::Real* dx_Real, co
 
 void dscal_(const int* N, const ::yade::Real* alpha_Real, ::yade::Real* x_Real, const int* incx)
 {
-	if (*incx != 1)
-		throw std::runtime_error("dscal_ wrapper: incx should be 1");
+	if (*incx != 1) throw std::runtime_error("dscal_ wrapper: incx should be 1");
 	// FIXME - this should be just an Eigen multiplication by scalar, like:  blasQAs *= scaleFactor; // it unrolls loops, and does everything you want.
 	for (int i = 0; i < *N; i++) {
 		x_Real[i] *= *alpha_Real;

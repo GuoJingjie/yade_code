@@ -79,18 +79,12 @@ void PotentialBlock::postLoad(PotentialBlock&)
 			for (unsigned int i = 0; i < vertices.size() - 1; i++) {
 				for (unsigned int j = i + 1; i < vertices.size(); i++) {
 					Distance = (vertices[i] - vertices[j]).norm();
-					if (Distance > maxDistance) {
-						maxDistance = Distance;
-					}
+					if (Distance > maxDistance) { maxDistance = Distance; }
 				}
 			}
-			if (maxDistance > 0.0) {
-				R = maxDistance / 2.;
-			}
+			if (maxDistance > 0.0) { R = maxDistance / 2.; }
 			calculateVertices(); //Recalculate vertices after calculating R to improve the check for duplicate vertices
-			if (R == 0) {
-				std::cout << "R must be positive. Incorrect automatic calculation from the vertices." << endl;
-			}
+			if (R == 0) { std::cout << "R must be positive. Incorrect automatic calculation from the vertices." << endl; }
 		}
 		assert(R > 0.0);
 
@@ -101,15 +95,9 @@ void PotentialBlock::postLoad(PotentialBlock&)
 		calculateInertia(centr, Ixx, Iyy, Izz, Ixy, Ixz, Iyz); //Calculate volume & centroid
 
 		// An attempt to eliminate rounding errors from the calculation of vertices/volume/inertia
-		if (math::abs(centr.x()) / R < 1e-6) {
-			centr.x() = 0;
-		}
-		if (math::abs(centr.y()) / R < 1e-6) {
-			centr.y() = 0;
-		}
-		if (math::abs(centr.z()) / R < 1e-6) {
-			centr.z() = 0;
-		}
+		if (math::abs(centr.x()) / R < 1e-6) { centr.x() = 0; }
+		if (math::abs(centr.y()) / R < 1e-6) { centr.y() = 0; }
+		if (math::abs(centr.z()) / R < 1e-6) { centr.z() = 0; }
 
 		// If the particle is not centered to its centroid, center (translate) the face equations around the centroid and recalculate vertices, volume & inertia
 		if (centr.norm() / R > 1e-6) {
@@ -313,9 +301,7 @@ void PotentialBlock::calculateVertices()
 
 						for (int m = 0; m < planeNo; m++) {
 							plane = a[m] * vertex.x() + b[m] * vertex.y() + c[m] * vertex.z() - d[m] - r;
-							if (plane > pow(10, -3)) {
-								inside = false;
-							}
+							if (plane > pow(10, -3)) { inside = false; }
 						}
 						if (inside == true) {
 							/* Check for duplicate vertices: New vertices cannot be too close to existing ones */
@@ -407,9 +393,7 @@ void PotentialBlock::calculateVertices()
 	for (int j = 0; j < planeNo; j++) {
 		std::stable_sort(planeStruct[j].vertexID.begin(), planeStruct[j].vertexID.end());
 		planeStruct[j].vertexID.erase(std::unique(planeStruct[j].vertexID.begin(), planeStruct[j].vertexID.end()), planeStruct[j].vertexID.end());
-		if (planeStruct[j].vertexID.size() < 3) {
-			pWLTTV.push_back(j);
-		}
+		if (planeStruct[j].vertexID.size() < 3) { pWLTTV.push_back(j); }
 	}
 
 	//Sort the IDs of the planes to be removed in descending order, in order to start removing from last to first, using the reverse iterators: rbegin(), rend()
@@ -422,21 +406,11 @@ void PotentialBlock::calculateVertices()
 		c.erase(c.begin() + pWLTTV[j]);
 		d.erase(d.begin() + pWLTTV[j]);
 
-		if (not phi_b.empty()) {
-			phi_b.erase(phi_b.begin() + pWLTTV[j]);
-		}
-		if (not phi_r.empty()) {
-			phi_r.erase(phi_r.begin() + pWLTTV[j]);
-		}
-		if (not cohesion.empty()) {
-			cohesion.erase(cohesion.begin() + pWLTTV[j]);
-		}
-		if (not tension.empty()) {
-			tension.erase(tension.begin() + pWLTTV[j]);
-		}
-		if (not jointType.empty()) {
-			jointType.erase(jointType.begin() + pWLTTV[j]);
-		}
+		if (not phi_b.empty()) { phi_b.erase(phi_b.begin() + pWLTTV[j]); }
+		if (not phi_r.empty()) { phi_r.erase(phi_r.begin() + pWLTTV[j]); }
+		if (not cohesion.empty()) { cohesion.erase(cohesion.begin() + pWLTTV[j]); }
+		if (not tension.empty()) { tension.erase(tension.begin() + pWLTTV[j]); }
+		if (not jointType.empty()) { jointType.erase(jointType.begin() + pWLTTV[j]); }
 
 		planeStruct.erase(planeStruct.begin() + pWLTTV[j]);
 	}
@@ -482,22 +456,16 @@ void PotentialBlock::calculateInertia(Vector3r& centroid, Real& Ixx, Real& Iyy, 
 			Qp.y()      = crossProd.y();
 			Qp.z()      = crossProd.z();
 			Qp.normalize();
-			if (crossProd.norm() < pow(10, -7)) {
-				Qp = Quaternionr::Identity();
-			}
+			if (crossProd.norm() < pow(10, -7)) { Qp = Quaternionr::Identity(); }
 			rotatedCoord = Qp.conjugate() * vertex;
 
 			verticesOnPlane.push_back(rotatedCoord);
 			oriVerticesOnPlane.push_back(vertex);
 		}
 
-		if (verticesOnPlane.empty()) {
-			continue;
-		}
+		if (verticesOnPlane.empty()) { continue; }
 		//		if(verticesOnPlane.size()<3) {continue;} //Only calculate volume/inertia for faces with three or more vertices
-		if (verticesOnPlane.size() < 3) {
-			std::cout << "Face: " << j << " has less than 3 vertices! Check particle geometry" << endl;
-		}
+		if (verticesOnPlane.size() < 3) { std::cout << "Face: " << j << " has less than 3 vertices! Check particle geometry" << endl; }
 
 		/* REORDER VERTICES counterclockwise positive*/
 		h   = 0;

@@ -66,8 +66,7 @@ protected:
 		}
 		bool operator()(const Vrtx& v1, const Vrtx& v2)
 		{
-			if (std::abs(v1[0] - v2[0]) < tolerance && std::abs(v1[1] - v2[1]) < tolerance && std::abs(v1[2] - v2[2]) < tolerance)
-				return false;
+			if (std::abs(v1[0] - v2[0]) < tolerance && std::abs(v1[1] - v2[1]) < tolerance && std::abs(v1[2] - v2[2]) < tolerance) return false;
 			return true;
 		}
 	};
@@ -78,8 +77,7 @@ template <class OutV, class OutE, class OutF, class OutN> bool STLReader::open(c
 	FILE* fp;
 	bool  binary = false;
 	fp           = fopen(filename, "r");
-	if (fp == NULL)
-		return false;
+	if (fp == NULL) return false;
 
 	/* Find size of file */
 	fseek(fp, 0, SEEK_END);
@@ -89,8 +87,7 @@ template <class OutV, class OutE, class OutF, class OutN> bool STLReader::open(c
 	fseek(fp, STL_LABEL_SIZE, SEEK_SET);
 	size_t res                = fread(&facenum, sizeof(int), 1, fp);
 	int    expected_file_size = STL_LABEL_SIZE + 4 + (sizeof(short) + 4 * sizeof(float)) * facenum;
-	if (file_size == expected_file_size)
-		binary = true;
+	if (file_size == expected_file_size) binary = true;
 	unsigned char tmpbuf[128];
 	res = fread(tmpbuf, sizeof(tmpbuf), 1, fp);
 	if (res) {
@@ -103,8 +100,7 @@ template <class OutV, class OutE, class OutF, class OutN> bool STLReader::open(c
 	}
 	// Now we know if the stl file is ascii or binary.
 	fclose(fp);
-	if (binary)
-		return open_binary(filename, vertices, edges, facets, normals);
+	if (binary) return open_binary(filename, vertices, edges, facets, normals);
 	else
 		return open_ascii(filename, vertices, edges, facets, normals);
 }
@@ -113,8 +109,7 @@ template <class OutV, class OutE, class OutF, class OutN> bool STLReader::open_a
 {
 	FILE* fp;
 	fp = fopen(filename, "r");
-	if (fp == NULL)
-		return false;
+	if (fp == NULL) return false;
 
 	/* Skip the first line of the file */
 	while (getc(fp) != '\n')
@@ -158,8 +153,7 @@ template <class OutV, class OutE, class OutF, class OutN> bool STLReader::open_a
 			IsDifferent isd(tolerance);
 			int         j = 0;
 			for (int ej = vcs.size(); j < ej; ++j)
-				if (!(is_different = isd(v[i], vcs[j])))
-					break;
+				if (!(is_different = isd(v[i], vcs[j]))) break;
 			if (is_different) {
 				vid[i] = vcs.size();
 				vcs.push_back(v[i]);
@@ -190,9 +184,7 @@ bool STLReader::open_binary(const char* filename, OutV vertices, OutE edges, Out
 {
 	FILE* fp;
 	fp = fopen(filename, "rb");
-	if (fp == NULL) {
-		return false;
-	}
+	if (fp == NULL) { return false; }
 
 	int facenum;
 	fseek(fp, STL_LABEL_SIZE, SEEK_SET);
@@ -219,8 +211,7 @@ bool STLReader::open_binary(const char* filename, OutV vertices, OutE edges, Out
 				IsDifferent isd(tolerance);
 				int         j = 0;
 				for (int ej = vcs.size(); j < ej; ++j)
-					if (!(is_different = isd(v[l], vcs[j])))
-						break;
+					if (!(is_different = isd(v[l], vcs[j]))) break;
 				if (is_different) {
 					vid[l] = vcs.size();
 					vcs.push_back(v[l]);

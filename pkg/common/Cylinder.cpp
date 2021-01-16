@@ -53,9 +53,7 @@ bool Ig2_Sphere_ChainedCylinder_CylScGeom::go(
 	bool                  isLast = (cylinderSt->chains[cylinderSt->chainNumber].size() == (cylinderSt->rank + 1));
 	bool                  isNew  = !c->geom;
 	shared_ptr<CylScGeom> scm;
-	if (!isNew) {
-		scm = YADE_PTR_CAST<CylScGeom>(c->geom);
-	}
+	if (!isNew) { scm = YADE_PTR_CAST<CylScGeom>(c->geom); }
 
 	bool     betweenTwoCylinders = false; //defines whether the sphere's center is moving between two cylinders who have an angle>180°
 	Vector3r segment, branch, direction;  //informations about the current cylinder
@@ -80,8 +78,7 @@ bool Ig2_Sphere_ChainedCylinder_CylScGeom::go(
 		direction = Vector3r(0, 1, 0);
 		dist      = directionPrev.dot(branch);
 		if (dist < 0) {
-			if (isNew)
-				return false;
+			if (isNew) return false;
 			else if (scm->isDuplicate) {
 				scm->isDuplicate      = 2;
 				scm->penetrationDepth = -1;
@@ -102,8 +99,7 @@ bool Ig2_Sphere_ChainedCylinder_CylScGeom::go(
 		if (!betweenTwoCylinders && (cylinderSt->rank > 0 or dist > 0)) {
 			if (segment.dot(branch) >= segment.dot(segment) or dist < 0) { //position after or before the cylinder
 				//FIXME : scm->penetrationDepth=-1 is defined to workaround interactions never being erased when scm->isDuplicate=2 on the true interaction.
-				if (isNew)
-					return false;
+				if (isNew) return false;
 				else if (scm->isDuplicate) {
 					scm->isDuplicate      = 2;
 					scm->penetrationDepth = -1;
@@ -116,12 +112,9 @@ bool Ig2_Sphere_ChainedCylinder_CylScGeom::go(
 	//Check sphere-cylinder distance
 	Vector3r projectedP = cylinderSt->pos + shift2 + direction * dist;
 	branch              = projectedP - sphereSt->pos;
-	if (isLast || (cylinderSt->rank == 0 && dist < 0)) {
-		branch = cylinderSt->pos - sphereSt->pos;
-	}
+	if (isLast || (cylinderSt->rank == 0 && dist < 0)) { branch = cylinderSt->pos - sphereSt->pos; }
 	if (branch.norm() > sphere->radius + cylinder->radius) {
-		if (isNew)
-			return false;
+		if (isNew) return false;
 		else if (scm->isDuplicate) {
 			scm->isDuplicate      = 2;
 			scm->penetrationDepth = -1;
@@ -129,8 +122,7 @@ bool Ig2_Sphere_ChainedCylinder_CylScGeom::go(
 		}
 	}
 
-	if (!isNew)
-		scm->isDuplicate = false; //reset here at each step, and recompute below
+	if (!isNew) scm->isDuplicate = false; //reset here at each step, and recompute below
 	//if there is a contact with the previous element in the chain, consider this one a duplicate and push data to the new contact. Two interactions will share the same geometry and physics during a timestep.
 	if (!betweenTwoCylinders && cylinderSt->rank > 0 && dist < 0) {
 		if (!isNew) {
@@ -182,8 +174,7 @@ bool Ig2_Sphere_ChainedCylinder_CylScGeom::go(
 
 	scm->radius1 = sphere->radius;
 	scm->radius2 = cylinder->radius;
-	if (!isLast)
-		scm->id3 = cylinderSt->chains[cylinderSt->chainNumber][cylinderSt->rank + 1];
+	if (!isLast) scm->id3 = cylinderSt->chains[cylinderSt->chainNumber][cylinderSt->rank + 1];
 	scm->start = cylinderSt->pos + shift2;
 	scm->end   = scm->start + segment;
 
@@ -255,9 +246,7 @@ bool Ig2_Sphere_ChainedCylinder_CylScGeom6D::go(
 	bool                    isLast = (cylinderSt->chains[cylinderSt->chainNumber].size() == (cylinderSt->rank + 1));
 	bool                    isNew  = !c->geom;
 	shared_ptr<CylScGeom6D> scm;
-	if (!isNew) {
-		scm = YADE_PTR_CAST<CylScGeom6D>(c->geom);
-	}
+	if (!isNew) { scm = YADE_PTR_CAST<CylScGeom6D>(c->geom); }
 
 	bool     betweenTwoCylinders = false; //defines whether the sphere's center is moving between two cylinders who have an angle>180°
 	Vector3r segment, branch, direction;  //informations about the current cylinder
@@ -283,8 +272,7 @@ bool Ig2_Sphere_ChainedCylinder_CylScGeom6D::go(
 		direction = Vector3r(0, 1, 0);
 		dist      = directionPrev.dot(branch);
 		if (dist < 0) {
-			if (isNew)
-				return false;
+			if (isNew) return false;
 			else if (scm->isDuplicate) {
 				scm->isDuplicate = 2;
 				return true;
@@ -304,8 +292,7 @@ bool Ig2_Sphere_ChainedCylinder_CylScGeom6D::go(
 		if (!betweenTwoCylinders && (cylinderSt->rank > 0 or dist > 0)) {
 			if (segment.dot(branch) >= segment.dot(segment) or dist < 0) { //position after or before the cylinder
 				//FIXME : scm->penetrationDepth=-1 is defined to workaround interactions never being erased when scm->isDuplicate=2 on the true interaction.
-				if (isNew)
-					return false;
+				if (isNew) return false;
 				else if (scm->isDuplicate) {
 					scm->isDuplicate = 2;
 					return true;
@@ -317,20 +304,16 @@ bool Ig2_Sphere_ChainedCylinder_CylScGeom6D::go(
 	//Check sphere-cylinder distance
 	Vector3r projectedP = cylinderSt->pos + shift2 + direction * dist;
 	branch              = projectedP - sphereSt->pos;
-	if (isLast || (cylinderSt->rank == 0 && dist < 0)) {
-		branch = cylinderSt->pos - sphereSt->pos;
-	}
+	if (isLast || (cylinderSt->rank == 0 && dist < 0)) { branch = cylinderSt->pos - sphereSt->pos; }
 	if (branch.norm() > sphere->radius + cylinder->radius) {
-		if (isNew)
-			return false;
+		if (isNew) return false;
 		else if (scm->isDuplicate) {
 			scm->isDuplicate = 2;
 			return true;
 		}
 	}
 
-	if (!isNew)
-		scm->isDuplicate = false; //reset here at each step, and recompute below
+	if (!isNew) scm->isDuplicate = false; //reset here at each step, and recompute below
 	//if there is a contact with the previous element in the chain, consider this one a duplicate and push data to the new contact. Two interactions will share the same geometry and physics during a timestep.
 	if (!betweenTwoCylinders && cylinderSt->rank > 0 && dist < 0) {
 		if (!isNew) {
@@ -382,8 +365,7 @@ bool Ig2_Sphere_ChainedCylinder_CylScGeom6D::go(
 
 	scm->radius1 = sphere->radius;
 	scm->radius2 = cylinder->radius;
-	if (!isLast && !scm->id3)
-		scm->id3 = cylinderSt->chains[cylinderSt->chainNumber][cylinderSt->rank + 1];
+	if (!isLast && !scm->id3) scm->id3 = cylinderSt->chains[cylinderSt->chainNumber][cylinderSt->rank + 1];
 	scm->start = cylinderSt->pos + shift2;
 	scm->end   = scm->start + segment;
 
@@ -450,9 +432,7 @@ bool Ig2_ChainedCylinder_ChainedCylinder_ScGeom6D::go(
 	pChain2                 = YADE_CAST<const ChainedState*>(&state2);
 	unsigned int sizeChain1 = pChain1->chains[pChain1->chainNumber].size();
 	unsigned int sizeChain2 = pChain2->chains[pChain2->chainNumber].size();
-	if (!pChain1 || !pChain2) {
-		cerr << "cast failed8567" << endl;
-	}
+	if (!pChain1 || !pChain2) { cerr << "cast failed8567" << endl; }
 	const bool          revert  = ((int)pChain2->rank - (int)pChain1->rank == -1);
 	const ChainedState& bchain1 = revert ? *pChain2 : *YADE_CAST<const ChainedState*>(&state1);
 	const ChainedState& bchain2 = revert ? *pChain1 : *pChain2;
@@ -461,9 +441,7 @@ bool Ig2_ChainedCylinder_ChainedCylinder_ScGeom6D::go(
 	bool isNew  = !c->geom;
 	if (pChain2->chainNumber != pChain1->chainNumber) {
 		shared_ptr<ChCylGeom6D> scm;
-		if (isLast) {
-			return false;
-		}
+		if (isLast) { return false; }
 		shared_ptr<Body> cylinderNext1 = Body::byId(pChain1->chains[pChain1->chainNumber][pChain1->rank + 1], scene);
 		shared_ptr<Body> cylinderNext2 = Body::byId(pChain2->chains[pChain2->chainNumber][pChain2->rank + 1], scene);
 		//cout<<c->id1<<"  "<<c->id2<<endl;
@@ -497,23 +475,19 @@ bool Ig2_ChainedCylinder_ChainedCylinder_ScGeom6D::go(
 					dist = NaN;
 					if (k >= 1) {
 						k = 1;
-						if (!(pChain1->rank >= sizeChain1 - 2))
-							insideCyl1 = 0;
+						if (!(pChain1->rank >= sizeChain1 - 2)) insideCyl1 = 0;
 					}
 					if (k < 0) {
 						k = 0;
-						if (!(pChain1->rank == 0))
-							insideCyl1 = 0;
+						if (!(pChain1->rank == 0)) insideCyl1 = 0;
 					}
 					if (m >= 1) {
 						m = 1;
-						if (!(pChain2->rank >= sizeChain2 - 2))
-							insideCyl2 = 0;
+						if (!(pChain2->rank >= sizeChain2 - 2)) insideCyl2 = 0;
 					}
 					if (m < 0) {
 						m = 0;
-						if (!(pChain2->rank == 0))
-							insideCyl2 = 0;
+						if (!(pChain2->rank == 0)) insideCyl2 = 0;
 					}
 				}
 			} else
@@ -541,8 +515,7 @@ bool Ig2_ChainedCylinder_ChainedCylinder_ScGeom6D::go(
 			dist                 = (A + k * a - (B + m * b)).norm();
 			bool edgeEdgeContact = (h1 > 1 && pChain2->rank >= sizeChain2 - 2) || (h1 < 0 && pChain2->rank == 0)
 			        || (h2 > 1 && pChain1->rank >= sizeChain1 - 2) || (h2 < 0 && pChain1->rank == 0);
-			if (edgeEdgeContact)
-				colinearVectors = 0;
+			if (edgeEdgeContact) colinearVectors = 0;
 			if ((0 <= h1 and 1 > h1) or (0 <= h2 and 1 > h2) or edgeEdgeContact) {
 				; //Do a perfectly flat contact
 			} else
@@ -560,8 +533,7 @@ bool Ig2_ChainedCylinder_ChainedCylinder_ScGeom6D::go(
 				Vector3r S = pointsToCheck[i], C = (i < 2) ? B : A, vec = (i < 2) ? b : a;
 				Vector3r CS = S - C;
 				Real     d  = CS.dot(vec) / (vec.norm());
-				if (d < 0.)
-					resultDist = CS.norm();
+				if (d < 0.) resultDist = CS.norm();
 				else if (d > vec.norm())
 					resultDist = (C + vec - S).norm();
 				else
@@ -581,40 +553,31 @@ bool Ig2_ChainedCylinder_ChainedCylinder_ScGeom6D::go(
 				k = whichCaseIsCloser == 0 ? 0 : 1;
 				if (resultProj <= 0) {
 					m = 0;
-					if (!(pChain2->rank == 0))
-						insideCyl2 = 0;
+					if (!(pChain2->rank == 0)) insideCyl2 = 0;
 				} else if (resultProj > b.norm()) {
 					m = 1;
-					if (!(pChain2->rank >= sizeChain2 - 2))
-						insideCyl2 = 0;
+					if (!(pChain2->rank >= sizeChain2 - 2)) insideCyl2 = 0;
 				} else
 					m = resultProj / (b.norm());
-				if (isNew && whichCaseIsCloser == 1 && !(pChain1->rank >= sizeChain1 - 2))
-					return false;
+				if (isNew && whichCaseIsCloser == 1 && !(pChain1->rank >= sizeChain1 - 2)) return false;
 			} else {
 				m = whichCaseIsCloser == 2 ? 0 : 1;
 				if (resultProj <= 0) {
 					k = 0;
-					if (!(pChain1->rank == 0))
-						insideCyl1 = 0;
+					if (!(pChain1->rank == 0)) insideCyl1 = 0;
 				} else if (resultProj > a.norm()) {
 					k = 1;
-					if (!(pChain1->rank >= sizeChain2 - 2))
-						insideCyl1 = 0;
+					if (!(pChain1->rank >= sizeChain2 - 2)) insideCyl1 = 0;
 				} else
 					k = resultProj / (a.norm());
-				if (isNew && whichCaseIsCloser == 3 && !(pChain2->rank >= sizeChain2 - 2))
-					return false;
+				if (isNew && whichCaseIsCloser == 3 && !(pChain2->rank >= sizeChain2 - 2)) return false;
 			}
 		}
-		if (isNew && dist >= cc1->radius + cc2->radius)
-			return false; //if the contact had not yet occured, return false.
+		if (isNew && dist >= cc1->radius + cc2->radius) return false; //if the contact had not yet occured, return false.
 		//FIXME:the next line sometimes causes an error in the terminal, because instead of returning false here the contact should be correctly erased.
-		if (insideCyl1 == 0 || insideCyl2 == 0)
-			return false; //the contact may be duplicated ...
-		else {                //else create the geometry.
-			if (!isNew)
-				scm = YADE_PTR_CAST<ChCylGeom6D>(c->geom);
+		if (insideCyl1 == 0 || insideCyl2 == 0) return false; //the contact may be duplicated ...
+		else {                                                //else create the geometry.
+			if (!isNew) scm = YADE_PTR_CAST<ChCylGeom6D>(c->geom);
 			else {
 				scm     = shared_ptr<ChCylGeom6D>(new ChCylGeom6D());
 				c->geom = scm;
@@ -646,8 +609,7 @@ bool Ig2_ChainedCylinder_ChainedCylinder_ScGeom6D::go(
 		return false;
 	} else { //contact between two Cylinders within the same chain.
 		shared_ptr<ScGeom6D> scm;
-		if (!isNew)
-			scm = YADE_PTR_CAST<ScGeom6D>(c->geom);
+		if (!isNew) scm = YADE_PTR_CAST<ScGeom6D>(c->geom);
 		else {
 			scm     = shared_ptr<ScGeom6D>(new ScGeom6D());
 			c->geom = scm;
@@ -713,16 +675,13 @@ void Gl1_Cylinder::go(const shared_ptr<Shape>& cm, const shared_ptr<State>&, boo
 	Real length = (static_cast<Cylinder*>(cm.get()))->length;
 	//glMaterialv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Vector3f(cm->color[0],cm->color[1],cm->color[2]));
 	glColor3v(cm->color);
-	if (glutNormalize)
-		glPushAttrib(GL_NORMALIZE);
+	if (glutNormalize) glPushAttrib(GL_NORMALIZE);
 	// 	glPushMatrix();
 	Quaternionr shift = (static_cast<ChainedCylinder*>(cm.get()))->chainedOrientation;
-	if (wire || wire2)
-		drawCylinder(true, r, length, shift);
+	if (wire || wire2) drawCylinder(true, r, length, shift);
 	else
 		drawCylinder(false, r, length, shift);
-	if (glutNormalize)
-		glPopAttrib();
+	if (glutNormalize) glPopAttrib();
 	// 	glPopMatrix();
 	return;
 }
@@ -734,14 +693,11 @@ void Gl1_ChainedCylinder::go(const shared_ptr<Shape>& cm, const shared_ptr<State
 	Quaternionr shift; // = (static_cast<ChainedCylinder*>(cm.get()))->chainedOrientation;
 	shift.setFromTwoVectors(Vector3r::UnitZ(), state->ori.conjugate() * (static_cast<ChainedCylinder*>(cm.get()))->segment);
 	glColor3v(cm->color);
-	if (glutNormalize)
-		glPushAttrib(GL_NORMALIZE);
-	if (wire || wire2)
-		drawCylinder(true, r, length, shift);
+	if (glutNormalize) glPushAttrib(GL_NORMALIZE);
+	if (wire || wire2) drawCylinder(true, r, length, shift);
 	else
 		drawCylinder(false, r, length, shift);
-	if (glutNormalize)
-		glPopAttrib();
+	if (glutNormalize) glPopAttrib();
 	return;
 }
 
@@ -773,9 +729,7 @@ void Gl1_Cylinder::drawCylinder(bool wireNonMember, Real radius, Real length, co
 void Bo1_Cylinder_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body* /*b*/)
 {
 	Cylinder* cylinder = static_cast<Cylinder*>(cm.get());
-	if (!bv) {
-		bv = shared_ptr<Bound>(new Aabb);
-	}
+	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 	Aabb* aabb = static_cast<Aabb*>(bv.get());
 	if (!scene->isPeriodic) {
 		const Vector3r& O  = se3.position;
@@ -792,9 +746,7 @@ void Bo1_Cylinder_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, c
 void Bo1_ChainedCylinder_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body* /*b*/)
 {
 	ChainedCylinder* cylinder = static_cast<ChainedCylinder*>(cm.get());
-	if (!bv) {
-		bv = shared_ptr<Bound>(new Aabb);
-	}
+	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 	Aabb* aabb = static_cast<Aabb*>(bv.get());
 	if (!scene->isPeriodic) {
 		const Vector3r& O  = se3.position;
@@ -824,8 +776,7 @@ bool Law2_CylScGeom_FrictPhys_CundallStrack::go(shared_ptr<IGeom>& ig, shared_pt
 	if (geom->isDuplicate) {
 		if (id2 != geom->trueInt) {
 			//cerr<<"skip duplicate "<<id1<<" "<<id2<<endl;
-			if (geom->isDuplicate == 2)
-				return false;
+			if (geom->isDuplicate == 2) return false;
 		}
 	}
 	Real& un          = geom->penetrationDepth;
@@ -850,8 +801,7 @@ bool Law2_CylScGeom_FrictPhys_CundallStrack::go(shared_ptr<IGeom>& ig, shared_pt
 			//define the plastic work input and increment the total plastic energy dissipated
 			shearForce *= ratio;
 			Real dissip = ((1 / phys->ks) * (trialForce - shearForce)) /*plastic disp*/.dot(shearForce) /*active force*/;
-			if (dissip > 0)
-				scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset*/ false);
+			if (dissip > 0) scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset*/ false);
 		}
 		// compute elastic energy as well
 		scene->energy->add(
@@ -892,16 +842,14 @@ bool Law2_CylScGeom6D_CohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, sha
 	CylScGeom6D*  geom                  = YADE_CAST<CylScGeom6D*>(ig.get());
 	CohFrictPhys* currentContactPhysics = YADE_CAST<CohFrictPhys*>(ip.get());
 
-	Vector3r& shearForceFirst = currentContactPhysics->shearForce; //force tangentielle
-	if (contact->isFresh(scene))
-		shearForceFirst = Vector3r::Zero();                              //contact nouveau => force tengentielle = 0,0,0
+	Vector3r& shearForceFirst = currentContactPhysics->shearForce;           //force tangentielle
+	if (contact->isFresh(scene)) shearForceFirst = Vector3r::Zero();         //contact nouveau => force tengentielle = 0,0,0
 	Real un = geom->penetrationDepth;                                        //un : interpenetration
 	Real Fn = currentContactPhysics->kn * (un - currentContactPhysics->unp); //Fn : force normale
 	if (geom->isDuplicate) {
 		if (id2 != geom->trueInt) {
 			//cerr<<"skip duplicate "<<id1<<" "<<id2<<endl;
-			if (geom->isDuplicate == 2)
-				return false;
+			if (geom->isDuplicate == 2) return false;
 		}
 	}
 
@@ -912,8 +860,7 @@ bool Law2_CylScGeom6D_CohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, sha
 		if ((-Fn) > currentContactPhysics->normalAdhesion) { //normal plasticity
 			Fn                         = -currentContactPhysics->normalAdhesion;
 			currentContactPhysics->unp = un + currentContactPhysics->normalAdhesion / currentContactPhysics->kn;
-			if (currentContactPhysics->unpMax && currentContactPhysics->unp < currentContactPhysics->unpMax)
-				return false;
+			if (currentContactPhysics->unpMax && currentContactPhysics->unp < currentContactPhysics->unpMax) return false;
 		}
 		currentContactPhysics->normalForce = Fn * geom->normal;
 		Vector3r&       shearForce         = geom->rotate(currentContactPhysics->shearForce);
@@ -924,8 +871,7 @@ bool Law2_CylScGeom6D_CohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, sha
 
 		Real Fs    = currentContactPhysics->shearForce.norm();
 		Real maxFs = currentContactPhysics->shearAdhesion;
-		if (!currentContactPhysics->cohesionDisablesFriction || maxFs == 0)
-			maxFs += Fn * currentContactPhysics->tangensOfFrictionAngle;
+		if (!currentContactPhysics->cohesionDisablesFriction || maxFs == 0) maxFs += Fn * currentContactPhysics->tangensOfFrictionAngle;
 		maxFs = math::max((Real)0, maxFs);
 		if (Fs > maxFs) { //Plasticity condition on shear force
 			if (currentContactPhysics->fragile && !currentContactPhysics->cohesionBroken) {
@@ -934,8 +880,7 @@ bool Law2_CylScGeom6D_CohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, sha
 			}
 			maxFs = maxFs / Fs;
 			shearForce *= maxFs;
-			if (Fn < 0)
-				currentContactPhysics->normalForce = Vector3r::Zero(); //Vector3r::Zero()
+			if (Fn < 0) currentContactPhysics->normalForce = Vector3r::Zero(); //Vector3r::Zero()
 		}
 		Vector3r force = -currentContactPhysics->normalForce - shearForce;
 		if (!scene->isPeriodic) {
@@ -978,20 +923,17 @@ bool Law2_ChCylGeom6D_CohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, sha
     intr->phys = c->phys;
     */
 
-	Vector3r& shearForceFirst = currentContactPhysics->shearForce; //force tangentielle
-	if (contact->isFresh(scene))
-		shearForceFirst = Vector3r::Zero();                              //contact nouveau => force tengentielle = 0,0,0
+	Vector3r& shearForceFirst = currentContactPhysics->shearForce;           //force tangentielle
+	if (contact->isFresh(scene)) shearForceFirst = Vector3r::Zero();         //contact nouveau => force tengentielle = 0,0,0
 	Real un = geom->penetrationDepth;                                        //un : interpenetration
 	Real Fn = currentContactPhysics->kn * (un - currentContactPhysics->unp); //Fn : force normale
 
-	if (currentContactPhysics->fragile && (-Fn) > currentContactPhysics->normalAdhesion)
-		return false; // BREAK due to tension
+	if (currentContactPhysics->fragile && (-Fn) > currentContactPhysics->normalAdhesion) return false; // BREAK due to tension
 	else {
 		if ((-Fn) > currentContactPhysics->normalAdhesion) { //normal plasticity
 			Fn                         = -currentContactPhysics->normalAdhesion;
 			currentContactPhysics->unp = un + currentContactPhysics->normalAdhesion / currentContactPhysics->kn;
-			if (currentContactPhysics->unpMax && currentContactPhysics->unp < currentContactPhysics->unpMax)
-				return false;
+			if (currentContactPhysics->unpMax && currentContactPhysics->unp < currentContactPhysics->unpMax) return false;
 		}
 
 
@@ -1004,8 +946,7 @@ bool Law2_ChCylGeom6D_CohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, sha
 
 		Real Fs    = currentContactPhysics->shearForce.norm();
 		Real maxFs = currentContactPhysics->shearAdhesion;
-		if (!currentContactPhysics->cohesionDisablesFriction || maxFs == 0)
-			maxFs += Fn * currentContactPhysics->tangensOfFrictionAngle;
+		if (!currentContactPhysics->cohesionDisablesFriction || maxFs == 0) maxFs += Fn * currentContactPhysics->tangensOfFrictionAngle;
 		maxFs = math::max((Real)0, maxFs);
 		if (Fs > maxFs) { //Plasticity condition on shear force
 			if (currentContactPhysics->fragile && !currentContactPhysics->cohesionBroken) {
@@ -1014,8 +955,7 @@ bool Law2_ChCylGeom6D_CohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, sha
 			}
 			maxFs = maxFs / Fs;
 			shearForce *= maxFs;
-			if (Fn < 0)
-				currentContactPhysics->normalForce = Vector3r::Zero(); //Vector3r::Zero()
+			if (Fn < 0) currentContactPhysics->normalForce = Vector3r::Zero(); //Vector3r::Zero()
 		}
 
 

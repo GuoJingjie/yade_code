@@ -24,9 +24,7 @@ YADE_PLUGIN((Bo1_FluidDomainBbox_Aabb));
 void Bo1_FluidDomainBbox_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*)
 {
 	FluidDomainBbox* domain = static_cast<FluidDomainBbox*>(cm.get());
-	if (!bv) {
-		bv = shared_ptr<Bound>(new Aabb);
-	}
+	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 	Aabb* aabb = static_cast<Aabb*>(bv.get());
 
 	aabb->min = scene->isPeriodic ? scene->cell->wrapPt(domain->minBound) : domain->minBound;
@@ -158,8 +156,7 @@ void FoamCoupling::updateProcList()
 	for (unsigned int i = 0; i != bodyList.size(); ++i) {
 		int dummy_val = -5;
 		MPI_Allreduce(&dummy_val, &procList[i], 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
-		if (procList[i] < 0)
-			LOG_WARN("particle id" << i << "not found in FOAM" << std::endl);
+		if (procList[i] < 0) LOG_WARN("particle id" << i << "not found in FOAM" << std::endl);
 	}
 }
 
@@ -328,9 +325,7 @@ void FoamCoupling::buildSharedIdsMap()
 			if (otherBody->getIsFluidDomainBbox()) {
 				const shared_ptr<FluidDomainBbox>& flbox = YADE_PTR_CAST<FluidDomainBbox>(otherBody->shape);
 				flbox->bIds.push_back(bodyId);
-				if (!flbox->hasIntersection) {
-					flbox->hasIntersection = true;
-				}
+				if (!flbox->hasIntersection) { flbox->hasIntersection = true; }
 				int indx = (flbox->bIds.size()) - 1;
 				testMap.insert(std::make_pair(
 				        otherId,
@@ -347,9 +342,7 @@ void FoamCoupling::buildSharedIdsMap()
 		const shared_ptr<Body>& flb = (*scene->bodies)[fluidId];
 		if (flb) {
 			const shared_ptr<FluidDomainBbox>& flBox = YADE_PTR_CAST<FluidDomainBbox>(flb->shape);
-			if (flBox->bIds.size() > 0) {
-				inCommunicationProc.push_back(std::make_pair(flBox->domainRank, flBox->bIds.size()));
-			}
+			if (flBox->bIds.size() > 0) { inCommunicationProc.push_back(std::make_pair(flBox->domainRank, flBox->bIds.size())); }
 		}
 	}
 }
@@ -374,9 +367,7 @@ void FoamCoupling::buildSharedIds()
 			} else {
 				otherId = intr->getId1();
 			}
-			if (ifFluidDomain(otherId)) {
-				fluidIds.push_back(otherId);
-			}
+			if (ifFluidDomain(otherId)) { fluidIds.push_back(otherId); }
 		}
 		if (fluidIds.size() > 1) {
 			sharedIds.push_back(std::make_pair(subD->ids[bodyId], fluidIds));
@@ -393,9 +384,7 @@ int FoamCoupling::ifSharedIdMap(const Body::id_t& testId)
 		return testId == elem.first;
 	});
 
-	if (it != sharedIdsMapIndx.end()) {
-		res = it - sharedIdsMapIndx.begin();
-	}
+	if (it != sharedIdsMapIndx.end()) { res = it - sharedIdsMapIndx.begin(); }
 	return res;
 }
 
@@ -413,9 +402,7 @@ bool FoamCoupling::ifFluidDomain(const Body::id_t& testId)
 
 void FoamCoupling::buildLocalIds()
 {
-	if (localRank == yadeMaster) {
-		return;
-	} // master has no bodies.
+	if (localRank == yadeMaster) { return; } // master has no bodies.
 	if (bodyList.size() == 0) {
 		LOG_ERROR("Ids for coupling has no been set, FAIL!");
 		return;
@@ -427,9 +414,7 @@ void FoamCoupling::buildLocalIds()
 	}
 	for (const auto& testId : bodyList) {
 		std::vector<Body::id_t>::iterator iter = std::find(subD->ids.begin(), subD->ids.end(), testId); // can subD have ids sorted?
-		if (iter != subD->ids.end()) {
-			localIds.push_back(*iter);
-		}
+		if (iter != subD->ids.end()) { localIds.push_back(*iter); }
 	}
 }
 
@@ -590,8 +575,7 @@ void FoamCoupling::verifyParticleDetection()
 				const shared_ptr<FluidDomainBbox>& flbox = YADE_PTR_CAST<FluidDomainBbox>((*scene->bodies)[fdIndx.first]->shape);
 				for (const auto& vt : verifyTracking) {
 					if (vt.first == flbox->domainRank) {
-						if (vt.second[fdIndx.second] > 0)
-							found = true;
+						if (vt.second[fdIndx.second] > 0) found = true;
 					}
 				}
 			}
@@ -647,9 +631,7 @@ void FoamCoupling::resetFluidDomains()
 void FoamCoupling::setHydroForceParallel()
 {
 	// add the force
-	if (localRank == yadeMaster) {
-		return;
-	}
+	if (localRank == yadeMaster) { return; }
 	for (const auto& rf : hForce) {
 		int                                indx     = abs(rf.first - localCommSize);
 		const std::vector<double>&         forceVec = rf.second;
@@ -727,9 +709,7 @@ void FoamCoupling::runCouplingParallel()
 
 void FoamCoupling::action()
 {
-	if (!commSizeSet) {
-		getRank();
-	}
+	if (!commSizeSet) { getRank(); }
 
 	if (!couplingModeParallel) {
 		if (exchangeData()) {
@@ -752,8 +732,7 @@ bool FoamCoupling::exchangeData() { return scene->iter % dataExchangeInterval ==
 void FoamCoupling::killMPI()
 {
 	castTerminate();
-	if (!couplingModeParallel)
-		MPI_Finalize();
+	if (!couplingModeParallel) MPI_Finalize();
 }
 } // namespace yade
 

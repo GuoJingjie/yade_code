@@ -20,15 +20,13 @@ public:
 	//Real radius(){return ext[0];}
 	bool isBox()
 	{
-		if (type == 1)
-			return true;
+		if (type == 1) return true;
 		else
 			return false;
 	}
 	bool isPtc()
 	{
-		if (type == 2)
-			return true;
+		if (type == 2) return true;
 		else
 			return false;
 	}

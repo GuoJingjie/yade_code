@@ -17,14 +17,10 @@ py::tuple extractNumbers(std::string verStr, std::string what)
 	int               found;
 	while (!ss.eof()) {
 		ss >> temp;
-		if (std::stringstream(temp) >> found) {
-			verNum.push_back(found);
-		}
+		if (std::stringstream(temp) >> found) { verNum.push_back(found); }
 		temp = "";
 	}
-	if (verNum.size() > 3) {
-		LOG_WARN(what << ": more than 3 numbers extracted from " << verStr);
-	}
+	if (verNum.size() > 3) { LOG_WARN(what << ": more than 3 numbers extracted from " << verStr); }
 	switch (verNum.size()) {
 		case 0: return py::make_tuple(0, 0, 0);
 		case 1: return py::make_tuple(verNum[0], 0, 0);

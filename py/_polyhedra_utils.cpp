@@ -129,24 +129,20 @@ Real PWaveTimeStep()
 	shared_ptr<Scene>       rb  = (_rb ? _rb : Omega::instance().getScene());
 	Real                    dt  = std::numeric_limits<Real>::infinity();
 	for (const auto& b : *rb->bodies) {
-		if (!b || !b->material || !b->shape)
-			continue;
+		if (!b || !b->material || !b->shape) continue;
 		shared_ptr<Sphere>    s = YADE_PTR_DYN_CAST<Sphere>(b->shape);
 		shared_ptr<Polyhedra> p = YADE_PTR_DYN_CAST<Polyhedra>(b->shape);
-		if (!s && !p)
-			continue;
+		if (!s && !p) continue;
 		if (!p) {
 			//spheres
 			shared_ptr<ElastMat> ebp = YADE_PTR_DYN_CAST<ElastMat>(b->material);
-			if (!ebp)
-				continue;
+			if (!ebp) continue;
 			Real density = b->state->mass / ((4. / 3.) * Mathr::PI * pow(s->radius, 3));
 			dt           = min(dt, s->radius / sqrt(ebp->young / density));
 		} else {
 			//polyhedrons
 			shared_ptr<PolyhedraMat> ebp = YADE_PTR_DYN_CAST<PolyhedraMat>(b->material);
-			if (!ebp)
-				continue;
+			if (!ebp) continue;
 			Real density = b->state->mass / p->GetVolume();
 			//get equivalent radius and use same equation as for sphere
 			Real equi_radius = pow(p->GetVolume() / ((4. / 3.) * Mathr::PI), 1. / 3.);
@@ -212,8 +208,7 @@ void SieveCurve()
 	std::vector<std::pair<Real, Real>> sieve_volume;
 	Real                               total_volume = 0;
 	for (const auto& b : *rb->bodies) {
-		if (!b || !b->shape)
-			continue;
+		if (!b || !b->shape) continue;
 		shared_ptr<Polyhedra> p = YADE_PTR_DYN_CAST<Polyhedra>(b->shape);
 		if (p) {
 			sieve_volume.push_back(std::pair<Real, Real>(SieveSize(p), p->GetVolume()));
@@ -242,12 +237,9 @@ void SizeRatio()
 	std::ofstream           myfile;
 	myfile.open("sizes.dat");
 	for (const auto& b : *rb->bodies) {
-		if (!b || !b->shape)
-			continue;
+		if (!b || !b->shape) continue;
 		shared_ptr<Polyhedra> p = YADE_PTR_DYN_CAST<Polyhedra>(b->shape);
-		if (p) {
-			myfile << SizeOfPolyhedra(p) << endl;
-		}
+		if (p) { myfile << SizeOfPolyhedra(p) << endl; }
 	}
 	myfile.close();
 }
@@ -281,12 +273,9 @@ Vector3r MaxCoord(const shared_ptr<Shape>& cm1, const State& state1)
 
 	Vector3r maxccord = trans_vec;
 	for (Polyhedron::Vertex_iterator vi = PA.vertices_begin(); vi != PA.vertices_end(); ++vi) {
-		if (vi->point()[0] > maxccord[0])
-			maxccord[0] = vi->point()[0];
-		if (vi->point()[1] > maxccord[1])
-			maxccord[1] = vi->point()[1];
-		if (vi->point()[2] > maxccord[2])
-			maxccord[2] = vi->point()[2];
+		if (vi->point()[0] > maxccord[0]) maxccord[0] = vi->point()[0];
+		if (vi->point()[1] > maxccord[1]) maxccord[1] = vi->point()[1];
+		if (vi->point()[2] > maxccord[2]) maxccord[2] = vi->point()[2];
 	}
 
 	return maxccord;
@@ -321,12 +310,9 @@ Vector3r MinCoord(const shared_ptr<Shape>& cm1, const State& state1)
 
 	Vector3r minccord = trans_vec;
 	for (Polyhedron::Vertex_iterator vi = PA.vertices_begin(); vi != PA.vertices_end(); ++vi) {
-		if (vi->point()[0] < minccord[0])
-			minccord[0] = vi->point()[0];
-		if (vi->point()[1] < minccord[1])
-			minccord[1] = vi->point()[1];
-		if (vi->point()[2] < minccord[2])
-			minccord[2] = vi->point()[2];
+		if (vi->point()[0] < minccord[0]) minccord[0] = vi->point()[0];
+		if (vi->point()[1] < minccord[1]) minccord[1] = vi->point()[1];
+		if (vi->point()[2] < minccord[2]) minccord[2] = vi->point()[2];
 	}
 
 	return minccord;
@@ -362,8 +348,7 @@ vector<Vector3r> fillBox_cpp(Vector3r minCoord, Vector3r maxCoord, Vector3r size
 		if (it == 1) {
 			trialP.Clear();
 			trialP.seed = rand();
-			if (fixed_ratio)
-				trialP.size = (rand() * (sizemax[0] - sizemin[0]) / RAND_MAX + sizemin[0]) * ratio;
+			if (fixed_ratio) trialP.size = (rand() * (sizemax[0] - sizemin[0]) / RAND_MAX + sizemin[0]) * ratio;
 			else
 				trialP.size
 				        = Vector3r(rand() * (sizemax[0] - sizemin[0]), rand() * (sizemax[1] - sizemin[1]), rand() * (sizemax[2] - sizemin[2]))
@@ -404,8 +389,7 @@ vector<Vector3r> fillBox_cpp(Vector3r minCoord, Vector3r maxCoord, Vector3r size
 		//call test with other polyhedrons
 		for (vector<Polyhedron>::iterator a = polyhedrons.begin(); (a != polyhedrons.end()) && (!intersection); a++) {
 			intersection = do_intersect(*a, trial_moved);
-			if (intersection)
-				break;
+			if (intersection) break;
 		}
 		if (!intersection) {
 			polyhedrons.push_back(trial_moved);
@@ -456,19 +440,15 @@ vector<Vector3r> TruncIcosaHedPoints(Vector3r radii)
 				v.push_back(Vector3r(-b[0], b[1], b[2]));
 				if (b[1] != 0.) {
 					v.push_back(Vector3r(-b[0], -b[1], b[2]));
-					if (b[2] != 0.)
-						v.push_back(Vector3r(-b[0], -b[1], -b[2]));
+					if (b[2] != 0.) v.push_back(Vector3r(-b[0], -b[1], -b[2]));
 				}
-				if (b[2] != 0.)
-					v.push_back(Vector3r(-b[0], b[1], -b[2]));
+				if (b[2] != 0.) v.push_back(Vector3r(-b[0], b[1], -b[2]));
 			}
 			if (b[1] != 0.) {
 				v.push_back(Vector3r(b[0], -b[1], b[2]));
-				if (b[2] != 0.)
-					v.push_back(Vector3r(b[0], -b[1], -b[2]));
+				if (b[2] != 0.) v.push_back(Vector3r(b[0], -b[1], -b[2]));
 			}
-			if (b[2] != 0.)
-				v.push_back(Vector3r(b[0], b[1], -b[2]));
+			if (b[2] != 0.) v.push_back(Vector3r(b[0], b[1], -b[2]));
 		}
 	}
 	return v;
@@ -507,10 +487,8 @@ vector<Vector3r> SnubCubePoints(Vector3r radii)
 vector<Vector3r> BallPoints(Vector3r radii, int NumFacets, int seed)
 {
 	vector<Vector3r> v;
-	if (NumFacets == 60)
-		v = TruncIcosaHedPoints(radii);
-	if (NumFacets == 24)
-		v = SnubCubePoints(radii);
+	if (NumFacets == 60) v = TruncIcosaHedPoints(radii);
+	if (NumFacets == 24) v = SnubCubePoints(radii);
 	else {
 		Real inc = Mathr::PI * (3. - pow(5., 0.5));
 		Real off = 2. / double(NumFacets);
@@ -612,8 +590,7 @@ fillBoxByBalls_cpp(Vector3r minCoord, Vector3r maxCoord, Vector3r sizemin, Vecto
 		//call test with other polyhedrons
 		for (vector<Polyhedron>::iterator a = polyhedrons.begin(); (a != polyhedrons.end()) && (!intersection); a++) {
 			intersection = do_intersect(*a, trial_moved);
-			if (intersection)
-				break;
+			if (intersection) break;
 		}
 		if (!intersection) {
 			polyhedrons.push_back(trial_moved);

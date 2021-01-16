@@ -23,8 +23,7 @@ class InteractionContainer;
 	const Body::id_t          _sz(redirect ? realBodies.size() : bodies->size());                                                                          \
 	_Pragma("omp parallel for") for (int k = 0; k < _sz; k++)                                                                                              \
 	{                                                                                                                                                      \
-		if (not redirect and not(*bodies)[k])                                                                                                          \
-			continue;                                                                                                                              \
+		if (not redirect and not(*bodies)[k]) continue;                                                                                                \
 		b_((*bodies)[redirect ? realBodies[k] : k]);
 #else
 #define YADE_PARALLEL_FOREACH_BODY_BEGIN(b_, bodies)                                                                                                           \
@@ -33,8 +32,7 @@ class InteractionContainer;
 	const bool                redirect   = bodies->useRedirection;                                                                                         \
 	const Body::id_t          _sz(redirect ? realBodies.size() : bodies->size());                                                                          \
 	for (int k = 0; k < _sz; k++) {                                                                                                                        \
-		if (not redirect and not(*bodies)[k])                                                                                                          \
-			continue;                                                                                                                              \
+		if (not redirect and not(*bodies)[k]) continue;                                                                                                \
 		b_((*bodies)[redirect ? realBodies[k] : k]);
 #endif
 #define YADE_PARALLEL_FOREACH_BODY_END() }

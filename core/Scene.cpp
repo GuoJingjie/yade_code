@@ -56,8 +56,7 @@ void Scene::fillDefaultTags()
 	if (pw) { // May fail in some clusters
 		string gecos(pw->pw_gecos), gecos2;
 		size_t p = gecos.find(",");
-		if (p != string::npos)
-			boost::algorithm::erase_tail(gecos, gecos.size() - p);
+		if (p != string::npos) boost::algorithm::erase_tail(gecos, gecos.size() - p);
 		for (size_t i = 0; i < gecos.size(); i++) {
 			gecos2.push_back(((unsigned char)gecos[i]) < 128 ? gecos[i] : '?');
 		}
@@ -81,8 +80,7 @@ void Scene::postLoad(Scene&)
 
 	// this might be removed at some point, since it is checked by regression tests now
 	for (const auto& b : *bodies) {
-		if (!b || !b->material || b->material->id < 0)
-			continue; // not a shared material
+		if (!b || !b->material || b->material->id < 0) continue; // not a shared material
 		if (b->material != materials[b->material->id])
 			throw std::logic_error("Scene::postLoad: Internal inconsistency, shared materials not preserved when loaded; please report bug.");
 	}
@@ -107,8 +105,7 @@ void Scene::moveToNextTimeStep()
 		/* set substep to 0 during the loop, so that engines/nextEngines handler know whether we are inside the loop currently */
 		subStep = 0;
 		// ** 1. ** prologue
-		if (isPeriodic)
-			cell->integrateAndUpdate(dt);
+		if (isPeriodic) cell->integrateAndUpdate(dt);
 		//forces.reset(); // uncomment if ForceResetter is removed
 		const bool TimingInfo_enabled = TimingInfo::
 		        enabled; // cache the value, so that when it is changed inside the step, the engine that was just running doesn't get bogus values
@@ -116,8 +113,7 @@ void Scene::moveToNextTimeStep()
 		// ** 2. ** engines
 		for (const auto& e : engines) {
 			e->scene = this;
-			if (e->dead || !e->isActivated())
-				continue;
+			if (e->dead || !e->isActivated()) continue;
 			e->action();
 			if (TimingInfo_enabled) {
 				TimingInfo::delta now = TimingInfo::getNow();
@@ -165,15 +161,13 @@ void Scene::moveToNextTimeStep()
 			assert(subs >= -1 && subs <= (int)engines.size());
 			// ** 1. ** prologue
 			if (subs == -1) {
-				if (isPeriodic)
-					cell->integrateAndUpdate(dt);
+				if (isPeriodic) cell->integrateAndUpdate(dt);
 			}
 			// ** 2. ** engines
 			else if (subs >= 0 && subs < (int)engines.size()) {
 				const shared_ptr<Engine>& e(engines[subs]);
 				e->scene = this;
-				if (!e->dead && e->isActivated())
-					e->action();
+				if (!e->dead && e->isActivated()) e->action();
 			}
 			// ** 3. ** epilogue
 			else if (subs == (int)engines.size()) {
@@ -193,8 +187,7 @@ void Scene::moveToNextTimeStep()
 shared_ptr<Engine> Scene::engineByName(const string& s)
 {
 	for (const auto& e : engines) {
-		if (e->getClassName() == s)
-			return e;
+		if (e->getClassName() == s) return e;
 	}
 	return shared_ptr<Engine>();
 }
@@ -203,11 +196,9 @@ bool Scene::timeStepperPresent()
 {
 	int n = 0;
 	for (const auto& e : engines) {
-		if (dynamic_cast<TimeStepper*>(e.get()))
-			n++;
+		if (dynamic_cast<TimeStepper*>(e.get())) n++;
 	}
-	if (n > 1)
-		throw std::runtime_error(string("Multiple (" + boost::lexical_cast<string>(n) + ") TimeSteppers in the simulation?!").c_str());
+	if (n > 1) throw std::runtime_error(string("Multiple (" + boost::lexical_cast<string>(n) + ") TimeSteppers in the simulation?!").c_str());
 	return n > 0;
 }
 
@@ -222,8 +213,7 @@ bool Scene::timeStepperActive()
 			n++;
 		}
 	}
-	if (n > 1)
-		throw std::runtime_error(string("Multiple (" + boost::lexical_cast<string>(n) + ") TimeSteppers in the simulation?!").c_str());
+	if (n > 1) throw std::runtime_error(string("Multiple (" + boost::lexical_cast<string>(n) + ") TimeSteppers in the simulation?!").c_str());
 	return ret;
 }
 
@@ -237,16 +227,14 @@ bool Scene::timeStepperActivate(bool a)
 			n++;
 		}
 	}
-	if (n > 1)
-		throw std::runtime_error(string("Multiple (" + boost::lexical_cast<string>(n) + ") TimeSteppers in the simulation?!").c_str());
+	if (n > 1) throw std::runtime_error(string("Multiple (" + boost::lexical_cast<string>(n) + ") TimeSteppers in the simulation?!").c_str());
 	return n > 0;
 }
 
 void Scene::checkStateTypes()
 {
 	for (const auto& b : *bodies) {
-		if (!b || !b->material)
-			continue;
+		if (!b || !b->material) continue;
 		if (b->material && !b->state)
 			throw std::runtime_error("Body #" + boost::lexical_cast<string>(b->getId()) + ": has Body::material, but NULL Body::state.");
 		if (!b->material->stateTypeOk(b->state.get())) {
@@ -260,20 +248,16 @@ void Scene::checkStateTypes()
 
 void Scene::updateBound()
 {
-	if (!bound)
-		bound = shared_ptr<Bound>(new Bound);
+	if (!bound) bound = shared_ptr<Bound>(new Bound);
 	const Real& inf = std::numeric_limits<Real>::infinity();
 	Vector3r    mx(-inf, -inf, -inf);
 	Vector3r    mn(inf, inf, inf);
 	for (const auto& b : *bodies) {
-		if (!b)
-			continue;
+		if (!b) continue;
 		if (b->bound) {
 			for (int i = 0; i < 3; i++) {
-				if (!math::isinf(b->bound->max[i]))
-					mx[i] = max(mx[i], b->bound->max[i]);
-				if (!math::isinf(b->bound->min[i]))
-					mn[i] = min(mn[i], b->bound->min[i]);
+				if (!math::isinf(b->bound->max[i])) mx[i] = max(mx[i], b->bound->max[i]);
+				if (!math::isinf(b->bound->min[i])) mn[i] = min(mn[i], b->bound->min[i]);
 			}
 		} else {
 			mx = mx.cwiseMax(b->state->pos);

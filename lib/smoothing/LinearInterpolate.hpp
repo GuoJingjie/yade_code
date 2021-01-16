@@ -31,8 +31,7 @@ template <typename T, typename timeT> T linearInterpolate(const ::yade::Real t, 
 	pos = std::min(pos, tt.size() - 2);
 	while ((tt[pos] > t) || (tt[pos + 1] < t)) {
 		assert(tt[pos] < tt[pos + 1]);
-		if (tt[pos] > t)
-			pos--;
+		if (tt[pos] > t) pos--;
 		else
 			pos++;
 	}

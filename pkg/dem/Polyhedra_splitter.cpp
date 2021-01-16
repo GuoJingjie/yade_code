@@ -31,12 +31,10 @@ void getStressForEachBody(vector<Matrix3r>& bStresses)
 	const shared_ptr<Scene>& scene = Omega::instance().getScene();
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		PolyhedraGeom* geom = YADE_CAST<PolyhedraGeom*>(I->geom.get());
 		PolyhedraPhys* phys = YADE_CAST<PolyhedraPhys*>(I->phys.get());
-		if (!geom || !phys)
-			continue;
+		if (!geom || !phys) continue;
 		Vector3r f = phys->normalForce + phys->shearForce;
 		//Sum f_i*l_j for each contact of each particle
 		const auto cP    = geom->contactPoint;
@@ -106,8 +104,7 @@ void PolyhedraSplitter::action()
 	getStressForEachBody(bStresses);
 
 	for (const auto& b : *(rb->bodies)) {
-		if (!b || !b->material || !b->shape)
-			continue;
+		if (!b || !b->material || !b->shape) continue;
 		shared_ptr<Polyhedra>    p = YADE_PTR_DYN_CAST<Polyhedra>(b->shape);
 		shared_ptr<PolyhedraMat> m = YADE_PTR_DYN_CAST<PolyhedraMat>(b->material);
 
@@ -154,8 +151,7 @@ void SplitPolyTauMax::action()
 	getStressForEachBody(bStresses);
 
 	for (const auto& b : *scene->bodies) {
-		if (!b || !b->material || !b->shape)
-			continue;
+		if (!b || !b->material || !b->shape) continue;
 		shared_ptr<Polyhedra>    p = YADE_PTR_DYN_CAST<Polyhedra>(b->shape);
 		shared_ptr<PolyhedraMat> m = YADE_PTR_DYN_CAST<PolyhedraMat>(b->material);
 
@@ -253,8 +249,7 @@ void SplitPolyMohrCoulomb::action()
 	fileS.open(fileName, ios::out | ios::app);
 
 	for (const auto& b : *(scene->bodies)) {
-		if (!b || !b->material || !b->shape)
-			continue;
+		if (!b || !b->material || !b->shape) continue;
 		shared_ptr<Polyhedra>    p = YADE_PTR_DYN_CAST<Polyhedra>(b->shape);
 		shared_ptr<PolyhedraMat> m = YADE_PTR_DYN_CAST<PolyhedraMat>(b->material);
 
@@ -297,18 +292,14 @@ void SplitPolyMohrCoulomb::action()
 					if (P > 0) {
 						BodyBroken = isPolyhedraBroken(SigmaCD, -S3, V0, V, M, P);
 					} else {
-						if (S3 < -SigmaCD) {
-							BodyBroken = true;
-						}
+						if (S3 < -SigmaCD) { BodyBroken = true; }
 					}
 					SigmaV = -S3;
 				} else if (S1 > 0 and S3 > 0) {
 					if (P > 0) {
 						BodyBroken = isPolyhedraBroken(math::abs(SigmaCZ), S1, V0, V, M, P);
 					} else {
-						if (S1 > SigmaCZ) {
-							BodyBroken = true;
-						}
+						if (S1 > SigmaCZ) { BodyBroken = true; }
 					}
 					SigmaV = S1;
 				} else {
@@ -316,9 +307,7 @@ void SplitPolyMohrCoulomb::action()
 					if (P > 0) {
 						BodyBroken = isPolyhedraBroken(math::abs(SigmaCZ), math::abs(SigmaT), V0, V, M, P);
 					} else {
-						if (SigmaT >= SigmaCZ) {
-							BodyBroken = true;
-						}
+						if (SigmaT >= SigmaCZ) { BodyBroken = true; }
 					}
 					SigmaV = math::abs(SigmaT);
 				}

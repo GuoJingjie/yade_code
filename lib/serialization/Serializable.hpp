@@ -113,8 +113,7 @@ template <class C, typename T, T C::*A> void make_setter_postLoad(C& instance, c
 		std::string docStr(_ATTR_DOC(attr));                                                                                                           \
 		docStr += " :yattrflags:`" + boost::lexical_cast<string>(_ATTR_FLG(attr)) + "` ";                                                              \
                                                                                                                                                                \
-		if (_ref && !_ro && !_post)                                                                                                                    \
-			_classObj.def_readwrite(_ATTR_NAM_STR(attr), &thisClass::_ATTR_NAM(attr), docStr.c_str());                                             \
+		if (_ref && !_ro && !_post) _classObj.def_readwrite(_ATTR_NAM_STR(attr), &thisClass::_ATTR_NAM(attr), docStr.c_str());                         \
 		else if (_ref && !_ro && _post)                                                                                                                \
 			_classObj.add_property(                                                                                                                \
 			        _ATTR_NAM_STR(attr),                                                                                                           \
@@ -162,8 +161,7 @@ template <class C, typename T, T C::*A> void make_setter_postLoad(C& instance, c
 	                                 "|ydeprecated| alias for :yref:`" BOOST_PP_STRINGIZE(_DEPREC_NEWNAME(z)) "<" BOOST_PP_STRINGIZE(thisClass) "." BOOST_PP_STRINGIZE(             \
 	                _DEPREC_NEWNAME(z)) ">` (" _DEPREC_COMMENT(z) ")")
 #define _PYHASKEY_ATTR_DEPREC(x, thisClass, z)                                                                                                                 \
-	if (key == BOOST_PP_STRINGIZE(_DEPREC_OLDNAME(z)))                                                                                                     \
-		return true;
+	if (key == BOOST_PP_STRINGIZE(_DEPREC_OLDNAME(z))) return true;
 
 /* accessors functions ussing warning */
 #define _ACCESS_DEPREC(x, thisClass, z) /*getter*/                                                                                                             \
@@ -180,8 +178,7 @@ template <class C, typename T, T C::*A> void make_setter_postLoad(C& instance, c
 
 // loop bodies for attribute access
 #define _PYGET_ATTR(x, y, z)                                                                                                                                   \
-	if (key == _ATTR_NAM_STR(z))                                                                                                                           \
-		return ::boost::python::object(_ATTR_NAM(z));
+	if (key == _ATTR_NAM_STR(z)) return ::boost::python::object(_ATTR_NAM(z));
 #if (YADE_REAL_BIT <= 80)
 #define _PYSET_ATTR(x, y, z)                                                                                                                                   \
 	if (key == _ATTR_NAM_STR(z)) {                                                                                                                         \
@@ -197,15 +194,11 @@ template <class C, typename T, T C::*A> void make_setter_postLoad(C& instance, c
 #endif
 #define _PYKEYS_ATTR(x, y, z) ret.append(_ATTR_NAM_STR(z));
 #define _PYHASKEY_ATTR(x, y, z)                                                                                                                                \
-	if (key == _ATTR_NAM_STR(z))                                                                                                                           \
-		return true;
+	if (key == _ATTR_NAM_STR(z)) return true;
 #define _PYDICT_ATTR(x, y, z)                                                                                                                                  \
-	if (!(_ATTR_FLG(z) & yade::Attr::hidden))                                                                                                              \
-		ret[_ATTR_NAM_STR(z)] = ::boost::python::object(_ATTR_NAM(z));
+	if (!(_ATTR_FLG(z) & yade::Attr::hidden)) ret[_ATTR_NAM_STR(z)] = ::boost::python::object(_ATTR_NAM(z));
 #define _REGISTER_BOOST_ATTRIBUTES_REPEAT(x, y, z)                                                                                                             \
-	if ((_ATTR_FLG(z) & yade::Attr::noSave) == 0) {                                                                                                        \
-		ar& BOOST_SERIALIZATION_NVP(_ATTR_NAM(z));                                                                                                     \
-	}
+	if ((_ATTR_FLG(z) & yade::Attr::noSave) == 0) { ar& BOOST_SERIALIZATION_NVP(_ATTR_NAM(z)); }
 #define _REGISTER_BOOST_ATTRIBUTES(baseClass, attrs)                                                                                                           \
 	friend class boost::serialization::access;                                                                                                             \
                                                                                                                                                                \
@@ -214,13 +207,11 @@ private:                                                                        
 	{                                                                                                                                                      \
 		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP(baseClass);                                                                                            \
 		/* with ADL, either the generic (empty) version above or baseClass::preLoad etc will be called (compile-time resolution) */                    \
-		if (ArchiveT::is_loading::value)                                                                                                               \
-			preLoad(*this);                                                                                                                        \
+		if (ArchiveT::is_loading::value) preLoad(*this);                                                                                               \
 		else                                                                                                                                           \
 			preSave(*this);                                                                                                                        \
 		BOOST_PP_SEQ_FOR_EACH(_REGISTER_BOOST_ATTRIBUTES_REPEAT, ~, attrs)                                                                             \
-		if (ArchiveT::is_loading::value)                                                                                                               \
-			postLoad(*this);                                                                                                                       \
+		if (ArchiveT::is_loading::value) postLoad(*this);                                                                                              \
 		else                                                                                                                                           \
 			postSave(*this);                                                                                                                       \
 	}

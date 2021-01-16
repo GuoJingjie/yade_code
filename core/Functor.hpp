@@ -79,10 +79,8 @@ public:                                                                         
 	std::string get2DFunctorType2(void) { return string(#type2); };                                                                                        \
 	int         checkArgTypes(const shared_ptr<DispatchType1>& arg1, const shared_ptr<DispatchType2>& arg2)                                                \
 	{                                                                                                                                                      \
-		if (YADE_PTR_DYN_CAST<type1>(arg1) && YADE_PTR_DYN_CAST<type2>(arg2))                                                                          \
-			return 1;                                                                                                                              \
-		if (YADE_PTR_DYN_CAST<type1>(arg2) && YADE_PTR_DYN_CAST<type2>(arg1))                                                                          \
-			return -1;                                                                                                                             \
+		if (YADE_PTR_DYN_CAST<type1>(arg1) && YADE_PTR_DYN_CAST<type2>(arg2)) return 1;                                                                \
+		if (YADE_PTR_DYN_CAST<type1>(arg2) && YADE_PTR_DYN_CAST<type2>(arg1)) return -1;                                                               \
 		return 0;                                                                                                                                      \
 	}
 	virtual std::string get2DFunctorType1(void)

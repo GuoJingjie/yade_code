@@ -19,8 +19,7 @@ public:
 	{
 		if (!self) {
 			const std::lock_guard<std::mutex> lock(singleton_constructor_mutex);
-			if (!self)
-				self = new T;
+			if (!self) self = new T;
 		}
 		return *self;
 	}

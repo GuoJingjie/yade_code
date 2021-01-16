@@ -100,14 +100,12 @@ class InsertionSortCollider : public Collider {
 		bool operator<(const Bounds& b) const
 		{
 			/* handle special case of zero-width bodies, which could otherwise get min/max swapped in the unstable std::sort */
-			if (id == b.id && coord == b.coord)
-				return flags.isMin;
+			if (id == b.id && coord == b.coord) return flags.isMin;
 			return coord < b.coord;
 		}
 		bool operator>(const Bounds& b) const
 		{
-			if (id == b.id && coord == b.coord)
-				return !flags.isMin;
+			if (id == b.id && coord == b.coord) return !flags.isMin;
 			return coord > b.coord;
 		}
 	};
@@ -138,8 +136,7 @@ class InsertionSortCollider : public Collider {
 		// normalize given index to the right range (wraps around)
 		size_t norm(long i) const
 		{
-			if (i < 0)
-				i += size();
+			if (i < 0) i += size();
 			assert(i >= 0);
 			size_t ret = i % size();
 			assert(ret < size());
@@ -165,8 +162,7 @@ class InsertionSortCollider : public Collider {
 		void reserve(size_t n) { vec.reserve(n); }
 		void resize(size_t n)
 		{
-			if (n > vec.size())
-				LOG_ERROR("not supposed to increase size - shrink only");
+			if (n > vec.size()) LOG_ERROR("not supposed to increase size - shrink only");
 			vec.resize(n, Bounds(0, 0, true));
 		}
 		void push_back(const Bounds& bb) { vec.push_back(bb); }
@@ -175,9 +171,9 @@ class InsertionSortCollider : public Collider {
 		void                                sort() { std::sort(vec.begin(), vec.end()); }
 		std::vector<Bounds>::const_iterator cbegin() const { return vec.cbegin(); }
 		std::vector<Bounds>::const_iterator cend() const { return vec.cend(); }
-		std::vector<Bounds>::iterator begin() { return vec.begin(); }
-		std::vector<Bounds>::iterator end() { return vec.end(); }
-		std::vector<Bounds>::iterator insert(std::vector<Bounds>::iterator pos, Bounds& bb)  { return vec.insert(pos,bb); }
+		std::vector<Bounds>::iterator       begin() { return vec.begin(); }
+		std::vector<Bounds>::iterator       end() { return vec.end(); }
+		std::vector<Bounds>::iterator       insert(std::vector<Bounds>::iterator pos, Bounds& bb) { return vec.insert(pos, bb); }
 
 	private:
 		std::vector<Bounds> vec;
@@ -227,8 +223,7 @@ public:
 	//! Predicate called from loop within InteractionContainer::erasePending
 	bool shouldBeErased(Body::id_t id1, Body::id_t id2, Scene* rb) const
 	{
-		if (!periodic)
-			return !spatialOverlap(id1, id2);
+		if (!periodic) return !spatialOverlap(id1, id2);
 		else {
 			Vector3i periods;
 			return !spatialOverlapPeri(id1, id2, rb, periods);

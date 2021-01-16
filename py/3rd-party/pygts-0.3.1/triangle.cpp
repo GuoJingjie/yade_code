@@ -123,9 +123,7 @@ static PyObject* angle(PygtsTriangle* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &t_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &t_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (!pygts_triangle_check(t_)) {
@@ -147,9 +145,7 @@ static PyObject* is_compatible(PygtsTriangle* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &t2_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &t2_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (!pygts_triangle_check(t2_)) {
@@ -184,9 +180,7 @@ static PyObject* common_edge(PygtsTriangle* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &t2_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &t2_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (!pygts_triangle_check(t2_)) {
@@ -201,9 +195,7 @@ static PyObject* common_edge(PygtsTriangle* self, PyObject* args)
 		return Py_None;
 	}
 
-	if ((edge = pygts_edge_new(GTS_EDGE(e))) == NULL) {
-		return NULL;
-	}
+	if ((edge = pygts_edge_new(GTS_EDGE(e))) == NULL) { return NULL; }
 
 	return (PyObject*)edge;
 }
@@ -221,9 +213,7 @@ static PyObject* opposite(PygtsTriangle* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &o_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &o_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (pygts_edge_check(o_)) {
@@ -257,15 +247,11 @@ static PyObject* opposite(PygtsTriangle* self, PyObject* args)
 	/* Get the opposite and return */
 	if (e != NULL) {
 		vertex = gts_triangle_vertex_opposite(triangle, edge);
-		if ((v = pygts_vertex_new(vertex)) == NULL) {
-			return NULL;
-		}
+		if ((v = pygts_vertex_new(vertex)) == NULL) { return NULL; }
 		return (PyObject*)v;
 	} else {
 		edge = gts_triangle_edge_opposite(triangle, vertex);
-		if ((e = pygts_edge_new(edge)) == NULL) {
-			return NULL;
-		}
+		if ((e = pygts_edge_new(edge)) == NULL) { return NULL; }
 		return (PyObject*)e;
 	}
 }
@@ -281,9 +267,7 @@ static PyObject* vertices(PygtsTriangle* self, PyObject* args)
 	/* Get the vertices */
 	gts_triangle_vertices(PYGTS_TRIANGLE_AS_GTS_TRIANGLE(self), &v1_, &v2_, &v3_);
 
-	if ((v1 = pygts_vertex_new(v1_)) == NULL) {
-		return NULL;
-	}
+	if ((v1 = pygts_vertex_new(v1_)) == NULL) { return NULL; }
 
 	if ((v2 = pygts_vertex_new(v2_)) == NULL) {
 		Py_DECREF(v1);
@@ -310,9 +294,7 @@ static PyObject* vertex(PygtsTriangle* self, PyObject* args)
 	/* Get the vertices */
 	v1_ = gts_triangle_vertex(PYGTS_TRIANGLE_AS_GTS_TRIANGLE(self));
 
-	if ((v1 = pygts_vertex_new(v1_)) == NULL) {
-		return NULL;
-	}
+	if ((v1 = pygts_vertex_new(v1_)) == NULL) { return NULL; }
 
 	return (PyObject*)v1;
 }
@@ -333,9 +315,7 @@ static PyObject* circumcenter(PygtsTriangle* self, PyObject* args)
 		return Py_None;
 	}
 
-	if ((v = pygts_vertex_new(vertex)) == NULL) {
-		return NULL;
-	}
+	if ((v = pygts_vertex_new(vertex)) == NULL) { return NULL; }
 
 	return (PyObject*)v;
 }
@@ -352,9 +332,7 @@ static PyObject* is_stabbed(PygtsTriangle* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &p_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &p_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (!pygts_point_check(p_)) {
@@ -371,16 +349,12 @@ static PyObject* is_stabbed(PygtsTriangle* self, PyObject* args)
 	}
 
 	if (GTS_IS_VERTEX(obj)) {
-		if ((vertex = pygts_vertex_new(GTS_VERTEX(obj))) == NULL) {
-			return NULL;
-		}
+		if ((vertex = pygts_vertex_new(GTS_VERTEX(obj))) == NULL) { return NULL; }
 		return (PyObject*)vertex;
 	}
 
 	if (GTS_IS_EDGE(obj)) {
-		if ((edge = pygts_edge_new(GTS_EDGE(obj))) == NULL) {
-			return NULL;
-		}
+		if ((edge = pygts_edge_new(GTS_EDGE(obj))) == NULL) { return NULL; }
 		return (PyObject*)edge;
 	}
 
@@ -398,9 +372,7 @@ static PyObject* interpolate_height(PygtsTriangle* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &p_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &p_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (!pygts_point_check(p_)) {
@@ -573,9 +545,7 @@ static PyObject* get_e1(PygtsTriangle* self, void* closure)
 
 	SELF_CHECK
 
-	if ((e1 = pygts_edge_new(PYGTS_TRIANGLE_AS_GTS_TRIANGLE(self)->e1)) == NULL) {
-		return NULL;
-	}
+	if ((e1 = pygts_edge_new(PYGTS_TRIANGLE_AS_GTS_TRIANGLE(self)->e1)) == NULL) { return NULL; }
 
 	return (PyObject*)e1;
 }
@@ -587,9 +557,7 @@ static PyObject* get_e2(PygtsTriangle* self, void* closure)
 
 	SELF_CHECK
 
-	if ((e2 = pygts_edge_new(PYGTS_TRIANGLE_AS_GTS_TRIANGLE(self)->e2)) == NULL) {
-		return NULL;
-	}
+	if ((e2 = pygts_edge_new(PYGTS_TRIANGLE_AS_GTS_TRIANGLE(self)->e2)) == NULL) { return NULL; }
 
 	return (PyObject*)e2;
 }
@@ -601,9 +569,7 @@ static PyObject* get_e3(PygtsTriangle* self, void* closure)
 
 	SELF_CHECK
 
-	if ((e3 = pygts_edge_new(PYGTS_TRIANGLE_AS_GTS_TRIANGLE(self)->e3)) == NULL) {
-		return NULL;
-	}
+	if ((e3 = pygts_edge_new(PYGTS_TRIANGLE_AS_GTS_TRIANGLE(self)->e3)) == NULL) { return NULL; }
 
 	return (PyObject*)e3;
 }
@@ -640,12 +606,8 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	/* Parse the args */
 	if (kwds) {
 		o = PyDict_GetItemString(kwds, "alloc_gtsobj");
-		if (o == Py_False) {
-			alloc_gtsobj = FALSE;
-		}
-		if (o != NULL) {
-			PyDict_DelItemString(kwds, "alloc_gtsobj");
-		}
+		if (o == Py_False) { alloc_gtsobj = FALSE; }
+		if (o != NULL) { PyDict_DelItemString(kwds, "alloc_gtsobj"); }
 	}
 	if (kwds) {
 		Py_INCREF(Py_False);
@@ -744,30 +706,18 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 		      || (s1->v1 == s3->v1 && s1->v2 == s2->v2 && s2->v1 == s3->v2) || (s1->v2 == s3->v2 && s1->v1 == s2->v2 && s2->v1 == s3->v1)
 		      || (s1->v2 == s3->v1 && s1->v1 == s2->v1 && s2->v2 == s3->v2) || (s1->v2 == s3->v1 && s1->v1 == s2->v2 && s2->v1 == s3->v2))) {
 			PyErr_SetString(PyExc_RuntimeError, "Edges in triangle must connect");
-			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) {
-				gts_object_destroy(GTS_OBJECT(e1));
-			}
-			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) {
-				gts_object_destroy(GTS_OBJECT(e2));
-			}
-			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) {
-				gts_object_destroy(GTS_OBJECT(e3));
-			}
+			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) { gts_object_destroy(GTS_OBJECT(e1)); }
+			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) { gts_object_destroy(GTS_OBJECT(e2)); }
+			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) { gts_object_destroy(GTS_OBJECT(e3)); }
 			return NULL;
 		}
 
 		/* Create the GtsTriangle */
 		if ((t = gts_triangle_new(gts_triangle_class(), e1, e2, e3)) == NULL) {
 			PyErr_SetString(PyExc_MemoryError, "could not create Face");
-			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) {
-				gts_object_destroy(GTS_OBJECT(e1));
-			}
-			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) {
-				gts_object_destroy(GTS_OBJECT(e2));
-			}
-			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) {
-				gts_object_destroy(GTS_OBJECT(e3));
-			}
+			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) { gts_object_destroy(GTS_OBJECT(e1)); }
+			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) { gts_object_destroy(GTS_OBJECT(e2)); }
+			if (!g_hash_table_lookup(obj_table, GTS_OBJECT(e1))) { gts_object_destroy(GTS_OBJECT(e3)); }
 			return NULL;
 		}
 
@@ -802,9 +752,7 @@ static int init(PygtsTriangle* self, PyObject* args, PyObject* kwds)
 	gint ret;
 
 	/* Chain up */
-	if ((ret = PygtsObjectType.tp_init((PyObject*)self, args, kwds)) != 0) {
-		return ret;
-	}
+	if ((ret = PygtsObjectType.tp_init((PyObject*)self, args, kwds)) != 0) { return ret; }
 
 #if PYGTS_DEBUG
 	if (!pygts_triangle_check((PyObject*)self)) {
@@ -820,9 +768,7 @@ static int compare(PyObject* o1, PyObject* o2)
 {
 	GtsTriangle *t1, *t2;
 
-	if (!(pygts_triangle_check(o1) && pygts_triangle_check(o2))) {
-		return -1;
-	}
+	if (!(pygts_triangle_check(o1) && pygts_triangle_check(o2))) { return -1; }
 	t1 = PYGTS_TRIANGLE_AS_GTS_TRIANGLE(o1);
 	t2 = PYGTS_TRIANGLE_AS_GTS_TRIANGLE(o2);
 
@@ -831,12 +777,10 @@ static int compare(PyObject* o1, PyObject* o2)
 #if PY_MAJOR_VERSION >= 3
 static PyObject* rich_compare(PyObject* o1, PyObject* o2, int op)
 {
-	if (o2 == Py_None)
-		Py_RETURN_FALSE;
+	if (o2 == Py_None) Py_RETURN_FALSE;
 	switch (op) {
 		case Py_EQ: {
-			if (compare(o1, o2))
-				Py_RETURN_TRUE;
+			if (compare(o1, o2)) Py_RETURN_TRUE;
 			Py_RETURN_FALSE;
 		}
 		default: Py_RETURN_NOTIMPLEMENTED;
@@ -914,8 +858,7 @@ gboolean pygts_triangle_check(PyObject* o)
 
 gboolean pygts_triangle_is_ok(PygtsTriangle* t)
 {
-	if (!pygts_object_is_ok(PYGTS_OBJECT(t)))
-		return FALSE;
+	if (!pygts_object_is_ok(PYGTS_OBJECT(t))) return FALSE;
 	return pygts_gts_triangle_is_ok(PYGTS_TRIANGLE_AS_GTS_TRIANGLE(t));
 }
 

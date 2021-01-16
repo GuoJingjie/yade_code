@@ -15,8 +15,7 @@ struct TimingInfo {
 	}
 	static delta getNow(bool evenIfDisabled = false)
 	{
-		if (!enabled && !evenIfDisabled)
-			return 0L;
+		if (!enabled && !evenIfDisabled) return 0L;
 #ifdef __APPLE__
 		std::cerr << "ERROR: Time profiling (TimingInfo) not implemented on Apples." << std::endl;
 		return 0L;
@@ -46,15 +45,13 @@ public:
 	}
 	void start()
 	{
-		if (!TimingInfo::enabled)
-			return;
+		if (!TimingInfo::enabled) return;
 		i    = 0;
 		last = TimingInfo::getNow();
 	}
 	void checkpoint(const string& label)
 	{
-		if (!TimingInfo::enabled)
-			return;
+		if (!TimingInfo::enabled) return;
 		if (data.size() <= i) {
 			data.resize(i + 1);
 			labels.resize(i + 1);

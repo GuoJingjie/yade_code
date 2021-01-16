@@ -30,8 +30,7 @@ void PDFEngine::getSpectrums(vector<PDFEngine::PDF>& pdfs)
 
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		GenericSpheresContact* geom = dynamic_cast<GenericSpheresContact*>(I->geom.get());
 
 		if (geom) {
@@ -52,8 +51,7 @@ void PDFEngine::getSpectrums(vector<PDFEngine::PDF>& pdfs)
 
 				Real dS = sin(((double)idT1 + 0.5) * dTheta[i]) * dTheta[i] * dPhi[i];
 
-				if (pdfs[i][idT1][idP1])
-					pdfs[i][idT1][idP1]->addData(I, dS, V, N, inversed);
+				if (pdfs[i][idT1][idP1]) pdfs[i][idT1][idP1]->addData(I, dS, V, N, inversed);
 			}
 		}
 	}
@@ -110,8 +108,7 @@ void PDFEngine::writeToFile(vector<PDFEngine::PDF> const& pdfs)
 		fid << "\n";
 		fid.close();
 	} else {
-		if (!warnedOnce)
-			LOG_ERROR("Unable to open " << filename << " for PDF writing");
+		if (!warnedOnce) LOG_ERROR("Unable to open " << filename << " for PDF writing");
 		warnedOnce = true;
 	}
 }
@@ -159,13 +156,11 @@ void PDFSpheresDistanceCalculator::cleanData()
 
 bool PDFSpheresDistanceCalculator::addData(const shared_ptr<Interaction>& I, Real const&, Real const&, int const&, bool)
 {
-	if (!I->isReal())
-		return false;
+	if (!I->isReal()) return false;
 	ScGeom* geom = dynamic_cast<ScGeom*>(I->geom.get());
 	Real    a((geom->radius1 + geom->radius2) / 2.);
 
-	if (!geom)
-		return false;
+	if (!geom) return false;
 
 	m_N++;
 	m_h -= geom->penetrationDepth / a;
@@ -199,20 +194,17 @@ void PDFSpheresVelocityCalculator::cleanData()
 
 bool PDFSpheresVelocityCalculator::addData(const shared_ptr<Interaction>& I, Real const&, Real const&, int const&, bool inversed)
 {
-	if (!I->isReal())
-		return false;
+	if (!I->isReal()) return false;
 
 	// Geometry
 	ScGeom* geom = dynamic_cast<ScGeom*>(I->geom.get());
-	if (!geom)
-		return false;
+	if (!geom) return false;
 
 	// geometric parameters
 	// Real a((geom->radius1+geom->radius2)/2.);
 	Vector3r relV = geom->getIncidentVel_py(I, false);
 
-	if (inversed)
-		relV *= -1;
+	if (inversed) relV *= -1;
 
 	m_N++;
 	m_vel += relV;
@@ -233,11 +225,9 @@ void PDFSpheresIntrsCalculator::cleanData() { m_P = 0.; }
 
 bool PDFSpheresIntrsCalculator::addData(const shared_ptr<Interaction>& I, Real const& dS, Real const&, int const& N, bool)
 {
-	if (!I->isReal())
-		return false;
+	if (!I->isReal()) return false;
 
-	if (m_accepter(I))
-		m_P += 1. / (dS * N);
+	if (m_accepter(I)) m_P += 1. / (dS * N);
 
 	return true;
 }

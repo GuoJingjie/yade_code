@@ -26,12 +26,9 @@ Real Law2_SCG_KnKsPBPhys_KnKsPBLaw::ratioSlidingContacts()
 	int  count(0);
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		KnKsPBPhys* phys = dynamic_cast<KnKsPBPhys*>(I->phys.get()); /* contact physics */
-		if (phys->isSliding) {
-			ratio += 1;
-		}
+		if (phys->isSliding) { ratio += 1; }
 		count++;
 	}
 	ratio /= count;
@@ -55,8 +52,7 @@ Real Law2_SCG_KnKsPBPhys_KnKsPBLaw::elasticEnergy()
 	Real energy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		KnKsPBPhys* phys = dynamic_cast<KnKsPBPhys*>(I->phys.get()); /* contact physics */
 		if (phys) {
 			//FIXME: Check whether we need to add the viscous forces to the elastic ones below, since the normalForce is reduced by normalViscous
@@ -385,9 +381,7 @@ bool Law2_SCG_KnKsPBPhys_KnKsPBLaw::go(shared_ptr<IGeom>& ig /* contact geometry
 #endif
 
 		//		#if 0
-		if (phys->normalViscous.norm() > phys->normalForce.norm()) {
-			phys->normalViscous = phys->normalForce;
-		}
+		if (phys->normalViscous.norm() > phys->normalForce.norm()) { phys->normalViscous = phys->normalForce; }
 		//		#endif
 
 		//FIXME: The same must be done for the shearForce, if viscous damping is to be considered in the shear direction as well in the future
@@ -461,9 +455,7 @@ bool Law2_SCG_KnKsPBPhys_KnKsPBLaw::go(shared_ptr<IGeom>& ig /* contact geometry
 		//		if (fN<=0) { std::cout<<"Negative fN: "<<fN<<endl; } //This is here for debugging purposes, to check when fN can be negative
 		//		else       { std::cout<<"Positive fN: "<<fN<<endl; }
 
-		if (math::isnan(fN)) {
-			fN = 0.0;
-		} //FIXME: Maybe output a warning if fN is negative (i.e. attractive) and/or include an assertion
+		if (math::isnan(fN)) { fN = 0.0; } //FIXME: Maybe output a warning if fN is negative (i.e. attractive) and/or include an assertion
 		//fN should contribute to friction only when it is compressive. If allowViscousAttraction=True, fN can be tensile, and friction is not present
 
 		if (phys->intactRock == true) {
@@ -485,9 +477,7 @@ bool Law2_SCG_KnKsPBPhys_KnKsPBLaw::go(shared_ptr<IGeom>& ig /* contact geometry
 				Real ratio      = maxFs / shearForce.norm(); //Define the plastic work input and increment the total plastic energy dissipated
 				shearForce *= ratio;
 				shearForce = shearForce; //FIXME: Check whether this line is necessary
-				if (allowBreakage == true) {
-					phys->cohesionBroken = true;
-				}
+				if (allowBreakage == true) { phys->cohesionBroken = true; }
 				dampedShearForce = shearForce; /* no damping when it slides */
 				phys->shearForce = shearForce; //FIXME: Stop storing the shearForce in two places: dampedShearForce and phys->shearForce
 			} else {
@@ -505,16 +495,13 @@ bool Law2_SCG_KnKsPBPhys_KnKsPBLaw::go(shared_ptr<IGeom>& ig /* contact geometry
 				/*const*/ Vector3r trialForce = shearForce;  //Store prev force for definition of plastic slip
 				shearForce *= ratio;
 				shearForce = shearForce; //FIXME: Check whether this line is necessary
-				if (allowBreakage == true) {
-					phys->cohesionBroken = true;
-				}
+				if (allowBreakage == true) { phys->cohesionBroken = true; }
 				dampedShearForce = shearForce; /* no damping when it slides */
 				phys->shearForce = shearForce; //FIXME: Stop storing the shearForce in two places: dampedShearForce and phys->shearForce
 
 				/* Plastic dissipation due to friction */
 				/*const*/ Real dissip = ((1 / phys->ks) * (trialForce - shearForce)) /*plastic disp*/.dot(shearForce) /*active force*/;
-				if (traceEnergy)
-					plasticDissipation += dissip;
+				if (traceEnergy) plasticDissipation += dissip;
 				else if (dissip > 0)
 					scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset at every timestep*/ false);
 
@@ -542,8 +529,7 @@ bool Law2_SCG_KnKsPBPhys_KnKsPBLaw::go(shared_ptr<IGeom>& ig /* contact geometry
 			/* Dissipation due to viscous damping*/
 			if (phys->viscousDamping > 0.0) {
 				/*const*/ Real normDampDissipValue = phys->normalViscous.dot(incidentVn * dt);
-				if (traceEnergy)
-					normDampDissip += normDampDissipValue; // calc dissipation of energy due to normal damping
+				if (traceEnergy) normDampDissip += normDampDissipValue; // calc dissipation of energy due to normal damping
 				else if (normDampDissipValue > 0)
 					scene->energy->add(normDampDissipValue, "normDampDissip", normDampDissipIx, /*reset at every timestep*/ false);
 				// Here, instead of checking shearViscous.norm(), I should consider a boolean variable "noShearDamp", like in HertzMindlin.cpp
@@ -565,9 +551,7 @@ bool Law2_SCG_KnKsPBPhys_KnKsPBLaw::go(shared_ptr<IGeom>& ig /* contact geometry
 		//Real beta = 0.0; /* rate of plastic multiplier */
 		Real beta_prev = phys->cumulative_us;      /* accumulated plastic mutliplier before stress update */
 		Real fN        = phys->normalForce.norm(); //FIXME: We calculate this differently in the above branch. Check whether they lead to the same value
-		if (math::isnan(fN)) {
-			fN = 0.0;
-		}
+		if (math::isnan(fN)) { fN = 0.0; }
 		Real     phi = phys->phi_b;
 		Vector3r newFs(0, 0, 0);
 		Real     plasticDisp = 0.0;
@@ -687,12 +671,8 @@ Real Law2_SCG_KnKsPBPhys_KnKsPBLaw::stressUpdateVec(
 
 		/* Establish upper bound for lambda*/
 		Real upperBound = du.norm() / Fs_prev.norm();
-		if (math::isnan(upperBound) == true) {
-			upperBound = 1.0;
-		}
-		if (math::isinf(upperBound) == true || upperBound > pow(10.0, 12)) {
-			upperBound = pow(10.0, 12);
-		}
+		if (math::isnan(upperBound) == true) { upperBound = 1.0; }
+		if (math::isinf(upperBound) == true || upperBound > pow(10.0, 12)) { upperBound = pow(10.0, 12); }
 		termA              = (Fs_prev + Ks * du) / (Ks * upperBound + 1.0);
 		beta               = beta_prev + upperBound * termA.norm();
 		Real f_upper_bound = termA.norm() - fN * (miu_peak - delta_miu * (1.0 - exp(-1.0 * beta / 0.35)));
@@ -703,9 +683,7 @@ Real Law2_SCG_KnKsPBPhys_KnKsPBLaw::stressUpdateVec(
 			beta          = beta_prev + upperBound * termA.norm();
 			f_upper_bound = termA.norm() - fN * (miu_peak - delta_miu * (1.0 - exp(-1.0 * beta / 0.35)));
 			iterUpper++;
-			if (iterUpper > 1000) {
-				std::cout << "iterUpper: " << iterUpper << endl;
-			}
+			if (iterUpper > 1000) { std::cout << "iterUpper: " << iterUpper << endl; }
 		}
 
 		Real oriUpperBound    = upperBound;
@@ -822,12 +800,8 @@ Real Law2_SCG_KnKsPBPhys_KnKsPBLaw::stressUpdateVecTalesnick(
 
 		/* Establish upper bound for lambda*/
 		Real upperBound = du.norm() / Fs_prev.norm();
-		if (math::isnan(upperBound) == true) {
-			upperBound = 1.0;
-		}
-		if (math::isinf(upperBound) == true || upperBound > pow(10.0, 12)) {
-			upperBound = pow(10.0, 12);
-		}
+		if (math::isnan(upperBound) == true) { upperBound = 1.0; }
+		if (math::isinf(upperBound) == true || upperBound > pow(10.0, 12)) { upperBound = pow(10.0, 12); }
 		termA              = (Fs_prev + Ks * du) / (Ks * upperBound + 1.0);
 		beta               = beta_prev + upperBound * termA.norm();
 		Real f_upper_bound = termA.norm() - fN * (miu_peak * (1.0 - exp(-1.0 * beta_prev / upeak)));
@@ -838,9 +812,7 @@ Real Law2_SCG_KnKsPBPhys_KnKsPBLaw::stressUpdateVecTalesnick(
 			beta          = beta_prev + upperBound * termA.norm();
 			f_upper_bound = termA.norm() - fN * (miu_peak * (1.0 - exp(-1.0 * beta_prev / upeak)));
 			iterUpper++;
-			if (iterUpper > 1000) {
-				std::cout << "iterUpper: " << iterUpper << endl;
-			}
+			if (iterUpper > 1000) { std::cout << "iterUpper: " << iterUpper << endl; }
 		}
 
 		Real oriUpperBound    = upperBound;
@@ -909,8 +881,7 @@ CREATE_LOGGER(Ip2_FrictMat_FrictMat_KnKsPBPhys);
 void Ip2_FrictMat_FrictMat_KnKsPBPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
 	//	const Real PI = 3.14159265358979323846;
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 
 	ScGeom* scg = YADE_CAST<ScGeom*>(interaction->geom.get());
 	assert(scg);

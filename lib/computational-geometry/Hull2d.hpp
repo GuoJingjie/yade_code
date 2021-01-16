@@ -33,8 +33,7 @@ class ConvexHull2d {
 		right = raw_points.back();
 		raw_points.pop_back();
 		for (const Vector2r& p : raw_points) {
-			if (direction(left, right, p) < 0)
-				upper_partition_points.push_back(p);
+			if (direction(left, right, p) < 0) upper_partition_points.push_back(p);
 			else
 				lower_partition_points.push_back(p);
 		}
@@ -49,8 +48,7 @@ class ConvexHull2d {
 			in.pop_front();
 			while (out.size() >= 3) {
 				size_t end = out.size() - 1;
-				if (factor * direction(out[end - 2], out[end], out[end - 1]) <= 0)
-					out.erase(out.begin() + end - 1);
+				if (factor * direction(out[end - 2], out[end], out[end - 1]) <= 0) out.erase(out.begin() + end - 1);
 				else
 					break;
 			}

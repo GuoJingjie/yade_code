@@ -28,12 +28,9 @@ Real Law2_ScGeom_FrictPhys_CundallStrack::elasticEnergy()
 	Real energy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		FrictPhys* phys = dynamic_cast<FrictPhys*>(I->phys.get());
-		if (phys) {
-			energy += 0.5 * (phys->normalForce.squaredNorm() / phys->kn + phys->shearForce.squaredNorm() / phys->ks);
-		}
+		if (phys) { energy += 0.5 * (phys->normalForce.squaredNorm() / phys->kn + phys->shearForce.squaredNorm() / phys->ks); }
 	}
 	return energy;
 }
@@ -41,18 +38,15 @@ Real Law2_ScGeom_FrictPhys_CundallStrack::elasticEnergy()
 
 void ElasticContactLaw::action()
 {
-	if (!functor)
-		functor = shared_ptr<Law2_ScGeom_FrictPhys_CundallStrack>(new Law2_ScGeom_FrictPhys_CundallStrack);
+	if (!functor) functor = shared_ptr<Law2_ScGeom_FrictPhys_CundallStrack>(new Law2_ScGeom_FrictPhys_CundallStrack);
 	functor->neverErase = neverErase;
 	functor->scene      = scene;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 #ifdef YADE_DEBUG
 		// these checks would be redundant in the functor (LawDispatcher does that already)
-		if (!dynamic_cast<ScGeom*>(I->geom.get()) || !dynamic_cast<FrictPhys*>(I->phys.get()))
-			continue;
+		if (!dynamic_cast<ScGeom*>(I->geom.get()) || !dynamic_cast<FrictPhys*>(I->phys.get())) continue;
 #endif
 		functor->go(I->geom, I->phys, I.get());
 	}
@@ -95,8 +89,7 @@ bool Law2_ScGeom_FrictPhys_CundallStrack::go(shared_ptr<IGeom>& ig, shared_ptr<I
 			//define the plastic work input and increment the total plastic energy dissipated
 			shearForce *= ratio;
 			Real dissip = ((1 / phys->ks) * (trialForce - shearForce)) /*plastic disp*/.dot(shearForce) /*active force*/;
-			if (traceEnergy)
-				plasticDissipation += dissip;
+			if (traceEnergy) plasticDissipation += dissip;
 			else if (dissip > 0)
 				scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset*/ false);
 		}

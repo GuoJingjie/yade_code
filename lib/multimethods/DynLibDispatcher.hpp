@@ -104,8 +104,7 @@ public:
 			throw runtime_error(
 			        "No functor for type " + arg1->getClassName() + " (index " + boost::lexical_cast<string>(arg1->getClassIndex())
 			        + "), since the index is invalid (negative).");
-		if (locateMultivirtualFunctor1D(ix1, arg1))
-			return callBacks[ix1];
+		if (locateMultivirtualFunctor1D(ix1, arg1)) return callBacks[ix1];
 		return shared_ptr<Executor>();
 	}
 
@@ -117,8 +116,7 @@ public:
 			        + arg2->getClassName() + " (index " + boost::lexical_cast<string>(arg2->getClassIndex())
 			        + "), since some of the indices is invalid (negative).");
 		int ix1, ix2;
-		if (locateMultivirtualFunctor2D(ix1, ix2, arg1, arg2))
-			return callBacks[ix1][ix2];
+		if (locateMultivirtualFunctor2D(ix1, ix2, arg1, arg2)) return callBacks[ix1][ix2];
 		return shared_ptr<Executor>();
 	}
 
@@ -127,8 +125,7 @@ public:
 	shared_ptr<Executor> getFunctor2D(shared_ptr<BaseClass1>& base1, shared_ptr<BaseClass2>& base2, bool& swap)
 	{
 		int ix1, ix2;
-		if (!locateMultivirtualFunctor2D(ix1, ix2, base1, base2))
-			return shared_ptr<Executor>();
+		if (!locateMultivirtualFunctor2D(ix1, ix2, base1, base2)) return shared_ptr<Executor>();
 		swap = (bool)(callBacksInfo[ix1][ix2]);
 		return callBacks[ix1][ix2];
 	}
@@ -138,8 +135,7 @@ public:
 	{
 		vector<DynLibDispatcher_Item1D> ret;
 		for (size_t i = 0; i < callBacks.size(); i++) {
-			if (callBacks[i])
-				ret.push_back(DynLibDispatcher_Item1D(i, callBacks[i]->getClassName()));
+			if (callBacks[i]) ret.push_back(DynLibDispatcher_Item1D(i, callBacks[i]->getClassName()));
 		}
 		return ret;
 	}
@@ -149,9 +145,7 @@ public:
 		vector<DynLibDispatcher_Item2D> ret;
 		for (size_t i = 0; i < callBacks.size(); i++) {
 			for (size_t j = 0; j < callBacks[i].size(); j++) {
-				if (callBacks[i][j]) {
-					ret.push_back(DynLibDispatcher_Item2D(i, j, callBacks[i][j]->getClassName()));
-				}
+				if (callBacks[i][j]) { ret.push_back(DynLibDispatcher_Item2D(i, j, callBacks[i][j]->getClassName())); }
 			}
 		}
 		return ret;
@@ -161,8 +155,7 @@ public:
 	std::ostream& dumpDispatchMatrix1D(std::ostream& out, const string& prefix = "")
 	{
 		for (size_t i = 0; i < callBacks.size(); i++) {
-			if (callBacks[i])
-				out << prefix << i << " -> " << callBacks[i]->getClassName() << std::endl;
+			if (callBacks[i]) out << prefix << i << " -> " << callBacks[i]->getClassName() << std::endl;
 		}
 		return out;
 	}
@@ -171,8 +164,7 @@ public:
 	{
 		for (size_t i = 0; i < callBacks.size(); i++) {
 			for (size_t j = 0; j < callBacks.size(); j++) {
-				if (callBacks[i][j])
-					out << prefix << i << "+" << j << " -> " << callBacks[i][j]->getClassName() << std::endl;
+				if (callBacks[i][j]) out << prefix << i << "+" << j << " -> " << callBacks[i][j]->getClassName() << std::endl;
 			}
 		}
 		return out;
@@ -190,8 +182,7 @@ public:
 
 		assert(base);
 		int& index = base->getClassIndex();
-		if (index == -1)
-			std::cerr << "--------> Did you forget to call createIndex(); in constructor?\n";
+		if (index == -1) std::cerr << "--------> Did you forget to call createIndex(); in constructor?\n";
 		assert(index != -1);
 
 		int maxCurrentIndex = base->getMaxCurrentlyUsedClassIndex();
@@ -213,17 +204,14 @@ public:
 		assert(base2);
 
 		int& index1 = base1->getClassIndex();
-		if (index1 == -1)
-			std::cerr << "--------> Did you forget to call createIndex(); in constructor?\n";
+		if (index1 == -1) std::cerr << "--------> Did you forget to call createIndex(); in constructor?\n";
 		assert(index1 != -1);
 
 		int& index2 = base2->getClassIndex();
-		if (index2 == -1)
-			std::cerr << "--------> Did you forget to call createIndex(); in constructor?\n";
+		if (index2 == -1) std::cerr << "--------> Did you forget to call createIndex(); in constructor?\n";
 		assert(index2 != -1);
 
-		if (typeid(BaseClass1) == typeid(BaseClass2))
-			assert(base1->getMaxCurrentlyUsedClassIndex() == base2->getMaxCurrentlyUsedClassIndex());
+		if (typeid(BaseClass1) == typeid(BaseClass2)) assert(base1->getMaxCurrentlyUsedClassIndex() == base2->getMaxCurrentlyUsedClassIndex());
 
 		int maxCurrentIndex1 = base1->getMaxCurrentlyUsedClassIndex();
 		int maxCurrentIndex2 = base2->getMaxCurrentlyUsedClassIndex();
@@ -263,25 +251,20 @@ public:
 
 	bool locateMultivirtualFunctor1D(int& index, shared_ptr<BaseClass1>& base)
 	{
-		if (callBacks.empty())
-			return false;
+		if (callBacks.empty()) return false;
 		index = base->getClassIndex();
 		assert(index >= 0 && (unsigned int)(index) < callBacks.size());
-		if (callBacks[index])
-			return true;
+		if (callBacks[index]) return true;
 
 		int depth     = 1;
 		int index_tmp = base->getBaseClassIndex(depth);
 		while (1)
-			if (index_tmp == -1)
-				return false;
+			if (index_tmp == -1) return false;
 			else if (callBacks[index_tmp]) {
 				// BEGIN FIXME - this should be a separate function to resize stuff
 				//cerr << index << " " << index_tmp << endl;
-				if (callBacksInfo.size() <= (unsigned int)index)
-					callBacksInfo.resize(index + 1);
-				if (callBacks.size() <= (unsigned int)index)
-					callBacks.resize(index + 1);
+				if (callBacksInfo.size() <= (unsigned int)index) callBacksInfo.resize(index + 1);
+				if (callBacks.size() <= (unsigned int)index) callBacks.resize(index + 1);
 				// END
 				callBacksInfo[index] = callBacksInfo[index_tmp];
 				callBacks[index]     = callBacks[index_tmp];
@@ -296,8 +279,7 @@ public:
 	{
 //#define _DISP_TRACE(msg) cerr<<"@DT@"<<__LINE__<<" "<<msg<<endl;
 #define _DISP_TRACE(msg)
-		if (callBacks.empty())
-			return false;
+		if (callBacks.empty()) return false;
 		index1 = base1->getClassIndex();
 		index2 = base2->getClassIndex();
 		assert(index1 >= 0);
@@ -334,16 +316,12 @@ public:
 			foundIx1 = foundIx2 = -1; // found no dispatch at this depth yet
 			for (int dp1 = 0; dp1 <= dist; dp1++) {
 				int dp2 = dist - dp1;
-				if ((maxDp1 >= 0 && dp1 > maxDp1) || (maxDp2 >= 0 && dp2 > maxDp2))
-					continue;
+				if ((maxDp1 >= 0 && dp1 > maxDp1) || (maxDp2 >= 0 && dp2 > maxDp2)) continue;
 				_DISP_TRACE(" Trying indices with depths " << dp1 << " and " << dp2 << ", dist=" << dist);
 				int ix1 = dp1 > 0 ? base1->getBaseClassIndex(dp1) : index1, ix2 = dp2 > 0 ? base2->getBaseClassIndex(dp2) : index2;
-				if (ix1 < 0)
-					maxDp1 = dp1;
-				if (ix2 < 0)
-					maxDp2 = dp2;
-				if (ix1 < 0 || ix2 < 0)
-					continue; // hierarchy height exceeded in either dimension
+				if (ix1 < 0) maxDp1 = dp1;
+				if (ix2 < 0) maxDp2 = dp2;
+				if (ix1 < 0 || ix2 < 0) continue; // hierarchy height exceeded in either dimension
 				distTooBig = false;
 				if (callBacks[ix1][ix2]) {
 					if (foundIx1 != -1
@@ -364,8 +342,7 @@ public:
 					_DISP_TRACE("Found callback [" << ix1 << "][" << ix2 << "] → " << callBacks[ix1][ix2]->getClassName());
 				}
 			}
-			if (foundIx1 != -1)
-				return true;
+			if (foundIx1 != -1) return true;
 			if (distTooBig) {
 				_DISP_TRACE("Undefined dispatch, dist=" << dist);
 				return false; /* undefined dispatch */
@@ -377,8 +354,7 @@ public:
 	template <typename... Args> ResultType operator()(shared_ptr<BaseClass1>& base, Args... args)
 	{
 		int index;
-		if (locateMultivirtualFunctor1D(index, base))
-			return (callBacks[index])->go(base, args...);
+		if (locateMultivirtualFunctor1D(index, base)) return (callBacks[index])->go(base, args...);
 		else
 			return ResultType();
 	}

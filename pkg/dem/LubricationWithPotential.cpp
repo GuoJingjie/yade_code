@@ -22,9 +22,7 @@ bool Law2_ScGeom_PotentialLubricationPhys::go(shared_ptr<IGeom>& iGeom, shared_p
 	Real a((geom->radius1 + geom->radius2) / 2.);
 
 	// End-of Interaction condition
-	if (-geom->penetrationDepth > MaxDist * a) {
-		return false;
-	}
+	if (-geom->penetrationDepth > MaxDist * a) { return false; }
 
 	// inititalization
 	if (phys->u == -1.) {
@@ -131,8 +129,7 @@ bool Law2_ScGeom_PotentialLubricationPhys::solve_normalForce(Real const& un, Rea
 			return false;
 		}
 
-		if (math::abs(F) < SolutionTol)
-			break;
+		if (math::abs(F) < SolutionTol) break;
 
 		if (F * F1 < 0) {
 			d2 = d;
@@ -178,8 +175,7 @@ Real CundallStrackAdhesivePotential::potential(Real const& u, LubricationPhys co
 {
 	Real ladh((phys.contact) ? fadh / phys.kn : 0.);
 
-	if (u < phys.eps * phys.a + ladh)
-		return -alpha * phys.kn * (phys.eps * phys.a - u);
+	if (u < phys.eps * phys.a + ladh) return -alpha * phys.kn * (phys.eps * phys.a - u);
 	return 0;
 }
 
@@ -208,10 +204,8 @@ void LinExponentialPotential::applyPotential(Real const& u, LubricationPhys& phy
 
 void LinExponentialPotential::setParameters(Real const& x_0, Real const& x_e, Real const& k_)
 {
-	if (x_0 >= x_e)
-		throw std::runtime_error("x0 must be lower than xe!");
-	if (x_e == 0.)
-		throw std::runtime_error("Extremum can't be at the origin.");
+	if (x_0 >= x_e) throw std::runtime_error("x0 must be lower than xe!");
+	if (x_e == 0.) throw std::runtime_error("Extremum can't be at the origin.");
 
 	x0 = x_0;
 	xe = x_e;
@@ -224,10 +218,8 @@ void LinExponentialPotential::computeParametersFromF0(Real const& F_0, Real cons
 {
 	Real rho = x_e * x_e * +4. * F_0 * x_e / k_;
 
-	if (rho <= 0)
-		throw std::runtime_error("xe^2 + 4F0 xe/k must be positive!");
-	if (x_e == 0.)
-		throw std::runtime_error("Extremum can't be at the origin.");
+	if (rho <= 0) throw std::runtime_error("xe^2 + 4F0 xe/k must be positive!");
+	if (x_e == 0.) throw std::runtime_error("Extremum can't be at the origin.");
 
 	k  = k_;
 	xe = x_e;
@@ -239,16 +231,12 @@ void LinExponentialPotential::computeParametersFromF0(Real const& F_0, Real cons
 void LinExponentialPotential::computeParametersFromF0Fe(Real const& x_e, Real const& F_e, Real const& F_0)
 {
 	using math::abs; // when used inside function it does not leak - it is safe.
-	if (x_e == 0.)
-		throw std::runtime_error("Extremum can't be at the origin.");
+	if (x_e == 0.) throw std::runtime_error("Extremum can't be at the origin.");
 	if (F_e * F_0 < 0) {
-		if (x_e < 0)
-			throw std::runtime_error("When xe < 0, F0 and Fe must be same sign!");
-		if (abs(F_e) <= 1.5 * abs(F_0))
-			throw std::runtime_error("When F0 and Fe are different sign, you must ensure |Fe| > 1.5|F0|");
+		if (x_e < 0) throw std::runtime_error("When xe < 0, F0 and Fe must be same sign!");
+		if (abs(F_e) <= 1.5 * abs(F_0)) throw std::runtime_error("When F0 and Fe are different sign, you must ensure |Fe| > 1.5|F0|");
 	} else {
-		if (abs(F_e) <= abs(F_0))
-			throw std::runtime_error("When F0 and F0 are same sign, you must ensure |Fe| > |F0|");
+		if (abs(F_e) <= abs(F_0)) throw std::runtime_error("When F0 and F0 are same sign, you must ensure |Fe| > |F0|");
 	}
 
 	xe = x_e;

@@ -27,9 +27,7 @@ void CapillaryStressRecorder::action()
 	shared_ptr<BodyContainer>& bodies = scene->bodies;
 
 	// at the beginning of the file; write column titles
-	if (out.tellp() == 0) {
-		out << "iteration Scap11 Scap22 Scap33 Scap12 Scap13 Scap23 Uc Sr w" << endl;
-	}
+	if (out.tellp() == 0) { out << "iteration Scap11 Scap22 Scap33 Scap12 Scap13 Scap23 Uc Sr w" << endl; }
 	if (!triaxialCompressionEngine) {
 		vector<shared_ptr<Engine>>::iterator itFirst = scene->engines.begin();
 		vector<shared_ptr<Engine>>::iterator itLast  = scene->engines.end();
@@ -104,8 +102,7 @@ void CapillaryStressRecorder::action()
 	Real Vs = 0, Rbody = 0, SR = 0;
 
 	for (const auto& b : *bodies) {
-		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic())
-			continue;
+		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic()) continue;
 		Sphere* sphere = static_cast<Sphere*>(b->shape.get());
 
 		if (sphere) {
@@ -117,11 +114,9 @@ void CapillaryStressRecorder::action()
 
 	Real Vv = V - Vs;
 	Real Sr = 100 * Vwater / Vv;
-	if (Sr > 100)
-		Sr = 100;
+	if (Sr > 100) Sr = 100;
 	Real w = 100 * Vwater / V;
-	if (w > (100 * Vv / V))
-		w = 100 * (Vv / V);
+	if (w > (100 * Vv / V)) w = 100 * (Vv / V);
 
 	/// homogeneized capillary stresses
 

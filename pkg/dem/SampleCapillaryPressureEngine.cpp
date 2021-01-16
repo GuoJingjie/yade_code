@@ -48,11 +48,9 @@ void SampleCapillaryPressureEngine::action()
 	updateParameters();
 	TriaxialStressController::action();
 	if (pressureVariationActivated) {
-		if (scene->iter % 100 == 0)
-			cerr << "pressure variation!!" << endl;
+		if (scene->iter % 100 == 0) cerr << "pressure variation!!" << endl;
 
-		if ((Pressure >= 0) && (Pressure <= 1000000000))
-			Pressure += PressureVariation;
+		if ((Pressure >= 0) && (Pressure <= 1000000000)) Pressure += PressureVariation;
 		capillaryCohesiveLaw->capillaryPressure = Pressure;
 
 		capillaryCohesiveLaw->fusionDetection = fusionDetection;
@@ -62,8 +60,7 @@ void SampleCapillaryPressureEngine::action()
 		capillaryCohesiveLaw->fusionDetection   = fusionDetection;
 		capillaryCohesiveLaw->binaryFusion      = binaryFusion;
 	}
-	if (scene->iter % 100 == 0)
-		cerr << "capillary pressure = " << Pressure << endl;
+	if (scene->iter % 100 == 0) cerr << "capillary pressure = " << Pressure << endl;
 	capillaryCohesiveLaw->scene = scene;
 	;
 	capillaryCohesiveLaw->action();

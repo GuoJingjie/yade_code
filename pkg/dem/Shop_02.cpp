@@ -60,13 +60,11 @@ Real Shop::RayleighWaveTimeStep(const shared_ptr<Scene> _rb)
 	shared_ptr<Scene> rb = (_rb ? _rb : Omega::instance().getScene());
 	Real              dt = std::numeric_limits<Real>::infinity();
 	for (const auto& b : *rb->bodies) {
-		if (!b || !b->material || !b->shape)
-			continue;
+		if (!b || !b->material || !b->shape) continue;
 
 		shared_ptr<ElastMat> ebp = YADE_PTR_DYN_CAST<ElastMat>(b->material);
 		shared_ptr<Sphere>   s   = YADE_PTR_DYN_CAST<Sphere>(b->shape);
-		if (!ebp || !s)
-			continue;
+		if (!ebp || !s) continue;
 
 		Real density      = b->state->mass / ((4 / 3.) * Mathr::PI * pow(s->radius, 3));
 		Real ShearModulus = ebp->young / (2. * (1 + ebp->poisson));
@@ -91,8 +89,7 @@ boost::tuple<Real, Real, Real> Shop::spiralProject(const Vector3r& pt, Real dH_d
 	Real theta;
 	if (r > Mathr::ZERO_TOLERANCE) {
 		theta = acos(pt[ax1] / r);
-		if (pt[ax2] < 0)
-			theta = Mathr::TWO_PI - theta;
+		if (pt[ax2] < 0) theta = Mathr::TWO_PI - theta;
 	} else
 		theta = 0;
 	Real hRef = dH_dTheta * (theta - theta0);
@@ -123,41 +120,32 @@ shared_ptr<Interaction> Shop::createExplicitInteraction(Body::id_t id1, Body::id
 			rb->interactions->erase(id1, id2, i->linIx);
 	}
 	shared_ptr<Body> b1 = Body::byId(id1, rb), b2 = Body::byId(id2, rb);
-	if (!b1)
-		throw runtime_error(("No body #" + boost::lexical_cast<string>(id1)).c_str());
-	if (!b2)
-		throw runtime_error(("No body #" + boost::lexical_cast<string>(id2)).c_str());
+	if (!b1) throw runtime_error(("No body #" + boost::lexical_cast<string>(id1)).c_str());
+	if (!b2) throw runtime_error(("No body #" + boost::lexical_cast<string>(id2)).c_str());
 
 	if (not virtualI) { // normal case, create a statefull interaction or nothing
 		FOREACH(const shared_ptr<Engine>& e, rb->engines)
 		{
 			if (!geomMeta) {
 				geomMeta = dynamic_cast<IGeomDispatcher*>(e.get());
-				if (geomMeta)
-					continue;
+				if (geomMeta) continue;
 			}
 			if (!physMeta) {
 				physMeta = dynamic_cast<IPhysDispatcher*>(e.get());
-				if (physMeta)
-					continue;
+				if (physMeta) continue;
 			}
 			InteractionLoop* id(dynamic_cast<InteractionLoop*>(e.get()));
 			if (id) {
 				geomMeta = id->geomDispatcher.get();
 				physMeta = id->physDispatcher.get();
 			}
-			if (geomMeta && physMeta) {
-				break;
-			}
+			if (geomMeta && physMeta) { break; }
 		}
-		if (!geomMeta)
-			throw runtime_error("No IGeomDispatcher in engines or inside InteractionLoop.");
-		if (!physMeta)
-			throw runtime_error("No IPhysDispatcher in engines or inside InteractionLoop.");
+		if (!geomMeta) throw runtime_error("No IGeomDispatcher in engines or inside InteractionLoop.");
+		if (!physMeta) throw runtime_error("No IPhysDispatcher in engines or inside InteractionLoop.");
 		i = geomMeta->explicitAction(b1, b2, /*force*/ force);
 		assert(force && i);
-		if (!i)
-			return i;
+		if (!i) return i;
 		physMeta->explicitAction(b1->material, b2->material, i);
 		i->iterMadeReal = rb->iter;
 	} else
@@ -185,12 +173,9 @@ void Shop::getViscoelasticFromSpheresInteraction(Real /*tc*/, Real /*en*/, Real 
 Vector3r Shop::scalarOnColorScale(Real x, Real xmin, Real xmax)
 {
 	Real xnorm = min((Real)1., max((x - xmin) / (xmax - xmin), (Real)0.));
-	if (xnorm < .25)
-		return Vector3r(0, 4. * xnorm, 1);
-	if (xnorm < .5)
-		return Vector3r(0, 1, 1. - 4. * (xnorm - .25));
-	if (xnorm < .75)
-		return Vector3r(4 * (xnorm - .5), 1., 0);
+	if (xnorm < .25) return Vector3r(0, 4. * xnorm, 1);
+	if (xnorm < .5) return Vector3r(0, 1, 1. - 4. * (xnorm - .25));
+	if (xnorm < .75) return Vector3r(4 * (xnorm - .5), 1., 0);
 	return Vector3r(1, 1 - 4 * (xnorm - .75), 0);
 }
 
@@ -202,8 +187,7 @@ Real Shop::periodicWrap(Real x, Real x0, Real x1, long* period)
 {
 	Real xNorm  = (x - x0) / (x1 - x0);
 	Real xxNorm = xNorm - floor(xNorm);
-	if (period)
-		*period = (long)floor(xNorm);
+	if (period) *period = (long)floor(xNorm);
 	return x0 + xxNorm * (x1 - x0);
 }
 
@@ -214,8 +198,7 @@ void Shop::getStressForEachBody(vector<Shop::bodyState>& bodyStates)
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
 		Vector3r normalStress, shearStress;
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 
 		const FrictPhys* physFP  = YADE_CAST<FrictPhys*>(I->phys.get());
 		ScGeom*          geomScG = YADE_CAST<ScGeom*>(I->geom.get());
@@ -250,15 +233,12 @@ py::tuple Shop::normalShearStressTensors(bool compressionPositive, bool splitNor
 {
 	//*** Stress tensor split into shear and normal contribution ***/
 	Scene* scene = Omega::instance().getScene().get();
-	if (!scene->isPeriodic) {
-		throw runtime_error("Can't compute stress of periodic cell in aperiodic simulation.");
-	}
+	if (!scene->isPeriodic) { throw runtime_error("Can't compute stress of periodic cell in aperiodic simulation."); }
 	Matrix3r sigN(Matrix3r::Zero()), sigT(Matrix3r::Zero());
 	//const Matrix3r& cellHsize(scene->cell->Hsize);   //Disabled because of warning.
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		GenericSpheresContact* geom = YADE_CAST<GenericSpheresContact*>(I->geom.get());
 		NormShearPhys*         phys = YADE_CAST<NormShearPhys*>(I->phys.get());
 		const Vector3r&        n    = geom->normal;
@@ -268,15 +248,13 @@ py::tuple Shop::normalShearStressTensors(bool compressionPositive, bool splitNor
 		Real     N = (compressionPositive ? -1 : 1) * phys->normalForce.dot(n), T = Fs.norm();
 		bool     hasShear = (T > 0);
 		Vector3r t;
-		if (hasShear)
-			t = Fs / T;
+		if (hasShear) t = Fs / T;
 		// Real R=(Body::byId(I->getId2(),scene)->state->pos+cellHsize*I->cellDist.cast<Real>()-Body::byId(I->getId1(),scene)->state->pos).norm();
 		Real R = .5 * (geom->refR1 + geom->refR2);
 		for (int i = 0; i < 3; i++)
 			for (int j = i; j < 3; j++) {
 				sigN(i, j) += R * N * n[i] * n[j];
-				if (hasShear)
-					sigT(i, j) += R * T * n[i] * t[j];
+				if (hasShear) sigT(i, j) += R * T * n[i] * t[j];
 			}
 	}
 	Real vol = scene->cell->getVolume();
@@ -297,8 +275,7 @@ py::tuple Shop::normalShearStressTensors(bool compressionPositive, bool splitNor
 	Matrix3r sigNStrong(Matrix3r::Zero()), sigNWeak(Matrix3r::Zero());
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		GenericSpheresContact* geom = YADE_CAST<GenericSpheresContact*>(I->geom.get());
 		NormShearPhys*         phys = YADE_CAST<NormShearPhys*>(I->phys.get());
 		const Vector3r&        n    = geom->normal;
@@ -352,8 +329,7 @@ void Shop::fabricTensor(Real& Fmean, Matrix3r& fabric, Matrix3r& fabricStrong, M
 	// interactions loop to compute the fabric tensor returned when split = 0, and also measures average force for subsequent computations for split = 1:
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		GenericSpheresContact* geom = YADE_CAST<GenericSpheresContact*>(I->geom.get());
 		cp                          = geom->contactPoint;
 		if (!(cp[0] >= bbMin[0] && cp[0] <= bbMax[0] && cp[1] >= bbMin[1] && cp[1] <= bbMax[1] && cp[2] >= bbMin[2] && cp[2] <= bbMax[2]))
@@ -391,8 +367,7 @@ void Shop::fabricTensor(Real& Fmean, Matrix3r& fabric, Matrix3r& fabricStrong, M
 	}
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		GenericSpheresContact* geom = YADE_CAST<GenericSpheresContact*>(I->geom.get());
 		cp                          = geom->contactPoint;
 		if (!(cp[0] >= bbMin[0] && cp[0] <= bbMax[0] && cp[1] >= bbMin[1] && cp[1] <= bbMax[1] && cp[2] >= bbMin[2] && cp[2] <= bbMax[2]))
@@ -456,22 +431,19 @@ Matrix3r Shop::getStress(Real volume)
 		const auto extrema = Shop::aabbExtrema();
 		volumeNonPeri      = (extrema.second[0] - extrema.first[0]) * (extrema.second[1] - extrema.first[1]) * (extrema.second[2] - extrema.first[2]);
 	}
-	if (volume == 0)
-		volume = scene->isPeriodic ? scene->cell->hSize.determinant() : volumeNonPeri;
+	if (volume == 0) volume = scene->isPeriodic ? scene->cell->hSize.determinant() : volumeNonPeri;
 	Matrix3r   stressTensor = Matrix3r::Zero();
 	const bool isPeriodic   = scene->isPeriodic;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		shared_ptr<Body> b1 = Body::byId(I->getId1(), scene);
 		shared_ptr<Body> b2 = Body::byId(I->getId2(), scene);
 		if (b1->shape->getClassIndex() == GridNode::getClassIndexStatic())
 			continue; //no need to check b2 because a GridNode can only be in interaction with an oher GridNode.
 		NormShearPhys* nsi    = YADE_CAST<NormShearPhys*>(I->phys.get());
 		Vector3r       branch = b1->state->pos - b2->state->pos;
-		if (isPeriodic)
-			branch -= scene->cell->hSize * I->cellDist.cast<Real>();
+		if (isPeriodic) branch -= scene->cell->hSize * I->cellDist.cast<Real>();
 		stressTensor += (nsi->normalForce + nsi->shearForce) * branch.transpose();
 	}
 	return stressTensor / volume;
@@ -493,8 +465,7 @@ py::list Shop::getDynamicStress()
 
 		Sphere* s = YADE_CAST<Sphere*>(b->shape.get());
 
-		if (s)
-			kineticStressTensors.append(-(3.0 / (4.0 * M_PI * pow(s->radius, 3))) * b->state->mass * vFluct * vFluct.transpose());
+		if (s) kineticStressTensors.append(-(3.0 / (4.0 * M_PI * pow(s->radius, 3))) * b->state->mass * vFluct * vFluct.transpose());
 		else
 			kineticStressTensors.append(Matrix3r::Zero());
 	}
@@ -508,8 +479,7 @@ Matrix3r Shop::getTotalDynamicStress(Real volume)
 	Matrix3r kineticStressTensor(Matrix3r::Zero());
 
 	if (volume == 0) {
-		if (scene->isPeriodic)
-			volume = scene->cell->getVolume();
+		if (scene->isPeriodic) volume = scene->cell->getVolume();
 		else {
 			LOG_ERROR("Must provide volume if scene is not periodic!");
 			return kineticStressTensor;
@@ -556,8 +526,7 @@ py::tuple Shop::getStressProfile(Real volume, int nCell, Real dz, Real zRef, vec
 		}
 	}
 	for (int n = 0; n < nCell; n++) {
-		if (numPart[n] > 0)
-			granularTemperatureProfile[n] /= numPart[n];
+		if (numPart[n] > 0) granularTemperatureProfile[n] /= numPart[n];
 	}
 
 	//
@@ -565,8 +534,7 @@ py::tuple Shop::getStressProfile(Real volume, int nCell, Real dz, Real zRef, vec
 	//
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{ // loop over the interactions
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		shared_ptr<Body> b1 = Body::byId(I->getId1(), scene);
 		shared_ptr<Body> b2 = Body::byId(I->getId2(), scene);
 
@@ -577,8 +545,7 @@ py::tuple Shop::getStressProfile(Real volume, int nCell, Real dz, Real zRef, vec
 			int Np2 = int(math::floor((b2->state->pos[2] - zRef) / dz));
 			//Vector between the two centers, from 2 to 1
 			Vector3r branch = b1->state->pos - b2->state->pos;
-			if (isPeriodic)
-				branch -= scene->cell->hSize * I->cellDist.cast<Real>(); //to handle periodicity
+			if (isPeriodic) branch -= scene->cell->hSize * I->cellDist.cast<Real>(); //to handle periodicity
 
 			//Contact vector (from 1 to 2)
 			NormShearPhys* nsi      = YADE_CAST<NormShearPhys*>(I->phys.get());
@@ -588,9 +555,7 @@ py::tuple Shop::getStressProfile(Real volume, int nCell, Real dz, Real zRef, vec
 			//inside the cell is taken into account
 			//If the whole vector is in the cell, add the whole contribution to the cell
 			if (Np1 == Np2) {
-				if ((Np1 >= 0) && (Np1 < nCell)) {
-					stressTensorProfile[Np1] += 1 / volume * fContact * branch.transpose();
-				}
+				if ((Np1 >= 0) && (Np1 < nCell)) { stressTensorProfile[Np1] += 1 / volume * fContact * branch.transpose(); }
 			}
 			//Otherwise, find out the cell crossed by the branch vector and assign it the contribution from this part.
 			else {
@@ -620,8 +585,7 @@ py::tuple Shop::getStressProfile(Real volume, int nCell, Real dz, Real zRef, vec
 					if ((numLayer >= 0) && (numLayer < nCell)) {
 						//Evaluate the branch height inside the cell
 						Real deltaZ = dz;
-						if (numLayer == minZ)
-							deltaZ = dz - (minPosZ - minZ * dz);
+						if (numLayer == minZ) deltaZ = dz - (minPosZ - minZ * dz);
 						else if (numLayer == maxZ)
 							deltaZ = maxPosZ - maxZ * dz;
 						//From it, trigonometry gives us the vector contained in the cell
@@ -654,8 +618,7 @@ py::tuple Shop::getStressProfile_contact(Real volume, int nCell, Real dz, Real z
 	//
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{ // loop over the interactions
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		shared_ptr<Body> b1 = Body::byId(I->getId1(), scene);
 		shared_ptr<Body> b2 = Body::byId(I->getId2(), scene);
 
@@ -666,8 +629,7 @@ py::tuple Shop::getStressProfile_contact(Real volume, int nCell, Real dz, Real z
 			int Np2 = int(math::floor((b2->state->pos[2] - zRef) / dz));
 			//Vector between the two centers, from 2 to 1
 			Vector3r branch = b1->state->pos - b2->state->pos;
-			if (isPeriodic)
-				branch -= scene->cell->hSize * I->cellDist.cast<Real>(); //to handle periodicity
+			if (isPeriodic) branch -= scene->cell->hSize * I->cellDist.cast<Real>(); //to handle periodicity
 
 			//Contact vector (from 1 to 2)
 			NormShearPhys* nsi      = YADE_CAST<NormShearPhys*>(I->phys.get());
@@ -677,9 +639,7 @@ py::tuple Shop::getStressProfile_contact(Real volume, int nCell, Real dz, Real z
 			//inside the cell is taken into account
 			//If the whole vector is in the cell, add the whole contribution to the cell
 			if (Np1 == Np2) {
-				if ((Np1 >= 0) && (Np1 < nCell)) {
-					stressTensorProfile[Np1] += 1 / volume * fContact * branch.transpose();
-				}
+				if ((Np1 >= 0) && (Np1 < nCell)) { stressTensorProfile[Np1] += 1 / volume * fContact * branch.transpose(); }
 			}
 			//Otherwise, find out the cell crossed by the branch vector and assign it the contribution from this part.
 			else {
@@ -709,8 +669,7 @@ py::tuple Shop::getStressProfile_contact(Real volume, int nCell, Real dz, Real z
 					if ((numLayer >= 0) && (numLayer < nCell)) {
 						//Evaluate the branch height inside the cell
 						Real deltaZ = dz;
-						if (numLayer == minZ)
-							deltaZ = dz - (minPosZ - minZ * dz);
+						if (numLayer == minZ) deltaZ = dz - (minPosZ - minZ * dz);
 						else if (numLayer == maxZ)
 							deltaZ = maxPosZ - maxZ * dz;
 						//From it, trigonometry gives us the vector contained in the cell
@@ -746,12 +705,10 @@ py::tuple Shop::getDepthProfiles(Real vCell, int nCell, Real dz, Real zRef, bool
 	//Loop over the particles
 	for (const auto& b : *Omega::instance().getScene()->bodies) {
 		shared_ptr<Sphere> s = YADE_PTR_DYN_CAST<Sphere>(b->shape);
-		if (!s)
-			continue;
+		if (!s) continue;
 		if (activateCond == true) {
 			const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
-			if (sphere->radius != radiusPy)
-				continue;
+			if (sphere->radius != radiusPy) continue;
 		} //select diameters asked
 		const Real zPos = b->state->pos[dir] - zRef;
 		int        Np   = int(math::floor(
@@ -770,10 +727,8 @@ py::tuple Shop::getDepthProfiles(Real vCell, int nCell, Real dz, Real zRef, bool
 			        < nCell)) { //average under zRef does not interest us, avoid also negative values not compatible with the evaluation of volPart
 				zInf = (numLayer - Np - 1) * dz + deltaCenter;
 				zSup = (numLayer - Np) * dz + deltaCenter;
-				if (zInf < -s->radius)
-					zInf = -s->radius;
-				if (zSup > s->radius)
-					zSup = s->radius;
+				if (zInf < -s->radius) zInf = -s->radius;
+				if (zSup > s->radius) zSup = s->radius;
 
 				//Analytical formulation of the volume of a slice of sphere
 				volPart = Mathr::PI * pow(s->radius, 2) * (zSup - zInf + (pow(zInf, 3) - pow(zSup, 3)) / (3 * pow(s->radius, 2)));
@@ -819,12 +774,10 @@ py::tuple Shop::getDepthProfiles_center(Real vCell, int nCell, Real dz, Real zRe
 	//Loop over the particles
 	for (const auto& b : *Omega::instance().getScene()->bodies) {
 		shared_ptr<Sphere> s = YADE_PTR_DYN_CAST<Sphere>(b->shape);
-		if (!s)
-			continue;
+		if (!s) continue;
 		if (activateCond == true) {
 			const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
-			if (sphere->radius != radiusPy)
-				continue;
+			if (sphere->radius != radiusPy) continue;
 		} //select diameters asked
 		const Real zPos = b->state->pos[2] - zRef;
 		int        Np   = int(math::floor(
@@ -859,20 +812,17 @@ py::tuple Shop::getDepthProfiles_center(Real vCell, int nCell, Real dz, Real zRe
 Matrix3r Shop::getCapillaryStress(Real volume, bool mindlin)
 {
 	Scene* scene = Omega::instance().getScene().get();
-	if (volume == 0)
-		volume = scene->isPeriodic ? scene->cell->hSize.determinant() : 1;
+	if (volume == 0) volume = scene->isPeriodic ? scene->cell->hSize.determinant() : 1;
 	Matrix3r   stressTensor = Matrix3r::Zero();
 	const bool isPeriodic   = scene->isPeriodic;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		shared_ptr<Body> b1     = Body::byId(I->getId1(), scene);
 		shared_ptr<Body> b2     = Body::byId(I->getId2(), scene);
 		Vector3r         fCap   = mindlin ? YADE_CAST<MindlinCapillaryPhys*>(I->phys.get())->fCap : YADE_CAST<CapillaryPhys*>(I->phys.get())->fCap;
 		Vector3r         branch = b1->state->pos - b2->state->pos;
-		if (isPeriodic)
-			branch -= scene->cell->hSize * I->cellDist.cast<Real>();
+		if (isPeriodic) branch -= scene->cell->hSize * I->cellDist.cast<Real>();
 		stressTensor += fCap * branch.transpose();
 	}
 	return stressTensor / volume;
@@ -886,8 +836,7 @@ void Shop::getStressLWForEachBody(vector<Matrix3r>& bStresses)
 		bStresses[k] = Matrix3r::Zero();
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		GenericSpheresContact* geom = YADE_CAST<GenericSpheresContact*>(I->geom.get());
 		NormShearPhys*         phys = YADE_CAST<NormShearPhys*>(I->phys.get());
 		Vector3r               f    = phys->normalForce + phys->shearForce;
@@ -919,10 +868,8 @@ void Shop::calm(const shared_ptr<Scene>& _scene, int mask)
 	const shared_ptr<Scene> scene = (_scene ? _scene : Omega::instance().getScene());
 	FOREACH(shared_ptr<Body> b, *scene->bodies)
 	{
-		if (!b || !b->isDynamic())
-			continue;
-		if (((mask > 0) and ((b->groupMask & mask) == 0)))
-			continue;
+		if (!b || !b->isDynamic()) continue;
+		if (((mask > 0) and ((b->groupMask & mask) == 0))) continue;
 		b->state->vel    = Vector3r::Zero();
 		b->state->angVel = Vector3r::Zero();
 		b->state->angMom = Vector3r::Zero();
@@ -932,9 +879,7 @@ void Shop::calm(const shared_ptr<Scene>& _scene, int mask)
 py::list Shop::getBodyIdsContacts(Body::id_t bodyID)
 {
 	py::list ret;
-	if (bodyID < 0) {
-		throw std::logic_error("BodyID should be a positive value!");
-	}
+	if (bodyID < 0) { throw std::logic_error("BodyID should be a positive value!"); }
 
 	const shared_ptr<Scene>& scene = Omega::instance().getScene();
 	const shared_ptr<Body>&  b     = Body::byId(bodyID, scene);
@@ -950,15 +895,12 @@ void Shop::setContactFriction(Real angleRad)
 	Scene*                     scene  = Omega::instance().getScene().get();
 	shared_ptr<BodyContainer>& bodies = scene->bodies;
 	for (const auto& b : *scene->bodies) {
-		if (b->isClump())
-			continue;
-		if (b->isDynamic())
-			YADE_PTR_CAST<FrictMat>(b->material)->frictionAngle = angleRad;
+		if (b->isClump()) continue;
+		if (b->isDynamic()) YADE_PTR_CAST<FrictMat>(b->material)->frictionAngle = angleRad;
 	}
 	FOREACH(const shared_ptr<Interaction>& ii, *scene->interactions)
 	{
-		if (!ii->isReal())
-			continue;
+		if (!ii->isReal()) continue;
 		const shared_ptr<FrictMat>& sdec1 = YADE_PTR_CAST<FrictMat>((*bodies)[(Body::id_t)((ii)->getId1())]->material);
 		const shared_ptr<FrictMat>& sdec2 = YADE_PTR_CAST<FrictMat>((*bodies)[(Body::id_t)((ii)->getId2())]->material);
 		//FIXME - why dynamic_cast fails here?
@@ -974,8 +916,7 @@ void Shop::growParticles(Real multiplier, bool updateMass, bool dynamicOnly)
 	Scene*    scene     = Omega::instance().getScene().get();
 	const int sphereIdx = Sphere::getClassIndexStatic();
 	for (const auto& b : *scene->bodies) {
-		if (dynamicOnly && !b->isDynamic())
-			continue;
+		if (dynamicOnly && !b->isDynamic()) continue;
 		//We grow only spheres and clumps
 		if (b->isClump() or sphereIdx == b->shape->getClassIndex()) {
 			if (updateMass) {
@@ -997,8 +938,7 @@ void Shop::growParticles(Real multiplier, bool updateMass, bool dynamicOnly)
 			// for spheres, we update radius
 			(YADE_CAST<Sphere*>(b->shape.get()))->radius *= multiplier;
 			// and if they are clump members,clump volume variation with homothetic displacement of all members
-			if (b->isClumpMember())
-				b->state->pos += (multiplier - 1) * (b->state->pos - Body::byId(b->clumpId, scene)->state->pos);
+			if (b->isClumpMember()) b->state->pos += (multiplier - 1) * (b->state->pos - Body::byId(b->clumpId, scene)->state->pos);
 		}
 	}
 	FOREACH(const shared_ptr<Interaction>& ii, *scene->interactions)
@@ -1028,11 +968,9 @@ void Shop::growParticle(Body::id_t bodyID, Real multiplier, bool updateMass)
 		b->state->inertia *= pow(multiplier, 5);
 	}
 	for (Body::MapId2IntrT::iterator it = b->intrs.begin(), end = b->intrs.end(); it != end; ++it) { //Iterate over all bodie's interactions
-		if (!(*it).second->isReal())
-			continue;
+		if (!(*it).second->isReal()) continue;
 		GenericSpheresContact* contact = YADE_CAST<GenericSpheresContact*>((*it).second->geom.get());
-		if (bodyID == it->second->getId1())
-			contact->refR1 = rad;
+		if (bodyID == it->second->getId1()) contact->refR1 = rad;
 		else
 			contact->refR2 = rad;
 	}
@@ -1040,14 +978,12 @@ void Shop::growParticle(Body::id_t bodyID, Real multiplier, bool updateMass)
 
 pair<Vector3r, Vector3r> Shop::aabbExtrema(Real cutoff, bool centers)
 {
-	if (cutoff < 0. || cutoff > 1.)
-		throw invalid_argument("Cutoff must be >=0 and <=1.");
+	if (cutoff < 0. || cutoff > 1.) throw invalid_argument("Cutoff must be >=0 and <=1.");
 	Real     inf = std::numeric_limits<Real>::infinity();
 	Vector3r minimum(inf, inf, inf), maximum(-inf, -inf, -inf);
 	for (const auto& b : *Omega::instance().getScene()->bodies) {
 		shared_ptr<Sphere> s = YADE_PTR_DYN_CAST<Sphere>(b->shape);
-		if (!s)
-			continue;
+		if (!s) continue;
 		Vector3r rrr(s->radius, s->radius, s->radius);
 		minimum = minimum.cwiseMin(b->state->pos - (centers ? Vector3r::Zero() : rrr));
 		maximum = maximum.cwiseMax(b->state->pos + (centers ? Vector3r::Zero() : rrr));
@@ -1064,11 +1000,9 @@ Real Shop::getSpheresVolume2D(const shared_ptr<Scene>& _scene, int mask)
 	Real                    vol   = 0;
 	FOREACH(shared_ptr<Body> b, *scene->bodies)
 	{
-		if (!b)
-			continue;
+		if (!b) continue;
 		Sphere* s = dynamic_cast<Sphere*>(b->shape.get());
-		if ((!s) or ((mask > 0) and ((b->groupMask & mask) == 0)))
-			continue;
+		if ((!s) or ((mask > 0) and ((b->groupMask & mask) == 0))) continue;
 		vol += Mathr::PI * pow(s->radius, 2);
 	}
 	return vol;
@@ -1092,15 +1026,13 @@ Real Shop::getVoidRatio2D(const shared_ptr<Scene>& _scene, Real _zlen)
 py::tuple Shop::getStressAndTangent(Real volume, bool /*symmetry*/)
 {
 	Scene* scene = Omega::instance().getScene().get();
-	if (volume == 0)
-		volume = scene->isPeriodic ? scene->cell->hSize.determinant() : 1;
+	if (volume == 0) volume = scene->isPeriodic ? scene->cell->hSize.determinant() : 1;
 	Matrix3r   stress     = Matrix3r::Zero();
 	Matrix6r   tangent    = Matrix6r::Zero();
 	const bool isPeriodic = scene->isPeriodic;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		shared_ptr<Body> b1   = Body::byId(I->getId1(), scene);
 		shared_ptr<Body> b2   = Body::byId(I->getId2(), scene);
 		Vector3r         pos1 = Vector3r::Zero();
@@ -1116,8 +1048,7 @@ py::tuple Shop::getStressAndTangent(Real volume, bool /*symmetry*/)
 			pos2 = b2->state->pos;
 		}
 		Vector3r branch = pos1 - pos2;
-		if (isPeriodic)
-			branch -= scene->cell->hSize * I->cellDist.cast<Real>();
+		if (isPeriodic) branch -= scene->cell->hSize * I->cellDist.cast<Real>();
 		NormShearPhys*         nsi      = YADE_CAST<NormShearPhys*>(I->phys.get());
 		Real                   kN       = nsi->kn;
 		Real                   kT       = nsi->ks;
@@ -1128,8 +1059,7 @@ py::tuple Shop::getStressAndTangent(Real volume, bool /*symmetry*/)
 		Real                   T        = fT.norm();
 		bool                   hasShear = (T > 0);
 		Vector3r               t(Vector3r::Zero());
-		if (hasShear)
-			t = fT / T;
+		if (hasShear) t = fT / T;
 		stress += fTotal * branch.transpose();
 		tangent(0, 0) += kN * n[0] * branch[0] * n[0] * branch[0] + kT * t[0] * branch[0] * t[0] * branch[0];
 		tangent(0, 1) += kN * n[0] * branch[0] * n[1] * branch[1] + kT * t[0] * branch[0] * t[1] * branch[1];

@@ -27,8 +27,7 @@ TriaxialStateRecorder::~TriaxialStateRecorder() {};
 void TriaxialStateRecorder::action()
 {
 	// at the beginning of the file; write column titles
-	if (out.tellp() == 0)
-		out << "iteration s11 s22 s33 e11 e22 e33 unb_force porosity kineticE" << endl;
+	if (out.tellp() == 0) out << "iteration s11 s22 s33 e11 e22 e33 unb_force porosity kineticE" << endl;
 
 	if (!triaxialStressController) {
 		vector<shared_ptr<Engine>>::iterator itFirst = scene->engines.begin();
@@ -41,19 +40,16 @@ void TriaxialStateRecorder::action()
 				//triaxialCompressionEngine = shared_ptr<TriaxialCompressionEngine> (static_cast<TriaxialCompressionEngine*> ( (*itFirst).get()));
 			}
 		}
-		if (!triaxialStressController)
-			LOG_ERROR("stress controller engine NOT found");
+		if (!triaxialStressController) LOG_ERROR("stress controller engine NOT found");
 	}
-	if (!(scene->iter % triaxialStressController->computeStressStrainInterval == 0))
-		triaxialStressController->computeStressStrain();
+	if (!(scene->iter % triaxialStressController->computeStressStrainInterval == 0)) triaxialStressController->computeStressStrain();
 
 	/// Compute porosity :
 	Real Vs = 0;
 	Real V  = (triaxialStressController->height) * (triaxialStressController->width) * (triaxialStressController->depth);
 
 	for (const auto& b : *scene->bodies) {
-		if (!(b) || b->isClump())
-			continue;
+		if (!(b) || b->isClump()) continue;
 		if (b->isDynamic()) {
 			//Sorry, the next string was commented, because it gave a Warning "unused variable v". Anton Gladky
 			//const Vector3r& v = b->state->vel;

@@ -170,8 +170,7 @@ namespace CGT {
 				CVector v  = s.to_vector();
 				Real    ny = math::abs(v.y() / sqrt(s.squared_length()));
 
-				if (Nymin < ny && ny <= Nymax)
-					filteredList.push_back(ed_it);
+				if (Nymin < ny && ny <= Nymax) filteredList.push_back(ed_it);
 			}
 		}
 		return filteredList;
@@ -199,8 +198,7 @@ namespace CGT {
 		RTriangulation::Finite_vertices_iterator V_it              = Tri.finite_vertices_begin();
 		bool                                     beginWithFictious = V_it->info().isFictious;
 		for (; V_it != Tri.finite_vertices_end(); ++V_it)
-			if (!V_it->info().isFictious)
-				vtk.file << V_it->point().point() << endl;
+			if (!V_it->info().isFictious) vtk.file << V_it->point().point() << endl;
 		vtk.end_vertices();
 
 		vtk.begin_cells();
@@ -280,8 +278,7 @@ namespace CGT {
 				CVector v  = s.to_vector();
 				Real    xx = math::abs(v.z() / sqrt(s.squared_length()));
 
-				if (xx > 0.95)
-					edges.push_back(ed_it);
+				if (xx > 0.95) edges.push_back(ed_it);
 			}
 		}
 		NormalDisplacementDistributionToFile(edges, output_file);
@@ -293,8 +290,7 @@ namespace CGT {
 				CVector v  = s.to_vector();
 				Real    xx = math::abs(v.z() / sqrt(s.squared_length()));
 
-				if (xx < 0.05)
-					edges.push_back(ed_it);
+				if (xx < 0.05) edges.push_back(ed_it);
 			}
 		}
 		NormalDisplacementDistributionToFile(edges, output_file);
@@ -306,8 +302,7 @@ namespace CGT {
 				CVector v  = s.to_vector();
 				Real    xx = math::abs(v.z() / sqrt(s.squared_length()));
 
-				if (xx > 0.65 && xx < 0.75)
-					edges.push_back(ed_it);
+				if (xx > 0.65 && xx < 0.75) edges.push_back(ed_it);
 			}
 		}
 		NormalDisplacementDistributionToFile(edges, output_file);
@@ -320,8 +315,7 @@ namespace CGT {
 		long                           nc1  = 0;
 		TriaxialState::ContactIterator cend = state.contacts_end();
 		for (TriaxialState::ContactIterator cit = state.contacts_begin(); cit != cend; ++cit) {
-			if (state.inside((*cit)->grain1->sphere.point()) && state.inside((*cit)->grain2->sphere.point()))
-				nc1 += 2;
+			if (state.inside((*cit)->grain1->sphere.point()) && state.inside((*cit)->grain2->sphere.point())) nc1 += 2;
 			else if (state.inside((*cit)->grain1->sphere.point()) || state.inside((*cit)->grain2->sphere.point()))
 				++nc1;
 		}
@@ -336,8 +330,7 @@ namespace CGT {
 		for (Edge_iterator ed_it = T.edges_begin(); ed_it != ed_end; ++ed_it) {
 			if (!T.is_infinite(*ed_it)) {
 				Segment s(T.segment(*ed_it));
-				if (state.inside(s.source()) && state.inside(s.target()))
-					nv1 += 2;
+				if (state.inside(s.source()) && state.inside(s.target())) nv1 += 2;
 				else if (state.inside(s.source()) || state.inside(s.target()))
 					++nv1;
 			}
@@ -350,8 +343,7 @@ namespace CGT {
 		long                         ng1  = 0;
 		TriaxialState::GrainIterator gend = state.grains_end();
 		for (TriaxialState::GrainIterator git = state.grains_begin(); git != gend; ++git) {
-			if (state.inside(git->sphere.point()))
-				++ng1;
+			if (state.inside(git->sphere.point())) ++ng1;
 		}
 		return ng1;
 	}
@@ -445,8 +437,7 @@ namespace CGT {
 			Vh2    = (*ed_it)->first->vertex((*ed_it)->third);
 			branch = Vh1->point().point() - Vh2->point().point();
 			NORMALIZE(branch);
-			if (consecutive)
-				U = TS1->grain(Vh1->info().id()).translation - TS1->grain(Vh2->info().id()).translation;
+			if (consecutive) U = TS1->grain(Vh1->info().id()).translation - TS1->grain(Vh2->info().id()).translation;
 			else {
 				U = (TS1->grain(Vh1->info().id()).sphere.point() - TS0->grain(Vh1->info().id()).sphere.point())
 				        - (TS1->grain(Vh2->info().id()).sphere.point() - TS0->grain(Vh2->info().id()).sphere.point());
@@ -523,8 +514,7 @@ namespace CGT {
 		}
 
 		for (TriaxialState::GrainIterator git = (*TS1).grains_begin(); git != gend; ++git) {
-			if ((*TS1).inside(git->sphere.point()))
-				++ng1;
+			if ((*TS1).inside(git->sphere.point())) ++ng1;
 			else
 				++ng2;
 		}
@@ -583,8 +573,7 @@ namespace CGT {
 
 		TriaxialState::GrainIterator gend = (*TS1).grains_end();
 		for (TriaxialState::GrainIterator git = (*TS1).grains_begin(); git != gend; ++git) {
-			if ((*TS1).inside(git->sphere.point()))
-				++ng1;
+			if ((*TS1).inside(git->sphere.point())) ++ng1;
 			else
 				++ng2;
 		}
@@ -647,8 +636,7 @@ namespace CGT {
 
 		for (int i = 0; i < Nc0; ++i) {
 			TS0->contacts[i]->visited = false;
-			if (TS0->contacts[i]->status == TriaxialState::Contact::LOST)
-				++lost_in_state0;
+			if (TS0->contacts[i]->status == TriaxialState::Contact::LOST) ++lost_in_state0;
 		}
 		for (int i = 0; i < Nc1; ++i)
 			TS1->contacts[i]->visited = false;
@@ -708,8 +696,7 @@ namespace CGT {
 	{
 		TriaxialState::GrainIterator gend = TS1->grains_end();
 		for (TriaxialState::GrainIterator git = TS1->grains_begin(); git != gend; ++git)
-			if (git->id >= 0)
-				git->translation = TS1->grain(git->id).sphere.point() - TS0->grain(git->id).sphere.point();
+			if (git->id >= 0) git->translation = TS1->grain(git->id).sphere.point() - TS0->grain(git->id).sphere.point();
 		consecutive = true;
 	}
 
@@ -734,8 +721,7 @@ namespace CGT {
 					        meanFieldDisp[2] * Delta_epsilon(3, 3));
 				} else
 					meanFieldDisp = CVector(0, 0, 0);
-				if (consecutive)
-					v = v + TS1->grain(id).translation - meanFieldDisp;
+				if (consecutive) v = v + TS1->grain(id).translation - meanFieldDisp;
 				else
 					v = v + (TS1->grain(id).sphere.point() - TS0->grain(id).sphere.point() - meanFieldDisp);
 			}
@@ -762,8 +748,7 @@ namespace CGT {
 			v = Deplacement(cell, facet);
 			Grad_u(cell, facet, v, T);
 		}
-		if (vol_divide)
-			T /= Tesselation::Volume(cell);
+		if (vol_divide) T /= Tesselation::Volume(cell);
 	}
 
 	const vector<Tenseur3>& KinematicLocalisationAnalyser::computeParticlesDeformation(void)
@@ -782,8 +767,7 @@ namespace CGT {
 		Delta_epsilon(2, 2) = TS1->eps2 - TS0->eps2;
 
 		//compute Voronoi tesselation (i.e. voronoi center of each cell)
-		if (!Tes.computed)
-			Tes.compute();
+		if (!Tes.computed) Tes.compute();
 		if (ParticleDeformation.size() != (unsigned int)(Tes.Max_id() + 1)) {
 			ParticleDeformation.clear();
 			ParticleDeformation.resize(Tes.Max_id() + 1);
@@ -795,8 +779,7 @@ namespace CGT {
 			//cerr << V_it->info().id() << endl;
 			V_it->info().v() = 0; //WARNING : this will erase previous values if some have been computed
 			ParticleDeformation[V_it->info().id()].reset();
-			if (!V_it->info().isFictious)
-				++n_real_vertices;
+			if (!V_it->info().isFictious) ++n_real_vertices;
 			else
 				++n_fictious_vertices;
 		}
@@ -843,14 +826,12 @@ namespace CGT {
 			v_total_g += V_it->info().v();
 			v_solid_total += 4.188790 * pow(V_it->point().weight(), 1.5); //4.18... = 4/3*PI; and here, weight is rad²
 			grad_u_total_g += ParticleDeformation[V_it->info().id()];
-			if (V_it->info().v())
-				ParticleDeformation[V_it->info().id()] /= V_it->info().v();
+			if (V_it->info().v()) ParticleDeformation[V_it->info().id()] /= V_it->info().v();
 		}
 		grad_u_total_g /= v_total_g;
 		if (1) {
 			cerr << "sym_grad_u_total_g (wrong averaged strain):" << endl << Tenseur_sym3(grad_u_total_g) << endl;
-			if (v_total)
-				grad_u_total /= v_total;
+			if (v_total) grad_u_total /= v_total;
 			cerr << "Total volume = " << v_total << ", grad_u = " << endl
 			     << grad_u_total << endl
 			     << "sym_grad_u (true average strain): " << endl

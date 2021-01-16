@@ -34,8 +34,7 @@ void GridNode::addConnection(shared_ptr<Body> GC) { ConnList.push_back(GC); }
 
 Vector3r GridConnection::getSegment()
 {
-	if (!periodic)
-		return node2->state->pos - node1->state->pos;
+	if (!periodic) return node2->state->pos - node1->state->pos;
 	//else
 	const Scene* scene = Omega::instance().getScene().get();
 	return node2->state->pos + scene->cell->hSize * cellDist.cast<Real>() - node1->state->pos;
@@ -72,16 +71,14 @@ bool Ig2_GridNode_GridNode_GridNodeGeom6D::go(
 			*(YADE_PTR_CAST<ScGeom>(sc)) = *(YADE_PTR_CAST<ScGeom>(c->geom));
 			c->geom                      = sc;
 		}
-		if (updateRotations)
-			YADE_PTR_CAST<GridNodeGeom6D>(c->geom)->precomputeRotations(state1, state2, isNew, creep);
+		if (updateRotations) YADE_PTR_CAST<GridNodeGeom6D>(c->geom)->precomputeRotations(state1, state2, isNew, creep);
 		if (YADE_PTR_CAST<GridNodeGeom6D>(c->geom)->connectionBody) { //test this because the connectionBody may not have been yet initialized.
 			YADE_PTR_CAST<GridNodeGeom6D>(c->geom)->connectionBody->state->pos = state1.pos;
 
 			for (unsigned int j = 0; j < 2; j++) {
 				for (unsigned int i = 0; i < GN[j]->pfacetList.size(); i++) {
 					PFacet* Pfacet = YADE_CAST<PFacet*>(GN[j]->pfacetList[i]->shape.get());
-					if (c->id1 == Pfacet->node1->getId())
-						GN[j]->pfacetList[i]->state->pos = state1.pos;
+					if (c->id1 == Pfacet->node1->getId()) GN[j]->pfacetList[i]->state->pos = state1.pos;
 				}
 			}
 		}
@@ -193,8 +190,7 @@ bool Ig2_GridConnection_GridConnection_GridCoGridCoGeom::go(
 	Real                         penetrationDepth = conn1->radius + conn2->radius - (A + k * a - (B + m * b)).norm();
 	shared_ptr<GridCoGridCoGeom> scm;
 	if (isNew) {
-		if (penetrationDepth < 0)
-			return false;
+		if (penetrationDepth < 0) return false;
 		scm     = shared_ptr<GridCoGridCoGeom>(new GridCoGridCoGeom());
 		c->geom = scm;
 	} else
@@ -255,8 +251,7 @@ bool Ig2_Sphere_GridConnection_ScGridCoGeom::go(
 	State*                   gridNo2St = YADE_CAST<State*>(gridCo->node2->state.get());
 	bool                     isNew     = !c->geom;
 	shared_ptr<ScGridCoGeom> scm;
-	if (!isNew)
-		scm = YADE_PTR_CAST<ScGridCoGeom>(c->geom);
+	if (!isNew) scm = YADE_PTR_CAST<ScGridCoGeom>(c->geom);
 	else {
 		scm = shared_ptr<ScGridCoGeom>(new ScGridCoGeom());
 	}
@@ -266,14 +261,11 @@ bool Ig2_Sphere_GridConnection_ScGridCoGeom::go(
 	Vector3r branch    = spherePos - gridNo1St->pos;
 	Vector3r branchN   = spherePos - gridNo2St->pos;
 	for (int i = 0; i < 3; i++) {
-		if (math::abs(branch[i]) < 1e-14)
-			branch[i] = 0.0;
-		if (math::abs(branchN[i]) < 1e-14)
-			branchN[i] = 0.0;
+		if (math::abs(branch[i]) < 1e-14) branch[i] = 0.0;
+		if (math::abs(branchN[i]) < 1e-14) branchN[i] = 0.0;
 	}
 	Real relPos = branch.dot(segt) / (len * len);
-	if (scm->isDuplicate == 2 && scm->trueInt != c->id2)
-		return true; //the contact will be deleted into the Law, no need to compute here.
+	if (scm->isDuplicate == 2 && scm->trueInt != c->id2) return true; //the contact will be deleted into the Law, no need to compute here.
 	scm->isDuplicate = 0;
 	scm->trueInt     = -1;
 
@@ -294,15 +286,13 @@ bool Ig2_Sphere_GridConnection_ScGridCoGeom::go(
 		if (gridNo1->ConnList.size() > 1) {                                   //	if the node is not an extremity of the Grid (only one connection)
 			for (int unsigned i = 0; i < gridNo1->ConnList.size(); i++) { // ... loop on all the Connections of the same Node ...
 				GridConnection* GC = (GridConnection*)gridNo1->ConnList[i]->shape.get();
-				if (GC == gridCo)
-					continue; //	self comparison.
+				if (GC == gridCo) continue; //	self comparison.
 				Vector3r segtCandidate1
 				        = GC->node1->state->pos - gridNo1St->pos; // (be sure of the direction of segtPrev to compare relPosPrev.)
 				Vector3r segtCandidate2 = GC->node2->state->pos - gridNo1St->pos;
 				Vector3r segtPrev       = segtCandidate1.norm() > segtCandidate2.norm() ? segtCandidate1 : segtCandidate2;
 				for (int j = 0; j < 3; j++) {
-					if (math::abs(segtPrev[j]) < 1e-14)
-						segtPrev[j] = 0.0;
+					if (math::abs(segtPrev[j]) < 1e-14) segtPrev[j] = 0.0;
 				}
 				Real relPosPrev = (branch.dot(segtPrev)) / (segtPrev.norm() * segtPrev.norm());
 				// ... and check whether the sphere projection is before the neighbours connections too.
@@ -312,16 +302,14 @@ bool Ig2_Sphere_GridConnection_ScGridCoGeom::go(
 					if (intr && intr->isReal()) {
 						shared_ptr<ScGridCoGeom> intrGeom = YADE_PTR_CAST<ScGridCoGeom>(intr->geom);
 						if (!(intrGeom->isDuplicate == 1)) { //skip contact.
-							if (isNew)
-								return false;
+							if (isNew) return false;
 							else {
 								scm->isDuplicate = 1; /*cout<<"Declare "<<c->id1<<"-"<<c->id2<<" as duplicated."<<endl;*/
 							}
 						}
 					}
 				} else { //the sphere projection is outside the current Connection but inside the previous neighbour. The contact has to be handled by the Prev GridConnection, not here.
-					if (isNew)
-						return false;
+					if (isNew) return false;
 					else {
 						// 						cout<<"The contact "<<c->id1<<"-"<<c->id2<<" may be copied and will be deleted now."<<endl ;
 						scm->isDuplicate = 1;
@@ -338,14 +326,12 @@ bool Ig2_Sphere_GridConnection_ScGridCoGeom::go(
 		if (gridNo2->ConnList.size() > 1) {
 			for (int unsigned i = 0; i < gridNo2->ConnList.size(); i++) {
 				GridConnection* GC = (GridConnection*)gridNo2->ConnList[i]->shape.get();
-				if (GC == gridCo)
-					continue; //	self comparison.
+				if (GC == gridCo) continue; //	self comparison.
 				Vector3r segtCandidate1 = GC->node1->state->pos - gridNo2St->pos;
 				Vector3r segtCandidate2 = GC->node2->state->pos - gridNo2St->pos;
 				Vector3r segtNext       = segtCandidate1.norm() > segtCandidate2.norm() ? segtCandidate1 : segtCandidate2;
 				for (int j = 0; j < 3; j++) {
-					if (math::abs(segtNext[j]) < 1e-14)
-						segtNext[j] = 0.0;
+					if (math::abs(segtNext[j]) < 1e-14) segtNext[j] = 0.0;
 				}
 				Real relPosNext = (branchN.dot(segtNext)) / (segtNext.norm() * segtNext.norm());
 				if (relPosNext
@@ -354,16 +340,14 @@ bool Ig2_Sphere_GridConnection_ScGridCoGeom::go(
 					if (intr && intr->isReal()) {
 						shared_ptr<ScGridCoGeom> intrGeom = YADE_PTR_CAST<ScGridCoGeom>(intr->geom);
 						if (!(intrGeom->isDuplicate == 1)) {
-							if (isNew)
-								return false;
+							if (isNew) return false;
 							else {
 								scm->isDuplicate = 1; /*cout<<"Declare "<<c->id1<<"-"<<c->id2<<" as duplicated."<<endl;*/
 							}
 						}
 					}
 				} else { //the sphere projection is outside the current Connection but inside the previous neighbour. The contact has to be handled by the Prev GridConnection, not here.
-					if (isNew)
-						return false;
+					if (isNew) return false;
 					else {
 						// 						cout<<"The contact "<<c->id1<<"-"<<c->id2<<" may be copied and will be deleted now."<<endl ;
 						scm->isDuplicate = 1;
@@ -379,15 +363,13 @@ bool Ig2_Sphere_GridConnection_ScGridCoGeom::go(
 		if (gridNo1->ConnList.size() > 1) {                                   //	if the node is not an extremity of the Grid (only one connection)
 			for (int unsigned i = 0; i < gridNo1->ConnList.size(); i++) { // ... loop on all the Connections of the same Node ...
 				GridConnection* GC = (GridConnection*)gridNo1->ConnList[i]->shape.get();
-				if (GC == gridCo)
-					continue; //	self comparison.
+				if (GC == gridCo) continue; //	self comparison.
 				Vector3r segtCandidate1
 				        = GC->node1->state->pos - gridNo1St->pos; // (be sure of the direction of segtPrev to compare relPosPrev.)
 				Vector3r segtCandidate2 = GC->node2->state->pos - gridNo1St->pos;
 				Vector3r segtPrev       = segtCandidate1.norm() > segtCandidate2.norm() ? segtCandidate1 : segtCandidate2;
 				for (int j = 0; j < 3; j++) {
-					if (math::abs(segtPrev[j]) < 1e-14)
-						segtPrev[j] = 0.0;
+					if (math::abs(segtPrev[j]) < 1e-14) segtPrev[j] = 0.0;
 				}
 				Real relPosPrev = (branch.dot(segtPrev)) / (segtPrev.norm() * segtPrev.norm());
 				if (relPosPrev <= 0) { //the sphere projection is inside the current Connection and outide this neighbour connection.
@@ -415,14 +397,12 @@ bool Ig2_Sphere_GridConnection_ScGridCoGeom::go(
 		if (gridNo2->ConnList.size() > 1) {
 			for (int unsigned i = 0; i < gridNo2->ConnList.size(); i++) {
 				GridConnection* GC = (GridConnection*)gridNo2->ConnList[i]->shape.get();
-				if (GC == gridCo)
-					continue; //	self comparison.
+				if (GC == gridCo) continue; //	self comparison.
 				Vector3r segtCandidate1 = GC->node1->state->pos - gridNo2St->pos;
 				Vector3r segtCandidate2 = GC->node2->state->pos - gridNo2St->pos;
 				Vector3r segtNext       = segtCandidate1.norm() > segtCandidate2.norm() ? segtCandidate1 : segtCandidate2;
 				for (int j = 0; j < 3; j++) {
-					if (math::abs(segtNext[j]) < 1e-14)
-						segtNext[j] = 0.0;
+					if (math::abs(segtNext[j]) < 1e-14) segtNext[j] = 0.0;
 				}
 				Real relPosNext = (branchN.dot(segtNext)) / (segtNext.norm() * segtNext.norm());
 				if (relPosNext <= 0) { //the sphere projection is inside the current Connection and outide this neighbour connection.
@@ -451,12 +431,10 @@ bool Ig2_Sphere_GridConnection_ScGridCoGeom::go(
 	Vector3r fictiousPos = gridNo1St->pos + relPos * segt;
 	Vector3r branchF     = fictiousPos - spherePos;
 	Real     dist        = branchF.norm();
-	if (isNew && (dist > (sphere->radius + gridCo->radius)))
-		return false;
+	if (isNew && (dist > (sphere->radius + gridCo->radius))) return false;
 
 	//	Create the geometry :
-	if (isNew)
-		c->geom = scm;
+	if (isNew) c->geom = scm;
 	scm->radius1              = sphere->radius;
 	scm->radius2              = gridCo->radius;
 	scm->id3                  = gridCo->node1->getId();
@@ -506,8 +484,7 @@ bool Law2_ScGridCoGeom_FrictPhys_CundallStrack::go(shared_ptr<IGeom>& ig, shared
 	if (geom->isDuplicate) {
 		if (id2 != geom->trueInt) {
 			//cerr<<"skip duplicate "<<id1<<" "<<id2<<endl;
-			if (geom->isDuplicate == 2)
-				return false;
+			if (geom->isDuplicate == 2) return false;
 			return true;
 		}
 	}
@@ -536,8 +513,7 @@ bool Law2_ScGridCoGeom_FrictPhys_CundallStrack::go(shared_ptr<IGeom>& ig, shared
 			//define the plastic work input and increment the total plastic energy dissipated
 			shearForce *= ratio;
 			Real dissip = ((1 / phys->ks) * (trialForce - shearForce)) /*plastic disp*/.dot(shearForce) /*active force*/;
-			if (dissip > 0)
-				scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset*/ false);
+			if (dissip > 0) scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset*/ false);
 		}
 		// compute elastic energy as well
 		scene->energy->add(
@@ -579,15 +555,13 @@ bool Law2_ScGridCoGeom_CohFrictPhys_CundallStrack::go(shared_ptr<IGeom>& ig, sha
 	if (geom->isDuplicate) {
 		if (id2 != geom->trueInt) {
 			//cerr<<"skip duplicate "<<id1<<" "<<id2<<endl;
-			if (geom->isDuplicate == 2)
-				return false;
+			if (geom->isDuplicate == 2) return false;
 			return true;
 		}
 	}
 
 	Vector3r& shearForceFirst = phys->shearForce;
-	if (contact->isFresh(scene) && geom->isDuplicate != 2)
-		shearForceFirst = Vector3r::Zero();
+	if (contact->isFresh(scene) && geom->isDuplicate != 2) shearForceFirst = Vector3r::Zero();
 	Real un = geom->penetrationDepth;
 	Real Fn = phys->kn * (un - phys->unp);
 
@@ -598,8 +572,7 @@ bool Law2_ScGridCoGeom_CohFrictPhys_CundallStrack::go(shared_ptr<IGeom>& ig, sha
 		if ((-Fn) > phys->normalAdhesion) { //normal plasticity
 			Fn        = -phys->normalAdhesion;
 			phys->unp = un + phys->normalAdhesion / phys->kn;
-			if (phys->unpMax && phys->unp < phys->unpMax)
-				return false;
+			if (phys->unpMax && phys->unp < phys->unpMax) return false;
 		}
 		phys->normalForce          = Fn * geom->normal;
 		Vector3r&       shearForce = geom->rotate(phys->shearForce);
@@ -610,8 +583,7 @@ bool Law2_ScGridCoGeom_CohFrictPhys_CundallStrack::go(shared_ptr<IGeom>& ig, sha
 
 		Real Fs    = phys->shearForce.norm();
 		Real maxFs = phys->shearAdhesion;
-		if (!phys->cohesionDisablesFriction || maxFs == 0)
-			maxFs += Fn * phys->tangensOfFrictionAngle;
+		if (!phys->cohesionDisablesFriction || maxFs == 0) maxFs += Fn * phys->tangensOfFrictionAngle;
 		maxFs = math::max((Real)0, maxFs);
 		if (Fs > maxFs) { //Plasticity condition on shear force
 			if (phys->fragile && !phys->cohesionBroken) {
@@ -623,11 +595,9 @@ bool Law2_ScGridCoGeom_CohFrictPhys_CundallStrack::go(shared_ptr<IGeom>& ig, sha
 			shearForce *= maxFs;
 			if (scene->trackEnergy) {
 				Real dissip = ((1 / phys->ks) * (trialForce - shearForce)) /*plastic disp*/.dot(shearForce) /*active force*/;
-				if (dissip > 0)
-					scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset*/ false);
+				if (dissip > 0) scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset*/ false);
 			}
-			if (Fn < 0)
-				phys->normalForce = Vector3r::Zero(); //Vector3r::Zero()
+			if (Fn < 0) phys->normalForce = Vector3r::Zero(); //Vector3r::Zero()
 		}
 		Vector3r force = -phys->normalForce - shearForce;
 		scene->forces.addForce(id1, force);
@@ -681,8 +651,7 @@ bool Law2_GridCoGridCoGeom_FrictPhys_CundallStrack::go(shared_ptr<IGeom>& ig, sh
 			//define the plastic work input and increment the total plastic energy dissipated
 			shearForce *= ratio;
 			Real dissip = ((1 / phys->ks) * (trialForce - shearForce)) /*plastic disp*/.dot(shearForce) /*active force*/;
-			if (traceEnergy)
-				plasticDissipation += dissip;
+			if (traceEnergy) plasticDissipation += dissip;
 			else if (dissip > 0)
 				scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset*/ false);
 		}
@@ -714,9 +683,7 @@ YADE_PLUGIN((Law2_GridCoGridCoGeom_FrictPhys_CundallStrack));
 void Bo1_GridConnection_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& /*se3*/, const Body* /*b*/)
 {
 	GridConnection* GC = static_cast<GridConnection*>(cm.get());
-	if (!bv) {
-		bv = shared_ptr<Bound>(new Aabb);
-	}
+	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 	Aabb*    aabb = static_cast<Aabb*>(bv.get());
 	Vector3r O    = YADE_CAST<State*>(GC->node1->state.get())->pos;
 	Vector3r O2   = YADE_CAST<State*>(GC->node2->state.get())->pos;

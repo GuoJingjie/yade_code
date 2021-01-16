@@ -59,8 +59,7 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 
 	if (smoothJoint && phys->isOnJoint) {
 		if (phys->more || (phys->jointCumulativeSliding > (2 * min(geom->radius1, geom->radius2)))) {
-			if (!neverErase)
-				return false;
+			if (!neverErase) return false;
 			else {
 				phys->shearForce  = Vector3r::Zero();
 				phys->normalForce = Vector3r::Zero();
@@ -90,16 +89,12 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 	}
 
 	if (phys->momentBroken && recordMoments && !phys->momentCalculated) {
-		if (phys->originalClusterEvent && !phys->computedCentroid)
-			computeCentroid(phys);
-		if (phys->originalClusterEvent)
-			computeClusteredMoment(phys);
+		if (phys->originalClusterEvent && !phys->computedCentroid) computeCentroid(phys);
+		if (phys->originalClusterEvent) computeClusteredMoment(phys);
 
 		if (phys->momentCalculated && phys->momentMagnitude != 0) {
 			std::ofstream file(fileMoments.c_str(), !momentsFileExist ? std::ios::trunc : std::ios::app);
-			if (file.tellp() == 0) {
-				file << "i p0 p1 p2 moment numInts eventNum time beginTime" << endl;
-			}
+			if (file.tellp() == 0) { file << "i p0 p1 p2 moment numInts eventNum time beginTime" << endl; }
 			file << boost::lexical_cast<string>(scene->iter) << " " << boost::lexical_cast<string>(phys->momentCentroid[0]) << " "
 			     << boost::lexical_cast<string>(phys->momentCentroid[1]) << " " << boost::lexical_cast<string>(phys->momentCentroid[2]) << " "
 			     << boost::lexical_cast<string>(phys->momentMagnitude) << " " << boost::lexical_cast<string>(phys->clusterInts.size()) << " "
@@ -112,8 +107,7 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 	/* Determination of interaction */
 	if (D < 0) { //tensile configuration
 		if (!phys->isCohesive) {
-			if (!neverErase)
-				return false;
+			if (!neverErase) return false;
 			else {
 				phys->shearForce  = Vector3r::Zero();
 				phys->normalForce = Vector3r::Zero();
@@ -149,9 +143,7 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 
 			if (recordCracks) {
 				std::ofstream file(fileCracks.c_str(), !cracksFileExist ? std::ios::trunc : std::ios::app);
-				if (file.tellp() == 0) {
-					file << "iter time p0 p1 p2 type size norm0 norm1 norm2 nrg onJnt" << endl;
-				}
+				if (file.tellp() == 0) { file << "iter time p0 p1 p2 type size norm0 norm1 norm2 nrg onJnt" << endl; }
 				Vector3r crackNormal = Vector3r::Zero();
 				if ((smoothJoint) && (phys->isOnJoint)) {
 					crackNormal = phys->jointNormal;
@@ -173,8 +165,7 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 			}
 			cracksFileExist = true;
 
-			if (!neverErase)
-				return false;
+			if (!neverErase) return false;
 			else {
 				phys->shearForce  = Vector3r::Zero();
 				phys->normalForce = Vector3r::Zero();
@@ -212,8 +203,7 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 	Real scalarShearForce = shearForce.norm();
 
 	if (scalarShearForce > maxFs) {
-		if (scalarShearForce != 0)
-			shearForce *= maxFs / scalarShearForce;
+		if (scalarShearForce != 0) shearForce *= maxFs / scalarShearForce;
 		else
 			shearForce = Vector3r::Zero();
 		if ((smoothJoint) && (phys->isOnJoint)) {
@@ -259,9 +249,7 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 
 			if (recordCracks) {
 				std::ofstream file(fileCracks.c_str(), !cracksFileExist ? std::ios::trunc : std::ios::app);
-				if (file.tellp() == 0) {
-					file << "iter time p0 p1 p2 type size norm0 norm1 norm2 nrg onJnt" << endl;
-				}
+				if (file.tellp() == 0) { file << "iter time p0 p1 p2 type size norm0 norm1 norm2 nrg onJnt" << endl; }
 				Vector3r crackNormal = Vector3r::Zero();
 				if ((smoothJoint) && (phys->isOnJoint)) {
 					crackNormal = phys->jointNormal;
@@ -295,8 +283,7 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 			// option 2: delete contact if in tension
 			//	    shearForce *= Fn*phys->tanFrictionAngle/scalarShearForce; // now or at the next timestep? should not be very different -> to TEST
 			if (D < 0) { // spheres do not touch
-				if (!neverErase)
-					return false;
+				if (!neverErase) return false;
 				else {
 					phys->shearForce  = Vector3r::Zero();
 					phys->normalForce = Vector3r::Zero();
@@ -321,8 +308,7 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 	scene->forces.addForce(id2, f);
 
 	// simple solution to avoid torque computation for particles interacting on a smooth joint
-	if ((phys->isOnJoint) && (smoothJoint))
-		return true;
+	if ((phys->isOnJoint) && (smoothJoint)) return true;
 
 	/// those lines are needed if rootBody->forces.addForce and rootBody->forces.addMoment are used instead of applyForceAtContactPoint -> NOTE need to check for accuracy!!!
 	scene->forces.addTorque(id1, (geom->radius1 - 0.5 * geom->penetrationDepth) * geom->normal.cross(-f));
@@ -359,12 +345,10 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::addUniqueIntsToList(JCFp
 {
 	unsigned int size = phys->nearbyInts.size();
 	for (unsigned int i = 0; i < nearbyPhys->nearbyInts.size(); i++) {
-		if (!nearbyPhys->nearbyInts[i])
-			continue;
+		if (!nearbyPhys->nearbyInts[i]) continue;
 		bool pushBack = true;
 		for (unsigned int j = 0; j < size; j++) {
-			if (!phys->nearbyInts[j])
-				continue;
+			if (!phys->nearbyInts[j]) continue;
 			if (phys->nearbyInts[j] == nearbyPhys->nearbyInts[i]) {
 				pushBack = false;
 				break;
@@ -414,16 +398,13 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::checkForCluster(JCFpmPhy
 		//#endif
 		JCFpmPhys*    nearbyPhys;
 		const ScGeom* nearbyGeom;
-		if (!I || !I->geom.get() || !I->phys.get())
-			continue;
+		if (!I || !I->geom.get() || !I->phys.get()) continue;
 		if (I && I->isReal() && JCFpmPhys::getClassIndexStatic() == I->phys->getClassIndex()) {
 			nearbyPhys = YADE_CAST<JCFpmPhys*>(I->phys.get());
-			if (!nearbyPhys)
-				continue;
+			if (!nearbyPhys) continue;
 			if (I->geom.get() /*&& !nearbyPhys->momentBroken*/) {
 				nearbyGeom = YADE_CAST<ScGeom*>(I->geom.get());
-				if (!nearbyGeom)
-					continue;
+				if (!nearbyGeom) continue;
 				Vector3r nearbyInteractionLocation = nearbyGeom->contactPoint;
 				Vector3r proximityVector           = nearbyInteractionLocation - brokenInteractionLocation;
 				Real     proximity                 = proximityVector.norm();
@@ -443,8 +424,7 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::checkForCluster(JCFpmPhy
 						}
 					}
 
-					if (nearbyPhys->momentBroken)
-						continue;
+					if (nearbyPhys->momentBroken) continue;
 					phys->nearbyInts.push_back(I);
 				}
 			}
@@ -468,11 +448,9 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::computeClusteredMoment(J
 	Real momentEnergyChange = 0;
 	for (unsigned int i = 0; i < phys->nearbyInts.size(); i++) {
 		const JCFpmPhys* nearbyPhys;
-		if (!phys->nearbyInts[i] || !phys->nearbyInts[i]->geom.get() || !phys->nearbyInts[i]->phys.get())
-			continue;
+		if (!phys->nearbyInts[i] || !phys->nearbyInts[i]->geom.get() || !phys->nearbyInts[i]->phys.get()) continue;
 		nearbyPhys = YADE_CAST<JCFpmPhys*>(phys->nearbyInts[i]->phys.get());
-		if (!nearbyPhys)
-			continue;
+		if (!nearbyPhys) continue;
 		totalMomentEnergy += (useStrainEnergy ? nearbyPhys->strainEnergy : nearbyPhys->kineticEnergy);
 	}
 	if (phys->firstMomentCalc) {
@@ -481,12 +459,10 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::computeClusteredMoment(J
 	}
 	momentEnergyChange = totalMomentEnergy - phys->momentEnergy;
 	phys->elapsedIter += 1;
-	if (momentEnergyChange > phys->momentEnergyChange)
-		phys->momentEnergyChange = momentEnergyChange;
+	if (momentEnergyChange > phys->momentEnergyChange) phys->momentEnergyChange = momentEnergyChange;
 	if (phys->elapsedIter >= phys->temporalWindow) { // the elapsed time should reflect 20*particlediameters radius Hazzard and Damjanac 2013
 		phys->originalClusterEvent = false;      // this event no longer exists, so we need to allow other new events to occur nearby.
-		if (phys->momentEnergyChange != 0)
-			phys->momentMagnitude = (2. / 3.) * log(phys->momentEnergyChange * momentFudgeFactor) - 3.2;
+		if (phys->momentEnergyChange != 0) phys->momentMagnitude = (2. / 3.) * log(phys->momentEnergyChange * momentFudgeFactor) - 3.2;
 		phys->momentCalculated = true;
 		//empirical equation for energy magnitude (Hazzard and Damjanac 2013)
 		//if(phys->momentStrainEnergyChange==0) cout<<"avgDiameter " << avgDiameter << " found nearby interaciton? " << phys->nearbyFound << "over " << phys->elapsedIter << " iterations" <<endl;  // debugging. It appears some strain energy searches yield decreases of strain energy in neighbor hood. We are handling these by assining a 0 magnitude...but that seems wrong. Turns out these are just very very small events. There is actually no change of strain around them. Due to weibull dist int areas?
@@ -518,8 +494,7 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::computeCentroid(JCFpmPhy
 	Vector3r   summedLocations = Vector3r::Zero();
 	for (unsigned int i = 0; i < originalPhys->clusterInts.size(); i++) {
 		ScGeom* nearbyGeom;
-		if (!originalPhys->clusterInts[i])
-			continue;
+		if (!originalPhys->clusterInts[i]) continue;
 		if (originalPhys->clusterInts[i]->geom.get()) {
 			nearbyGeom                         = YADE_CAST<ScGeom*>(originalPhys->clusterInts[i]->geom.get());
 			Vector3r nearbyInteractionLocation = nearbyGeom->contactPoint;
@@ -535,8 +510,7 @@ CREATE_LOGGER(Ip2_JCFpmMat_JCFpmMat_JCFpmPhys);
 void Ip2_JCFpmMat_JCFpmMat_JCFpmPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
 	/* avoid updates of interaction if it already exists */
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 
 	ScGeom* geom = dynamic_cast<ScGeom*>(interaction->geom.get());
 	assert(geom);
@@ -685,8 +659,7 @@ void Ip2_JCFpmMat_JCFpmMat_JCFpmPhys::distributeCrossSectionsWeibull(shared_ptr<
 	::boost::random::mt19937                    e2(rd());
 	::boost::random::weibull_distribution<Real> weibullDistribution(xSectionWeibullShapeParameter, xSectionWeibullScaleParameter);
 	Real                                        correction = weibullDistribution(e2);
-	if (correction < weibullCutOffMin)
-		correction = weibullCutOffMin;
+	if (correction < weibullCutOffMin) correction = weibullCutOffMin;
 	else if (correction > weibullCutOffMax)
 		correction = weibullCutOffMax;
 	Real interactingRadius       = correction * min(R1, R2);

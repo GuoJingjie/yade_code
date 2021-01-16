@@ -27,9 +27,9 @@ namespace CGT {
 		DECLARE_TESSELATION_TYPES(Network<Tesselation>)
 
 		//painfull, but we need that for templates inheritance...
+		using _N::alphaBoundingCells;
 		using _N::boundaries;
 		using _N::boundingCells;
-		using _N::alphaBoundingCells;
 		using _N::boundsIds;
 		using _N::conductionBoundingCells;
 		using _N::cornerMax;

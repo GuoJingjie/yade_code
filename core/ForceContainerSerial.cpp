@@ -11,9 +11,7 @@ void ForceContainer::ensureSize(Body::id_t id)
 {
 	const Body::id_t idMaxTmp = max(id, _maxId);
 	_maxId                    = 0;
-	if (size <= (size_t)idMaxTmp) {
-		resize(min((size_t)1.5 * (idMaxTmp + 100), (size_t)(idMaxTmp + 2000)));
-	};
+	if (size <= (size_t)idMaxTmp) { resize(min((size_t)1.5 * (idMaxTmp + 100), (size_t)(idMaxTmp + 2000))); };
 }
 
 const Vector3r& ForceContainer::getForce(Body::id_t id)

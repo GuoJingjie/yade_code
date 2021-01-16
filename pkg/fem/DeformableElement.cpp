@@ -61,9 +61,7 @@ void DeformableElement::addNode(const shared_ptr<Body>& nodeBody)
 		         + " is not a Node therefore cannot be added to the deformable element "));
 	}
 
-	if (subId < 0) {
-		throw std::invalid_argument(("The Node that is given is not a member of the scene therefore it has no state, not adding exiting"));
-	}
+	if (subId < 0) { throw std::invalid_argument(("The Node that is given is not a member of the scene therefore it has no state, not adding exiting")); }
 
 	if (this->localmap.count(nodeBody) != 0)
 		throw std::invalid_argument(("Node that has Body id #" + boost::lexical_cast<string>(subId) + " is already part of this deformable element"));

@@ -34,8 +34,7 @@ public:
 			return false;
 		}
 
-		if (iterNow < iterLast)
-			nDone = 0; //handle O.resetTime(), all counters will be initialized again
+		if (iterNow < iterLast) nDone = 0; //handle O.resetTime(), all counters will be initialized again
 		if ((nDo < 0 || nDone < nDo)
 		    && ((virtPeriod > 0 && virtNow - virtLast >= virtPeriod) || (realPeriod > 0 && realNow - realLast >= realPeriod)
 		        || (iterPeriod > 0 && iterNow - iterLast >= iterPeriod))) {
@@ -51,8 +50,7 @@ public:
 			virtLast = virtNow;
 			iterLast = iterNow;
 			nDone++;
-			if (initRun)
-				return true;
+			if (initRun) return true;
 			return false;
 		}
 		return false;

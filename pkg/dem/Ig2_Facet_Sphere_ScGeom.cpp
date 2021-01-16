@@ -111,8 +111,7 @@ bool Ig2_Facet_Sphere_ScGeom::go(
 	if (penetrationDepth > 0 || c->isReal()) {
 		shared_ptr<ScGeom> scm;
 		bool               isNew = !c->geom;
-		if (c->geom)
-			scm = YADE_PTR_CAST<ScGeom>(c->geom);
+		if (c->geom) scm = YADE_PTR_CAST<ScGeom>(c->geom);
 		else
 			scm = shared_ptr<ScGeom>(new ScGeom());
 
@@ -121,8 +120,7 @@ bool Ig2_Facet_Sphere_ScGeom::go(
 		scm->penetrationDepth = penetrationDepth;
 		scm->radius1          = 2 * sphereRadius;
 		scm->radius2          = sphereRadius;
-		if (isNew)
-			c->geom = scm;
+		if (isNew) c->geom = scm;
 		scm->precompute(state1, state2, scene, c, normal, isNew, shift2, false /*avoidGranularRatcheting only for sphere-sphere*/);
 		TIMING_DELTAS_CHECKPOINT("Ig2_Facet_Sphere_ScGeom");
 		return true;
@@ -197,10 +195,8 @@ bool Ig2_Wall_Sphere_ScGeom::go(
 	Wall*      wall   = static_cast<Wall*>(cm1.get());
 	const Real radius = static_cast<Sphere*>(cm2.get())->radius;
 	const int& ax(wall->axis);
-	Real       dist = (state2.pos)[ax] + shift2[ax] - state1.pos[ax]; // signed "distance" between centers
-	if (!c->isReal() && math::abs(dist) > radius && !force) {
-		return false;
-	} // wall and sphere too far from each other
+	Real       dist = (state2.pos)[ax] + shift2[ax] - state1.pos[ax];         // signed "distance" between centers
+	if (!c->isReal() && math::abs(dist) > radius && !force) { return false; } // wall and sphere too far from each other
 
 	// contact point is sphere center projected onto the wall
 	Vector3r contPt = state2.pos + shift2;
@@ -208,14 +204,12 @@ bool Ig2_Wall_Sphere_ScGeom::go(
 	Vector3r normal(0., 0., 0.);
 	// wall interacting from both sides: normal depends on sphere's position
 	assert(wall->sense == -1 || wall->sense == 0 || wall->sense == 1);
-	if (wall->sense == 0)
-		normal[ax] = dist > 0 ? 1. : -1.;
+	if (wall->sense == 0) normal[ax] = dist > 0 ? 1. : -1.;
 	else
 		normal[ax] = wall->sense == 1 ? 1. : -1;
 
 	bool isNew = !c->geom;
-	if (isNew)
-		c->geom = shared_ptr<ScGeom>(new ScGeom());
+	if (isNew) c->geom = shared_ptr<ScGeom>(new ScGeom());
 	const shared_ptr<ScGeom>& ws = YADE_PTR_CAST<ScGeom>(c->geom);
 	ws->radius1 = ws->radius2 = radius; // wall's "radius" is chosen as the same as the sphere's radius
 	ws->contactPoint          = contPt;

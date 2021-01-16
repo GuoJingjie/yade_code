@@ -67,8 +67,7 @@ public:
 	virtual ~ChainedState();
 	void addToChain(Body::id_t bodyId)
 	{
-		if (chains.size() <= currentChain)
-			chains.resize(currentChain + 1);
+		if (chains.size() <= currentChain) chains.resize(currentChain + 1);
 		chainNumber = currentChain;
 		rank        = chains[currentChain].size();
 		chains[currentChain].push_back(bodyId);
@@ -78,12 +77,9 @@ public:
 
 	void postLoad(ChainedState&)
 	{
-		if (bId < 0)
-			return; //state has not been chained yet
-		if (chains.size() <= currentChain)
-			chains.resize(currentChain + 1);
-		if (chains[currentChain].size() <= rank)
-			chains[currentChain].resize(rank + 1);
+		if (bId < 0) return; //state has not been chained yet
+		if (chains.size() <= currentChain) chains.resize(currentChain + 1);
+		if (chains[currentChain].size() <= rank) chains[currentChain].resize(rank + 1);
 		chains[currentChain][rank] = bId;
 		// 			if (rank>0) statePrev = Body::byId(chains[chainNumber][rank-1],scene)->state;
 	}

@@ -80,8 +80,7 @@ public:
 			// velocity update
 			subState->vel    = clumpState->vel + clumpState->angVel.cross(subState->pos - clumpState->pos);
 			subState->angVel = clumpState->angVel;
-			if (integrator)
-				integrator->saveMaximaDisplacement(b);
+			if (integrator) integrator->saveMaximaDisplacement(b);
 		}
 	}
 

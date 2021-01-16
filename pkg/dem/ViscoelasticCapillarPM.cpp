@@ -20,8 +20,7 @@ ViscElCapPhys::~ViscElCapPhys() { }
 void Ip2_ViscElCapMat_ViscElCapMat_ViscElCapPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
 	// no updates of an existing contact
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 
 	TIMING_DELTAS_START();
 	TIMING_DELTAS_CHECKPOINT("setup");
@@ -116,9 +115,7 @@ bool Law2_ScGeom_ViscElCapPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IP
 		phys.liqBridgeCreated = true;
 		phys.liqBridgeActive  = false;
 #ifdef YADE_LIQMIGRATION
-		if (phys.LiqMigrEnabled) {
-			scene->addIntrs.push_back(I);
-		}
+		if (phys.LiqMigrEnabled) { scene->addIntrs.push_back(I); }
 #endif
 		Sphere* s1 = dynamic_cast<Sphere*>(bodies[id1]->shape.get());
 		Sphere* s2 = dynamic_cast<Sphere*>(bodies[id2]->shape.get());
@@ -152,8 +149,7 @@ bool Law2_ScGeom_ViscElCapPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IP
 				const State& de2 = *static_cast<State*>(bodies[id2]->state.get());
 
 				Vector3r& shearForce = phys.shearForce;
-				if (I->isFresh(scene))
-					shearForce = Vector3r(0, 0, 0);
+				if (I->isFresh(scene)) shearForce = Vector3r(0, 0, 0);
 				shearForce = geom.rotate(shearForce);
 
 				const Vector3r shift2   = scene->isPeriodic ? scene->cell->intrShiftPos(I->cellDist) : Vector3r::Zero();
@@ -471,12 +467,8 @@ void LiqControl::action()
 			Real Vf1 = 0.0;
 			Real Vf2 = 0.0;
 
-			if ((b1->state->Vmin) < b1->state->Vf) {
-				Vf1 = (b1->state->Vf - b1->state->Vmin) / bI[id1];
-			}
-			if ((b2->state->Vmin) < b2->state->Vf) {
-				Vf2 = (b2->state->Vf - b2->state->Vmin) / bI[id2];
-			}
+			if ((b1->state->Vmin) < b1->state->Vf) { Vf1 = (b1->state->Vf - b1->state->Vmin) / bI[id1]; }
+			if ((b2->state->Vmin) < b2->state->Vf) { Vf2 = (b2->state->Vf - b2->state->Vmin) / bI[id2]; }
 
 			Real Vrup = Vf1 + Vf2;
 
@@ -526,8 +518,7 @@ void LiqControl::updateLiquid(shared_ptr<Body> b)
 		Real         LiqContactsAccept = 0.0;
 		unsigned int contactN          = 0;
 		for (Body::MapId2IntrT::iterator it = b->intrs.begin(), end = b->intrs.end(); it != end; ++it) {
-			if (!((*it).second) or !(((*it).second)->isReal()))
-				continue;
+			if (!((*it).second) or !(((*it).second)->isReal())) continue;
 			ViscElCapPhys* physT = dynamic_cast<ViscElCapPhys*>(((*it).second)->phys.get());
 			if ((physT->Vb < physT->Vmax) and (physT->Vmax > 0)) {
 				LiqContactsAccept += physT->Vmax - physT->Vb;
@@ -548,8 +539,7 @@ void LiqControl::updateLiquid(shared_ptr<Body> b)
 			}
 
 			for (Body::MapId2IntrT::iterator it = b->intrs.begin(), end = b->intrs.end(); it != end; ++it) {
-				if (!((*it).second) or !(((*it).second)->isReal()))
-					continue;
+				if (!((*it).second) or !(((*it).second)->isReal())) continue;
 				ViscElCapPhys* physT = dynamic_cast<ViscElCapPhys*>(((*it).second)->phys.get());
 				if ((physT->Vb < physT->Vmax) and (physT->Vmax > 0)) {
 					const Real addVolLiq = (physT->Vmax - physT->Vb) * FillLevel;
@@ -618,8 +608,7 @@ Real liqVolIterBody(shared_ptr<Body> b)
 		return LiqVol;
 	} else {
 		for (Body::MapId2IntrT::iterator it = b->intrs.begin(), end = b->intrs.end(); it != end; ++it) {
-			if (!((*it).second) or !(((*it).second)->isReal()))
-				continue;
+			if (!((*it).second) or !(((*it).second)->isReal())) continue;
 			ViscElCapPhys* physT = dynamic_cast<ViscElCapPhys*>(((*it).second)->phys.get());
 			if (physT and physT->Vb and physT->Vb > 0) {
 				if (((*it).second)->id1 == b->id) {
@@ -660,20 +649,16 @@ Real LiqControl::totalLiqVol(int mask = 0) const
 	Scene* scene       = Omega::instance().getScene().get();
 	Real   totalLiqVol = 0.0;
 	for (const auto& b : *scene->bodies) {
-		if ((mask > 0 && (b->groupMask & mask) == 0) or (!b))
-			continue;
+		if ((mask > 0 && (b->groupMask & mask) == 0) or (!b)) continue;
 		totalLiqVol += liqVolIterBody(b);
-		if (b->state->Vf > 0) {
-			totalLiqVol += b->state->Vf;
-		}
+		if (b->state->Vf > 0) { totalLiqVol += b->state->Vf; }
 	}
 	return totalLiqVol;
 }
 
 bool LiqControl::addLiqInter(id_t id1, id_t id2, Real liq)
 {
-	if (id1 == id2 or liq <= 0)
-		return false;
+	if (id1 == id2 or liq <= 0) return false;
 
 	Scene*                            scene = Omega::instance().getScene().get();
 	shared_ptr<InteractionContainer>& intrs = scene->interactions;

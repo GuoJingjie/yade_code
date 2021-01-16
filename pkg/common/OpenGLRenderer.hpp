@@ -59,13 +59,11 @@ public:
 	vector<BodyDisp> bodyDisp;
 	void             hide(Body::id_t id)
 	{
-		if ((unsigned int)id < bodyDisp.size())
-			bodyDisp[id].hidden = true;
+		if ((unsigned int)id < bodyDisp.size()) bodyDisp[id].hidden = true;
 	}
 	void show(Body::id_t id)
 	{
-		if ((unsigned int)id < bodyDisp.size())
-			bodyDisp[id].hidden = false;
+		if ((unsigned int)id < bodyDisp.size()) bodyDisp[id].hidden = false;
 	}
 
 	virtual ~OpenGLRenderer();

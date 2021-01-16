@@ -40,8 +40,7 @@ public:                                                                         
 			iss >> token;                                                                                                                          \
 			tokens.push_back(token);                                                                                                               \
 		}                                                                                                                                              \
-		if (i >= token.size())                                                                                                                         \
-			return "";                                                                                                                             \
+		if (i >= token.size()) return "";                                                                                                              \
 		else                                                                                                                                           \
 			return tokens[i];                                                                                                                      \
 	}                                                                                                                                                      \

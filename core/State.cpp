@@ -15,8 +15,7 @@ std::string State::blockedDOFs_vec_get() const
 {
 	std::string ret;
 #define _SET_DOF(DOF_ANY, ch)                                                                                                                                  \
-	if ((blockedDOFs & State::DOF_ANY) != 0)                                                                                                               \
-		ret.push_back(ch);
+	if ((blockedDOFs & State::DOF_ANY) != 0) ret.push_back(ch);
 	_SET_DOF(DOF_X, 'x');
 	_SET_DOF(DOF_Y, 'y');
 	_SET_DOF(DOF_Z, 'z');

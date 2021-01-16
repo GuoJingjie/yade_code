@@ -72,12 +72,10 @@ public:
 		for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
 			bool isDrawable = cell->info().isReal() && cell->vertex(0)->info().isReal() && cell->vertex(1)->info().isReal()
 			        && cell->vertex(2)->info().isReal() && cell->vertex(3)->info().isReal();
-			if (!isDrawable)
-				vtkInfiniteCells += 1;
+			if (!isDrawable) vtkInfiniteCells += 1;
 		}
 		for (FiniteVerticesIterator v = Tri.finite_vertices_begin(); v != Tri.finite_vertices_end(); ++v) {
-			if (!v->info().isReal())
-				vtkInfiniteVertices += 1;
+			if (!v->info().isReal()) vtkInfiniteVertices += 1;
 			else if (firstReal == -1)
 				firstReal = vtkInfiniteVertices;
 		}
@@ -118,9 +116,7 @@ public:
 			for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != Tri.finite_cells_end(); ++cell) {
 				bool isDrawable = cell->info().isReal() && cell->vertex(0)->info().isReal() && cell->vertex(1)->info().isReal()
 				        && cell->vertex(2)->info().isReal() && cell->vertex(3)->info().isReal();
-				if (isDrawable) {
-					vtkfile.write_data(cell->info().s);
-				}
+				if (isDrawable) { vtkfile.write_data(cell->info().s); }
 			}
 			vtkfile.end_data();
 		} else {
@@ -128,9 +124,7 @@ public:
 			for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != Tri.finite_cells_end(); ++cell) {
 				bool isDrawable = cell->info().isReal() && cell->vertex(0)->info().isReal() && cell->vertex(1)->info().isReal()
 				        && cell->vertex(2)->info().isReal() && cell->vertex(3)->info().isReal();
-				if (isDrawable) {
-					vtkfile.write_data(cell->info().p());
-				}
+				if (isDrawable) { vtkfile.write_data(cell->info().p()); }
 			}
 			vtkfile.end_data();
 		}
@@ -154,9 +148,7 @@ public:
 			for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != Tri.finite_cells_end(); ++cell) {
 				bool isDrawable = cell->info().isReal() && cell->vertex(0)->info().isReal() && cell->vertex(1)->info().isReal()
 				        && cell->vertex(2)->info().isReal() && cell->vertex(3)->info().isReal();
-				if (isDrawable) {
-					vtkfile.write_data(cell->info().crack);
-				}
+				if (isDrawable) { vtkfile.write_data(cell->info().crack); }
 			}
 			vtkfile.end_data();
 		}
@@ -278,8 +270,7 @@ void DFNFlowEngine::trickPermeability(RTriangulation::Facet_circulator& facet, R
 	const RTriangulation& Tri   = solver->T[solver->currentTes].Triangulation();
 	const CellHandle&     cell1 = currentFacet.first;
 	const CellHandle&     cell2 = currentFacet.first->neighbor(facet->second);
-	if (Tri.is_infinite(cell1) || Tri.is_infinite(cell2))
-		cerr << "Infinite cell found in trickPermeability, should be handled somehow, maybe" << endl;
+	if (Tri.is_infinite(cell1) || Tri.is_infinite(cell2)) cerr << "Infinite cell found in trickPermeability, should be handled somehow, maybe" << endl;
 
 	// 	/// ROBERT
 	// 	if (cell1->info().count()[currentFacet.second] < 3){
@@ -335,8 +326,7 @@ void DFNFlowEngine::trickPermeability(Solver* flow)
 {
 	leakOffRate               = 0;
 	const RTriangulation& Tri = flow->T[solver->currentTes].Triangulation();
-	if (!first)
-		interpolateCrack(solver->T[solver->currentTes], flow->T[flow->currentTes]);
+	if (!first) interpolateCrack(solver->T[solver->currentTes], flow->T[flow->currentTes]);
 	const JCFpmPhys*                       jcfpmphys;
 	const shared_ptr<InteractionContainer> interactions                         = scene->interactions;
 	int                                    numberOfCrackedOrJointedInteractions = 0;
@@ -354,8 +344,7 @@ void DFNFlowEngine::trickPermeability(Solver* flow)
 		const shared_ptr<Interaction>& interaction = interactions->find(vi1.id(), vi2.id());
 
 		if (interaction && interaction->isReal()) {
-			if (edge->first->info().isFictious)
-				continue; /// avoid trick permeability for fictitious
+			if (edge->first->info().isFictious) continue; /// avoid trick permeability for fictitious
 			jcfpmphys = YADE_CAST<JCFpmPhys*>(interaction->phys.get());
 
 			if (jcfpmphys->isOnJoint || jcfpmphys->isBroken) {
@@ -374,14 +363,11 @@ void DFNFlowEngine::trickPermeability(Solver* flow)
 				// 					edgeOnJoint = false;
 				// 				}
 				/// for injection slot (different from pre-existing fractures if needed)
-				if (jcfpmphys->isOnSlot) {
-					residualAperture = slotInitialAperture;
-				}
+				if (jcfpmphys->isOnSlot) { residualAperture = slotInitialAperture; }
 
 				/// avoid trick permeability (permeability=matrix permeability)
 				// 				if ( !jcfpmphys->isOnJoint && (residualAperture <= 0.) ) continue;
-				if ((jcfpmphys->crackJointAperture <= 0.) && (residualAperture <= 0.))
-					continue;
+				if ((jcfpmphys->crackJointAperture <= 0.) && (residualAperture <= 0.)) continue;
 
 				// 				Real aperture = jcfpmphys->crackJointAperture;
 				// 				if (aperture < residualAperture) aperture = residualAperture;
@@ -389,10 +375,8 @@ void DFNFlowEngine::trickPermeability(Solver* flow)
 
 				// 				cout<<"aperture = " << aperture <<endl;
 				// 				if (aperture > valueToDefine) aperture = valueToDefine; /// to avoid problem for large deformations?
-				if (aperture <= residualAperture)
-					aperture = residualAperture;
-				if (aperture > maxAperture)
-					maxAperture = aperture;
+				if (aperture <= residualAperture) aperture = residualAperture;
+				if (aperture > maxAperture) maxAperture = aperture;
 				SumOfApertures += aperture;
 
 				trickPermeability(edge, aperture);

@@ -10,10 +10,8 @@ public:
 	~EnergyTracker();
 	void findId(const std::string& name, int& id, bool reset = false, bool newIfNotFound = true)
 	{
-		if (id > 0)
-			return; // the caller should have checked this already
-		if (names.count(name))
-			id = names[name];
+		if (id > 0) return; // the caller should have checked this already
+		if (names.count(name)) id = names[name];
 		else if (newIfNotFound) {
 #ifdef YADE_OPENMP
 #pragma omp critical
@@ -32,15 +30,13 @@ public:
 	// set value of the accumulator; note: must NOT be called from parallel sections!
 	void set(const Real& val, const std::string& name, int& id)
 	{
-		if (id < 0)
-			findId(name, id, /* do not reset value that is set directly */ false);
+		if (id < 0) findId(name, id, /* do not reset value that is set directly */ false);
 		energies.set(id, val);
 	}
 	// add value to the accumulator; safely called from parallel sections
 	void add(const Real& val, const std::string& name, int& id, bool reset = false)
 	{
-		if (id < 0)
-			findId(name, id, reset);
+		if (id < 0) findId(name, id, reset);
 		energies.add(id, val);
 	}
 	Real getItem_py(const std::string& name)
@@ -68,8 +64,7 @@ public:
 	{
 		size_t sz = energies.size();
 		for (size_t id = 0; id < sz; id++) {
-			if (resetStep[id])
-				energies.reset(id);
+			if (resetStep[id]) energies.reset(id);
 		}
 	}
 

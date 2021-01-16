@@ -51,8 +51,7 @@ void GLUtils::QGLViewer::drawArrow(double length, double radius, int nbSubdivisi
 {
 	static GLUquadric* quadric = gluNewQuadric();
 
-	if (radius < 0.0)
-		radius = 0.05 * length;
+	if (radius < 0.0) radius = 0.05 * length;
 
 	const double head           = 2.5 * (radius / length) + 0.1;
 	const double coneRadiusCoef = 4.0 - 5.0 * head;

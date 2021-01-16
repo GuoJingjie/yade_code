@@ -74,8 +74,7 @@ boost::python::list ParallelEngine::slaves_get()
 	boost::python::list ret;
 	FOREACH(vector<shared_ptr<Engine>> & grp, slaves)
 	{
-		if (grp.size() == 1)
-			ret.append(boost::python::object(grp[0]));
+		if (grp.size() == 1) ret.append(boost::python::object(grp[0]));
 		else
 			ret.append(boost::python::object(grp));
 	}

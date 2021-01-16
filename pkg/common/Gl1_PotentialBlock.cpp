@@ -323,9 +323,7 @@ Real ImpFuncPB::FunctionValue(Real x[3])
 
 		for (int i = 0; i < planeNo; i++) {
 			Real plane = a[i] * xlocal[0] + b[i] * xlocal[1] + c[i] * xlocal[2] - d[i];
-			if (plane < pow(10, -15)) {
-				plane = 0.0;
-			}
+			if (plane < pow(10, -15)) { plane = 0.0; }
 			p.push_back(plane);
 			pSum2 += pow(p[i], 2);
 		}
@@ -345,9 +343,7 @@ Real ImpFuncPB::FunctionValue(Real x[3])
 
 		for (int i = 0; i < planeNo; i++) {
 			Real plane = a[i] * xlocal[0] + b[i] * xlocal[1] + c[i] * xlocal[2] - d[i];
-			if (plane < pow(10, -15)) {
-				plane = 0.0;
-			}
+			if (plane < pow(10, -15)) { plane = 0.0; }
 			p.push_back(plane);
 			pSum2 += pow(p[i], 2);
 		}
@@ -363,8 +359,7 @@ Real ImpFuncPB::FunctionValue(Real x[3])
 
 void PotentialBlockVTKRecorder::action()
 {
-	if (fileName.size() == 0)
-		return;
+	if (fileName.size() == 0) return;
 	auto pbPos          = vtkSmartPointer<vtkPointsReal>::New();
 	auto appendFilter   = vtkSmartPointer<vtkAppendPolyData>::New();
 	auto appendFilterID = vtkSmartPointer<vtkAppendPolyData>::New();
@@ -445,10 +440,8 @@ void PotentialBlockVTKRecorder::action()
 
 
 	for (const auto& b : *scene->bodies) {
-		if (!b)
-			continue;
-		if (b->isClumpMember() == true)
-			continue;
+		if (!b) continue;
+		if (b->isClumpMember() == true) continue;
 
 		//const PotentialBlock* pb=dynamic_cast<PotentialBlock*>(b->shape.get());
 		//if(!pb) continue;
@@ -518,9 +511,7 @@ void PotentialBlockVTKRecorder::action()
 		Vector3r                            particleColour(0, 0, 0);
 		if (b->isClump() == false && b->isClumpMember() == false) {
 			const PotentialBlock* pb = dynamic_cast<PotentialBlock*>(b->shape.get());
-			if (pb->isLining == true) {
-				continue;
-			}
+			if (pb->isLining == true) { continue; }
 			function->a = pb->a;
 			function->b = pb->b;
 			function->c = pb->c;
@@ -642,15 +633,9 @@ void PotentialBlockVTKRecorder::action()
 		int sampleXno = sampleX;
 		int sampleYno = sampleY;
 		int sampleZno = sampleZ;
-		if (fabs(xmax - xmin) / static_cast<Real>(sampleX) > maxDimension) {
-			sampleXno = static_cast<int>(fabs(xmax - xmin) / maxDimension);
-		}
-		if (fabs(ymax - ymin) / static_cast<Real>(sampleY) > maxDimension) {
-			sampleYno = static_cast<int>(fabs(ymax - ymin) / maxDimension);
-		}
-		if (fabs(zmax - zmin) / static_cast<Real>(sampleZ) > maxDimension) {
-			sampleZno = static_cast<int>(fabs(zmax - zmin) / maxDimension);
-		}
+		if (fabs(xmax - xmin) / static_cast<Real>(sampleX) > maxDimension) { sampleXno = static_cast<int>(fabs(xmax - xmin) / maxDimension); }
+		if (fabs(ymax - ymin) / static_cast<Real>(sampleY) > maxDimension) { sampleYno = static_cast<int>(fabs(ymax - ymin) / maxDimension); }
+		if (fabs(zmax - zmin) / static_cast<Real>(sampleZ) > maxDimension) { sampleZno = static_cast<int>(fabs(zmax - zmin) / maxDimension); }
 
 		if (twoDimension == true) {
 			if (sampleY < 2) {
@@ -676,18 +661,18 @@ void PotentialBlockVTKRecorder::action()
 		pbColors->SetName("pbColors");
 		pbColors->SetNumberOfComponents(3);
 
-		Vector3r      color = particleColour;
-		#if VTK_MAJOR_VERSION < 9
+		Vector3r color = particleColour;
+#if VTK_MAJOR_VERSION < 9
 		unsigned char c[3]; //c = {color[0],color[1],color[2]};
 		c[0] = (unsigned char)(color[0]);
 		c[1] = (unsigned char)(color[1]);
 		c[2] = (unsigned char)(color[2]);
-		#else
+#else
 		float c[3]; //c = {color[0],color[1],color[2]};
 		c[0] = (float)(color[0]);
 		c[1] = (float)(color[1]);
 		c[2] = (float)(color[2]);
-		#endif
+#endif
 
 		int nbCells = polydata->GetNumberOfPoints();
 		for (int i = 0; i < nbCells; i++) {
@@ -819,9 +804,7 @@ void PotentialBlockVTKRecorder::action()
 		int count = 0;
 		FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 		{
-			if (!I->isReal()) {
-				continue;
-			}
+			if (!I->isReal()) { continue; }
 			const KnKsPBPhys* phys = YADE_CAST<KnKsPBPhys*>(I->phys.get());
 			const ScGeom*     geom = YADE_CAST<ScGeom*>(I->geom.get());
 			vtkIdType         pid[1];

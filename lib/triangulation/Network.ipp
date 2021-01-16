@@ -40,14 +40,12 @@ namespace CGT {
 		int nRealVtx   = 0;
 		for (int kk = 0; kk < 3; kk++) {
 			if (cell->vertex(facetVertices[j][kk])->info().isFictious) {
-				if (facetNFictious == 0)
-					facetF1 = kk;
+				if (facetNFictious == 0) facetF1 = kk;
 				else
 					facetF2 = kk;
 				facetNFictious += 1;
 			} else {
-				if (nRealVtx == 0)
-					facetRe1 = kk;
+				if (nRealVtx == 0) facetRe1 = kk;
 				else if (nRealVtx == 1)
 					facetRe2 = kk;
 				else if (nRealVtx == 2)
@@ -64,8 +62,7 @@ namespace CGT {
 		        abs; // It has to be added because on ubuntu xenial 16.04 g++ 5.3.1 Argument Depended Lookup does not work in cases when function from one namespace is used inside another namespace to be found by ADL
 		Point& p1 = cell->info();
 		Point& p2 = cell->neighbor(j)->info();
-		if (!reuseFacetData)
-			facetNFictious = detectFacetFictiousVertices(cell, j);
+		if (!reuseFacetData) facetNFictious = detectFacetFictiousVertices(cell, j);
 		//cout << "getting volume pore voronoi fraction for alpha ? "<< cell->info().isAlpha << " fictiousN " << facetNFictious << endl;
 		Sphere       v[3];
 		VertexHandle W[3];
@@ -83,8 +80,7 @@ namespace CGT {
 				        = 0.5 * CGAL::cross_product(SV1->point().point() - SV3->point().point(), SV2->point().point() - SV3->point().point());
 				if (cell->info().facetSurfaces[j][0] == 0 && cell->info().facetSurfaces[j][1] == 0 && cell->info().facetSurfaces[j][2] == 0)
 					cerr << "NULL FACET SURF" << endl;
-				if (cell->info().facetSurfaces[j] * (p2 - p1) > 0)
-					cell->info().facetSurfaces[j] = -1.0 * cell->info().facetSurfaces[j];
+				if (cell->info().facetSurfaces[j] * (p2 - p1) > 0) cell->info().facetSurfaces[j] = -1.0 * cell->info().facetSurfaces[j];
 				Real Vtot = abs(ONE_THIRD * cell->info().facetSurfaces[j] * (p1 - p2));
 				Vtotalissimo += Vtot;
 
@@ -99,8 +95,7 @@ namespace CGT {
 
 				bool border = false;
 				for (int i = 0; i < 4; i++) {
-					if (cell->neighbor(i)->info().fictious() != 0)
-						border = true;
+					if (cell->neighbor(i)->info().fictious() != 0) border = true;
 				}
 				if (!border) {
 					vPoralPorosity += Vtot - (Vsolid1 + Vsolid2);
@@ -166,8 +161,7 @@ namespace CGT {
 		Point AA(A[0], A[1], A[2]);
 		Point BB(B[0], B[1], B[2]);
 		facetSurface = surfaceSingleFictiousFacet(SV1, SV2, SV3);
-		if (facetSurface * (PV2 - PV1) > 0)
-			facetSurface = -1.0 * facetSurface;
+		if (facetSurface * (PV2 - PV1) > 0) facetSurface = -1.0 * facetSurface;
 		Real Vtot = ONE_THIRD * abs(facetSurface * (PV1 - PV2));
 		Vtotalissimo += Vtot;
 
@@ -203,8 +197,7 @@ namespace CGT {
 		Point BB(B[0], B[1], B[2]);
 
 		facetSurface = CGAL::cross_product(SV3->point().point() - AA, SV3->point().point() - BB);
-		if (facetSurface * (PV2 - PV1) > 0)
-			facetSurface = -1.0 * facetSurface;
+		if (facetSurface * (PV2 - PV1) > 0) facetSurface = -1.0 * facetSurface;
 		Real Vtot = abs(facetSurface * (PV1 - PV2)) * ONE_THIRD;
 		Vtotalissimo += Vtot;
 
@@ -220,8 +213,7 @@ namespace CGT {
 	template <class Tesselation> Real Network<Tesselation>::sphericalTriangleVolume(const Sphere& ST1, const Point& PT1, const Point& PT2, const Point& PT3)
 	{
 		Real rayon = sqrt(ST1.weight());
-		if (rayon == 0.0)
-			return 0.0;
+		if (rayon == 0.0) return 0.0;
 		return ((ONE_THIRD * rayon) * (fastSphericalTriangleArea(ST1, PT1, PT2, PT3)));
 	}
 
@@ -230,16 +222,14 @@ namespace CGT {
 	{
 		using namespace CGAL;
 		Real rayon2 = STA1.weight();
-		if (rayon2 == 0.0)
-			return 0.0;
+		if (rayon2 == 0.0) return 0.0;
 		return rayon2 * fastSolidAngle(STA1.point(), STA2, STA3, PTA1);
 	}
 
 	template <class Tesselation> Real Network<Tesselation>::sphericalTriangleArea(Sphere STA1, Sphere STA2, Sphere STA3, Point PTA1)
 	{
 		Real rayon = STA1.weight();
-		if (rayon == 0.0)
-			return 0.0;
+		if (rayon == 0.0) return 0.0;
 
 		CVector v12 = STA2.point() - STA1.point();
 		CVector v13 = STA3.point() - STA1.point();
@@ -256,8 +246,7 @@ namespace CGT {
 		Real A = acos(cosA);
 		Real B = acos(cosB);
 		Real C = acos(cosC);
-		if (A == 0 || B == 0 || C == 0)
-			return 0;
+		if (A == 0 || B == 0 || C == 0) return 0;
 
 		Real a = acos((cosA - cosB * cosC) / (sin(B) * sin(C)));
 		Real b = acos((cosB - cosC * cosA) / (sin(C) * sin(A)));
@@ -305,8 +294,7 @@ namespace CGT {
 	template <class Tesselation> Real Network<Tesselation>::surfaceSolidThroat(CellHandle cell, int j, bool slipBoundary, bool reuseFacetData)
 	{
 		using math::abs; // when used inside function it does not leak - it is safe.
-		if (!reuseFacetData)
-			facetNFictious = detectFacetFictiousVertices(cell, j);
+		if (!reuseFacetData) facetNFictious = detectFacetFictiousVertices(cell, j);
 		Point& p1 = cell->info();
 		Point& p2 = cell->neighbor(j)->info();
 
@@ -403,8 +391,7 @@ namespace CGT {
 
 		Ssolid = Ssolid1 + Ssolid1n + Ssolid2 + Ssolid2n + Ssolid3 + Ssolid3n;
 
-		if (Ssolid)
-			cell->info().solidSurfaces[j][3] = 1.0 / Ssolid;
+		if (Ssolid) cell->info().solidSurfaces[j][3] = 1.0 / Ssolid;
 		else
 			cell->info().solidSurfaces[j][3] = 0;
 		sSolidTot += Ssolid;
@@ -415,8 +402,7 @@ namespace CGT {
 	template <class Tesselation> Real Network<Tesselation>::surfaceSolidThroatInPore(CellHandle cell, int j, bool slipBoundary, bool reuseFacetData)
 	{
 		using math::abs; // inside function it does not leak.
-		if (!reuseFacetData)
-			facetNFictious = detectFacetFictiousVertices(cell, j);
+		if (!reuseFacetData) facetNFictious = detectFacetFictiousVertices(cell, j);
 		Point&       p1      = cell->info();
 		Point&       p2      = cell->neighbor(j)->info();
 		Real         Ssolid1 = 0, Ssolid2 = 0, Ssolid3 = 0;
@@ -477,10 +463,8 @@ namespace CGT {
 				//FIXME : we are computing triangle area twice here, because its computed in volume_double_fictious already -> optimize
 				Ssolid1 = 0.5 * (fastSphericalTriangleArea(SV3->point(), AA, p1, p2) + fastSphericalTriangleArea(SV3->point(), BB, p1, p2));
 				CVector p1p2v1Surface = 0.5 * CGAL::cross_product(p1 - p2, SV3->point().point() - p2);
-				if (bi1.flowCondition && !slipBoundary)
-					Ssolid2 = 0.5 * abs(p1p2v1Surface[bi1.coordinate]);
-				if (bi2.flowCondition && !slipBoundary)
-					Ssolid3 = 0.5 * abs(p1p2v1Surface[bi2.coordinate]);
+				if (bi1.flowCondition && !slipBoundary) Ssolid2 = 0.5 * abs(p1p2v1Surface[bi1.coordinate]);
+				if (bi2.flowCondition && !slipBoundary) Ssolid3 = 0.5 * abs(p1p2v1Surface[bi2.coordinate]);
 			}; break;
 		}
 		return Ssolid1 + Ssolid2 + Ssolid3;
@@ -654,8 +638,7 @@ namespace CGT {
 		}
 		for (int bound = 0; bound < 6; bound++) {
 			int& id = *boundsIds[bound];
-			if (id < 0)
-				continue;
+			if (id < 0) continue;
 			T[currentTes].vertexHandles[id];
 			VectorCell tmpCells;
 			tmpCells.resize(10000); // limiting if we have >10000 fictitious cells?
@@ -667,8 +650,7 @@ namespace CGT {
 				cell->info().isFictious = true;
 			}
 		}
-		if (debugOut)
-			cout << "Fictious cell defined" << endl;
+		if (debugOut) cout << "Fictious cell defined" << endl;
 	}
 
 
@@ -765,8 +747,7 @@ namespace CGT {
 		}
 
 		lSolid = cell->info().solidLine[j][0] + cell->info().solidLine[j][1] + cell->info().solidLine[j][2];
-		if (lSolid)
-			cell->info().solidLine[j][3] = 1.0 / lSolid;
+		if (lSolid) cell->info().solidLine[j][3] = 1.0 / lSolid;
 		else
 			cell->info().solidLine[j][3] = 0;
 	}

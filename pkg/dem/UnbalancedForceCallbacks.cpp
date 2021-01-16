@@ -30,8 +30,7 @@ void SumIntrForcesCb::go(IntrCallback* _self, Interaction* i)
 	NormShearPhys*   nsp  = YADE_CAST<NormShearPhys*>(i->phys.get());
 	assert(nsp != NULL); // only effective in debug mode
 	Vector3r f = nsp->normalForce + nsp->shearForce;
-	if (f == Vector3r::Zero())
-		return;
+	if (f == Vector3r::Zero()) return;
 	self->numIntr += 1;
 	self->force += f.norm();
 	//cerr<<"[cb#"<<i->getId1()<<"+"<<i->getId2()<<"]";
@@ -47,8 +46,7 @@ BodyCallback::FuncPtr SumBodyForcesCb::stepInit()
 }
 void SumBodyForcesCb::go(BodyCallback* _self, Body* b)
 {
-	if (b->state->blockedDOFs == State::DOF_ALL)
-		return;
+	if (b->state->blockedDOFs == State::DOF_ALL) return;
 	SumBodyForcesCb* self = static_cast<SumBodyForcesCb*>(_self);
 #ifdef YADE_OPENMP
 	cerr << "[" << omp_get_thread_num() << ",#" << b->id << ",scene=" << self->scene << "]";

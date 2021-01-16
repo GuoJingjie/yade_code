@@ -46,10 +46,8 @@ struct custom_Se3r_from_seq {
 	custom_Se3r_from_seq() { boost::python::converter::registry::push_back(&convertible, &construct, boost::python::type_id<Se3r>()); }
 	static void* convertible(PyObject* obj_ptr)
 	{
-		if (!PySequence_Check(obj_ptr))
-			return 0;
-		if (PySequence_Size(obj_ptr) != 2 && PySequence_Size(obj_ptr) != 7)
-			return 0;
+		if (!PySequence_Check(obj_ptr)) return 0;
+		if (PySequence_Size(obj_ptr) != 2 && PySequence_Size(obj_ptr) != 7) return 0;
 		return obj_ptr;
 	}
 	static void construct(PyObject* obj_ptr, boost::python::converter::rvalue_from_python_stage1_data* data)
@@ -176,8 +174,7 @@ template <typename containedType> struct custom_vector_from_seq {
 	static void* convertible(PyObject* obj_ptr)
 	{
 		// the second condition is important, for some reason otherwise there were attempted conversions of Body to list which failed afterwards.
-		if (!PySequence_Check(obj_ptr) || !PyObject_HasAttrString(obj_ptr, "__len__"))
-			return 0;
+		if (!PySequence_Check(obj_ptr) || !PyObject_HasAttrString(obj_ptr, "__len__")) return 0;
 		return obj_ptr;
 	}
 	static void construct(PyObject* obj_ptr, boost::python::converter::rvalue_from_python_stage1_data* data)
@@ -186,8 +183,7 @@ template <typename containedType> struct custom_vector_from_seq {
 		new (storage) std::vector<containedType>();
 		std::vector<containedType>* v = (std::vector<containedType>*)(storage);
 		int                         l = PySequence_Size(obj_ptr);
-		if (l < 0)
-			abort(); /*std::cerr<<"l="<<l<<"; "<<typeid(containedType).name()<<std::endl;*/
+		if (l < 0) abort(); /*std::cerr<<"l="<<l<<"; "<<typeid(containedType).name()<<std::endl;*/
 		v->reserve(l);
 		for (int i = 0; i < l; i++) {
 			v->push_back(boost::python::extract<containedType>(PySequence_GetItem(obj_ptr, i)));
@@ -250,10 +246,8 @@ struct custom_mask_from_long {
 		std::string s(PyString_AsString(obj_ptr));
 #endif
 		//
-		if (s.substr(0, 2).compare("0b") == 0)
-			s = s.substr(2);
-		if (s[s.length() - 1] == 'L')
-			s = s.substr(0, s.length() - 1);
+		if (s.substr(0, 2).compare("0b") == 0) s = s.substr(2);
+		if (s[s.length() - 1] == 'L') s = s.substr(0, s.length() - 1);
 		// TODO?
 		*mask             = mask_t(s);
 		data->convertible = storage;

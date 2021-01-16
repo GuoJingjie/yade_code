@@ -23,12 +23,9 @@ py::tuple negPosExtremeIds(int axis, Real distFactor)
 	py::list   minIds, maxIds;
 	for (const auto& b : *Omega::instance().getScene()->bodies) {
 		shared_ptr<Sphere> s = YADE_PTR_DYN_CAST<Sphere>(b->shape);
-		if (!s)
-			continue;
-		if (b->state->pos[axis] - s->radius * distFactor <= minCoord)
-			minIds.append(b->getId());
-		if (b->state->pos[axis] + s->radius * distFactor >= maxCoord)
-			maxIds.append(b->getId());
+		if (!s) continue;
+		if (b->state->pos[axis] - s->radius * distFactor <= minCoord) minIds.append(b->getId());
+		if (b->state->pos[axis] + s->radius * distFactor >= maxCoord) maxIds.append(b->getId());
 	}
 	return py::make_tuple(minIds, maxIds);
 }
@@ -44,8 +41,7 @@ py::tuple coordsAndDisplacements(int axis, py::tuple Aabb)
 	py::list retCoord, retDispl;
 	FOREACH(const shared_ptr<Body>& b, *Omega::instance().getScene()->bodies)
 	{
-		if (useBB && !Shop::isInBB(b->state->pos, bbMin, bbMax))
-			continue;
+		if (useBB && !Shop::isInBB(b->state->pos, bbMin, bbMax)) continue;
 		retCoord.append(b->state->pos[axis]);
 		retDispl.append(b->state->pos[axis] - b->state->refPos[axis]);
 	}
@@ -59,9 +55,7 @@ void setRefSe3()
 		b->state->refPos = b->state->pos;
 		b->state->refOri = b->state->ori;
 	}
-	if (scene->isPeriodic) {
-		scene->cell->refHSize = scene->cell->hSize;
-	}
+	if (scene->isPeriodic) { scene->cell->refHSize = scene->cell->hSize; }
 }
 
 Real PWaveTimeStep() { return Shop::PWaveTimeStep(); };
@@ -69,8 +63,7 @@ Real RayleighWaveTimeStep() { return Shop::RayleighWaveTimeStep(); };
 
 py::tuple interactionAnglesHistogram(int axis, int mask, size_t bins, py::tuple aabb, bool sphSph, Real minProjLen)
 {
-	if (axis < 0 || axis > 2)
-		throw invalid_argument("Axis must be from {0,1,2}=x,y,z.");
+	if (axis < 0 || axis > 2) throw invalid_argument("Axis must be from {0,1,2}=x,y,z.");
 	Vector3r bbMin(Vector3r::Zero()), bbMax(Vector3r::Zero());
 	bool     useBB = py::len(aabb) > 0;
 	if (useBB) {
@@ -83,26 +76,19 @@ py::tuple interactionAnglesHistogram(int axis, int mask, size_t bins, py::tuple 
 	shared_ptr<Scene> rb = Omega::instance().getScene();
 	FOREACH(const shared_ptr<Interaction>& i, *rb->interactions)
 	{
-		if (!i->isReal())
-			continue;
+		if (!i->isReal()) continue;
 		const shared_ptr<Body>&b1 = Body::byId(i->getId1(), rb), b2 = Body::byId(i->getId2(), rb);
-		if (!b1->maskOk(mask) || !b2->maskOk(mask))
-			continue;
-		if (useBB && !Shop::isInBB(b1->state->pos, bbMin, bbMax) && !Shop::isInBB(b2->state->pos, bbMin, bbMax))
-			continue;
-		if (sphSph && (!dynamic_cast<Sphere*>(b1->shape.get()) || !dynamic_cast<Sphere*>(b2->shape.get())))
-			continue;
+		if (!b1->maskOk(mask) || !b2->maskOk(mask)) continue;
+		if (useBB && !Shop::isInBB(b1->state->pos, bbMin, bbMax) && !Shop::isInBB(b2->state->pos, bbMin, bbMax)) continue;
+		if (sphSph && (!dynamic_cast<Sphere*>(b1->shape.get()) || !dynamic_cast<Sphere*>(b2->shape.get()))) continue;
 		GenericSpheresContact* geom = dynamic_cast<GenericSpheresContact*>(i->geom.get());
-		if (!geom)
-			continue;
+		if (!geom) continue;
 		Vector3r n(geom->normal);
 		n[axis]   = 0.;
 		Real nLen = n.norm();
-		if (nLen < minProjLen)
-			continue; // this interaction is (almost) exactly parallel to our axis; skip that one
+		if (nLen < minProjLen) continue; // this interaction is (almost) exactly parallel to our axis; skip that one
 		Real theta = acos(n[axis2] / nLen) * (n[axis3] > 0 ? 1 : -1);
-		if (theta < 0)
-			theta += Mathr::PI;
+		if (theta < 0) theta += Mathr::PI;
 		int binNo = int(math::round(theta / binStep));
 		cummProj[binNo] += nLen;
 	}
@@ -128,35 +114,29 @@ py::tuple bodyNumInteractionsHistogram(py::tuple aabb)
 	int maxIntr = 0;
 	FOREACH(const shared_ptr<Interaction>& i, *rb->interactions)
 	{
-		if (!i->isReal())
-			continue;
+		if (!i->isReal()) continue;
 		const Body::id_t       id1 = i->getId1(), id2 = i->getId2();
 		const shared_ptr<Body>&b1 = Body::byId(id1, rb), b2 = Body::byId(id2, rb);
 		if ((useBB && Shop::isInBB(b1->state->pos, bbMin, bbMax)) || !useBB) {
-			if (b1->isClumpMember())
-				bodyNumIntr[b1->clumpId] += 1; //count bodyNumIntr for the clump, not for the member
+			if (b1->isClumpMember()) bodyNumIntr[b1->clumpId] += 1; //count bodyNumIntr for the clump, not for the member
 			else
 				bodyNumIntr[id1] += 1;
 		}
 		if ((useBB && Shop::isInBB(b2->state->pos, bbMin, bbMax)) || !useBB) {
-			if (b2->isClumpMember())
-				bodyNumIntr[b2->clumpId] += 1; //count bodyNumIntr for the clump, not for the member
+			if (b2->isClumpMember()) bodyNumIntr[b2->clumpId] += 1; //count bodyNumIntr for the clump, not for the member
 			else
 				bodyNumIntr[id2] += 1;
 		}
 		maxIntr = max(max(maxIntr, bodyNumIntr[b1->getId()]), bodyNumIntr[b2->getId()]);
-		if (b1->isClumpMember())
-			maxIntr = max(maxIntr, bodyNumIntr[b1->clumpId]);
-		if (b2->isClumpMember())
-			maxIntr = max(maxIntr, bodyNumIntr[b2->clumpId]);
+		if (b1->isClumpMember()) maxIntr = max(maxIntr, bodyNumIntr[b1->clumpId]);
+		if (b2->isClumpMember()) maxIntr = max(maxIntr, bodyNumIntr[b2->clumpId]);
 	}
 	vector<int> bins;
 	bins.resize(maxIntr + 1, 0);
 	for (size_t id = 0; id < bodyNumIntr.size(); id++) {
 		const shared_ptr<Body>& b = Body::byId(id, rb);
 		if (b) {
-			if (bodyNumIntr[id] > 0)
-				bins[bodyNumIntr[id]] += 1;
+			if (bodyNumIntr[id] > 0) bins[bodyNumIntr[id]] += 1;
 			// 0 is handled specially: add body to the 0 bin only if it is inside the bb requested (if applicable)
 			// otherwise don't do anything, since it is outside the volume of interest
 			else if (((useBB && Shop::isInBB(b->state->pos, bbMin, bbMax)) || !useBB) && !(b->isClumpMember()))
@@ -165,8 +145,7 @@ py::tuple bodyNumInteractionsHistogram(py::tuple aabb)
 	}
 	py::list count, num;
 	for (size_t n = 0; n < bins.size(); n++) {
-		if (bins[n] == 0)
-			continue;
+		if (bins[n] == 0) continue;
 		num.append(n);
 		count.append(bins[n]);
 	}
@@ -189,8 +168,7 @@ py::dict getViscoelasticFromSpheresInteraction(Real tc, Real en, Real es)
 void highlightNone()
 {
 	for (const auto& b : *Omega::instance().getScene()->bodies) {
-		if (!b->shape)
-			continue;
+		if (!b->shape) continue;
 		b->shape->highlight = false;
 	}
 }
@@ -251,8 +229,7 @@ Real sumFacetNormalForces(vector<Body::id_t> ids, int axis)
 	FOREACH(const Body::id_t id, ids)
 	{
 		Facet* f = YADE_CAST<Facet*>(Body::byId(id, rb)->shape.get());
-		if (axis < 0)
-			ret += rb->forces.getForce(id).dot(f->normal);
+		if (axis < 0) ret += rb->forces.getForce(id).dot(f->normal);
 		else {
 			Vector3r ff = rb->forces.getForce(id);
 			ff[axis]    = 0;
@@ -272,8 +249,7 @@ void wireSome(string filter)
 		mode = noSpheres;
 	}
 	for (const auto& b : *Omega::instance().getScene()->bodies) {
-		if (!b->shape)
-			return;
+		if (!b->shape) return;
 		bool wire;
 		switch (mode) {
 			case none: wire = false; break;
@@ -314,17 +290,14 @@ bool pointInsidePolygon(py::tuple xy, py::object vertices)
 	int            rows, cols;
 	PyArrayObject* vert   = (PyArrayObject*)vertices.ptr();
 	int            result = PyArray_As2D((PyObject**)&vert /* is replaced */, &vertData, &rows, &cols, PyArray_DOUBLE);
-	if (result != 0)
-		throw invalid_argument("Unable to cast vertices to 2d array");
-	if (cols != 2 || rows < 3)
-		throw invalid_argument("Vertices must have 2 columns (x and y) and at least 3 rows.");
+	if (result != 0) throw invalid_argument("Unable to cast vertices to 2d array");
+	if (cols != 2 || rows < 3) throw invalid_argument("Vertices must have 2 columns (x and y) and at least 3 rows.");
 	int  i /*current node*/, j /*previous node*/;
 	bool inside = false;
 	for (i = 0, j = rows - 1; i < rows; j = i++) {
 		double vx_i = *(double*)(vert->data + i * vert->strides[0]), vy_i = *(double*)(vert->data + i * vert->strides[0] + vert->strides[1]),
 		       vx_j = *(double*)(vert->data + j * vert->strides[0]), vy_j = *(double*)(vert->data + j * vert->strides[0] + vert->strides[1]);
-		if (((vy_i > testy) != (vy_j > testy)) && (testx < (vx_j - vx_i) * (testy - vy_i) / (vy_j - vy_i) + vx_i))
-			inside = !inside;
+		if (((vy_i > testy) != (vy_j > testy)) && (testx < (vx_j - vx_i) * (testy - vy_i) / (vy_j - vy_i) + vx_i)) inside = !inside;
 	}
 	Py_DECREF(vert);
 	return inside;
@@ -340,20 +313,17 @@ bool pointInsidePolygon(py::tuple xy, py::object vertices)
 Real approxSectionArea(Real coord, int axis)
 {
 	std::list<Vector2r> cloud;
-	if (axis < 0 || axis > 2)
-		throw invalid_argument("Axis must be ∈ {0,1,2}");
+	if (axis < 0 || axis > 2) throw invalid_argument("Axis must be ∈ {0,1,2}");
 	const int  ax1 = (axis + 1) % 3, ax2 = (axis + 2) % 3;
 	const Real sqrt3 = sqrt(3);
 	Vector2r   mm, mx;
 	int        i = 0;
 	for (const auto& b : *Omega::instance().getScene()->bodies) {
 		Sphere* s = dynamic_cast<Sphere*>(b->shape.get());
-		if (!s)
-			continue;
+		if (!s) continue;
 		const Vector3r& pos(b->state->pos);
 		const Real      r(s->radius);
-		if ((pos[axis] > coord && (pos[axis] - r) > coord) || (pos[axis] < coord && (pos[axis] + r) < coord))
-			continue;
+		if ((pos[axis] > coord && (pos[axis] - r) > coord) || (pos[axis] < coord && (pos[axis] + r) < coord)) continue;
 		Vector2r c(pos[ax1], pos[ax2]);
 		cloud.push_back(c + Vector2r(r, 0.));
 		cloud.push_back(c + Vector2r(-r, 0.));
@@ -361,14 +331,11 @@ Real approxSectionArea(Real coord, int axis)
 		cloud.push_back(c + Vector2r(r / 2., -sqrt3 * r));
 		cloud.push_back(c + Vector2r(-r / 2., sqrt3 * r));
 		cloud.push_back(c + Vector2r(-r / 2., -sqrt3 * r));
-		if (i++ == 0) {
-			mm = c, mx = c;
-		}
+		if (i++ == 0) { mm = c, mx = c; }
 		mm = Vector2r(min(c[0] - r, mm[0]), min(c[1] - r, mm[1]));
 		mx = Vector2r(max(c[0] + r, mx[0]), max(c[1] + r, mx[1]));
 	}
-	if (cloud.size() == 0)
-		return 0;
+	if (cloud.size() == 0) return 0;
 	ConvexHull2d     ch2d(cloud);
 	vector<Vector2r> hull = ch2d();
 	return simplePolygonArea2d(hull);
@@ -387,17 +354,14 @@ Vector3r forcesOnPlane(const Vector3r& planePt, const Vector3r& normal)
 	Scene*   scene = Omega::instance().getScene().get();
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		NormShearPhys* nsi = dynamic_cast<NormShearPhys*>(I->phys.get());
-		if (!nsi)
-			continue;
+		if (!nsi) continue;
 		Vector3r pos1, pos2;
 		pos1      = Body::byId(I->getId1(), scene)->state->pos;
 		pos2      = Body::byId(I->getId2(), scene)->state->pos;
 		Real dot1 = (pos1 - planePt).dot(normal), dot2 = (pos2 - planePt).dot(normal);
-		if (dot1 * dot2 > 0)
-			continue; // both (centers of) bodies are on the same side of the plane=> this interaction has to be disregarded
+		if (dot1 * dot2 > 0) continue; // both (centers of) bodies are on the same side of the plane=> this interaction has to be disregarded
 		// if pt1 is on the negative plane side, d3dg->normal.Dot(normal)>0, the force is well oriented;
 		// otherwise, reverse its contribution. So that we return finally
 		// Sum [ ( normal(plane) dot normal(interaction= from 1 to 2) ) "nsi->force" ]
@@ -446,8 +410,7 @@ Real       Shop__getSpheresVolume(int mask) { return Shop::getSpheresVolume(Omeg
 Real       Shop__getSpheresMass(int mask) { return Shop::getSpheresMass(Omega::instance().getScene(), mask); }
 py::object Shop__kineticEnergy(bool findMaxId)
 {
-	if (!findMaxId)
-		return py::object(Shop::kineticEnergy());
+	if (!findMaxId) return py::object(Shop::kineticEnergy());
 	Body::id_t maxId;
 	Real       E = Shop::kineticEnergy(NULL, &maxId);
 	return py::make_tuple(E, maxId);
@@ -459,15 +422,12 @@ Real maxOverlapRatio()
 	Real   ret   = -1;
 	FOREACH(const shared_ptr<Interaction> I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		Sphere *s1(dynamic_cast<Sphere*>(Body::byId(I->getId1(), scene)->shape.get())),
 		        *s2(dynamic_cast<Sphere*>(Body::byId(I->getId2(), scene)->shape.get()));
-		if ((!s1) || (!s2))
-			continue;
+		if ((!s1) || (!s2)) continue;
 		ScGeom* geom = dynamic_cast<ScGeom*>(I->geom.get());
-		if (!geom)
-			continue;
+		if (!geom) continue;
 		Real rEq = 2 * s1->radius * s2->radius / (s1->radius + s2->radius);
 		ret      = max(ret, geom->penetrationDepth / rEq);
 	}
@@ -497,8 +457,7 @@ Real shiftBodies(py::list ids, const Vector3r& shift)
 	size_t            len = py::len(ids);
 	for (size_t i = 0; i < len; i++) {
 		const Body* b = (*rb->bodies)[py::extract<int>(ids[i])].get();
-		if (!b)
-			continue;
+		if (!b) continue;
 		b->state->pos += shift;
 	}
 	return 1;
@@ -528,9 +487,7 @@ py::list intrsOfEachBody()
 	// loop over all interactions and fill the list ret
 	FOREACH(const shared_ptr<Interaction>& i, *rb->interactions)
 	{
-		if (!i->isReal()) {
-			continue;
-		}
+		if (!i->isReal()) { continue; }
 		temp = py::extract<py::list>(ret[i->getId1()]);
 		temp.append(i);
 		temp = py::extract<py::list>(ret[i->getId2()]);
@@ -551,8 +508,7 @@ py::list numIntrsOfEachBody()
 	// loop over all interactions and fill the list ret
 	FOREACH(const shared_ptr<Interaction>& i, *rb->interactions)
 	{
-		if (!i->isReal())
-			continue;
+		if (!i->isReal()) continue;
 		ret[i->getId1()] += 1;
 		ret[i->getId2()] += 1;
 	}

@@ -41,8 +41,7 @@ public:
 
 	MPI_Comm selfComm()
 	{
-		if (myComm_p)
-			return *myComm_p;
+		if (myComm_p) return *myComm_p;
 		else
 			return MPI_COMM_WORLD;
 	}
@@ -51,12 +50,10 @@ public:
 	// inspired by https://bitbucket.org/mpi4py/mpi4py/src/master/demo/wrap-boost/helloworld.cxx
 	void setMyComm(boost::python::object py_comm)
 	{
-		if (import_mpi4py() < 0)
-			return; // must be somewhere to initialize mpi4py in c++, else segfault
+		if (import_mpi4py() < 0) return; // must be somewhere to initialize mpi4py in c++, else segfault
 		PyObject* py_obj = py_comm.ptr();
 		myComm_p         = PyMPIComm_Get(py_obj);
-		if (myComm_p == NULL)
-			LOG_ERROR("invalid COMM received from Python");
+		if (myComm_p == NULL) LOG_ERROR("invalid COMM received from Python");
 	}
 	PyObject* getMyComm() { return PyMPIComm_New(*myComm_p); }
 
@@ -139,8 +136,7 @@ public:
 	{
 		const shared_ptr<Scene>& scene = Omega::instance().getScene();
 		unsigned int             N     = b_ids.size();
-		if ((N * 13) != input.size())
-			LOG_ERROR("size mismatch" << N * 13 << " vs " << input.size() << " in " << scene->subdomain);
+		if ((N * 13) != input.size()) LOG_ERROR("size mismatch" << N * 13 << " vs " << input.size() << " in " << scene->subdomain);
 		for (unsigned k = 0; k < N; k++) {
 			unsigned int            idx = k * 13;
 			const shared_ptr<Body>& b   = (*(scene->bodies))[b_ids[k]];
@@ -161,8 +157,7 @@ public:
 	{
 		const shared_ptr<Scene>& scene = Omega::instance().getScene();
 		unsigned int             N     = b_ids.size();
-		if ((N * 19) != input.size())
-			LOG_ERROR("size mismatch" << N * 19 << " vs " << input.size() << " in " << scene->subdomain);
+		if ((N * 19) != input.size()) LOG_ERROR("size mismatch" << N * 19 << " vs " << input.size() << " in " << scene->subdomain);
 		for (unsigned k = 0; k < N; k++) {
 			const shared_ptr<Body>&  b   = (*(scene->bodies))[b_ids[k]];
 			const shared_ptr<State>& s   = b->state;
@@ -174,9 +169,7 @@ public:
                                 input[idx + 12], input[idx + 9], input[idx + 10], input[idx + 11]); //note q.coeffs() and q(w,x,y,z) take different oredrings
 
 			//b-bound should not be instanciate except pour the last body (k = N-1)
-			if (!b->bound) {
-				b->bound = boost::make_shared<Aabb>();
-			}
+			if (!b->bound) { b->bound = boost::make_shared<Aabb>(); }
 			b->bound->min = Vector3r(input[idx + 13], input[idx + 14], input[idx + 15]);
 			b->bound->max = Vector3r(input[idx + 16], input[idx + 17], input[idx + 18]);
 		}
@@ -200,10 +193,8 @@ public:
 
 	void mpiRecvStates(unsigned otherSubdomain)
 	{
-		if (mirrorIntersections.size() <= otherSubdomain)
-			LOG_ERROR("inconsistent size of mirrorIntersections and/or stateBuffer");
-		if (stateBuffer.size() <= otherSubdomain)
-			stateBuffer.resize(otherSubdomain + 1);
+		if (mirrorIntersections.size() <= otherSubdomain) LOG_ERROR("inconsistent size of mirrorIntersections and/or stateBuffer");
+		if (stateBuffer.size() <= otherSubdomain) stateBuffer.resize(otherSubdomain + 1);
 		const vector<Body::id_t>& b_ids = mirrorIntersections[otherSubdomain];
 		unsigned                  nb    = b_ids.size() * 13;
 		vector<Real>&             vals  = stateBuffer[otherSubdomain];
@@ -212,18 +203,14 @@ public:
 		MPI_Status recv_status;
 		MPI_Recv(&vals.front(), nb, MPI_DOUBLE, otherSubdomain, 177, selfComm(), &recv_status);
 		MPI_Get_count(&recv_status, MPI_DOUBLE, &recv_count);
-		if (recv_count != int(nb))
-			LOG_ERROR("length mismatch");
+		if (recv_count != int(nb)) LOG_ERROR("length mismatch");
 	}
 
 	void mpiIrecvStates(unsigned otherSubdomain)
 	{
-		if (mirrorIntersections.size() <= otherSubdomain)
-			LOG_ERROR("inconsistent size of mirrorIntersections and/or stateBuffer");
-		if (stateBuffer.size() <= otherSubdomain)
-			stateBuffer.resize(otherSubdomain + 1);
-		if (mpiReqs.size() <= otherSubdomain)
-			mpiReqs.resize(otherSubdomain + 1);
+		if (mirrorIntersections.size() <= otherSubdomain) LOG_ERROR("inconsistent size of mirrorIntersections and/or stateBuffer");
+		if (stateBuffer.size() <= otherSubdomain) stateBuffer.resize(otherSubdomain + 1);
+		if (mpiReqs.size() <= otherSubdomain) mpiReqs.resize(otherSubdomain + 1);
 
 		const vector<Body::id_t>& b_ids = mirrorIntersections[otherSubdomain];
 		unsigned                  nb    = b_ids.size() * 13;
@@ -329,19 +316,18 @@ public:
 		const shared_ptr<Scene>& scene = Omega::instance().getScene();
 		for (unsigned k = 0; k < ids.size(); k++) {
 			const shared_ptr<Body>& b = Body::byId(ids[k], scene);
-			if (!b or b->getIsSubdomain())
-				continue;
+			if (!b or b->getIsSubdomain()) continue;
 			center += b->state->mass * b->state->pos;
 			mass += b->state->mass;
 		}
 		return center * (1 / mass);
 	}
-	
+
 	// Count interactions of a body with given subdomain
-	unsigned countIntsWith(Body::id_t body, Body::id_t someSubD, const shared_ptr<Scene>& scene) const;
+	unsigned           countIntsWith(Body::id_t body, Body::id_t someSubD, const shared_ptr<Scene>& scene) const;
 	vector<Body::id_t> filteredInts(Body::id_t someSubD, bool mirror) const;
-	double filterIntersections();
-	
+	double             filterIntersections();
+
 	// body reallocation
 	std::vector<yade::projectedBoundElem> projectedBoundsCPP(int, const Vector3r&, const Vector3r&, bool useAABB = false);
 	std::vector<Body::id_t>               medianFilterCPP(int otherSD, const Vector3r&, const Vector3r&, int giveAway, bool useAABB = false);

@@ -377,9 +377,7 @@ template <int N, bool registerConverters> struct RegisterRealHPMath {
 
 		// Very important line: Verifies that Real type satisfies all the requirements of RealTypeConcept
 		BOOST_CONCEPT_ASSERT((boost::math::concepts::RealTypeConcept<RealHP<N>>));
-		if (::yade::math::isHP<RealHP<N>> == false) {
-			throw std::runtime_error("::yade::math::isHP<RealHP<N1>> == false, please file a bug report.");
-		};
+		if (::yade::math::isHP<RealHP<N>> == false) { throw std::runtime_error("::yade::math::isHP<RealHP<N1>> == false, please file a bug report."); };
 		if (::yade::math::isHP<ComplexHP<N>> == false) {
 			throw std::runtime_error("::yade::math::isHP<ComplexHP<N1>> == false, please file a bug report.");
 		};
@@ -908,9 +906,7 @@ BOOST_PYTHON_MODULE(_math)
 try {
 	YADE_SET_DOCSTRING_OPTS;
 
-	if ((::yade::math::RealHPConfig::getDigits10(1) >= 18) or (::yade::math::levelOrZero<double> == 0)) {
-		std_pair_to_python_converter<double, double>();
-	}
+	if ((::yade::math::RealHPConfig::getDigits10(1) >= 18) or (::yade::math::levelOrZero<double> == 0)) { std_pair_to_python_converter<double, double>(); }
 	// this loop registers all python functions from range defined in YADE_EIGENCGAL_HP, file lib/high-precision/RealHPEigenCgal.hpp
 	// Some functions for large N are extremely slow during python 'import yade.math', so they are not registered, see struct IfConstexprForSlowFunctions
 	::yade::math::detail::registerLoopForHPn<::yade::math::RealHPConfig::SupportedByMinieigen, RegisterRealHPMath>();
@@ -953,19 +949,15 @@ template <int N1> struct TestRealHP2 {
 			auto       c4 = a / b;
 			if (c1 != RealHP<N>(1.25)) // NOTE: might want later to replace these if with BOOST_ASSERT
 				throw std::runtime_error(("TestRealHP error: Fatal r1" + info).c_str());
-			if (c2 != RealHP<N>(-3.75))
-				throw std::runtime_error(("TestRealHP error: Fatal r2" + info).c_str());
-			if (c3 != RealHP<N>(-3.125))
-				throw std::runtime_error(("TestRealHP error: Fatal r3" + info).c_str());
-			if (c4 != RealHP<N>(-0.5))
-				throw std::runtime_error(("TestRealHP error: Fatal r4" + info).c_str());
+			if (c2 != RealHP<N>(-3.75)) throw std::runtime_error(("TestRealHP error: Fatal r2" + info).c_str());
+			if (c3 != RealHP<N>(-3.125)) throw std::runtime_error(("TestRealHP error: Fatal r3" + info).c_str());
+			if (c4 != RealHP<N>(-0.5)) throw std::runtime_error(("TestRealHP error: Fatal r4" + info).c_str());
 			auto       d1 = a;
 			auto       d2 = b;
 			RealHP<N2> d3 = RealHP<N2>(a);
 			RealHP<N1> d4 = RealHP<N1>(b);
 			auto       d5 = d1 + d2 + d3 + d4;
-			if (d5 != RealHP<N>(2.5))
-				throw std::runtime_error(("TestRealHP error: Fatal r5" + info).c_str());
+			if (d5 != RealHP<N>(2.5)) throw std::runtime_error(("TestRealHP error: Fatal r5" + info).c_str());
 		}
 		{
 			ComplexHP<N1> a  = ComplexHP<N1>(-1.25, 0.5);
@@ -974,22 +966,17 @@ template <int N1> struct TestRealHP2 {
 			auto          c2 = a - b;
 			auto          c3 = a * b;
 			auto          c4 = a / b;
-			if (c1 != ComplexHP<N>(-0.25, 1.5))
-				throw std::runtime_error(("TestRealHP error: Fatal c1" + info).c_str());
-			if (c2 != ComplexHP<N>(-2.25, -0.5))
-				throw std::runtime_error(("TestRealHP error: Fatal c2" + info).c_str());
-			if (c3 != ComplexHP<N>(-1.75, -0.75))
-				throw std::runtime_error(("TestRealHP error: Fatal c3" + info).c_str());
-			if (c4 != ComplexHP<N>(-0.375, 0.875))
-				throw std::runtime_error(("TestRealHP error: Fatal c4" + info).c_str());
+			if (c1 != ComplexHP<N>(-0.25, 1.5)) throw std::runtime_error(("TestRealHP error: Fatal c1" + info).c_str());
+			if (c2 != ComplexHP<N>(-2.25, -0.5)) throw std::runtime_error(("TestRealHP error: Fatal c2" + info).c_str());
+			if (c3 != ComplexHP<N>(-1.75, -0.75)) throw std::runtime_error(("TestRealHP error: Fatal c3" + info).c_str());
+			if (c4 != ComplexHP<N>(-0.375, 0.875)) throw std::runtime_error(("TestRealHP error: Fatal c4" + info).c_str());
 			auto d1 = a;
 			auto d2 = b;
 			// down-converting requires extra casting
 			ComplexHP<N2> d3 = ComplexHP<N2>(RealHP<N2>(a.real()), RealHP<N2>(a.imag()));
 			ComplexHP<N1> d4 = ComplexHP<N1>(RealHP<N1>(b.real()), RealHP<N1>(b.imag()));
 			auto          d5 = d1 + d2 + d3 + d4;
-			if (d5 != ComplexHP<N>(-0.5, 3.0))
-				throw std::runtime_error(("TestRealHP error: Fatal c5" + info).c_str());
+			if (d5 != ComplexHP<N>(-0.5, 3.0)) throw std::runtime_error(("TestRealHP error: Fatal c5" + info).c_str());
 		}
 		{
 			ComplexHP<N1> a  = ComplexHP<N1>(-1.25, 0.5);
@@ -1002,20 +989,13 @@ template <int N1> struct TestRealHP2 {
 			auto          c6 = b - a;
 			auto          c7 = b * a;
 			auto          c8 = b / a;
-			if (c1 != ComplexHP<N>(-0.25, 0.5))
-				throw std::runtime_error(("TestRealHP error: Fatal cr1" + info).c_str());
-			if (c2 != ComplexHP<N>(-2.25, 0.5))
-				throw std::runtime_error(("TestRealHP error: Fatal cr2" + info).c_str());
-			if (c3 != ComplexHP<N>(-1.25, 0.5))
-				throw std::runtime_error(("TestRealHP error: Fatal cr3" + info).c_str());
-			if (c4 != ComplexHP<N>(-1.25, 0.5))
-				throw std::runtime_error(("TestRealHP error: Fatal cr4" + info).c_str());
-			if (c5 != ComplexHP<N>(-0.25, 0.5))
-				throw std::runtime_error(("TestRealHP error: Fatal cr5" + info).c_str());
-			if (c6 != ComplexHP<N>(2.25, -0.5))
-				throw std::runtime_error(("TestRealHP error: Fatal cr6" + info).c_str());
-			if (c7 != ComplexHP<N>(-1.25, 0.5))
-				throw std::runtime_error(("TestRealHP error: Fatal cr7" + info).c_str());
+			if (c1 != ComplexHP<N>(-0.25, 0.5)) throw std::runtime_error(("TestRealHP error: Fatal cr1" + info).c_str());
+			if (c2 != ComplexHP<N>(-2.25, 0.5)) throw std::runtime_error(("TestRealHP error: Fatal cr2" + info).c_str());
+			if (c3 != ComplexHP<N>(-1.25, 0.5)) throw std::runtime_error(("TestRealHP error: Fatal cr3" + info).c_str());
+			if (c4 != ComplexHP<N>(-1.25, 0.5)) throw std::runtime_error(("TestRealHP error: Fatal cr4" + info).c_str());
+			if (c5 != ComplexHP<N>(-0.25, 0.5)) throw std::runtime_error(("TestRealHP error: Fatal cr5" + info).c_str());
+			if (c6 != ComplexHP<N>(2.25, -0.5)) throw std::runtime_error(("TestRealHP error: Fatal cr6" + info).c_str());
+			if (c7 != ComplexHP<N>(-1.25, 0.5)) throw std::runtime_error(("TestRealHP error: Fatal cr7" + info).c_str());
 			if (::yade::math::abs(c8 - ComplexHP<N>(-0.68965517241379310345, -0.27586206896551724138)) > 0.1)
 				throw std::runtime_error(("TestRealHP error: Fatal cr8" + info).c_str());
 			auto d1 = a;
@@ -1024,11 +1004,9 @@ template <int N1> struct TestRealHP2 {
 			ComplexHP<N2> d3 = ComplexHP<N2>(RealHP<N2>(a.real()), RealHP<N2>(a.imag()));
 			RealHP<N1>    d4 = RealHP<N1>(b);
 			auto          d5 = d1 + d2 + d4 + d3;
-			if (d5 != ComplexHP<N>(-0.5, 1.0))
-				throw std::runtime_error(("TestRealHP error: Fatal cr9" + info).c_str());
+			if (d5 != ComplexHP<N>(-0.5, 1.0)) throw std::runtime_error(("TestRealHP error: Fatal cr9" + info).c_str());
 			auto d6 = d1 + d2 + d3 + d4;
-			if (d6 != ComplexHP<N>(-0.5, 1.0))
-				throw std::runtime_error(("TestRealHP error: Fatal cr10" + info).c_str());
+			if (d6 != ComplexHP<N>(-0.5, 1.0)) throw std::runtime_error(("TestRealHP error: Fatal cr10" + info).c_str());
 
 			static_assert(std::is_same<ComplexHP<N>, decltype(c1)>::value, "Assert error c1");
 			static_assert(std::is_same<ComplexHP<N>, decltype(c2)>::value, "Assert error c2");

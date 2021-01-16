@@ -43,7 +43,7 @@ namespace CGT {
 
 	extern "C" int F77_FUNC(pardiso)(void*, int*, int*, int*, int*, int*, double*, int*, int*, int*, int*, int*, int*, double*, double*, int*, double*);
 #endif
-	template <class _Tesselation> PeriodicFlowLinSolv<_Tesselation>::~PeriodicFlowLinSolv() {}
+	template <class _Tesselation> PeriodicFlowLinSolv<_Tesselation>::~PeriodicFlowLinSolv() { }
 	template <class _Tesselation>
 	PeriodicFlowLinSolv<_Tesselation>::PeriodicFlowLinSolv()
 	        : BaseFlowSolver()
@@ -73,8 +73,7 @@ namespace CGT {
 			orderedCells.clear();
 			const FiniteCellsIterator cellEnd = Tri.finite_cells_end();
 			for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
-				if (cell->info().Pcondition || cell->info().isGhost)
-					continue;
+				if (cell->info().Pcondition || cell->info().isGhost) continue;
 				orderedCells.push_back(cell);
 				// 			T_cells[++ncols]=cell;
 				// 			indices[cell->info().index]=ncols;
@@ -116,16 +115,13 @@ namespace CGT {
 					is[T_nnz] = index;
 					js[T_nnz] = index;
 					vs[T_nnz] = (cInfo.kNorm())[0] + (cInfo.kNorm())[1] + (cInfo.kNorm())[2] + (cInfo.kNorm())[3];
-					if (vs[T_nnz] < 0)
-						cerr << "!!!! WTF !!!" << endl;
-					if (fluidBulkModulus > 0)
-						vs[T_nnz] += (1.f / (dt * fluidBulkModulus * cInfo.invVoidVolume()));
+					if (vs[T_nnz] < 0) cerr << "!!!! WTF !!!" << endl;
+					if (fluidBulkModulus > 0) vs[T_nnz] += (1.f / (dt * fluidBulkModulus * cInfo.invVoidVolume()));
 					T_nnz++;
 				}
 				for (int j = 0; j < 4; j++) {
 					neighbourCell = cell->neighbor(j);
-					if (Tri.is_infinite(neighbourCell))
-						continue;
+					if (Tri.is_infinite(neighbourCell)) continue;
 					CellInfo& nInfo = neighbourCell->info();
 					nIndex          = nInfo.index;
 					if (nIndex == index) {
@@ -133,19 +129,16 @@ namespace CGT {
 						errorCode = 3;
 					}
 
-					if (nInfo.Pcondition)
-						T_b[index - 1] += cInfo.kNorm()[j] * nInfo.shiftedP();
+					if (nInfo.Pcondition) T_b[index - 1] += cInfo.kNorm()[j] * nInfo.shiftedP();
 					else {
 						if (!isLinearSystemSet && index > nIndex) {
 							is[T_nnz] = index;
 							js[T_nnz] = nIndex;
 							vs[T_nnz] = -(cInfo.kNorm())[j];
-							if (vs[T_nnz] > 0)
-								cerr << "!!!! WTF2 !!!" << endl;
+							if (vs[T_nnz] > 0) cerr << "!!!! WTF2 !!!" << endl;
 							T_nnz++;
 						}
-						if (nInfo.isGhost)
-							T_b[index - 1] += cInfo.kNorm()[j] * nInfo.pShift();
+						if (nInfo.isGhost) T_b[index - 1] += cInfo.kNorm()[j] * nInfo.pShift();
 					}
 				}
 			}
@@ -186,8 +179,7 @@ namespace CGT {
 			orderedCells.clear();
 			T_cells.resize(n_cells + 1);
 			for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
-				if (cell->info().Pcondition || cell->info().isGhost)
-					continue;
+				if (cell->info().Pcondition || cell->info().isGhost) continue;
 				++ncols;
 				T_cells[cell->info().index] = cell;
 			}
@@ -237,9 +229,7 @@ namespace CGT {
 							fullAcolumns[cInfo.index][j] = &gsP[nInfo.index];
 							//DUMP
 							//if the adjacent cell is ghost, we account for the pressure shift in the RHS
-							if (nInfo.isGhost) {
-								gsB[cInfo.index] += cInfo.kNorm()[j] * nInfo.pShift();
-							}
+							if (nInfo.isGhost) { gsB[cInfo.index] += cInfo.kNorm()[j] * nInfo.pShift(); }
 						} else {
 							fullAvalues[cInfo.index][j]  = 0;
 							fullAcolumns[cInfo.index][j] = &gsP[0];
@@ -258,8 +248,7 @@ namespace CGT {
 						const CellInfo& nInfo         = neighbourCell->info();
 						CellInfo&       cInfo         = cell->info();
 						if (!nInfo.Pcondition) {
-							if (nInfo.isGhost)
-								gsB[cInfo.index] += cInfo.kNorm()[j] * nInfo.pShift();
+							if (nInfo.isGhost) gsB[cInfo.index] += cInfo.kNorm()[j] * nInfo.pShift();
 						} else
 							gsB[cInfo.index] += cInfo.kNorm()[j] * nInfo.shiftedP();
 					}

@@ -56,9 +56,7 @@ Factorable* ClassFactory::createPure(std::string name)
 	if (i == map.end()) {
 		dlm.load(name);
 		if (dlm.isLoaded(name)) {
-			if (map.find(name) == map.end()) {
-				throw std::runtime_error(("Class " + name + " not registered in the ClassFactory.").c_str());
-			}
+			if (map.find(name) == map.end()) { throw std::runtime_error(("Class " + name + " not registered in the ClassFactory.").c_str()); }
 			return createPure(name);
 		}
 		throw std::runtime_error(("Class " + name + " could not be factored in the ClassFactory.").c_str());
@@ -69,8 +67,7 @@ Factorable* ClassFactory::createPure(std::string name)
 void* ClassFactory::createPureCustom(std::string name)
 {
 	FactorableCreatorsMap::const_iterator i = map.find(name);
-	if (i == map.end())
-		throw std::runtime_error(("Class " + name + " could not be factored in the ClassFactory.").c_str());
+	if (i == map.end()) throw std::runtime_error(("Class " + name + " could not be factored in the ClassFactory.").c_str());
 	return (i->second.createPureCustom)();
 }
 

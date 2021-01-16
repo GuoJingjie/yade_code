@@ -82,8 +82,7 @@ template <typename ArbitraryEnum> struct ArbitraryEnum_from_python {
 		// The invocations in setArbitraryEnum(…) which return false in line if( ::boost::python::extract<…> … ) will call this function again. We better prevent that.
 		// Make sure it's thread safe, even though assigning enums simultaneously from different threads is not gonna happen.
 		thread_local static int preventRecurrence = 0;
-		if (preventRecurrence != 0)
-			return nullptr;
+		if (preventRecurrence != 0) return nullptr;
 		++preventRecurrence;
 
 		ArbitraryEnum             test;

@@ -79,12 +79,8 @@ void SpherePack::fromFile(const string& file)
 void SpherePack::toFile(const string& fname) const
 {
 	std::ofstream f(fname.c_str());
-	if (!f.good()) {
-		throw runtime_error("Unable to open file `" + fname + "'");
-	}
-	if (cellSize != Vector3r::Zero()) {
-		f << "##PERIODIC:: " << cellSize[0] << " " << cellSize[1] << " " << cellSize[2] << endl;
-	}
+	if (!f.good()) { throw runtime_error("Unable to open file `" + fname + "'"); }
+	if (cellSize != Vector3r::Zero()) { f << "##PERIODIC:: " << cellSize[0] << " " << cellSize[1] << " " << cellSize[2] << endl; }
 	for (const Sph& s : pack) {
 		f << s.c[0] << " " << s.c[1] << " " << s.c[2] << " " << s.r << " " << s.clumpId << endl;
 	}
@@ -96,11 +92,9 @@ void SpherePack::fromSimulation()
 	pack.clear();
 	Scene* scene = Omega::instance().getScene().get();
 	for (const auto& b : *scene->bodies) {
-		if (!b)
-			continue;
+		if (!b) continue;
 		shared_ptr<Sphere> intSph = YADE_PTR_DYN_CAST<Sphere>(b->shape);
-		if (!intSph)
-			continue;
+		if (!intSph) continue;
 		pack.push_back(Sph(b->state->pos, intSph->radius, (b->isClumpMember() ? b->clumpId : -1)));
 	}
 	if (scene->isPeriodic) {
@@ -133,11 +127,8 @@ long SpherePack::makeCloud(
 	vector<Real> psdCumm2; // psdCumm but dimensionally transformed to match mass distribution
 	const auto   size       = mx - mn;
 	bool         hSizeFound = (hSize != Matrix3r::Zero()); //is hSize passed to the function?
-	if (!hSizeFound) {
-		hSize = size.asDiagonal();
-	}
-	if (hSizeFound && !periodic)
-		LOG_WARN("hSize can be defined only for periodic cells.");
+	if (!hSizeFound) { hSize = size.asDiagonal(); }
+	if (hSizeFound && !periodic) LOG_WARN("hSize can be defined only for periodic cells.");
 	Real     volume   = hSize.determinant();
 	Matrix3r invHsize = hSize.inverse();
 	Real area = math::abs(size[0] * size[2] + size[0] * size[1] + size[1] * size[2]); //2 terms will be null if one coordinate is 0, the other is the area
@@ -157,13 +148,11 @@ long SpherePack::makeCloud(
 		porosity = 0.5;
 	}
 	//If rMean is not defined, then in will be defined in RDIST_NUM
-	if (rMean > 0)
-		mode = e_Mode::RDIST_RMEAN;
+	if (rMean > 0) mode = e_Mode::RDIST_RMEAN;
 	else if (num > 0 && psdSizes.size() == 0) {
 		mode = e_Mode::RDIST_NUM;
 		// the term (1+rRelFuzz²) comes from the mean volume for uniform distribution : Vmean = 4/3*pi*Rmean*(1+rRelFuzz²)
-		if (volume)
-			rMean = pow(volume * (1 - porosity) / (Mathr::PI * (4 / 3.) * (1 + rRelFuzz * rRelFuzz) * num), 1 / 3.);
+		if (volume) rMean = pow(volume * (1 - porosity) / (Mathr::PI * (4 / 3.) * (1 + rRelFuzz * rRelFuzz) * num), 1 / 3.);
 		else { //The volume is null, we will generate a 2D packing with the following rMean
 			if (!area)
 				throw invalid_argument(
@@ -179,8 +168,7 @@ long SpherePack::makeCloud(
 			throw invalid_argument(("SpherePack.makeCloud: psdSizes and psdCumm must have same dimensions ("
 			                        + boost::lexical_cast<string>(psdSizes.size()) + "!=" + boost::lexical_cast<string>(psdCumm.size()))
 			                               .c_str());
-		if (psdSizes.size() <= 1)
-			throw invalid_argument("SpherePack.makeCloud: psdSizes must have at least 2 items");
+		if (psdSizes.size() <= 1) throw invalid_argument("SpherePack.makeCloud: psdSizes must have at least 2 items");
 		if ((*psdCumm.begin()) != 0. && (*psdCumm.rbegin()) != 1.)
 			throw invalid_argument("SpherePack.makeCloud: first and last items of psdCumm *must* be exactly 0 and 1.");
 		psdRadii.reserve(psdSizes.size());
@@ -188,8 +176,7 @@ long SpherePack::makeCloud(
 			psdRadii.push_back(/* radius, not diameter */ .5 * psdSizes[i]);
 			if (distributeMass) {
 				//psdCumm2 is first obtained by integrating the number of particles over the volumic PSD (dN/dSize = totV*(dPassing/dSize)*1/(4/3πr³)). The total cumulated number will be the number of spheres in volume*(1-porosity), it is used to decide if the PSD will be scaled down. psdCumm2 is normalized below in order to fit in [0,1]. (Bruno C.)
-				if (i == 0)
-					psdCumm2.push_back(0);
+				if (i == 0) psdCumm2.push_back(0);
 				else
 					psdCumm2.push_back(
 					        psdCumm2[i - 1]
@@ -208,16 +195,14 @@ long SpherePack::makeCloud(
 		if (num > 1) {
 			appliedPsdScaling = 1;
 			if (distributeMass) {
-				if (psdCumm2[psdSizes.size() - 1] < num)
-					appliedPsdScaling = pow(psdCumm2[psdSizes.size() - 1] / num, 1. / 3.);
+				if (psdCumm2[psdSizes.size() - 1] < num) appliedPsdScaling = pow(psdCumm2[psdSizes.size() - 1] / num, 1. / 3.);
 			} else {
 				Real totVol = 0;
 				for (size_t i = 1; i < psdSizes.size(); i++)
 					totVol += 4 / 3 * Mathr::PI * (psdCumm[i] - psdCumm[i - 1]) * num * pow(0.5 * (psdSizes[i] + psdSizes[i - 1]), 3)
 					        * (1 + pow(0.5 * (psdSizes[i] - psdSizes[i - 1]), 2));
 				Real volumeRatio = totVol / ((1 - porosity) * (volume ? volume : (area * psdSizes[psdSizes.size() - 1])));
-				if (volumeRatio > 1)
-					appliedPsdScaling = pow(volumeRatio, -1. / 3.);
+				if (volumeRatio > 1) appliedPsdScaling = pow(volumeRatio, -1. / 3.);
 			}
 			if (appliedPsdScaling < 1)
 				for (size_t i = 0; i < psdSizes.size(); i++)
@@ -233,14 +218,12 @@ long SpherePack::makeCloud(
 		                       "combined with psdSizes.");
 	// adjust uniform distribution parameters with distributeMass; rMean has the meaning (dimensionally) of _volume_
 	const int maxTry = 1000;
-	if (periodic && volume && !hSizeFound)
-		(cellSize = size);
+	if (periodic && volume && !hSizeFound) (cellSize = size);
 	Real r = 0;
 	for (int i = 0; (i < num) || (num < 0); i++) {
 		Real norm, rand;
 		//Determine radius of the next sphere that will be placed in space. If (num>0), generate radii the deterministic way, in decreasing order, else radii are stochastic since we don't know what the final number will be
-		if (num > 0)
-			rand = ((Real)num - (Real)i + 0.5) / ((Real)num + 1.);
+		if (num > 0) rand = ((Real)num - (Real)i + 0.5) / ((Real)num + 1.);
 		else
 			rand = dis(gen);
 		int t;
@@ -253,8 +236,7 @@ long SpherePack::makeCloud(
 			//FIXME : r is never defined, it will be zero at first iteration, but it will have values in the next ones.
 			//I don't understand why it apparently works. Some magic?
 			case e_Mode::RDIST_NUM:
-				if (distributeMass)
-					r = pow3Interp(rand, rMean * (1 - rRelFuzz), rMean * (1 + rRelFuzz));
+				if (distributeMass) r = pow3Interp(rand, rMean * (1 - rRelFuzz), rMean * (1 + rRelFuzz));
 				else
 					r = rMean * (2 * (rand - .5) * rRelFuzz + 1); // uniform distribution in rMean*(1±rRelFuzz)
 				break;
@@ -307,8 +289,7 @@ long SpherePack::makeCloud(
 					} else { //not aligned, find closest neighbor in a cube of size 1, then transform distance to cartesian coordinates
 						Vector3r c1c2 = invHsize * (pack[j].c - c);
 						for (int axis = 0; axis < 3; axis++) {
-							if (math::abs(c1c2[axis]) < math::abs(c1c2[axis] - math::sign(c1c2[axis])))
-								dr[axis] = c1c2[axis];
+							if (math::abs(c1c2[axis]) < math::abs(c1c2[axis] - math::sign(c1c2[axis]))) dr[axis] = c1c2[axis];
 							else
 								dr[axis] = c1c2[axis] - math::sign(c1c2[axis]);
 						}
@@ -358,8 +339,7 @@ long SpherePack::makeCloud(
 			return i;
 		}
 	}
-	if (appliedPsdScaling < 1)
-		LOG_WARN("The size distribution has been scaled down by a factor pack.appliedPsdScaling=" << appliedPsdScaling);
+	if (appliedPsdScaling < 1) LOG_WARN("The size distribution has been scaled down by a factor pack.appliedPsdScaling=" << appliedPsdScaling);
 	return pack.size();
 }
 
@@ -374,19 +354,14 @@ void SpherePack::cellFill(Vector3r vol)
 
 void SpherePack::cellRepeat(Vector3i count)
 {
-	if (cellSize == Vector3r::Zero()) {
-		throw std::runtime_error("cellRepeat cannot be used on non-periodic packing.");
-	}
-	if (count[0] <= 0 || count[1] <= 0 || count[2] <= 0) {
-		throw std::invalid_argument("Repeat count components must be positive.");
-	}
+	if (cellSize == Vector3r::Zero()) { throw std::runtime_error("cellRepeat cannot be used on non-periodic packing."); }
+	if (count[0] <= 0 || count[1] <= 0 || count[2] <= 0) { throw std::invalid_argument("Repeat count components must be positive."); }
 	size_t origSize = pack.size();
 	pack.reserve(origSize * count[0] * count[1] * count[2]);
 	for (int i = 0; i < count[0]; i++) {
 		for (int j = 0; j < count[1]; j++) {
 			for (int k = 0; k < count[2]; k++) {
-				if ((i == 0) && (j == 0) && (k == 0))
-					continue; // original cell
+				if ((i == 0) && (j == 0) && (k == 0)) continue; // original cell
 				Vector3r off(cellSize[0] * i, cellSize[1] * j, cellSize[2] * k);
 				for (size_t l = 0; l < origSize; l++) {
 					const Sph& s = pack[l];
@@ -419,8 +394,7 @@ int SpherePack::psdGetPiece(Real x, const vector<Real>& cumm, Real& norm) const
 
 py::tuple SpherePack::psd(int bins, bool mass) const
 {
-	if (pack.size() == 0)
-		return py::make_tuple(py::list(), py::list()); // empty packing
+	if (pack.size() == 0) return py::make_tuple(py::list(), py::list()); // empty packing
 	// find extrema
 	Real minD = std::numeric_limits<Real>::infinity();
 	Real maxD = -minD;
@@ -447,8 +421,7 @@ py::tuple SpherePack::psd(int bins, bool mass) const
 	for (const Sph& s : pack) {
 		int bin = int(bins * (2 * s.r - minD) / (maxD - minD));
 		bin     = min(bin, bins - 1); // to make sure
-		if (mass)
-			hist[bin] += pow(s.r, 3) / vol;
+		if (mass) hist[bin] += pow(s.r, 3) / vol;
 		else
 			hist[bin] += 1. / N;
 	}
@@ -480,9 +453,7 @@ long SpherePack::makeClumpCloud(const Vector3r& mn, const Vector3r& mx, const ve
 	}
 	std::list<ClumpInfo> clumpInfos;
 	const auto           sizePack = mx - mn;
-	if (periodic) {
-		cellSize = sizePack;
-	}
+	if (periodic) { cellSize = sizePack; }
 	const auto                       maxTry = 200;
 	int                              nGen   = 0; // number of clumps generated
 	std::random_device               rd;
@@ -534,9 +505,7 @@ long SpherePack::makeClumpCloud(const Vector3r& mn, const Vector3r& mx, const ve
 					if (detailedCheck) {
 						for (const auto& s : C.pack) {
 							for (int id = cInfo.minId; id <= cInfo.maxId; id++) {
-								if ((s.c - pack[id].c).squaredNorm() < pow(s.r + pack[id].r, 2)) {
-									goto overlap;
-								}
+								if ((s.c - pack[id].c).squaredNorm() < pow(s.r + pack[id].r, 2)) { goto overlap; }
 							}
 						}
 					}
@@ -557,9 +526,7 @@ long SpherePack::makeClumpCloud(const Vector3r& mn, const Vector3r& mx, const ve
 						if (detailedCheck) {
 							for (const auto& s : C.pack) {
 								for (int id = cInfo.minId; id <= cInfo.maxId; id++) {
-									if (periPtDistSq(s.c, pack[id].c) < pow(s.r + pack[id].r, 2)) {
-										goto overlap;
-									}
+									if (periPtDistSq(s.c, pack[id].c) < pow(s.r + pack[id].r, 2)) { goto overlap; }
 								}
 							}
 						}
@@ -599,8 +566,7 @@ long SpherePack::makeClumpCloud(const Vector3r& mn, const Vector3r& mx, const ve
 bool SpherePack::hasClumps() const
 {
 	for (const auto& s : pack) {
-		if (s.clumpId >= 0)
-			return true;
+		if (s.clumpId >= 0) return true;
 	}
 	return false;
 }
@@ -615,8 +581,7 @@ py::tuple SpherePack::getClumps() const
 			standalone.append(i);
 			continue;
 		}
-		if (clumps.count(s.clumpId) == 0)
-			clumps[s.clumpId] = py::list();
+		if (clumps.count(s.clumpId) == 0) clumps[s.clumpId] = py::list();
 		clumps[s.clumpId].append(i);
 	}
 	py::list clumpList;
@@ -748,8 +713,7 @@ boost::python::tuple  SpherePack::_iterator::next()
 
 boost::python::tuple SpherePack::Sph::asTuple() const
 {
-	if (clumpId < 0)
-		return boost::python::make_tuple(c, r);
+	if (clumpId < 0) return boost::python::make_tuple(c, r);
 	return boost::python::make_tuple(c, r, clumpId);
 }
 

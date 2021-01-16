@@ -35,16 +35,14 @@ public:
 	{
 		Vector2i ret((int)(floor((xy[0] - lo[0]) / cellSizes[0])), (int)(floor((xy[1] - lo[1]) / cellSizes[1])));
 		if (ret[0] < 0 || ret[0] >= nCells[0] || ret[1] < 0 || ret[1] >= nCells[1]) {
-			if (inGrid)
-				*inGrid = false;
+			if (inGrid) *inGrid = false;
 			else
 				throw std::invalid_argument(
 				        "Cell coordinates outside grid (xy=" + boost::lexical_cast<string>(xy[0]) + "," + boost::lexical_cast<string>(xy[1])
 				        + ", computed cell coordinates " + boost::lexical_cast<string>(ret[0]) + "," + boost::lexical_cast<string>(ret[1])
 				        + ").");
 		} else {
-			if (inGrid)
-				*inGrid = true;
+			if (inGrid) *inGrid = true;
 		}
 		return ret;
 	}
@@ -57,14 +55,10 @@ public:
 		bool     inGrid;
 		Vector2i cxy = xy2cell(xy, &inGrid);
 		if (!inGrid) {
-			if (cxy[0] < 0)
-				cxy[0] = 0;
-			if (cxy[0] >= nCells[0])
-				cxy[0] = nCells[0] - 1;
-			if (cxy[1] < 0)
-				cxy[1] = 0;
-			if (cxy[1] >= nCells[1])
-				cxy[1] = nCells[1] - 1;
+			if (cxy[0] < 0) cxy[0] = 0;
+			if (cxy[0] >= nCells[0]) cxy[0] = nCells[0] - 1;
+			if (cxy[1] < 0) cxy[1] = 0;
+			if (cxy[1] >= nCells[1]) cxy[1] = nCells[1] - 1;
 		}
 		grid[cxy[0]][cxy[1]].push_back(t);
 	}
@@ -77,8 +71,7 @@ public:
 		Vector2i         cxymin = xy2cell(bbLo, &dummy), cxymax = xy2cell(bbHi, &dummy);
 		for (int cx = cxymin[0]; cx <= cxymax[0]; cx++) {
 			for (int cy = cxymin[1]; cy <= cxymax[1]; cy++) {
-				if (cx >= 0 && cx < nCells[0] && cy >= 0 && cy < nCells[1])
-					ret.push_back(Vector2i(cx, cy));
+				if (cx >= 0 && cx < nCells[0] && cy >= 0 && cy < nCells[1]) ret.push_back(Vector2i(cx, cy));
 			}
 		}
 		return ret;
@@ -99,17 +92,14 @@ public:
 			Vector2r xyMid = cell2xyMid(mid);
 			Vector2r xy(xyMid[0] - xy0[0], xyMid[1] - xy0[1]); // relative mid-cell coords
 			// tricky: move the mid-cell to the corner (or aligned pt on edge) according to position WRT center
-			if (mid[0] != cxy[0])
-				xy.x() += (mid[0] < cxy[0] ? 1 : -1) * .5 * cellSizes[0];
+			if (mid[0] != cxy[0]) xy.x() += (mid[0] < cxy[0] ? 1 : -1) * .5 * cellSizes[0];
 			else
 				xy.x() = 0;
-			if (mid[1] != cxy[1])
-				xy.x() += (mid[1] < cxy[1] ? 1 : -1) * .5 * cellSizes[1];
+			if (mid[1] != cxy[1]) xy.x() += (mid[1] < cxy[1] ? 1 : -1) * .5 * cellSizes[1];
 			else
 				xy.y() = 0;
 			// are we inside the ellipse? pass the filter, then
-			if ((pow(xy[0], 2) / pow(radii[0], 2) + pow(xy[1], 2) / pow(radii[1], 2)) <= 1)
-				ret.push_back(mid);
+			if ((pow(xy[0], 2) / pow(radii[0], 2) + pow(xy[1], 2) / pow(radii[1], 2)) <= 1) ret.push_back(mid);
 		}
 		return ret;
 	}
@@ -209,9 +199,8 @@ struct SGDA_Scalar2d : public WeightedAverage<Scalar2d, Real> {
 	virtual Real getWeight(const Vector2r& meanPt, const Scalar2d& e)
 	{
 		Vector2r pos = getPosition(e);
-		Real     rSq = (meanPt - pos).squaredNorm(); //pow(meanPt[0]-pos[0],2)+pow(meanPt[1]-pos[1],2);
-		if (rSq > pow(relThreshold * stDev, 2))
-			return 0.; // discard points further than relThreshold*stDev, by default 3*stDev
+		Real     rSq = (meanPt - pos).squaredNorm();       //pow(meanPt[0]-pos[0],2)+pow(meanPt[1]-pos[1],2);
+		if (rSq > pow(relThreshold * stDev, 2)) return 0.; // discard points further than relThreshold*stDev, by default 3*stDev
 		//return (1./(stDev*sqrt(2*M_PI)))*exp(-rSq/(2*stDev*stDev));
 		return boost::math::pdf(distrib, sqrt(rSq));
 	}
@@ -252,8 +241,7 @@ public:
 	{
 		for (const Poly2d& poly : clips) {
 			bool inside = pointInsidePolygon(pt, poly.vertices);
-			if ((inside && !poly.inclusive) || (!inside && poly.inclusive))
-				return true;
+			if ((inside && !poly.inclusive) || (!inside && poly.inclusive)) return true;
 		}
 		return false;
 	}
@@ -261,22 +249,19 @@ public:
 	{
 		Scalar2d d;
 		d.pos = tuple2vec2r(pos);
-		if (ptIsClipped(d.pos))
-			return false;
+		if (ptIsClipped(d.pos)) return false;
 		d.val = val;
 		sgda->grid->add(d, d.pos);
 		return true;
 	}
 	Real avg(Vector2r pt)
 	{
-		if (ptIsClipped(pt))
-			return std::numeric_limits<Real>::quiet_NaN();
+		if (ptIsClipped(pt)) return std::numeric_limits<Real>::quiet_NaN();
 		return sgda->computeAverage(pt);
 	}
 	Real avgPerUnitArea(Vector2r pt)
 	{
-		if (ptIsClipped(pt))
-			return std::numeric_limits<Real>::quiet_NaN();
+		if (ptIsClipped(pt)) return std::numeric_limits<Real>::quiet_NaN();
 		return sgda->computeAvgPerUnitArea(pt);
 	}
 	Real                 stDev_get() { return sgda->stDev; }

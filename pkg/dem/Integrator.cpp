@@ -48,8 +48,7 @@ void Integrator::system(const stateVector& currentstates, stateVector& derivativ
 		FOREACH(const shared_ptr<Engine>& e, slaves[i])
 		{
 			e->scene = scene;
-			if (!e->dead && e->isActivated())
-				e->action();
+			if (!e->dead && e->isActivated()) e->action();
 		}
 	}
 	derivatives = getSceneStateDot();
@@ -247,8 +246,7 @@ bool Integrator::setCurrentStates(stateVector yscene)
 
 		YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 		{
-			if (b->isClumpMember())
-				continue;
+			if (b->isClumpMember()) continue;
 
 			const Body::id_t& id = b->getId();
 
@@ -289,8 +287,7 @@ bool Integrator::setCurrentStates(stateVector yscene)
 			maxVelocitySq = max(maxVelocitySq, b->state->vel.squaredNorm()); // Set maximum velocity of the scene
 #endif
 
-			if (b->isClump())
-				Clump::moveMembers(b, scene, this);
+			if (b->isClump()) Clump::moveMembers(b, scene, this);
 		}
 		YADE_PARALLEL_FOREACH_BODY_END();
 
@@ -312,8 +309,7 @@ bool Integrator::setCurrentStates(stateVector yscene)
 #ifdef YADE_OPENMP
 void Integrator::ensureSync()
 {
-	if (syncEnsured)
-		return;
+	if (syncEnsured) return;
 	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 	{
 		// 		if(b->isClump()) continue;
@@ -327,8 +323,7 @@ void Integrator::ensureSync()
 
 void Integrator::saveMaximaDisplacement(const shared_ptr<Body>& b)
 {
-	if (!b->bound)
-		return; //clumps for instance, have no bounds, hence not saved
+	if (!b->bound) return; //clumps for instance, have no bounds, hence not saved
 	Vector3r disp    = b->state->pos - b->bound->refPos;
 	Real     maxDisp = max(math::abs(disp[0]), max(math::abs(disp[1]), math::abs(disp[2])));
 	if (!maxDisp
@@ -369,8 +364,7 @@ boost::python::list Integrator::slaves_get()
 	boost::python::list ret;
 	FOREACH(vector<shared_ptr<Engine>> & grp, slaves)
 	{
-		if (grp.size() == 1)
-			ret.append(boost::python::object(grp[0]));
+		if (grp.size() == 1) ret.append(boost::python::object(grp[0]));
 		else
 			ret.append(boost::python::object(grp));
 	}

@@ -45,17 +45,13 @@ namespace CGT {
 
 	Tenseur3& Tenseur3::operator=(const Tenseur3& source)
 	{
-		if (&source != this) {
-			T = source.T;
-		}
+		if (&source != this) { T = source.T; }
 		return *this;
 	}
 
 	Tenseur3& Tenseur3::operator/=(Real d)
 	{
-		if (d != 0) {
-			T /= d;
-		}
+		if (d != 0) { T /= d; }
 		return *this;
 	}
 
@@ -110,32 +106,26 @@ namespace CGT {
 
 	Tenseur_sym3& Tenseur_sym3::operator=(const Tenseur_sym3& source)
 	{
-		if (&source != this) {
-			T = source.T;
-		}
+		if (&source != this) { T = source.T; }
 		return *this;
 	}
 
 	Tenseur_sym3& Tenseur_sym3::operator/=(Real d)
 	{
-		if (d != 0) {
-			T /= d;
-		}
+		if (d != 0) { T /= d; }
 		return *this;
 	}
 
 	Real Tenseur_sym3::operator()(int i, int j) const
 	{
-		if (i == j)
-			return T[i - 1];
+		if (i == j) return T[i - 1];
 		else
 			return T[i + j];
 	}
 
 	Real& Tenseur_sym3::operator()(int i, int j)
 	{
-		if (i == j)
-			return T[i - 1];
+		if (i == j) return T[i - 1];
 		else
 			return T[i + j];
 	}

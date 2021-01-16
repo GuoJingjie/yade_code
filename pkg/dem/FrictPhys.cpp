@@ -9,8 +9,7 @@ YADE_PLUGIN((FrictPhys)(ViscoFrictPhys)(Ip2_FrictMat_FrictMat_ViscoFrictPhys)(Ip
 
 void Ip2_FrictMat_FrictMat_FrictPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 
 	const shared_ptr<FrictMat>& mat1 = YADE_PTR_CAST<FrictMat>(b1);
 	const shared_ptr<FrictMat>& mat2 = YADE_PTR_CAST<FrictMat>(b2);
@@ -46,8 +45,7 @@ void Ip2_FrictMat_FrictMat_FrictPhys::go(const shared_ptr<Material>& b1, const s
 
 void Ip2_FrictMat_FrictMat_ViscoFrictPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 	const shared_ptr<FrictMat>& mat1                 = YADE_PTR_CAST<FrictMat>(b1);
 	const shared_ptr<FrictMat>& mat2                 = YADE_PTR_CAST<FrictMat>(b2);
 	interaction->phys                                = shared_ptr<ViscoFrictPhys>(new ViscoFrictPhys());

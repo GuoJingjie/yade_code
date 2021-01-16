@@ -131,9 +131,7 @@ void SoluteFlowEngine::soluteTransport()
 			           + DiffusionCoefficient
 			                   * invdistancelocal); //(std::abs(max(qin,0.0))-(DiffusionCoefficient*invdistancelocal));       //off-diagonal
 
-			if (coeff1 != 0.0) {
-				tripletList2.push_back(ETriplet2(cell->info().id, cell->neighbor(ngb)->info().id, coeff1));
-			}
+			if (coeff1 != 0.0) { tripletList2.push_back(ETriplet2(cell->info().id, cell->neighbor(ngb)->info().id, coeff1)); }
 		}
 		coeff2 = 1.0 + (coeff * Qout) + (coeff * DiffusionCoefficient * invdistance); //diagonal
 		tripletList2.push_back(ETriplet2(cell->info().id, cell->info().id, coeff2));
@@ -156,9 +154,7 @@ void SoluteFlowEngine::soluteTransport()
 
 	FOREACH(CellHandle & cell, solver->T[solver->currentTes].cellHandles) { cell->info().solute() = ex2[cell->info().id]; }
 	tripletList2.clear();
-	if (dt != 1e9) {
-		scene->dt = dt;
-	}
+	if (dt != 1e9) { scene->dt = dt; }
 }
 
 void SoluteFlowEngine::soluteBC(unsigned int bcid1, unsigned int bcid2, double bcconcentration1, double bcconcentration2, unsigned int s)
@@ -170,13 +166,9 @@ void SoluteFlowEngine::soluteBC(unsigned int bcid1, unsigned int bcid2, double b
 	FOREACH(CellHandle & cell, solver->T[solver->currentTes].cellHandles)
 	{
 		for (unsigned int ngb = 0; ngb < 4; ngb++) {
-			if (cell->vertex(ngb)->info().id() == bcid1) {
-				cell->info().solute() = bcconcentration1;
-			}
+			if (cell->vertex(ngb)->info().id() == bcid1) { cell->info().solute() = bcconcentration1; }
 			if (s > 0) {
-				if (cell->vertex(ngb)->info().id() == bcid2) {
-					cell->info().solute() = bcconcentration2;
-				}
+				if (cell->vertex(ngb)->info().id() == bcid2) { cell->info().solute() = bcconcentration2; }
 			}
 		}
 	}

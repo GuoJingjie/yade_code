@@ -71,8 +71,7 @@ static PyObject* add(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &o_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &o_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	if (pygts_face_check(o_)) {
@@ -103,8 +102,7 @@ static PyObject* pygts_remove(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &f_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &f_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	if (!pygts_face_check(f_)) {
@@ -129,8 +127,7 @@ static PyObject* copy(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &s_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &s_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	if (!pygts_surface_check(s_)) {
@@ -171,8 +168,7 @@ static PyObject* manifold_faces(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &e_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &e_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	if (!pygts_edge_check(e_)) {
@@ -187,9 +183,7 @@ static PyObject* manifold_faces(PygtsSurface* self, PyObject* args)
 		return Py_None;
 	}
 
-	if ((face1 = pygts_face_new(f1)) == NULL) {
-		return NULL;
-	}
+	if ((face1 = pygts_face_new(f1)) == NULL) { return NULL; }
 
 	if ((face2 = pygts_face_new(f2)) == NULL) {
 		Py_DECREF(face1);
@@ -332,13 +326,11 @@ static PyObject* pygts_write(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &f_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &f_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	f = FILE_from_py_file__raises(f_, "w");
-	if (!f)
-		return NULL;
+	if (!f) return NULL;
 
 	/* Write to the file */
 	gts_surface_write(PYGTS_SURFACE_AS_GTS_SURFACE(self), f);
@@ -356,13 +348,11 @@ static PyObject* pygts_write_oogl(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &f_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &f_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	f = FILE_from_py_file__raises(f_, "w");
-	if (!f)
-		return NULL;
+	if (!f) return NULL;
 
 	/* Write to the file */
 	gts_surface_write_oogl(PYGTS_SURFACE_AS_GTS_SURFACE(self), f);
@@ -380,13 +370,11 @@ static PyObject* pygts_write_oogl_boundary(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &f_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &f_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	f = FILE_from_py_file__raises(f_, "w");
-	if (!f)
-		return NULL;
+	if (!f) return NULL;
 
 	/* Write to the file */
 	gts_surface_write_oogl_boundary(PYGTS_SURFACE_AS_GTS_SURFACE(self), f);
@@ -404,13 +392,11 @@ static PyObject* pygts_write_vtk(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &f_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &f_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	f = FILE_from_py_file__raises(f_, "w");
-	if (!f)
-		return NULL;
+	if (!f) return NULL;
 
 	/* Write to the file */
 	gts_surface_write_vtk(PYGTS_SURFACE_AS_GTS_SURFACE(self), f);
@@ -432,8 +418,7 @@ static PyObject* fan_oriented(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &v_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &v_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	if (!pygts_vertex_check(v_)) {
@@ -573,8 +558,7 @@ static PyObject* parent(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &e_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &e_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	if (!pygts_edge_check(e_)) {
@@ -589,9 +573,7 @@ static PyObject* parent(PygtsSurface* self, PyObject* args)
 		return Py_None;
 	}
 
-	if ((face = pygts_face_new(f)) == NULL) {
-		return NULL;
-	}
+	if ((face = pygts_face_new(f)) == NULL) { return NULL; }
 
 	return (PyObject*)face;
 }
@@ -607,9 +589,7 @@ static PyObject* edges(PyObject* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "|O", &tuple)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "|O", &tuple)) { return NULL; }
 
 	if (tuple) {
 		if (PyList_Check(tuple)) {
@@ -684,9 +664,7 @@ static PyObject* faces(PyObject* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "|O", &tuple)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "|O", &tuple)) { return NULL; }
 
 	if (tuple) {
 		if (PyList_Check(tuple)) {
@@ -765,8 +743,7 @@ static void get_indices(GtsFace* face, IndicesData* data)
 	guint      i, j;
 	gboolean   flag;
 
-	if (data->errflag)
-		return;
+	if (data->errflag) return;
 
 	/* Put the vertex pointers in an array */
 	gts_triangle_vertices(GTS_TRIANGLE(face), &(v[0]), &(v[1]), &(v[2]));
@@ -813,8 +790,7 @@ static PyObject* face_indices(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &vertices))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &vertices)) return NULL;
 
 	/* Make sure that the tuple contains only vertices */
 	Nv = PyTuple_Size(vertices);
@@ -866,8 +842,7 @@ static PyObject* distance(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O|d", &s_, &delta))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O|d", &s_, &delta)) return NULL;
 
 	/* Convert to PygtsObjects */
 	if (!pygts_surface_check(s_)) {
@@ -1128,12 +1103,9 @@ static PyObject* tessellate(PygtsSurface* self, PyObject* args)
 /* Helper function for inter() */
 void get_largest_coord(GtsVertex* v, gdouble* val)
 {
-	if (fabs(GTS_POINT(v)->x) > *val)
-		*val = fabs(GTS_POINT(v)->x);
-	if (fabs(GTS_POINT(v)->y) > *val)
-		*val = fabs(GTS_POINT(v)->y);
-	if (fabs(GTS_POINT(v)->z) > *val)
-		*val = fabs(GTS_POINT(v)->z);
+	if (fabs(GTS_POINT(v)->x) > *val) *val = fabs(GTS_POINT(v)->x);
+	if (fabs(GTS_POINT(v)->y) > *val) *val = fabs(GTS_POINT(v)->y);
+	if (fabs(GTS_POINT(v)->z) > *val) *val = fabs(GTS_POINT(v)->z);
 }
 
 /* Helper function for intersection operations */
@@ -1151,8 +1123,7 @@ static PyObject* inter(PygtsSurface* self, PyObject* args, GtsBooleanOperation o
 	gdouble          eps = 0.;
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &s_))
-		return NULL;
+	if (!PyArg_ParseTuple(args, "O", &s_)) return NULL;
 
 	/* Convert to PygtsObjects */
 	if (!pygts_surface_check(s_)) {
@@ -1310,11 +1281,9 @@ typedef struct {
 /* Helper for rotate() */
 static void rotate_point(GtsPoint* p, TransformData* data)
 {
-	if (data->errflag)
-		return;
+	if (data->errflag) return;
 
-	if (pygts_point_rotate(p, data->dx, data->dy, data->dz, data->a) == -1)
-		data->errflag = TRUE;
+	if (pygts_point_rotate(p, data->dx, data->dy, data->dz, data->a) == -1) data->errflag = TRUE;
 }
 
 static PyObject* rotate(PygtsSurface* self, PyObject* args, PyObject* keywds)
@@ -1331,14 +1300,11 @@ static PyObject* rotate(PygtsSurface* self, PyObject* args, PyObject* keywds)
 	data.errflag = FALSE;
 
 	/* Parse the args */
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "|dddd", kwlist, &(data.dx), &(data.dy), &(data.dz), &(data.a))) {
-		return NULL;
-	}
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "|dddd", kwlist, &(data.dx), &(data.dy), &(data.dz), &(data.a))) { return NULL; }
 
 	gts_surface_foreach_vertex(PYGTS_SURFACE_AS_GTS_SURFACE(self), (GtsFunc)rotate_point, &data);
 
-	if (data.errflag)
-		return NULL;
+	if (data.errflag) return NULL;
 
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -1348,11 +1314,9 @@ static PyObject* rotate(PygtsSurface* self, PyObject* args, PyObject* keywds)
 /* Helper for scale() */
 static void scale_point(GtsPoint* p, TransformData* data)
 {
-	if (data->errflag)
-		return;
+	if (data->errflag) return;
 
-	if (pygts_point_scale(p, data->dx, data->dy, data->dz) == -1)
-		data->errflag = TRUE;
+	if (pygts_point_scale(p, data->dx, data->dy, data->dz) == -1) data->errflag = TRUE;
 }
 
 static PyObject* scale(PygtsSurface* self, PyObject* args, PyObject* keywds)
@@ -1369,14 +1333,11 @@ static PyObject* scale(PygtsSurface* self, PyObject* args, PyObject* keywds)
 	data.errflag = FALSE;
 
 	/* Parse the args */
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "|ddd", kwlist, &(data.dx), &(data.dy), &(data.dz))) {
-		return NULL;
-	}
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "|ddd", kwlist, &(data.dx), &(data.dy), &(data.dz))) { return NULL; }
 
 	gts_surface_foreach_vertex(PYGTS_SURFACE_AS_GTS_SURFACE(self), (GtsFunc)scale_point, &data);
 
-	if (data.errflag)
-		return NULL;
+	if (data.errflag) return NULL;
 
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -1386,11 +1347,9 @@ static PyObject* scale(PygtsSurface* self, PyObject* args, PyObject* keywds)
 /* Helper for translate() */
 static void translate_point(GtsPoint* p, TransformData* data)
 {
-	if (data->errflag)
-		return;
+	if (data->errflag) return;
 
-	if (pygts_point_translate(p, data->dx, data->dy, data->dz) == -1)
-		data->errflag = TRUE;
+	if (pygts_point_translate(p, data->dx, data->dy, data->dz) == -1) data->errflag = TRUE;
 }
 
 static PyObject* translate(PygtsSurface* self, PyObject* args, PyObject* keywds)
@@ -1407,15 +1366,12 @@ static PyObject* translate(PygtsSurface* self, PyObject* args, PyObject* keywds)
 	data.errflag = FALSE;
 
 	/* Parse the args */
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "|ddd", kwlist, &(data.dx), &(data.dy), &(data.dz))) {
-		return NULL;
-	}
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "|ddd", kwlist, &(data.dx), &(data.dy), &(data.dz))) { return NULL; }
 
 	/* Make the call */
 	gts_surface_foreach_vertex(PYGTS_SURFACE_AS_GTS_SURFACE(self), (GtsFunc)translate_point, &data);
 
-	if (data.errflag)
-		return NULL;
+	if (data.errflag) return NULL;
 
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -1452,16 +1408,12 @@ static PyObject* cleanup(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "|d", &threshold)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "|d", &threshold)) { return NULL; }
 
 	s = PYGTS_SURFACE_AS_GTS_SURFACE(self);
 
 	/* Do the cleanup */
-	if (threshold != 0.) {
-		pygts_vertex_cleanup(s, threshold);
-	}
+	if (threshold != 0.) { pygts_vertex_cleanup(s, threshold); }
 	pygts_edge_cleanup(s);
 	pygts_face_cleanup(s);
 
@@ -1479,9 +1431,7 @@ static PyObject* coarsen(PygtsSurface* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "i|d", &n, &amin)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "i|d", &n, &amin)) { return NULL; }
 
 	/* Make the call */
 	gts_surface_coarsen(
@@ -1857,9 +1807,7 @@ static PyGetSetDef getset[] = {
 
 static void dealloc(PygtsSurface* self)
 {
-	if (self->traverse != NULL) {
-		gts_surface_traverse_destroy(self->traverse);
-	}
+	if (self->traverse != NULL) { gts_surface_traverse_destroy(self->traverse); }
 	self->traverse = NULL;
 
 	/* Chain up */
@@ -1876,12 +1824,8 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	/* Parse the args */
 	if (kwds) {
 		o = PyDict_GetItemString(kwds, "alloc_gtsobj");
-		if (o == Py_False) {
-			alloc_gtsobj = FALSE;
-		}
-		if (o != NULL) {
-			PyDict_DelItemString(kwds, "alloc_gtsobj");
-		}
+		if (o == Py_False) { alloc_gtsobj = FALSE; }
+		if (o != NULL) { PyDict_DelItemString(kwds, "alloc_gtsobj"); }
 	}
 	if (kwds) {
 		Py_INCREF(Py_False);
@@ -1913,9 +1857,7 @@ static int init(PygtsSurface* self, PyObject* args, PyObject* kwds)
 {
 	gint ret;
 
-	if ((ret = PygtsObjectType.tp_init((PyObject*)self, args, kwds)) != 0) {
-		return ret;
-	}
+	if ((ret = PygtsObjectType.tp_init((PyObject*)self, args, kwds)) != 0) { return ret; }
 
 	return 0;
 }
@@ -1924,8 +1866,7 @@ static int init(PygtsSurface* self, PyObject* args, PyObject* kwds)
 /* Helper function for iter */
 static void get_f0(GtsFace* f, GtsFace** f0)
 {
-	if (*f0 == NULL)
-		*f0 = f;
+	if (*f0 == NULL) *f0 = f;
 }
 
 PyObject* iter(PygtsSurface* self)
@@ -1976,9 +1917,7 @@ PyObject* iternext(PygtsSurface* self)
 		return NULL;
 	}
 
-	if ((face = pygts_face_new(f)) == NULL) {
-		return NULL;
-	}
+	if ((face = pygts_face_new(f)) == NULL) { return NULL; }
 
 	return (PyObject*)face;
 }
@@ -2052,9 +1991,7 @@ gboolean pygts_surface_check(PyObject* o)
 /* Helper function */
 static void face_is_ok(GtsFace* f, gboolean* ret)
 {
-	if (!pygts_gts_triangle_is_ok(GTS_TRIANGLE(f))) {
-		*ret = FALSE;
-	}
+	if (!pygts_gts_triangle_is_ok(GTS_TRIANGLE(f))) { *ret = FALSE; }
 }
 
 
@@ -2065,14 +2002,12 @@ gboolean pygts_surface_is_ok(PygtsSurface* s)
 
 	obj = PYGTS_OBJECT(s);
 
-	if (!pygts_object_is_ok(PYGTS_OBJECT(s)))
-		return FALSE;
+	if (!pygts_object_is_ok(PYGTS_OBJECT(s))) return FALSE;
 	g_return_val_if_fail(obj->gtsobj_parent == NULL, FALSE);
 
 	/* Check all of the faces this surface contains */
 	gts_surface_foreach_face(GTS_SURFACE(obj->gtsobj), (GtsFunc)face_is_ok, &ret);
-	if (ret == FALSE)
-		return FALSE;
+	if (ret == FALSE) return FALSE;
 
 	return TRUE;
 }

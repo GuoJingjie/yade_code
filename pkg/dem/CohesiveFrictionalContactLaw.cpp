@@ -34,12 +34,9 @@ Real Law2_ScGeom6D_CohFrictPhys_CohesionMoment::normElastEnergy()
 	Real normEnergy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		CohFrictPhys* phys = YADE_CAST<CohFrictPhys*>(I->phys.get());
-		if (phys) {
-			normEnergy += 0.5 * (phys->normalForce.squaredNorm() / phys->kn);
-		}
+		if (phys) { normEnergy += 0.5 * (phys->normalForce.squaredNorm() / phys->kn); }
 	}
 	return normEnergy;
 }
@@ -48,12 +45,9 @@ Real Law2_ScGeom6D_CohFrictPhys_CohesionMoment::shearElastEnergy()
 	Real shearEnergy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		CohFrictPhys* phys = YADE_CAST<CohFrictPhys*>(I->phys.get());
-		if (phys) {
-			shearEnergy += 0.5 * (phys->shearForce.squaredNorm() / phys->ks);
-		}
+		if (phys) { shearEnergy += 0.5 * (phys->shearForce.squaredNorm() / phys->ks); }
 	}
 	return shearEnergy;
 }
@@ -63,12 +57,9 @@ Real Law2_ScGeom6D_CohFrictPhys_CohesionMoment::bendingElastEnergy()
 	Real bendingEnergy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		CohFrictPhys* phys = YADE_CAST<CohFrictPhys*>(I->phys.get());
-		if (phys) {
-			bendingEnergy += 0.5 * (phys->moment_bending.squaredNorm() / phys->kr);
-		}
+		if (phys) { bendingEnergy += 0.5 * (phys->moment_bending.squaredNorm() / phys->kr); }
 	}
 	return bendingEnergy;
 }
@@ -78,12 +69,9 @@ Real Law2_ScGeom6D_CohFrictPhys_CohesionMoment::twistElastEnergy()
 	Real twistEnergy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		CohFrictPhys* phys = YADE_CAST<CohFrictPhys*>(I->phys.get());
-		if (phys) {
-			twistEnergy += 0.5 * (phys->moment_twist.squaredNorm() / phys->ktw);
-		}
+		if (phys) { twistEnergy += 0.5 * (phys->moment_twist.squaredNorm() / phys->ktw); }
 	}
 	return twistEnergy;
 }
@@ -93,8 +81,7 @@ Real Law2_ScGeom6D_CohFrictPhys_CohesionMoment::totalElastEnergy()
 	Real totalEnergy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		CohFrictPhys* phys = YADE_CAST<CohFrictPhys*>(I->phys.get());
 		if (phys) {
 			totalEnergy += 0.5 * (phys->normalForce.squaredNorm() / phys->kn);
@@ -109,8 +96,7 @@ Real Law2_ScGeom6D_CohFrictPhys_CohesionMoment::totalElastEnergy()
 
 void CohesiveFrictionalContactLaw::action()
 {
-	if (!functor)
-		functor = shared_ptr<Law2_ScGeom6D_CohFrictPhys_CohesionMoment>(new Law2_ScGeom6D_CohFrictPhys_CohesionMoment);
+	if (!functor) functor = shared_ptr<Law2_ScGeom6D_CohFrictPhys_CohesionMoment>(new Law2_ScGeom6D_CohFrictPhys_CohesionMoment);
 	functor->always_use_moment_law = always_use_moment_law;
 	functor->shear_creep           = shear_creep;
 	functor->twist_creep           = twist_creep;
@@ -118,8 +104,7 @@ void CohesiveFrictionalContactLaw::action()
 	functor->scene                 = scene;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		functor->go(I->geom, I->phys, I.get());
 	}
 }
@@ -133,8 +118,7 @@ bool Law2_ScGeom6D_CohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, shared
 	CohFrictPhys* phys            = YADE_CAST<CohFrictPhys*>(ip.get());
 	Vector3r&     shearForceFirst = phys->shearForce;
 
-	if (contact->isFresh(scene))
-		shearForceFirst = Vector3r::Zero();
+	if (contact->isFresh(scene)) shearForceFirst = Vector3r::Zero();
 	Real un = geom->penetrationDepth;
 	Real Fn = phys->kn * (un - phys->unp);
 
@@ -153,8 +137,7 @@ bool Law2_ScGeom6D_CohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, shared
 		State* de1        = Body::byId(id1, scene)->state.get();
 		State* de2        = Body::byId(id2, scene)->state.get();
 		///////////////////////// CREEP START ///////////
-		if (shear_creep)
-			shearForceFirst -= phys->ks * (shearForceFirst * dt / creep_viscosity);
+		if (shear_creep) shearForceFirst -= phys->ks * (shearForceFirst * dt / creep_viscosity);
 		///////////////////////// CREEP END ////////////
 
 		Vector3r&       shearForce = geom->rotate(phys->shearForce);
@@ -165,8 +148,7 @@ bool Law2_ScGeom6D_CohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, shared
 
 		Real Fs    = phys->shearForce.norm();
 		Real maxFs = phys->shearAdhesion;
-		if (!phys->cohesionDisablesFriction || maxFs == 0)
-			maxFs += Fn * phys->tangensOfFrictionAngle;
+		if (!phys->cohesionDisablesFriction || maxFs == 0) maxFs += Fn * phys->tangensOfFrictionAngle;
 		maxFs = math::max((Real)0, maxFs);
 		if (Fs > maxFs) { //Plasticity condition on shear force
 			if (phys->fragile && !phys->cohesionBroken) {
@@ -180,12 +162,10 @@ bool Law2_ScGeom6D_CohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, shared
 				Real sheardissip = ((1 / phys->ks) * (trialForce - shearForce)) /*plastic disp*/.dot(shearForce) /*active force*/;
 				if (sheardissip > 0) {
 					plasticDissipation += sheardissip;
-					if (scene->trackEnergy)
-						scene->energy->add(sheardissip, "shearDissip", shearDissipIx, /*reset*/ false);
+					if (scene->trackEnergy) scene->energy->add(sheardissip, "shearDissip", shearDissipIx, /*reset*/ false);
 				}
 			}
-			if (Fn < 0)
-				phys->normalForce = Vector3r::Zero(); //Vector3r::Zero()
+			if (Fn < 0) phys->normalForce = Vector3r::Zero(); //Vector3r::Zero()
 		}
 		//Apply the force
 		applyForceAtContactPoint(
@@ -243,8 +223,7 @@ bool Law2_ScGeom6D_CohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, shared
 					phys->moment_bending *= ratio;
 					if (scene->trackEnergy) {
 						Real bendingdissip = ((1 / phys->kr) * (scalarRoll - RollMax) * RollMax) /*active force*/;
-						if (bendingdissip > 0)
-							scene->energy->add(bendingdissip, "bendingDissip", bendingDissipIx, /*reset*/ false);
+						if (bendingdissip > 0) scene->energy->add(bendingdissip, "bendingDissip", bendingDissipIx, /*reset*/ false);
 					}
 				}
 			}
@@ -260,8 +239,7 @@ bool Law2_ScGeom6D_CohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, shared
 					phys->moment_twist *= ratio;
 					if (scene->trackEnergy) {
 						Real twistdissip = ((1 / phys->ktw) * (scalarTwist - TwistMax) * TwistMax) /*active force*/;
-						if (twistdissip > 0)
-							scene->energy->add(twistdissip, "twistDissip", twistDissipIx, /*reset*/ false);
+						if (twistdissip > 0) scene->energy->add(twistdissip, "twistDissip", twistDissipIx, /*reset*/ false);
 					}
 				}
 			}
@@ -288,8 +266,7 @@ void Ip2_CohFrictMat_CohFrictMat_CohFrictPhys::go(
 	ScGeom6D*    geom  = YADE_CAST<ScGeom6D*>(interaction->geom.get());
 
 	//Create cohesive interractions only once
-	if (setCohesionNow && cohesionDefinitionIteration == -1)
-		cohesionDefinitionIteration = scene->iter;
+	if (setCohesionNow && cohesionDefinitionIteration == -1) cohesionDefinitionIteration = scene->iter;
 	if (setCohesionNow && cohesionDefinitionIteration != -1 && cohesionDefinitionIteration != scene->iter) {
 		cohesionDefinitionIteration = -1;
 		setCohesionNow              = 0;
@@ -316,12 +293,10 @@ void Ip2_CohFrictMat_CohFrictMat_CohFrictPhys::go(
 
 			// harmonic average of alphas parameters
 			Real AlphaKr, AlphaKtw;
-			if (sdec1->alphaKr && sdec2->alphaKr)
-				AlphaKr = 2.0 * sdec1->alphaKr * sdec2->alphaKr / (sdec1->alphaKr + sdec2->alphaKr);
+			if (sdec1->alphaKr && sdec2->alphaKr) AlphaKr = 2.0 * sdec1->alphaKr * sdec2->alphaKr / (sdec1->alphaKr + sdec2->alphaKr);
 			else
 				AlphaKr = 0;
-			if (sdec1->alphaKtw && sdec2->alphaKtw)
-				AlphaKtw = 2.0 * sdec1->alphaKtw * sdec2->alphaKtw / (sdec1->alphaKtw + sdec2->alphaKtw);
+			if (sdec1->alphaKtw && sdec2->alphaKtw) AlphaKtw = 2.0 * sdec1->alphaKtw * sdec2->alphaKtw / (sdec1->alphaKtw + sdec2->alphaKtw);
 			else
 				AlphaKtw = 0;
 

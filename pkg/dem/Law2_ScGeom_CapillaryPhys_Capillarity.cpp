@@ -68,10 +68,8 @@ MeniscusParameters::~MeniscusParameters() { }
 
 void Law2_ScGeom_CapillaryPhys_Capillarity::action()
 {
-	if (!scene)
-		cerr << "scene not defined!";
-	if (!capillary)
-		postLoad(*this); //when the script does not define arguments, postLoad is never called
+	if (!scene) cerr << "scene not defined!";
+	if (!capillary) postLoad(*this); //when the script does not define arguments, postLoad is never called
 	shared_ptr<BodyContainer>& bodies      = scene->bodies;
 	int                        sphereIndex = Sphere::getClassIndexStatic();
 
@@ -80,8 +78,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity::action()
 		FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 		{
 			if (I->isReal()) {
-				if (CapillaryPhys::getClassIndexStatic() == I->phys->getClassIndex())
-					hertzOn = false;
+				if (CapillaryPhys::getClassIndexStatic() == I->phys->getClassIndex()) hertzOn = false;
 				else if (MindlinCapillaryPhys::getClassIndexStatic() == I->phys->getClassIndex())
 					hertzOn = true;
 				else
@@ -93,8 +90,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity::action()
 		}
 	}
 
-	if (fusionDetection && !bodiesMenisciiList.initialized)
-		bodiesMenisciiList.prepare(scene, hertzOn);
+	if (fusionDetection && !bodiesMenisciiList.initialized) bodiesMenisciiList.prepare(scene, hertzOn);
 
 	FOREACH(const shared_ptr<Interaction>& interaction, *scene->interactions)
 	{ // could be done in parallel as soon as OpenMPVector class (lib/base/openmp-accu.hpp) is extended See http://www.mail-archive.com/yade-dev@lists.launchpad.net/msg10842.html and msg11238.html
@@ -104,8 +100,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity::action()
 			MindlinCapillaryPhys* mindlinContactPhysics = NULL;
 
 			/// contact physics depends on the contact law, that is used (either linear model or hertz model)
-			if (!hertzOn)
-				cundallContactPhysics = static_cast<CapillaryPhys*>(interaction->phys.get()); //use CapillaryPhys for linear model
+			if (!hertzOn) cundallContactPhysics = static_cast<CapillaryPhys*>(interaction->phys.get()); //use CapillaryPhys for linear model
 			else
 				mindlinContactPhysics = static_cast<MindlinCapillaryPhys*>(interaction->phys.get()); //use MindlinCapillaryPhys for hertz model
 
@@ -120,8 +115,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity::action()
 			int geometryIndex2 = (*bodies)[id2]->shape->getClassIndex();
 			if (!(geometryIndex1 == sphereIndex && geometryIndex2 == sphereIndex)) { // such interactions won't have a meniscus
 				// thus we will ask for the interaction to be erased in this distant case, as we do w. sphere-sphere interactions below:
-				if (currentContactGeometry->penetrationDepth < 0)
-					scene->interactions->requestErase(interaction);
+				if (currentContactGeometry->penetrationDepth < 0) scene->interactions->requestErase(interaction);
 				continue;
 			}
 			/// Interacting Grains:
@@ -138,12 +132,10 @@ void Law2_ScGeom_CapillaryPhys_Capillarity::action()
 				D = max(0.,
 				        D); // defines fCap when spheres interpenetrate. D<0 leads to wrong interpolation as D<0 has no solution in the interpolation : this is not physically interpretable!! even if, interpenetration << grain radius.
 				if (!hertzOn) {
-					if (fusionDetection && !cundallContactPhysics->meniscus)
-						bodiesMenisciiList.insert(interaction);
+					if (fusionDetection && !cundallContactPhysics->meniscus) bodiesMenisciiList.insert(interaction);
 					cundallContactPhysics->meniscus = true;
 				} else {
-					if (fusionDetection && !mindlinContactPhysics->meniscus)
-						bodiesMenisciiList.insert(interaction);
+					if (fusionDetection && !mindlinContactPhysics->meniscus) bodiesMenisciiList.insert(interaction);
 					mindlinContactPhysics->meniscus = true;
 				}
 			}
@@ -151,12 +143,10 @@ void Law2_ScGeom_CapillaryPhys_Capillarity::action()
 
 			/// Suction (Capillary pressure):
 			Real Pinterpol = 0;
-			if (!hertzOn)
-				Pinterpol = cundallContactPhysics->isBroken ? 0 : capillaryPressure * (R2 / surfaceTension);
+			if (!hertzOn) Pinterpol = cundallContactPhysics->isBroken ? 0 : capillaryPressure * (R2 / surfaceTension);
 			else
 				Pinterpol = mindlinContactPhysics->isBroken ? 0 : capillaryPressure * (R2 / surfaceTension);
-			if (!hertzOn)
-				cundallContactPhysics->capillaryPressure = capillaryPressure;
+			if (!hertzOn) cundallContactPhysics->capillaryPressure = capillaryPressure;
 			else
 				mindlinContactPhysics->capillaryPressure = capillaryPressure;
 
@@ -182,22 +172,19 @@ void Law2_ScGeom_CapillaryPhys_Capillarity::action()
 				/// capillary adhesion force
 				Real     Finterpol = solution.F;
 				Vector3r fCap      = -Finterpol * (2 * Mathr::PI * (R2 / alpha) * surfaceTension) * currentContactGeometry->normal;
-				if (!hertzOn)
-					cundallContactPhysics->fCap = fCap;
+				if (!hertzOn) cundallContactPhysics->fCap = fCap;
 				else
 					mindlinContactPhysics->fCap = fCap;
 				/// meniscus volume
 				Real Vinterpol = solution.V * pow(R2 / alpha, 3);
 				if (!hertzOn) {
 					cundallContactPhysics->vMeniscus = Vinterpol;
-					if (Vinterpol != 0)
-						cundallContactPhysics->meniscus = true;
+					if (Vinterpol != 0) cundallContactPhysics->meniscus = true;
 					else
 						cundallContactPhysics->meniscus = false;
 				} else {
 					mindlinContactPhysics->vMeniscus = Vinterpol;
-					if (Vinterpol != 0)
-						mindlinContactPhysics->meniscus = true;
+					if (Vinterpol != 0) mindlinContactPhysics->meniscus = true;
 					else
 						mindlinContactPhysics->meniscus = false;
 				}
@@ -222,8 +209,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity::action()
 		} else if (fusionDetection)
 			bodiesMenisciiList.remove(interaction);
 	}
-	if (fusionDetection)
-		checkFusion();
+	if (fusionDetection) checkFusion();
 
 #ifdef YADE_OPENMP
 	const long size = scene->interactions->size();
@@ -237,8 +223,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity::action()
 		if (interaction->isReal()) {
 			CapillaryPhys*        cundallContactPhysics = NULL;
 			MindlinCapillaryPhys* mindlinContactPhysics = NULL;
-			if (!hertzOn)
-				cundallContactPhysics = static_cast<CapillaryPhys*>(interaction->phys.get()); //use CapillaryPhys for linear model
+			if (!hertzOn) cundallContactPhysics = static_cast<CapillaryPhys*>(interaction->phys.get()); //use CapillaryPhys for linear model
 			else
 				mindlinContactPhysics = static_cast<MindlinCapillaryPhys*>(interaction->phys.get()); //use MindlinCapillaryPhys for hertz model
 
@@ -273,8 +258,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity::checkFusion()
 	FOREACH(const shared_ptr<Interaction>& interaction, *scene->interactions)
 	{ // same remark for parallel loops, the most problematic part ?
 		if (interaction->isReal()) {
-			if (!hertzOn)
-				static_cast<CapillaryPhys*>(interaction->phys.get())->fusionNumber = 0;
+			if (!hertzOn) static_cast<CapillaryPhys*>(interaction->phys.get())->fusionNumber = 0;
 			else
 				static_cast<MindlinCapillaryPhys*>(interaction->phys.get())->fusionNumber = 0;
 		}
@@ -297,14 +281,12 @@ void Law2_ScGeom_CapillaryPhys_Capillarity::checkFusion()
 				++currentMeniscus;
 				if (!hertzOn) {
 					cundallInteractionPhysics1 = YADE_CAST<CapillaryPhys*>((*firstMeniscus)->phys.get());
-					if (i == (*firstMeniscus)->getId1())
-						angle1 = cundallInteractionPhysics1->Delta1; //get angle of meniscus1 on body i
+					if (i == (*firstMeniscus)->getId1()) angle1 = cundallInteractionPhysics1->Delta1; //get angle of meniscus1 on body i
 					else
 						angle1 = cundallInteractionPhysics1->Delta2;
 				} else {
 					mindlinInteractionPhysics1 = YADE_CAST<MindlinCapillaryPhys*>((*firstMeniscus)->phys.get());
-					if (i == (*firstMeniscus)->getId1())
-						angle1 = mindlinInteractionPhysics1->Delta1; //get angle of meniscus1 on body i
+					if (i == (*firstMeniscus)->getId1()) angle1 = mindlinInteractionPhysics1->Delta1; //get angle of meniscus1 on body i
 					else
 						angle1 = mindlinInteractionPhysics1->Delta2;
 				}
@@ -322,8 +304,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity::checkFusion()
 						else
 							angle2 = mindlinInteractionPhysics2->Delta2;
 					}
-					if (angle1 == 0 || angle2 == 0)
-						cerr << "THIS SHOULD NOT HAPPEN!!" << endl;
+					if (angle1 == 0 || angle2 == 0) cerr << "THIS SHOULD NOT HAPPEN!!" << endl;
 
 					//cerr << "angle1 = " << angle1 << " | angle2 = " << angle2 << endl;
 
@@ -338,8 +319,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity::checkFusion()
 						normalDot = -(normalFirstMeniscus.dot(normalCurrentMeniscus));
 
 					Real normalAngle = 0;
-					if (normalDot >= 0)
-						normalAngle = math::fastInvCos0(normalDot);
+					if (normalDot >= 0) normalAngle = math::fastInvCos0(normalDot);
 					else
 						normalAngle = ((Mathr::PI)-math::fastInvCos0(-(normalDot)));
 
@@ -622,11 +602,9 @@ bool BodiesMenisciiList::prepare(Scene* scene, bool hertzOn)
 	{ // parallel version using Engine::ompThreads variable not accessible, this function is not one of the Engine..
 		if (I->isReal()) {
 			if (!hertzOn) {
-				if (static_cast<CapillaryPhys*>(I->phys.get())->meniscus)
-					insert(I);
+				if (static_cast<CapillaryPhys*>(I->phys.get())->meniscus) insert(I);
 			} else {
-				if (static_cast<MindlinCapillaryPhys*>(I->phys.get())->meniscus)
-					insert(I);
+				if (static_cast<MindlinCapillaryPhys*>(I->phys.get())->meniscus) insert(I);
 			}
 		}
 	}
@@ -654,9 +632,7 @@ bool BodiesMenisciiList::remove(const shared_ptr<Interaction>& interaction)
 void BodiesMenisciiList::checkLengthBuffer(const shared_ptr<Interaction>& interaction)
 {
 	Body::id_t maxBodyId = std::max(interaction->getId1(), interaction->getId2());
-	if (unsigned(maxBodyId) >= interactionsOnBody.size()) {
-		interactionsOnBody.resize(maxBodyId + 1);
-	}
+	if (unsigned(maxBodyId) >= interactionsOnBody.size()) { interactionsOnBody.resize(maxBodyId + 1); }
 }
 
 std::list<shared_ptr<Interaction>>& BodiesMenisciiList::operator[](int index) { return interactionsOnBody[index]; }
@@ -673,8 +649,7 @@ void BodiesMenisciiList::display()
 			//cerr << "size = "<<interactionsOnBody[i].size() << " empty="<<interactionsOnBody[i].empty() <<endl;
 			for (firstMeniscus = interactionsOnBody[i].begin(); firstMeniscus != lastMeniscus; ++firstMeniscus) {
 				if (*firstMeniscus) {
-					if (firstMeniscus->get())
-						cerr << "(" << (*firstMeniscus)->getId1() << ", " << (*firstMeniscus)->getId2() << ") ";
+					if (firstMeniscus->get()) cerr << "(" << (*firstMeniscus)->getId1() << ", " << (*firstMeniscus)->getId2() << ") ";
 					else
 						cerr << "(void)";
 				}

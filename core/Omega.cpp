@@ -89,8 +89,7 @@ void Omega::cleanupTemps()
 
 std::string Omega::tmpFilename()
 {
-	if (tmpFileDir.empty())
-		throw runtime_error("tmpFileDir empty; Omega::initTemps not yet called()?");
+	if (tmpFileDir.empty()) throw runtime_error("tmpFileDir empty; Omega::initTemps not yet called()?");
 	const std::lock_guard<std::mutex> lock(tmpFileCounterMutex);
 	return tmpFileDir + "/tmp-" + boost::lexical_cast<string>(tmpFileCounter++);
 }
@@ -116,8 +115,7 @@ void Omega::createSimulationLoop() { simulationLoop = shared_ptr<ThreadRunner>(n
 void Omega::stop()
 {
 	LOG_DEBUG("");
-	if (simulationLoop && simulationLoop->looping())
-		simulationLoop->stop();
+	if (simulationLoop && simulationLoop->looping()) simulationLoop->stop();
 	if (simulationLoop)
 		// TODO: throwing from here causes segfault. But sometimes calling the destructor ~ThreadRunner() cannot be done - also causes segfault
 		//       if(simulationLoop->permissionToDestroy()) ....
@@ -127,9 +125,7 @@ void Omega::stop()
 /* WARNING: even a single simulation step is run asynchronously; the call will return before the iteration is finished. */
 void Omega::step()
 {
-	if (simulationLoop) {
-		simulationLoop->spawnSingleAction();
-	}
+	if (simulationLoop) { simulationLoop->spawnSingleAction(); }
 }
 
 void Omega::run()
@@ -138,22 +134,17 @@ void Omega::run()
 		LOG_ERROR("No Omega::simulationLoop? Creating one (please report bug).");
 		createSimulationLoop();
 	}
-	if (simulationLoop && !simulationLoop->looping()) {
-		simulationLoop->start();
-	}
+	if (simulationLoop && !simulationLoop->looping()) { simulationLoop->start(); }
 }
 
 void Omega::pause()
 {
-	if (simulationLoop && simulationLoop->looping()) {
-		simulationLoop->stop();
-	}
+	if (simulationLoop && simulationLoop->looping()) { simulationLoop->stop(); }
 }
 
 bool Omega::isRunning()
 {
-	if (simulationLoop)
-		return simulationLoop->looping();
+	if (simulationLoop) return simulationLoop->looping();
 	else
 		return false;
 }
@@ -172,8 +163,7 @@ void Omega::buildDynlibDatabase(const vector<string>& dynlibsList)
 			for (int i = 0; i < f->getBaseClassNumber(); i++) {
 				dynlibs[name].baseClasses.insert(f->getBaseClassName(i));
 			}
-			if (dynlibs[name].isSerializable)
-				pythonables.push_back(name);
+			if (dynlibs[name].isSerializable) pythonables.push_back(name);
 		} catch (std::runtime_error& e) {
 			/* FIXME: this catches all errors! Some of them are not harmful, however:
 			 * when a class is not factorable, it is OK to skip it; */
@@ -185,20 +175,17 @@ void Omega::buildDynlibDatabase(const vector<string>& dynlibsList)
 	for now, just loop until we succeed; proper solution will be to build graphs of classes
 	and traverse it from the top. It will be done once all classes are pythonable. */
 	for (int i = 0; i < 100 && pythonables.size() > 0; i++) {
-		if (getenv("YADE_DEBUG"))
-			cerr << endl << "[[[ Round " << i << " ]]]: ";
+		if (getenv("YADE_DEBUG")) cerr << endl << "[[[ Round " << i << " ]]]: ";
 		std::list<string> done;
 		for (std::list<string>::iterator I = pythonables.begin(); I != pythonables.end();) {
 			shared_ptr<Serializable> s = boost::static_pointer_cast<Serializable>(ClassFactory::instance().createShared(*I));
 			try {
-				if (getenv("YADE_DEBUG"))
-					cerr << "{{" << *I << "}}";
+				if (getenv("YADE_DEBUG")) cerr << "{{" << *I << "}}";
 				s->pyRegisterClass(wrapperScope);
 				std::list<string>::iterator prev = I++;
 				pythonables.erase(prev);
 			} catch (...) {
-				if (getenv("YADE_DEBUG"))
-					cerr << "[" << *I << "]";
+				if (getenv("YADE_DEBUG")) cerr << "[" << *I << "]";
 				//PyErr_Print();
 				boost::python::handle_exception();
 				PyErr_Clear();
@@ -214,8 +201,7 @@ void Omega::buildDynlibDatabase(const vector<string>& dynlibsList)
 		std::set<string>::iterator bciEnd = (*dli).second.baseClasses.end();
 		for (; bci != bciEnd; ++bci) {
 			string name = *bci;
-			if (name == "Dispatcher1D" || name == "Dispatcher2D")
-				(*dli).second.baseClasses.insert("Dispatcher");
+			if (name == "Dispatcher1D" || name == "Dispatcher2D") (*dli).second.baseClasses.insert("Dispatcher");
 			else if (name == "Functor1D" || name == "Functor2D")
 				(*dli).second.baseClasses.insert("Functor");
 			else if (name == "Serializable")
@@ -236,11 +222,9 @@ bool Omega::isInheritingFrom(const string& className, const string& baseClassNam
 
 bool Omega::isInheritingFrom_recursive(const string& className, const string& baseClassName)
 {
-	if (dynlibs[className].baseClasses.find(baseClassName) != dynlibs[className].baseClasses.end())
-		return true;
+	if (dynlibs[className].baseClasses.find(baseClassName) != dynlibs[className].baseClasses.end()) return true;
 	for (const auto& parent : dynlibs[className].baseClasses) {
-		if (isInheritingFrom_recursive(parent, baseClassName))
-			return true;
+		if (isInheritingFrom_recursive(parent, baseClassName)) return true;
 	}
 	return false;
 }
@@ -276,13 +260,10 @@ void Omega::loadPlugins(vector<string> pluginFiles)
 void Omega::loadSimulation(const string& f, bool quiet)
 {
 	bool isMem = boost::algorithm::starts_with(f, ":memory:");
-	if (!isMem && !boost::filesystem::exists(f))
-		throw runtime_error("Simulation file to load doesn't exist: " + f);
-	if (isMem && memSavedSimulations.count(f) == 0)
-		throw runtime_error("Cannot load nonexistent memory-saved simulation " + f);
+	if (!isMem && !boost::filesystem::exists(f)) throw runtime_error("Simulation file to load doesn't exist: " + f);
+	if (isMem && memSavedSimulations.count(f) == 0) throw runtime_error("Cannot load nonexistent memory-saved simulation " + f);
 
-	if (!quiet)
-		LOG_INFO("Loading file " + f);
+	if (!quiet) LOG_INFO("Loading file " + f);
 	shared_ptr<Scene>& scene = scenes[currentSceneNb];
 	{
 		stop(); // stop current simulation if running
@@ -295,8 +276,7 @@ void Omega::loadSimulation(const string& f, bool quiet)
 			yade::ObjectIO::load(f, "scene", scene);
 		}
 	}
-	if (scene->getClassName() != "Scene")
-		throw logic_error("Wrong file format (scene is not a Scene!?) in " + f);
+	if (scene->getClassName() != "Scene") throw logic_error("Wrong file format (scene is not a Scene!?) in " + f);
 	sceneFile = f;
 	timeInit();
 
@@ -304,20 +284,16 @@ void Omega::loadSimulation(const string& f, bool quiet)
 	//Assumption: maxId is size-1
 	scene->forces.addMaxId(scene->bodies->size() - 1);
 
-	if (!quiet)
-		LOG_DEBUG("Simulation loaded");
+	if (!quiet) LOG_DEBUG("Simulation loaded");
 }
 
 void Omega::saveSimulation(const string& f, bool quiet)
 {
-	if (f.size() == 0)
-		throw runtime_error("f of file to save has zero length.");
-	if (!quiet)
-		LOG_INFO("Saving file " << f);
+	if (f.size() == 0) throw runtime_error("f of file to save has zero length.");
+	if (!quiet) LOG_INFO("Saving file " << f);
 	shared_ptr<Scene>& scene = scenes[currentSceneNb];
 	if (boost::algorithm::starts_with(f, ":memory:")) {
-		if (memSavedSimulations.count(f) > 0 && !quiet)
-			LOG_INFO("Overwriting in-memory saved simulation " << f);
+		if (memSavedSimulations.count(f) > 0 && !quiet) LOG_INFO("Overwriting in-memory saved simulation " << f);
 		std::ostringstream oss;
 		yade::ObjectIO::save<decltype(scene), boost::archive::binary_oarchive>(oss, "scene", scene);
 		memSavedSimulations[f] = oss.str();

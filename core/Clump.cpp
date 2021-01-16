@@ -55,9 +55,7 @@ void Clump::add(const shared_ptr<Body>& clumpBody, const shared_ptr<Body>& subBo
 	}
 	clumpBody->clumpId = clumpBody->id; // just to make sure
 	clumpBody->setBounded(false);       // disallow collisions with the clump itself
-	if (subBody->isStandalone()) {
-		LOG_DEBUG("Added body #" << subBody->id << " to clump #" << clumpBody->id);
-	}
+	if (subBody->isStandalone()) { LOG_DEBUG("Added body #" << subBody->id << " to clump #" << clumpBody->id); }
 }
 
 void Clump::del(const shared_ptr<Body>& clumpBody, const shared_ptr<Body>& subBody)
@@ -112,9 +110,7 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 	const shared_ptr<State> state(clumpBody->state);
 	const shared_ptr<Clump> clump(YADE_PTR_CAST<Clump>(clumpBody->shape));
 
-	if (clump->members.empty()) {
-		throw std::runtime_error("Clump::updateProperties: clump has zero members.");
-	}
+	if (clump->members.empty()) { throw std::runtime_error("Clump::updateProperties: clump has zero members."); }
 	// trivial case
 	if (clump->members.size() == 1) {
 		LOG_DEBUG("Clump of size one will be treated specially.")
@@ -155,8 +151,7 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 					}
 				}
 			}
-			if (intersecting)
-				break;
+			if (intersecting) break;
 		}
 	}
 	/* quantities suffixed by
@@ -190,8 +185,7 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 		Real dx     = rMin / discretization; //edge length of cell
 		Real dv     = pow(dx, 3);            //volume of cell
 		long nCells = long(math::round((aabb.sizes() / dx).prod()));
-		if (nCells > 1e7)
-			LOG_WARN("Clump::updateProperties: Cell array has " << nCells << " cells. Integrate inertia may take a while ...");
+		if (nCells > 1e7) LOG_WARN("Clump::updateProperties: Cell array has " << nCells << " cells. Integrate inertia may take a while ...");
 		Vector3r x; //position vector (center) of cell
 		for (x.x() = aabb.min().x() + dx / 2.; x.x() < aabb.max().x(); x.x() += dx) {
 			for (x.y() = aabb.min().y() + dx / 2.; x.y() < aabb.max().y(); x.y() += dx) {

@@ -14,8 +14,7 @@ void SPHEngine::action()
 	{
 		YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 		{
-			if (mask > 0 && (b->groupMask & mask) == 0)
-				continue;
+			if (mask > 0 && (b->groupMask & mask) == 0) continue;
 			this->calculateSPHRho(b);
 			b->state->press = math::max(0.0, k * (b->state->rho - b->state->rho0));
 		}
@@ -25,9 +24,7 @@ void SPHEngine::action()
 
 void SPHEngine::calculateSPHRho(const shared_ptr<Body>& b)
 {
-	if (b->state->rho0 < 0) {
-		b->state->rho0 = rho0;
-	}
+	if (b->state->rho0 < 0) { b->state->rho0 = rho0; }
 	if (not b->isClump()) {
 		Real rho = 0;
 
@@ -38,16 +35,14 @@ void SPHEngine::calculateSPHRho(const shared_ptr<Body>& b)
 		for (Body::MapId2IntrT::iterator it = b->intrs.begin(), end = b->intrs.end(); it != end; ++it) {
 			const shared_ptr<Body> b2 = Body::byId((*it).first, scene);
 			Sphere*                s  = dynamic_cast<Sphere*>(b->shape.get());
-			if (!s)
-				continue;
+			if (!s) continue;
 
 			if (((*it).second)->geom and ((*it).second)->phys) {
 				const ScGeom     geom = *(YADE_PTR_CAST<ScGeom>(((*it).second)->geom));
 				const ViscElPhys phys = *(YADE_PTR_CAST<ViscElPhys>(((*it).second)->phys));
 
 				Real Mass = b2->state->mass;
-				if (Mass == 0)
-					Mass = b->state->mass;
+				if (Mass == 0) Mass = b->state->mass;
 
 				const Real SmoothDist = (b2->state->pos - b->state->pos).norm();
 
@@ -196,9 +191,7 @@ KernelFunction returnKernelFunction(const int a, const typeKernFunctions typeF) 
 
 KernelFunction returnKernelFunction(const int a, const int b, const typeKernFunctions typeF)
 {
-	if (a != b) {
-		throw runtime_error("Kernel types should be equal!");
-	}
+	if (a != b) { throw runtime_error("Kernel types should be equal!"); }
 	if (a == Lucy) {
 		if (typeF == Norm) {
 			return smoothkernelLucy;

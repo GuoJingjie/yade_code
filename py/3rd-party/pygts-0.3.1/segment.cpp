@@ -69,9 +69,7 @@ static PyObject* intersects(PygtsSegment* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &s_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &s_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (!pygts_segment_check(s_)) {
@@ -92,9 +90,7 @@ static PyObject* connects(PygtsSegment* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "OO", &v1_, &v2_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "OO", &v1_, &v2_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (!pygts_vertex_check(v1_)) {
@@ -127,9 +123,7 @@ static PyObject* touches(PygtsSegment* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O", &s_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O", &s_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (!pygts_segment_check(s_)) {
@@ -157,9 +151,7 @@ static PyObject* midvertex(PygtsSegment* self, PyObject* args)
 
 	v = gts_segment_midvertex(PYGTS_SEGMENT_AS_GTS_SEGMENT(self), gts_vertex_class());
 
-	if ((vertex = pygts_vertex_new(v)) == NULL) {
-		return NULL;
-	}
+	if ((vertex = pygts_vertex_new(v)) == NULL) { return NULL; }
 
 	return (PyObject*)vertex;
 }
@@ -176,9 +168,7 @@ static PyObject* intersection(PygtsSegment* self, PyObject* args)
 	SELF_CHECK
 
 	/* Parse the args */
-	if (!PyArg_ParseTuple(args, "O|O", &t_, &boundary_)) {
-		return NULL;
-	}
+	if (!PyArg_ParseTuple(args, "O|O", &t_, &boundary_)) { return NULL; }
 
 	/* Convert to PygtsObjects */
 	if (!pygts_triangle_check(t_)) {
@@ -205,9 +195,7 @@ static PyObject* intersection(PygtsSegment* self, PyObject* args)
 		return Py_None;
 	}
 
-	if ((vertex = pygts_vertex_new(v)) == NULL) {
-		return NULL;
-	}
+	if ((vertex = pygts_vertex_new(v)) == NULL) { return NULL; }
 
 	return (PyObject*)vertex;
 }
@@ -288,9 +276,7 @@ static PyObject* get_v1(PygtsSegment* self, void* closure)
 
 	SELF_CHECK
 
-	if ((v1 = pygts_vertex_new(PYGTS_SEGMENT_AS_GTS_SEGMENT(self)->v1)) == NULL) {
-		return NULL;
-	}
+	if ((v1 = pygts_vertex_new(PYGTS_SEGMENT_AS_GTS_SEGMENT(self)->v1)) == NULL) { return NULL; }
 
 	return (PyObject*)v1;
 }
@@ -302,9 +288,7 @@ static PyObject* get_v2(PygtsSegment* self, void* closure)
 
 	SELF_CHECK
 
-	if ((v2 = pygts_vertex_new(PYGTS_SEGMENT_AS_GTS_SEGMENT(self)->v2)) == NULL) {
-		return NULL;
-	}
+	if ((v2 = pygts_vertex_new(PYGTS_SEGMENT_AS_GTS_SEGMENT(self)->v2)) == NULL) { return NULL; }
 
 	return (PyObject*)v2;
 }
@@ -333,12 +317,8 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	/* Parse the args */
 	if (kwds) {
 		o = PyDict_GetItemString(kwds, "alloc_gtsobj");
-		if (o == Py_False) {
-			alloc_gtsobj = FALSE;
-		}
-		if (o != NULL) {
-			PyDict_DelItemString(kwds, "alloc_gtsobj");
-		}
+		if (o == Py_False) { alloc_gtsobj = FALSE; }
+		if (o != NULL) { PyDict_DelItemString(kwds, "alloc_gtsobj"); }
 	}
 	if (kwds) {
 		Py_INCREF(Py_False);
@@ -411,9 +391,7 @@ static int init(PygtsSegment* self, PyObject* args, PyObject* kwds)
 	gint ret;
 
 	/* Chain up */
-	if ((ret = PygtsObjectType.tp_init((PyObject*)self, args, kwds)) != 0) {
-		return ret;
-	}
+	if ((ret = PygtsObjectType.tp_init((PyObject*)self, args, kwds)) != 0) { return ret; }
 
 	return 0;
 }
@@ -437,12 +415,10 @@ static int compare(PyObject* s1_, PyObject* s2_)
 #if PY_MAJOR_VERSION >= 3
 static PyObject* rich_compare(PyObject* o1, PyObject* o2, int op)
 {
-	if (o2 == Py_None)
-		Py_RETURN_FALSE;
+	if (o2 == Py_None) Py_RETURN_FALSE;
 	switch (op) {
 		case Py_EQ: {
-			if (compare(o1, o2))
-				Py_RETURN_TRUE;
+			if (compare(o1, o2)) Py_RETURN_TRUE;
 			Py_RETURN_FALSE;
 		}
 		default: Py_RETURN_NOTIMPLEMENTED;
@@ -520,8 +496,7 @@ gboolean pygts_segment_check(PyObject* o)
 
 gboolean pygts_segment_is_ok(PygtsSegment* s)
 {
-	if (!pygts_object_is_ok(PYGTS_OBJECT(s)))
-		return FALSE;
+	if (!pygts_object_is_ok(PYGTS_OBJECT(s))) return FALSE;
 	return gts_segment_is_ok(PYGTS_SEGMENT_AS_GTS_SEGMENT(s));
 }
 

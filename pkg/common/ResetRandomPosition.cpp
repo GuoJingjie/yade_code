@@ -33,8 +33,7 @@ void ResetRandomPosition::action()
 		FOREACH(shared_ptr<Engine> eng, scene->engines)
 		{
 			bI = dynamic_cast<Collider*>(eng.get());
-			if (bI)
-				break;
+			if (bI) break;
 		}
 		if (!bI) {
 			LOG_FATAL("Can't find Collider.");
@@ -88,8 +87,7 @@ void ResetRandomPosition::action()
 						break;
 					}
 				}
-				if (is_overlap)
-					continue; // new attempt
+				if (is_overlap) continue; // new attempt
 
 				// Test overlap with other bodies
 				vector<Body::id_t> probedBodies = bI->probeBoundingVolume(bv);
@@ -100,8 +98,7 @@ void ResetRandomPosition::action()
 						break;
 					}
 				}
-				if (is_overlap)
-					continue; // new attempt
+				if (is_overlap) continue; // new attempt
 				break;
 			}
 			if (is_overlap) {

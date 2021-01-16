@@ -31,13 +31,11 @@ ThreeDTriaxialEngine::~ThreeDTriaxialEngine() { }
 void ThreeDTriaxialEngine::action()
 {
 	static int warn = 0;
-	if (!warn++)
-		LOG_WARN("This engine is deprecated, please switch to TriaxialStressController if you expect long term support.")
+	if (!warn++) LOG_WARN("This engine is deprecated, please switch to TriaxialStressController if you expect long term support.")
 	if (firstRun) {
 		LOG_INFO("First run, will initialize!");
 
-		if (updateFrictionAngle)
-			setContactProperties(frictionAngleDegree);
+		if (updateFrictionAngle) setContactProperties(frictionAngleDegree);
 
 		height0 = height;
 		depth0  = depth;
@@ -79,8 +77,7 @@ void ThreeDTriaxialEngine::action()
 
 	if (!stressControl_1) // control in strain if wanted
 	{
-		if (currentStrainRate1 != strainRate1)
-			currentStrainRate1 += (strainRate1 - currentStrainRate1) * (1 - strainDamping);
+		if (currentStrainRate1 != strainRate1) currentStrainRate1 += (strainRate1 - currentStrainRate1) * (1 - strainDamping);
 
 		State* p_left = Body::byId(wall_left_id, scene)->state.get();
 		p_left->pos += 0.5 * currentStrainRate1 * width * translationAxisx * dt;
@@ -88,16 +85,14 @@ void ThreeDTriaxialEngine::action()
 		p_right->pos -= 0.5 * currentStrainRate1 * width * translationAxisx * dt;
 
 	} else {
-		if (currentStrainRate1 != strainRate1)
-			currentStrainRate1 += (strainRate1 - currentStrainRate1) * (1 - strainDamping);
+		if (currentStrainRate1 != strainRate1) currentStrainRate1 += (strainRate1 - currentStrainRate1) * (1 - strainDamping);
 		max_vel1 = 0.5 * currentStrainRate1 * width;
 	}
 
 
 	if (!stressControl_2) // control in strain if wanted
 	{
-		if (currentStrainRate2 != strainRate2)
-			currentStrainRate2 += (strainRate2 - currentStrainRate2) * (1 - strainDamping);
+		if (currentStrainRate2 != strainRate2) currentStrainRate2 += (strainRate2 - currentStrainRate2) * (1 - strainDamping);
 
 		State* p_bottom = Body::byId(wall_bottom_id, scene)->state.get();
 		p_bottom->pos += 0.5 * currentStrainRate2 * height * translationAxisy * dt;
@@ -105,16 +100,14 @@ void ThreeDTriaxialEngine::action()
 		p_top->pos -= 0.5 * currentStrainRate2 * height * translationAxisy * dt;
 
 	} else {
-		if (currentStrainRate2 != strainRate2)
-			currentStrainRate2 += (strainRate2 - currentStrainRate2) * (1 - strainDamping);
+		if (currentStrainRate2 != strainRate2) currentStrainRate2 += (strainRate2 - currentStrainRate2) * (1 - strainDamping);
 		max_vel2 = 0.5 * currentStrainRate2 * height;
 	}
 
 
 	if (!stressControl_3) // control in strain if wanted
 	{
-		if (currentStrainRate3 != strainRate3)
-			currentStrainRate3 += (strainRate3 - currentStrainRate3) * (1 - strainDamping);
+		if (currentStrainRate3 != strainRate3) currentStrainRate3 += (strainRate3 - currentStrainRate3) * (1 - strainDamping);
 
 
 		State* p_back = Body::byId(wall_back_id, scene)->state.get();
@@ -123,8 +116,7 @@ void ThreeDTriaxialEngine::action()
 		p_front->pos -= 0.5 * currentStrainRate3 * depth * translationAxisz * dt;
 
 	} else {
-		if (currentStrainRate3 != strainRate3)
-			currentStrainRate3 += (strainRate3 - currentStrainRate3) * (1 - strainDamping);
+		if (currentStrainRate3 != strainRate3) currentStrainRate3 += (strainRate3 - currentStrainRate3) * (1 - strainDamping);
 		max_vel3 = 0.5 * currentStrainRate3 * depth;
 	}
 
@@ -136,14 +128,12 @@ void ThreeDTriaxialEngine::setContactProperties(Real frictionDegree)
 	scene                             = Omega::instance().getScene().get();
 	shared_ptr<BodyContainer>& bodies = scene->bodies;
 	for (const auto& b : *scene->bodies) {
-		if (b->isDynamic())
-			YADE_PTR_CAST<FrictMat>(b->material)->frictionAngle = frictionDegree * Mathr::PI / 180.0;
+		if (b->isDynamic()) YADE_PTR_CAST<FrictMat>(b->material)->frictionAngle = frictionDegree * Mathr::PI / 180.0;
 	}
 
 	FOREACH(const shared_ptr<Interaction>& ii, *scene->interactions)
 	{
-		if (!ii->isReal())
-			continue;
+		if (!ii->isReal()) continue;
 		const shared_ptr<FrictMat>& sdec1 = YADE_PTR_CAST<FrictMat>((*bodies)[(Body::id_t)((ii)->getId1())]->material);
 		const shared_ptr<FrictMat>& sdec2 = YADE_PTR_CAST<FrictMat>((*bodies)[(Body::id_t)((ii)->getId2())]->material);
 		//FIXME - why dynamic_cast fails here?

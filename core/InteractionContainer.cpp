@@ -22,8 +22,7 @@ bool InteractionContainer::insert(const shared_ptr<Interaction>& i)
 	Body::id_t id1 = i->getId1();
 	Body::id_t id2 = i->getId2();
 
-	if (id1 > id2)
-		swap(id1, id2);
+	if (id1 > id2) swap(id1, id2);
 
 	assert((Body::id_t)bodies->size() > id1); // the bodies must exist already
 	assert((Body::id_t)bodies->size() > id2);
@@ -31,10 +30,8 @@ bool InteractionContainer::insert(const shared_ptr<Interaction>& i)
 	const shared_ptr<Body>& b1 = (*bodies)[id1];
 	const shared_ptr<Body>& b2 = (*bodies)[id2];
 
-	if (!b1->intrs.insert(Body::MapId2IntrT::value_type(id2, i)).second)
-		return false; // already exists
-	if (!b2->intrs.insert(Body::MapId2IntrT::value_type(id1, i)).second)
-		return false;
+	if (!b1->intrs.insert(Body::MapId2IntrT::value_type(id2, i)).second) return false; // already exists
+	if (!b2->intrs.insert(Body::MapId2IntrT::value_type(id1, i)).second) return false;
 
 	linIntrs.resize(++currSize);           // currSize updated
 	linIntrs[currSize - 1] = i;            // assign last element
@@ -68,8 +65,7 @@ void InteractionContainer::clear()
 	assert(bodies);
 	const std::lock_guard<std::mutex> lock(drawloopmutex);
 	for (const auto& b : *bodies) {
-		if (b)
-			b->intrs.clear();
+		if (b) b->intrs.clear();
 	}
 	linIntrs.clear();
 	currSize = 0;
@@ -81,20 +77,16 @@ bool InteractionContainer::erase(Body::id_t id1, Body::id_t id2, int linPos)
 	assert(bodies);
 #warning("is cpu cost of this mutex known?")
 	const std::lock_guard<std::mutex> lock(drawloopmutex);
-	if (id1 > id2)
-		swap(id1, id2);
-	if (id2 >= (Body::id_t)bodies->size())
-		return false;
+	if (id1 > id2) swap(id1, id2);
+	if (id2 >= (Body::id_t)bodies->size()) return false;
 
 	const shared_ptr<Body>& b1((*bodies)[id1]);
 	const shared_ptr<Body>& b2((*bodies)[id2]);
 	int                     linIx = -1;
-	if (!b1)
-		linIx = linPos;
+	if (!b1) linIx = linPos;
 	else {
 		Body::MapId2IntrT::iterator I(b1->intrs.find(id2));
-		if (I == b1->intrs.end())
-			linIx = linPos;
+		if (I == b1->intrs.end()) linIx = linPos;
 		else {
 			linIx = I->second->linIx;
 			assert(linIx == linPos);
@@ -102,9 +94,7 @@ bool InteractionContainer::erase(Body::id_t id1, Body::id_t id2, int linPos)
 			b1->intrs.erase(I);
 			if (b2) {
 				Body::MapId2IntrT::iterator I2(b2->intrs.find(id1));
-				if (not(I2 == b2->intrs.end())) {
-					b2->intrs.erase(I2);
-				}
+				if (not(I2 == b2->intrs.end())) { b2->intrs.erase(I2); }
 			}
 		}
 	}
@@ -128,8 +118,7 @@ bool InteractionContainer::erase(Body::id_t id1, Body::id_t id2, int linPos)
 const shared_ptr<Interaction>& InteractionContainer::find(Body::id_t id1, Body::id_t id2)
 {
 	assert(bodies);
-	if (id1 > id2)
-		swap(id1, id2);
+	if (id1 > id2) swap(id1, id2);
 	// those checks could be perhaps asserts, but pyInteractionContainer has no access to the body container...
 	if (id2 >= (Body::id_t)bodies->size()) {
 		empty = shared_ptr<Interaction>();
@@ -141,8 +130,7 @@ const shared_ptr<Interaction>& InteractionContainer::find(Body::id_t id1, Body::
 		return empty;
 	}
 	Body::MapId2IntrT::iterator I(b1->intrs.find(id2));
-	if (I != b1->intrs.end())
-		return I->second;
+	if (I != b1->intrs.end()) return I->second;
 	else {
 		empty = shared_ptr<Interaction>();
 		return empty;
@@ -158,8 +146,7 @@ bool InteractionContainer::insert(Body::id_t id1, Body::id_t id2)
 void InteractionContainer::requestErase(Body::id_t id1, Body::id_t id2)
 {
 	const shared_ptr<Interaction> I = find(id1, id2);
-	if (!I)
-		return;
+	if (!I) return;
 	I->reset();
 }
 
@@ -170,8 +157,7 @@ void InteractionContainer::requestErase(Interaction* I) { I->reset(); }
 void InteractionContainer::eraseNonReal()
 {
 	for (const auto& i : *this)
-		if (!i->isReal())
-			this->erase(i->getId1(), i->getId2(), i->linIx);
+		if (!i->isReal()) this->erase(i->getId1(), i->getId2(), i->linIx);
 }
 
 // compare interaction based on their first id
@@ -189,12 +175,10 @@ void InteractionContainer::updateSortedIntrs()
 void InteractionContainer::preSave(InteractionContainer&)
 {
 	for (const shared_ptr<Interaction>& I : *this) {
-		if (I->geom || I->phys)
-			interaction.push_back(I);
+		if (I->geom || I->phys) interaction.push_back(I);
 		// since requestErase'd interactions have no interaction physics/geom, they are not saved
 	}
-	if (serializeSorted)
-		std::sort(interaction.begin(), interaction.end(), compPtrInteraction());
+	if (serializeSorted) std::sort(interaction.begin(), interaction.end(), compPtrInteraction());
 }
 void InteractionContainer::postSave(InteractionContainer&) { interaction.clear(); }
 

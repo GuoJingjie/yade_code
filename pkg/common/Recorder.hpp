@@ -10,14 +10,11 @@ class Recorder : public PeriodicEngine {
 		assert(!out.is_open());
 
 		std::string fileTemp = file;
-		if (addIterNum)
-			fileTemp += "-" + boost::lexical_cast<string>(scene->iter);
+		if (addIterNum) fileTemp += "-" + boost::lexical_cast<string>(scene->iter);
 
-		if (fileTemp.empty())
-			throw ios_base::failure(__FILE__ ": Empty filename.");
+		if (fileTemp.empty()) throw ios_base::failure(__FILE__ ": Empty filename.");
 		out.open(fileTemp.c_str(), truncate ? std::fstream::trunc : std::fstream::app);
-		if (!out.good())
-			throw ios_base::failure(__FILE__ ": I/O error opening file `" + fileTemp + "'.");
+		if (!out.good()) throw ios_base::failure(__FILE__ ": I/O error opening file `" + fileTemp + "'.");
 	}
 
 protected:
@@ -29,8 +26,7 @@ public:
 	virtual bool isActivated()
 	{
 		if (PeriodicEngine::isActivated()) {
-			if (!out.is_open())
-				openAndCheck();
+			if (!out.is_open()) openAndCheck();
 			return true;
 		}
 		return false;

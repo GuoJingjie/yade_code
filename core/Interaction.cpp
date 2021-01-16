@@ -44,9 +44,7 @@ void Interaction::reset()
 
 void Interaction::swapOrder()
 {
-	if (geom || phys) {
-		throw std::logic_error("Bodies in interaction cannot be swapped if they have geom or phys.");
-	}
+	if (geom || phys) { throw std::logic_error("Bodies in interaction cannot be swapped if they have geom or phys."); }
 	std::swap(id1, id2);
 	cellDist *= -1;
 }

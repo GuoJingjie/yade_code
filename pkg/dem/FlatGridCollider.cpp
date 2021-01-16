@@ -15,12 +15,10 @@ bool FlatGridCollider::isActivated()
 {
 	// keep interactions trequested for deletion as potential (forget removal requests)
 	// 	scene->interactions->clearPendingErase();
-	if (!newton)
-		return true;
+	if (!newton) return true;
 	// handle verlet distance
 	fastestBodyMaxDist += sqrt(newton->maxVelocitySq) * scene->dt;
-	if (fastestBodyMaxDist > verletDist)
-		return true;
+	if (fastestBodyMaxDist > verletDist) return true;
 	return false;
 }
 
@@ -30,12 +28,9 @@ void FlatGridCollider::action()
 		FOREACH(const shared_ptr<Engine>& e, scene->engines)
 		{
 			newton = YADE_PTR_DYN_CAST<NewtonIntegrator>(e);
-			if (newton)
-				break;
+			if (newton) break;
 		}
-		if (!newton) {
-			throw runtime_error("FlatGridCollider: Unable to find NewtonIntegrator in engines.");
-		}
+		if (!newton) { throw runtime_error("FlatGridCollider: Unable to find NewtonIntegrator in engines."); }
 	}
 	fastestBodyMaxDist = 0;
 	// make interaction loop delete unseen potential interactions
@@ -43,8 +38,7 @@ void FlatGridCollider::action()
 	// adjust grid if necessary
 	updateGrid();
 	for (const auto& b : *scene->bodies) {
-		if (!b)
-			continue; // deleted bodies
+		if (!b) continue; // deleted bodies
 		updateBodyCells(b);
 	}
 	updateCollisions();
@@ -62,8 +56,7 @@ void FlatGridCollider::initIndices()
 void FlatGridCollider::updateGrid()
 {
 	// checks
-	if (step <= 0)
-		throw std::runtime_error("FlatGridCollider::step must be positive.");
+	if (step <= 0) throw std::runtime_error("FlatGridCollider::step must be positive.");
 	Vector3r aabbSize = aabbMax - aabbMin;
 	if (aabbSize[0] <= 0 || aabbSize[1] <= 0 || aabbSize[2] <= 0)
 		throw std::runtime_error("FlatGridCollider::{aabbMin,aabbMax} must give positive volume.");
@@ -84,8 +77,7 @@ void FlatGridCollider::updateGrid()
 
 void FlatGridCollider::updateBodyCells(const shared_ptr<Body>& b)
 {
-	if (!b->shape)
-		return;
+	if (!b->shape) return;
 	const Shape* shape(b->shape.get());
 	// Sphere
 	if (shape->getClassIndex() == sphereIdx) {
@@ -107,8 +99,7 @@ void FlatGridCollider::updateBodyCells(const shared_ptr<Body>& b)
 						// perhaps slower, but inserts each body only once into the cell (meaningful if outside grid: multiple integer coords coolapse in one cell)
 						{
 							Grid::idVector& vv = grid(cPtIn);
-							if (vv.size() == 0 || *(vv.rbegin()) != b->id)
-								vv.push_back(b->id);
+							if (vv.size() == 0 || *(vv.rbegin()) != b->id) vv.push_back(b->id);
 						}
 						//grid(cPtIn).push_back(b->id);
 						LOG_TRACE(
@@ -132,8 +123,7 @@ void FlatGridCollider::updateCollisions()
 		for (size_t i = 0; i < sz; i++)
 			for (size_t j = i + 1; j < sz; j++) {
 				Body::id_t id1 = v[i], id2 = v[j];
-				if (id1 == id2)
-					continue; // at grid boundary, it is possible to have one body more times in one cell
+				if (id1 == id2) continue; // at grid boundary, it is possible to have one body more times in one cell
 				const shared_ptr<Interaction>& I = intrs->find(id1, id2);
 				if (I) {
 					I->iterLastSeen = iter;

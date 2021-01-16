@@ -23,30 +23,24 @@ void UniaxialStrainer::init()
 	{
 		const shared_ptr<Body>& b = Body::byId(id, scene);
 		posCoords.push_back(b->state->pos[axis]);
-		if (blockDisplacements && blockRotations)
-			b->state->blockedDOFs = State::DOF_ALL;
+		if (blockDisplacements && blockRotations) b->state->blockedDOFs = State::DOF_ALL;
 		else {
-			if (!blockDisplacements)
-				b->state->blockedDOFs = State::axisDOF(axis);
+			if (!blockDisplacements) b->state->blockedDOFs = State::axisDOF(axis);
 			else
 				b->state->blockedDOFs = State::DOF_XYZ;
-			if (blockRotations)
-				b->state->blockedDOFs |= State::DOF_RXRYRZ;
+			if (blockRotations) b->state->blockedDOFs |= State::DOF_RXRYRZ;
 		}
 	}
 	FOREACH(Body::id_t id, negIds)
 	{
 		const shared_ptr<Body>& b = Body::byId(id, scene);
 		negCoords.push_back(b->state->pos[axis]);
-		if (blockDisplacements && blockRotations)
-			b->state->blockedDOFs = State::DOF_ALL;
+		if (blockDisplacements && blockRotations) b->state->blockedDOFs = State::DOF_ALL;
 		else {
-			if (!blockDisplacements)
-				b->state->blockedDOFs = State::axisDOF(axis);
+			if (!blockDisplacements) b->state->blockedDOFs = State::axisDOF(axis);
 			else
 				b->state->blockedDOFs = State::DOF_XYZ;
-			if (blockRotations)
-				b->state->blockedDOFs |= State::DOF_RXRYRZ;
+			if (blockRotations) b->state->blockedDOFs |= State::DOF_RXRYRZ;
 		}
 	}
 
@@ -63,8 +57,7 @@ void UniaxialStrainer::init()
 		                .c_str());
 	/* this happens is nan propagates from e.g. brefcom consitutive law in case 2 bodies have _exactly_ the same position
 	 * (the the normal strain is 0./0.=nan). That is an user's error, however and should not happen. */
-	if (math::isnan(originalLength))
-		throw logic_error("UniaxialStrainer: Initial length is NaN!");
+	if (math::isnan(originalLength)) throw logic_error("UniaxialStrainer: Initial length is NaN!");
 	assert(originalLength > 0 && !math::isnan(originalLength));
 
 	assert(!math::isnan(strainRate) || !math::isnan(absSpeed));
@@ -125,24 +118,19 @@ void UniaxialStrainer::init()
 			b->state->vel[axis] = pNormalized * (v1 - v0) + v0;
 		}
 	}
-	if (math::isnan(crossSectionArea)) {
-		throw std::invalid_argument("UniaxialStrain.crossSectionArea must be specified.");
-	}
+	if (math::isnan(crossSectionArea)) { throw std::invalid_argument("UniaxialStrain.crossSectionArea must be specified."); }
 }
 
 void UniaxialStrainer::action()
 {
-	if (needsInit)
-		init();
+	if (needsInit) init();
 	// postconditions for initParams
 	assert(posIds.size() == posCoords.size() && negIds.size() == negCoords.size() && originalLength > 0 && crossSectionArea > 0);
 	//nothing to do
-	if (posIds.size() == 0 || negIds.size() == 0)
-		return;
+	if (posIds.size() == 0 || negIds.size() == 0) return;
 	// linearly increase strain to the desired value
 	if (math::abs(currentStrainRate) < math::abs(strainRate)) {
-		if (initAccelTime_s != 0)
-			currentStrainRate = (scene->time / initAccelTime_s) * strainRate;
+		if (initAccelTime_s != 0) currentStrainRate = (scene->time / initAccelTime_s) * strainRate;
 		else
 			currentStrainRate = strainRate;
 	} else
@@ -160,8 +148,7 @@ void UniaxialStrainer::action()
 			scene->stopAtIter = scene->iter + 1 + idleIterations;
 		}
 	}
-	if (asymmetry == 0)
-		dAX *= .5; // apply half on both sides if straining symetrically
+	if (asymmetry == 0) dAX *= .5; // apply half on both sides if straining symetrically
 	if (asymmetry != 1) {
 		for (size_t i = 0; i < negIds.size(); i++) {
 			negCoords[i] -= dAX;

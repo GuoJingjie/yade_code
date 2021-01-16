@@ -68,8 +68,7 @@ void ThreadRunner::call()
 
 void ThreadRunner::spawnSingleAction()
 {
-	if (m_looping)
-		return;
+	if (m_looping) return;
 	const std::lock_guard<std::mutex> calllock(m_callmutex);
 	boost::function0<void>            call(boost::bind(&ThreadRunner::call, this));
 	boost::thread                     th(call);

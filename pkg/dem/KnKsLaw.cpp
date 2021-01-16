@@ -20,12 +20,9 @@ Real Law2_SCG_KnKsPhys_KnKsLaw::ratioSlidingContacts()
 	int  count(0);
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		KnKsPhys* phys = dynamic_cast<KnKsPhys*>(I->phys.get()); /* contact physics */
-		if (phys->isSliding) {
-			ratio += 1;
-		}
+		if (phys->isSliding) { ratio += 1; }
 		count++;
 	}
 	ratio /= count;
@@ -49,8 +46,7 @@ Real Law2_SCG_KnKsPhys_KnKsLaw::elasticEnergy()
 	Real energy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
-		if (!I->isReal())
-			continue;
+		if (!I->isReal()) continue;
 		KnKsPhys* phys = dynamic_cast<KnKsPhys*>(I->phys.get()); /* contact physics */
 		if (phys) {
 			//FIXME: Check whether we need to add the viscous forces to the elastic ones below, since the normalForce is reduced by normalViscous
@@ -254,9 +250,7 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 #endif
 
 		//		#if 0
-		if (phys->normalViscous.norm() > phys->normalForce.norm()) {
-			phys->normalViscous = phys->normalForce;
-		}
+		if (phys->normalViscous.norm() > phys->normalForce.norm()) { phys->normalViscous = phys->normalForce; }
 		//		#endif
 
 		//FIXME: The same must be done for the shearForce, if viscous damping is to be considered in the shear direction as well in the future
@@ -310,9 +304,7 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 			phys->isSliding = true;
 			Real ratio      = maxFs / shearForce.norm();
 			shearForce *= ratio;
-			if (allowBreakage == true) {
-				phys->cohesionBroken = true;
-			}
+			if (allowBreakage == true) { phys->cohesionBroken = true; }
 			dampedShearForce   = shearForce; /* no damping when it slides */
 			phys->shearViscous = Vector3r(0, 0, 0);
 		} else {
@@ -327,16 +319,13 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 			Real               ratio      = maxFs / shearForce.norm();
 			/*const*/ Vector3r trialForce = shearForce; //Store prev force for definition of plastic slip
 			shearForce *= ratio;
-			if (allowBreakage == true) {
-				phys->cohesionBroken = true;
-			}
+			if (allowBreakage == true) { phys->cohesionBroken = true; }
 			dampedShearForce   = shearForce; /* no damping when it slides */
 			phys->shearViscous = Vector3r(0, 0, 0);
 
 			/* Plastic dissipation due to friction */
 			/*const*/ Real dissip = ((1 / phys->ks) * (trialForce - shearForce)) /*plastic disp*/.dot(shearForce) /*active force*/;
-			if (traceEnergy)
-				plasticDissipation += dissip;
+			if (traceEnergy) plasticDissipation += dissip;
 			else if (dissip > 0)
 				scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset at every timestep*/ false);
 		} else {
@@ -361,8 +350,7 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 		/* Dissipation due to viscous damping*/
 		if (phys->viscousDamping > 0.0) {
 			/*const*/ Real normDampDissipValue = phys->normalViscous.dot(incidentVn * dt);
-			if (traceEnergy)
-				normDampDissip += normDampDissipValue; // calc dissipation of energy due to normal damping
+			if (traceEnergy) normDampDissip += normDampDissipValue; // calc dissipation of energy due to normal damping
 			else if (normDampDissipValue > 0)
 				scene->energy->add(normDampDissipValue, "normDampDissip", normDampDissipIx, /*reset at every timestep*/ false);
 			// Here, instead of checking shearViscous.norm(), I should consider a boolean variable "noShearDamp", like in HertzMindlin.cpp
@@ -407,8 +395,7 @@ CREATE_LOGGER(Ip2_FrictMat_FrictMat_KnKsPhys);
 void Ip2_FrictMat_FrictMat_KnKsPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
 	//	const Real PI = 3.14159265358979323846;
-	if (interaction->phys)
-		return;
+	if (interaction->phys) return;
 
 	ScGeom* scg = YADE_CAST<ScGeom*>(interaction->geom.get());
 	assert(scg);

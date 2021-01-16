@@ -38,14 +38,10 @@ void OpenGLRenderer::init()
 	FOREACH(const strDldPair& item, Omega::instance().getDynlibsDescriptor())
 	{
 		// if (Omega::instance().isInheritingFrom_recursive(item.first,"GlStateFunctor")) stateFunctorNames.push_back(item.first);
-		if (Omega::instance().isInheritingFrom_recursive(item.first, "GlBoundFunctor"))
-			boundFunctorNames.push_back(item.first);
-		if (Omega::instance().isInheritingFrom_recursive(item.first, "GlShapeFunctor"))
-			shapeFunctorNames.push_back(item.first);
-		if (Omega::instance().isInheritingFrom_recursive(item.first, "GlIGeomFunctor"))
-			geomFunctorNames.push_back(item.first);
-		if (Omega::instance().isInheritingFrom_recursive(item.first, "GlIPhysFunctor"))
-			physFunctorNames.push_back(item.first);
+		if (Omega::instance().isInheritingFrom_recursive(item.first, "GlBoundFunctor")) boundFunctorNames.push_back(item.first);
+		if (Omega::instance().isInheritingFrom_recursive(item.first, "GlShapeFunctor")) shapeFunctorNames.push_back(item.first);
+		if (Omega::instance().isInheritingFrom_recursive(item.first, "GlIGeomFunctor")) geomFunctorNames.push_back(item.first);
+		if (Omega::instance().isInheritingFrom_recursive(item.first, "GlIPhysFunctor")) physFunctorNames.push_back(item.first);
 	}
 	initgl(); // creates functor objects in the proper sense
 
@@ -93,11 +89,9 @@ void OpenGLRenderer::initgl()
 
 bool OpenGLRenderer::pointClipped(const Vector3r& p)
 {
-	if (numClipPlanes < 1)
-		return false;
+	if (numClipPlanes < 1) return false;
 	for (int i = 0; i < numClipPlanes; i++)
-		if (clipPlaneActive[i] && (p - clipPlaneSe3[i].position).dot(clipPlaneNormals[i]) < 0)
-			return true;
+		if (clipPlaneActive[i] && (p - clipPlaneSe3[i].position).dot(clipPlaneNormals[i]) < 0) return true;
 	return false;
 }
 
@@ -111,8 +105,7 @@ void OpenGLRenderer::setBodiesDispInfo()
 	bool scaleRotations     = (rotScale != 1.0);
 	bool scaleDisplacements = (dispScale != Vector3r::Ones());
 	for (const auto& b : *scene->bodies) {
-		if (!b || !b->state)
-			continue;
+		if (!b || !b->state) continue;
 		size_t             id      = b->getId();
 		const Vector3r&    pos     = b->state->pos;
 		const Vector3r&    refPos  = b->state->refPos;
@@ -127,11 +120,9 @@ void OpenGLRenderer::setBodiesDispInfo()
 			continue;
 		}
 		// apply scaling
-		bodyDisp[id].pos = cellPos; // point of reference (inside the cell for periodic)
-		if (scaleDisplacements)
-			bodyDisp[id].pos += dispScale.cwiseProduct(Vector3r(pos - refPos)); // add scaled translation to the point of reference
-		if (!scaleRotations)
-			bodyDisp[id].ori = ori;
+		bodyDisp[id].pos = cellPos;                                                                 // point of reference (inside the cell for periodic)
+		if (scaleDisplacements) bodyDisp[id].pos += dispScale.cwiseProduct(Vector3r(pos - refPos)); // add scaled translation to the point of reference
+		if (!scaleRotations) bodyDisp[id].ori = ori;
 		else {
 			Quaternionr relRot = refOri.conjugate() * ori;
 			AngleAxisr  aa(relRot);
@@ -144,8 +135,7 @@ void OpenGLRenderer::setBodiesDispInfo()
 // draw periodic cell, if active
 void OpenGLRenderer::drawPeriodicCell()
 {
-	if (!scene->isPeriodic)
-		return;
+	if (!scene->isPeriodic) return;
 	glColor3v(cellColor);
 	glPushMatrix();
 	// Vector3r size=scene->cell->getSize();
@@ -174,8 +164,7 @@ void OpenGLRenderer::resetSpecularEmission()
 void OpenGLRenderer::render(const shared_ptr<Scene>& _scene, Body::id_t selection)
 {
 	gilLock lockgil;
-	if (!initDone)
-		init();
+	if (!initDone) init();
 	assert(initDone);
 	selId = selection;
 
@@ -189,8 +178,7 @@ void OpenGLRenderer::render(const shared_ptr<Scene>& _scene, Body::id_t selectio
 	// stateDispatcher.updateScenePtr();
 
 	// just to make sure, since it is not initialized by default
-	if (!scene->bound)
-		scene->bound = shared_ptr<Aabb>(new Aabb);
+	if (!scene->bound) scene->bound = shared_ptr<Aabb>(new Aabb);
 
 	// recompute emissive light colors for highlighted bodies
 	Real now              = TimingInfo::getNow(/*even if timing is disabled*/ true) * 1e-9;
@@ -201,15 +189,11 @@ void OpenGLRenderer::render(const shared_ptr<Scene>& _scene, Body::id_t selectio
 	assert(clipPlaneNormals.size() == (size_t)numClipPlanes);
 	for (size_t i = 0; i < (size_t)numClipPlanes; i++) {
 		// someone could have modified those from python and truncate the vectors; fill those here in that case
-		if (i == clipPlaneSe3.size())
-			clipPlaneSe3.push_back(Se3r(Vector3r::Zero(), Quaternionr::Identity()));
-		if (i == clipPlaneActive.size())
-			clipPlaneActive.push_back(false);
-		if (i == clipPlaneNormals.size())
-			clipPlaneNormals.push_back(Vector3r::UnitX());
+		if (i == clipPlaneSe3.size()) clipPlaneSe3.push_back(Se3r(Vector3r::Zero(), Quaternionr::Identity()));
+		if (i == clipPlaneActive.size()) clipPlaneActive.push_back(false);
+		if (i == clipPlaneNormals.size()) clipPlaneNormals.push_back(Vector3r::UnitX());
 		// end filling stuff modified from python
-		if (clipPlaneActive[i])
-			clipPlaneNormals[i] = clipPlaneSe3[i].orientation * Vector3r(0, 0, 1);
+		if (clipPlaneActive[i]) clipPlaneNormals[i] = clipPlaneSe3[i].orientation * Vector3r(0, 0, 1);
 		/* glBegin(GL_LINES);glVertex3v(clipPlaneSe3[i].position);glVertex3v(clipPlaneSe3[i].position+clipPlaneNormals[i]);glEnd(); */
 	}
 	// set displayed Se3 of body (scaling) and isDisplayed (clipping)
@@ -228,8 +212,7 @@ void OpenGLRenderer::render(const shared_ptr<Scene>& _scene, Body::id_t selectio
 	glLightfv(GL_LIGHT0, GL_SPECULAR, specularColor);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientColor);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
-	if (light1)
-		glEnable(GL_LIGHT0);
+	if (light1) glEnable(GL_LIGHT0);
 	else
 		glDisable(GL_LIGHT0);
 
@@ -241,8 +224,7 @@ void OpenGLRenderer::render(const shared_ptr<Scene>& _scene, Body::id_t selectio
 	glLightfv(GL_LIGHT1, GL_SPECULAR, specularColor2);
 	glLightfv(GL_LIGHT1, GL_AMBIENT, ambientColor2);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight2);
-	if (light2)
-		glEnable(GL_LIGHT1);
+	if (light2) glEnable(GL_LIGHT1);
 	else
 		glDisable(GL_LIGHT1);
 
@@ -257,24 +239,17 @@ void OpenGLRenderer::render(const shared_ptr<Scene>& _scene, Body::id_t selectio
 
 	drawPeriodicCell();
 
-	if (dof || id)
-		renderDOF_ID();
-	if (bound)
-		renderBound();
+	if (dof || id) renderDOF_ID();
+	if (bound) renderBound();
 
-	if (shape)
-		renderShape();
-	if (intrAllWire)
-		renderAllInteractionsWire();
-	if (intrGeom)
-		renderIGeom();
-	if (intrPhys)
-		renderIPhys();
+	if (shape) renderShape();
+	if (intrAllWire) renderAllInteractionsWire();
+	if (intrGeom) renderIGeom();
+	if (intrPhys) renderIPhys();
 
 	FOREACH(const shared_ptr<GlExtraDrawer> d, extraDrawers)
 	{
-		if (d->dead)
-			continue;
+		if (d->dead) continue;
 		glPushMatrix();
 		d->scene = scene.get();
 		d->render();
@@ -287,17 +262,13 @@ void OpenGLRenderer::renderAllInteractionsWire()
 	FOREACH(const shared_ptr<Interaction>& i, *scene->interactions)
 	{
 		// geometry must exist              , sometimes a body can get deleted
-		if ((not i->functorCache.geomExists)) {
-			continue;
-		}
+		if ((not i->functorCache.geomExists)) { continue; }
 		const boost::shared_ptr<const Body> b1 = Body::byId(i->getId1(), scene);
 		const boost::shared_ptr<const Body> b2 = Body::byId(i->getId2(), scene);
 		// If the Body gets deleted after the two lines above, then we hold the last instance of it. And it will be deleted when this part of the loop ends
 		// using `const` makes this threadsafe, because shared_ptr holds a threadsafe atomic count of instances, while const means that we are not writing there.
 		// Only reading the soon-to-be-deleted (in next 50 miliseconds) body position.
-		if ((not b1) or (not b2)) {
-			continue;
-		}
+		if ((not b1) or (not b2)) { continue; }
 		glColor3v(i->isReal() ? Vector3r(0, 1, 0) : Vector3r(.5, 0, 1));
 		Vector3r        p1   = b1->state->pos;
 		const Vector3r& size = scene->cell->getSize();
@@ -305,8 +276,7 @@ void OpenGLRenderer::renderAllInteractionsWire()
 		// in sheared cell, apply shear on the mutual position as well
 		shift2       = scene->cell->shearPt(shift2);
 		Vector3r rel = b2->state->pos + shift2 - p1;
-		if (scene->isPeriodic)
-			p1 = scene->cell->wrapShearedPt(p1);
+		if (scene->isPeriodic) p1 = scene->cell->wrapShearedPt(p1);
 		glBegin(GL_LINES)
 			;
 			glVertex3v(p1);
@@ -321,14 +291,10 @@ void OpenGLRenderer::renderDOF_ID()
 	const GLfloat ambientColorUnselected[4] = { 0.5, 0.5, 0.5, 1.0 };
 	FOREACH(const shared_ptr<Body> b, *scene->bodies)
 	{
-		if (!b)
-			continue;
+		if (!b) continue;
 		if (b->shape && ((b->getGroupMask() & mask) || b->getGroupMask() == 0)) {
-			if (!id && b->state->blockedDOFs == 0)
-				continue;
-			if (selId == b->getId()) {
-				glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColorSelected);
-			}
+			if (!id && b->state->blockedDOFs == 0) continue;
+			if (selId == b->getId()) { glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColorSelected); }
 			{ // write text
 				glColor3(1.0 - bgColor[0], 1.0 - bgColor[1], 1.0 - bgColor[2]);
 				unsigned    d    = b->state->blockedDOFs;
@@ -337,19 +303,14 @@ void OpenGLRenderer::renderDOF_ID()
 				        + (((d & State::DOF_RY) != 0) ? "Y" : "") + (((d & State::DOF_RZ) != 0) ? "Z" : "");
 				std::string sId = boost::lexical_cast<std::string>(b->getId());
 				std::string str;
-				if (dof && id)
-					sId += " ";
-				if (id)
-					str += sId;
-				if (dof)
-					str += sDof;
+				if (dof && id) sId += " ";
+				if (id) str += sId;
+				if (dof) str += sDof;
 				const Vector3r& h(selId == b->getId() ? highlightEmission0 : Vector3r(1, 1, 1));
 				glColor3v(h);
 				GLUtils::GLDrawText(str, bodyDisp[b->id].pos, h);
 			}
-			if (selId == b->getId()) {
-				glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColorUnselected);
-			}
+			if (selId == b->getId()) { glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColorUnselected); }
 		}
 	}
 }
@@ -362,14 +323,11 @@ void OpenGLRenderer::renderIGeom()
 		const std::lock_guard<std::mutex> lock(scene->interactions->drawloopmutex);
 		FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 		{
-			if (!I->geom)
-				continue;              // avoid refcount manipulations if the interaction is not real anyway
+			if (!I->geom) continue;        // avoid refcount manipulations if the interaction is not real anyway
 			shared_ptr<IGeom> ig(I->geom); // keep reference so that ig does not disappear suddenly while being rendered
-			if (!ig)
-				continue;
+			if (!ig) continue;
 			const shared_ptr<Body>&b1 = Body::byId(I->getId1(), scene), b2 = Body::byId(I->getId2(), scene);
-			if (!(bodyDisp[I->getId1()].isDisplayed || bodyDisp[I->getId2()].isDisplayed))
-				continue;
+			if (!(bodyDisp[I->getId1()].isDisplayed || bodyDisp[I->getId2()].isDisplayed)) continue;
 			glPushMatrix();
 			geomDispatcher(ig, I, b1, b2, intrWire);
 			glPopMatrix();
@@ -386,12 +344,10 @@ void OpenGLRenderer::renderIPhys()
 		FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 		{
 			shared_ptr<IPhys> ip(I->phys);
-			if (!ip)
-				continue;
+			if (!ip) continue;
 			const shared_ptr<Body>&b1 = Body::byId(I->getId1(), scene), b2 = Body::byId(I->getId2(), scene);
 			Body::id_t             id1 = I->getId1(), id2 = I->getId2();
-			if (!(bodyDisp[id1].isDisplayed || bodyDisp[id2].isDisplayed))
-				continue;
+			if (!(bodyDisp[id1].isDisplayed || bodyDisp[id2].isDisplayed)) continue;
 			glPushMatrix();
 			physDispatcher(ip, I, b1, b2, intrWire);
 			glPopMatrix();
@@ -405,10 +361,8 @@ void OpenGLRenderer::renderBound()
 	boundDispatcher.updateScenePtr();
 
 	for (const auto& b : *scene->bodies) {
-		if (!b || !b->bound)
-			continue;
-		if (!bodyDisp[b->getId()].isDisplayed or bodyDisp[b->getId()].hidden)
-			continue;
+		if (!b || !b->bound) continue;
+		if (!bodyDisp[b->getId()].isDisplayed or bodyDisp[b->getId()].hidden) continue;
 		if (b->bound && ((b->getGroupMask() & mask) || b->getGroupMask() == 0)) {
 			glPushMatrix();
 			boundDispatcher(b->bound, scene.get());
@@ -418,8 +372,7 @@ void OpenGLRenderer::renderBound()
 	// since we remove the functor as Scene doesn't inherit from Body anymore, hardcore the rendering routine here
 	// for periodic scene, renderPeriodicCell is called separately
 	if (!scene->isPeriodic) {
-		if (!scene->bound)
-			scene->updateBound();
+		if (!scene->bound) scene->updateBound();
 		glColor3v(Vector3r(0, 1, 0));
 		Vector3r size   = scene->bound->max - scene->bound->min;
 		Vector3r center = .5 * (scene->bound->min + scene->bound->max);
@@ -447,14 +400,11 @@ void OpenGLRenderer::renderShape()
 	// but it is still better than crashes if the body gets deleted meanwile.
 	FOREACH(shared_ptr<Body> b, *scene->bodies)
 	{
-		if (!b || !b->shape)
-			continue;
-		if (!(bodyDisp[b->getId()].isDisplayed and !bodyDisp[b->getId()].hidden))
-			continue;
+		if (!b || !b->shape) continue;
+		if (!(bodyDisp[b->getId()].isDisplayed and !bodyDisp[b->getId()].hidden)) continue;
 		Vector3r    pos = bodyDisp[b->getId()].pos;
 		Quaternionr ori = bodyDisp[b->getId()].ori;
-		if (!b->shape || !((b->getGroupMask() & mask) || b->getGroupMask() == 0))
-			continue;
+		if (!b->shape || !((b->getGroupMask() & mask) || b->getGroupMask() == 0)) continue;
 
 		// ignored in non-selection mode, use it always
 		glPushName(b->id);
@@ -481,8 +431,7 @@ void OpenGLRenderer::renderShape()
 		}
 		glPopMatrix();
 		if (highlight) {
-			if (!b->bound || wire || b->shape->wire)
-				GLUtils::GLDrawInt(b->getId(), pos);
+			if (!b->bound || wire || b->shape->wire) GLUtils::GLDrawInt(b->getId(), pos);
 			else {
 				// move the label towards the camera by the bounding box so that it is not hidden inside the body
 				const Vector3r& mn = b->bound->min;
@@ -509,8 +458,7 @@ void OpenGLRenderer::renderShape()
 			for (i[0] = -1; i[0] <= 1; i[0]++)
 				for (i[1] = -1; i[1] <= 1; i[1]++)
 					for (i[2] = -1; i[2] <= 1; i[2]++) {
-						if (i[0] == 0 && i[1] == 0 && i[2] == 0)
-							continue; // middle; already rendered above
+						if (i[0] == 0 && i[1] == 0 && i[2] == 0) continue; // middle; already rendered above
 						Vector3r pos2 = pos
 						        + Vector3r(cellSize[0] * i[0], cellSize[1] * i[1], cellSize[2] * i[2]); // shift, but without shear!
 						pmin = pos2 - halfSize;
@@ -518,8 +466,7 @@ void OpenGLRenderer::renderShape()
 						if (pmin[0] <= cellSize[0] && pmax[0] >= 0 && pmin[1] <= cellSize[1] && pmax[1] >= 0 && pmin[2] <= cellSize[2]
 						    && pmax[2] >= 0) {
 							Vector3r pt = scene->cell->shearPt(pos2);
-							if (pointClipped(pt))
-								continue;
+							if (pointClipped(pt)) continue;
 							glLoadName(b->id);
 							glPushMatrix();
 							glTranslatev(pt);

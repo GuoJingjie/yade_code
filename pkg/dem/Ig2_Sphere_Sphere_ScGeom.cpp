@@ -35,8 +35,7 @@ bool Ig2_Sphere_Sphere_ScGeom::go(
 	}
 	shared_ptr<ScGeom> scm;
 	bool               isNew = !c->geom;
-	if (!isNew)
-		scm = YADE_PTR_CAST<ScGeom>(c->geom);
+	if (!isNew) scm = YADE_PTR_CAST<ScGeom>(c->geom);
 	else {
 		scm     = shared_ptr<ScGeom>(new ScGeom());
 		c->geom = scm;
@@ -89,8 +88,7 @@ bool Ig2_Sphere_Sphere_ScGeom6D::go(
 			*(YADE_PTR_CAST<ScGeom>(sc)) = *(YADE_PTR_CAST<ScGeom>(c->geom));
 			c->geom                      = sc;
 		}
-		if (updateRotations)
-			YADE_PTR_CAST<ScGeom6D>(c->geom)->precomputeRotations(state1, state2, isNew, creep);
+		if (updateRotations) YADE_PTR_CAST<ScGeom6D>(c->geom)->precomputeRotations(state1, state2, isNew, creep);
 		return true;
 	} else
 		return false;

@@ -114,11 +114,9 @@ void Gl1_PotentialParticle::go(const shared_ptr<Shape>& cm, const shared_ptr<Sta
 
 	if (initialized == false) {
 		for (const auto& b : *scene->bodies) {
-			if (!b)
-				continue;
+			if (!b) continue;
 			PotentialParticle* cmbody = dynamic_cast<PotentialParticle*>(b->shape.get());
-			if (!cmbody)
-				continue;
+			if (!cmbody) continue;
 			calcMinMax(*cmbody);
 			mc.init(sizeX, sizeY, sizeZ, min, max);
 			mc.resizeScalarField(scalarField, sizeX, sizeY, sizeZ);
@@ -216,9 +214,7 @@ Real Gl1_PotentialParticle::evaluateF(const PotentialParticle& pp, Real x, Real 
 		c.push_back(pp.c[i]);
 		d.push_back(pp.d[i]);
 		Real plane = a[i] * x + b[i] * y + c[i] * z - d[i];
-		if (plane < pow(10, -15)) {
-			plane = 0.0;
-		}
+		if (plane < pow(10, -15)) { plane = 0.0; }
 		p.push_back(plane);
 		pSum3 += pow(p[i], 2);
 	}
@@ -270,9 +266,7 @@ Real ImpFunc::FunctionValue(Real x[3])
 
 		for (int i = 0; i < planeNo; i++) {
 			Real plane = a[i] * xlocal[0] + b[i] * xlocal[1] + c[i] * xlocal[2] - d[i];
-			if (plane < pow(10, -15)) {
-				plane = 0.0;
-			}
+			if (plane < pow(10, -15)) { plane = 0.0; }
 			p.push_back(plane);
 			pSum2 += pow(p[i], 2);
 		}
@@ -291,9 +285,7 @@ Real ImpFunc::FunctionValue(Real x[3])
 
 		for (int i = 0; i < planeNo; i++) {
 			Real plane = a[i] * xlocal[0] + b[i] * xlocal[1] + c[i] * xlocal[2] - d[i];
-			if (plane < pow(10, -15)) {
-				plane = 0.0;
-			}
+			if (plane < pow(10, -15)) { plane = 0.0; }
 			p.push_back(plane);
 			pSum2 += pow(p[i], 2);
 		}
@@ -308,8 +300,7 @@ Real ImpFunc::FunctionValue(Real x[3])
 
 void PotentialParticleVTKRecorder::action()
 {
-	if (fileName.size() == 0)
-		return;
+	if (fileName.size() == 0) return;
 	auto pbPos          = vtkSmartPointer<vtkPointsReal>::New();
 	auto appendFilter   = vtkSmartPointer<vtkAppendPolyData>::New();
 	auto appendFilterID = vtkSmartPointer<vtkAppendPolyData>::New();
@@ -373,13 +364,10 @@ void PotentialParticleVTKRecorder::action()
 
 
 	for (const auto& b : *scene->bodies) {
-		if (!b)
-			continue;
-		if (b->isClump() == true)
-			continue;
+		if (!b) continue;
+		if (b->isClump() == true) continue;
 		const PotentialParticle* pb = dynamic_cast<PotentialParticle*>(b->shape.get());
-		if (!pb)
-			continue;
+		if (!pb) continue;
 
 		if (REC_ID == true) {
 			blockId->InsertNextValue(b->getId());
@@ -434,15 +422,9 @@ void PotentialParticleVTKRecorder::action()
 		int sampleXno = sampleX;
 		int sampleYno = sampleY;
 		int sampleZno = sampleZ;
-		if (fabs(xmax - xmin) / static_cast<Real>(sampleX) > maxDimension) {
-			sampleXno = static_cast<int>(fabs(xmax - xmin) / maxDimension);
-		}
-		if (fabs(ymax - ymin) / static_cast<Real>(sampleY) > maxDimension) {
-			sampleYno = static_cast<int>(fabs(ymax - ymin) / maxDimension);
-		}
-		if (fabs(zmax - zmin) / static_cast<Real>(sampleZ) > maxDimension) {
-			sampleZno = static_cast<int>(fabs(zmax - zmin) / maxDimension);
-		}
+		if (fabs(xmax - xmin) / static_cast<Real>(sampleX) > maxDimension) { sampleXno = static_cast<int>(fabs(xmax - xmin) / maxDimension); }
+		if (fabs(ymax - ymin) / static_cast<Real>(sampleY) > maxDimension) { sampleYno = static_cast<int>(fabs(ymax - ymin) / maxDimension); }
+		if (fabs(zmax - zmin) / static_cast<Real>(sampleZ) > maxDimension) { sampleZno = static_cast<int>(fabs(zmax - zmin) / maxDimension); }
 
 		if (twoDimension == true) {
 			if (sampleY < 2) {
@@ -469,9 +451,7 @@ void PotentialParticleVTKRecorder::action()
 		pbColors->SetName("pbColors");
 		pbColors->SetNumberOfComponents(3);
 		Vector3r color = pb->color; //Vector3r(0,100,0);
-		if (b->isDynamic() == false) {
-			color = Vector3r(157, 157, 157);
-		}
+		if (b->isDynamic() == false) { color = Vector3r(157, 157, 157); }
 		unsigned char c[3]; //c = {color[0],color[1],color[2]};
 		c[0]        = (unsigned char)(color[0]);
 		c[1]        = (unsigned char)(color[1]);
@@ -564,9 +544,7 @@ void PotentialParticleVTKRecorder::action()
 		int count = 0;
 		FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 		{
-			if (!I->isReal()) {
-				continue;
-			}
+			if (!I->isReal()) { continue; }
 			const KnKsPhys* phys = YADE_CAST<KnKsPhys*>(I->phys.get());
 			const ScGeom*   geom = YADE_CAST<ScGeom*>(I->geom.get());
 			vtkIdType       pid[1];

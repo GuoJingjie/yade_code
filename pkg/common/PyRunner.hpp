@@ -12,8 +12,7 @@ public:
 	/* virtual bool isActivated: not overridden, PeriodicEngine handles that */
 	virtual void action()
 	{
-		if (command.size() > 0)
-			pyRunString(command, ignoreErrors, updateGlobals);
+		if (command.size() > 0) pyRunString(command, ignoreErrors, updateGlobals);
 	}
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(PyRunner,PeriodicEngine,
