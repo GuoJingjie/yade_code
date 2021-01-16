@@ -280,7 +280,7 @@ void InsertionSortCollider::action()
 		doInitSort = true;
 		doSort     = false;
 	}
-	// ### Prepare lists of bounds. First approach: Bounds are from id=0 to id=nBodies, possibly with many null bodies after body erase (in mpi, namely)
+	// ### Prepare lists of bounds. First approach: Bounds are from id=0 to id=nBodies, possibly with many null bounds after body erase
 	if (not keepListsShort) {
 		if (BB[0].size() != 2 * nBodies) {
 			// store previous size
@@ -293,8 +293,7 @@ void InsertionSortCollider::action()
 					BB[i].clear();
 			}
 			// more than 20% new bodies, do initial sort again
-			if (BBsize == 0 || ((2 * nBodies - BBsize) / double(BBsize)) > 0.2)
-				doInitSort = true;
+			if (BBsize == 0 || ((2 * nBodies - BBsize) / double(BBsize)) > 0.2) doInitSort = true;
 			assert((BBsize % 2) == 0);
 			for (int i = 0; i < 3; i++) {
 				BB[i].reserve(2 * nBodies);
@@ -306,40 +305,60 @@ void InsertionSortCollider::action()
 			}
 		}
 
-		// ### Second approach: Bounds sizes match the real number of bodies in the scene
+	// ### Second approach with using body redirection: Bounds sizes match the number of real bodies in the scene
 	} else if (not scene->bodies->checkedByCollider) {
-		if (not shortListsInitialized)
-			scene->bodies->updateShortLists(); // not needed if we use inserted bodies
-		const vector<Body::id_t>& insrts  = shortListsInitialized ? scene->bodies->insertedBodies : scene->bodies->realBodies;
+		scene->bodies->updateShortLists(); // not needed if we use inserted bodies
+		vector<Body::id_t>& insrts  = scene->bodies->insertedBodies;
+		const vector<Body::id_t>& erased  = scene->bodies->erasedBodies;
 		size_t                    nInsert = insrts.size();
+		size_t                    nErased = erased.size();
 		size_t                    BBsize  = BB[0].size();
-		for (int i = 0; i < 3; i++) {
+		
+		// Handle erased bodies
+		int countNoBound=0;
+		if (nErased>0) {
+			for (const auto& id : erased) 
+				if (3*(id+1) <= (int)minima.size()) 
+					minima[3*id]= Mathr::MAX_REAL; // invalidate data so we can check what was erased in next loop and remove the bounds
+		
+			
 			size_t     idxTarget = 0;
-			VecBounds& BBi       = BB[i];
-			// move all bounds to the beginning of the vector
-			// improvement: skip i=1,2 if nothing to do
-			for (size_t idx = 0; idx < BBsize; idx++) {
-				if (Body::byId(BBi[idx].id, scene) and Body::byId(BBi[idx].id, scene)->isBounded()) {
-					if (idxTarget < idx)
-						BBi[idxTarget] = BBi[idx];
-					idxTarget++;
-				} else
-					continue;
+			for (size_t i = 0; i < 3; i++) {
+				idxTarget = 0;
+				VecBounds& BBi       = BB[i];
+				// move all bounds to the beginning of the vector
+				for (size_t idx = 0; idx < BBsize; idx++) {
+					const Body::id_t& id = BBi[idx].id;
+					if (Body::byId(id, scene) /*and Body::byId(id, scene)->isBounded()*/ and (3*(id+1) > (int)minima.size() or minima[3*id]!=Mathr::MAX_REAL)) {
+						if (idxTarget < idx)
+							BBi[idxTarget] = BBi[idx];
+						idxTarget++;
+					} else {
+						if (i==0 and Body::byId(id, scene) and not Body::byId(id, scene)->isBounded()) countNoBound++;
+						continue;}
+				}
+				if (idxTarget<BBi.size()) BBi.resize(idxTarget);
+				else break; // if first coordinate is unchanged no need to check the two others
 			}
-			BBi.resize(idxTarget);
 		}
-		for (int i = 0; i < 3; i++) {
-			for (size_t idx = 0; idx < nInsert; idx++) {
-				if (Body::byId(insrts[idx], scene) and Body::byId(insrts[idx], scene)->isBounded()) { //could have been inserted then erased
-					BB[i].push_back(Bounds(0, insrts[idx], /*isMin=*/true));
-					BB[i].push_back(Bounds(0, insrts[idx], /*isMin=*/false));
+		
+		// Now handle inserted bodies
+		if (not smartInsertErase) { // else we handle newly inserted ones at the end
+			if (BB[0].size() == 0 or nInsert / double(BB[0].size()) > 0.05)  doInitSort = true; 
+			std::sort(insrts.begin(), insrts.end()); // so we can identify duplicates more easily in case of multiple insert/erase with same id
+			
+			for (int i = 0; i < 3; i++) {
+				for (size_t idx = 0; idx < nInsert; idx++) {
+					if (idx>0 and insrts[idx]==insrts[idx-1]) continue; // skip duplicate
+					if (Body::byId(insrts[idx], scene) and Body::byId(insrts[idx], scene)->isBounded()) { //could have been inserted then erased
+						BB[i].push_back(Bounds(0, insrts[idx], /*isMin=*/true));
+						BB[i].push_back(Bounds(0, insrts[idx], /*isMin=*/false));
+					}
 				}
 			}
 		}
-		scene->bodies->checkedByCollider = true;
-		shortListsInitialized            = true;
 	}
-	scene->bodies->insertedBodies.clear(); //Better place to do this?
+	scene->bodies->checkedByCollider = true; // bounds lists and bodies list are in sync
 
 	if (minima.size() != (size_t)3 * nBodies) {
 		minima.resize(3 * nBodies);
@@ -513,6 +532,31 @@ void InsertionSortCollider::action()
 		else
 			for (int i = 0; i < 3; i++)
 				insertionSortPeri(BB[i], interactions, scene);
+		
+		if (keepListsShort and smartInsertErase and scene->bodies->insertedBodies.size() > 0) {// Do the init sort on new bodies only, Precondition: initial bounds list is sorted
+			for (const auto& id1 : scene->bodies->insertedBodies) {
+				const shared_ptr<Body>& b    = Body::byId(id1, scene);
+				if (b and b->isBounded()) {
+					for (const auto& id2 : probeBoundingVolume(*(b->bound))) { // Probe interactions with new body
+						if (Collider::mayCollide(Body::byId(id1, scene).get(), Body::byId(id2, scene).get()
+#ifdef YADE_MPI
+					            ,scene->subdomain
+#endif
+                                      )  and !interactions->found(id1, id2))
+							interactions->insert(shared_ptr<Interaction>(new Interaction(id1, id2)));
+					}
+					// then insert bounds in the right place so that they remain sorted
+					for (int i = 0; i < 3; i++) {
+						auto bMin = Bounds(b->bound->min[i], id1, /*isMin=*/true);
+						auto bMax = Bounds(b->bound->max[i], id1, /*isMin=*/false);
+						auto it = std::lower_bound(BB[i].begin(),BB[i].end(),bMin);
+						it = BB[i].insert(it,bMin);
+						it = std::lower_bound(it,BB[i].end(),bMax);
+						BB[i].insert(it,bMax);
+					}
+				}
+			}
+		}
 	}
 	// create initial interactions (much slower)
 	else {
@@ -533,16 +577,28 @@ void InsertionSortCollider::action()
 				for (int i = 0; i < 3; i++)
 					insertionSortPeri(BB[i], interactions, scene, false);
 		}
-		// traverse the container along requested axis
+		
+		// traverse the container along requested axis and find overlaps
 		assert(sortAxis == 0 || sortAxis == 1 || sortAxis == 2);
 		VecBounds& V = BB[sortAxis];
+		findOverlaps(V);
+		
+	}
+	scene->bodies->insertedBodies.clear();
+	scene->bodies->erasedBodies.clear();
+	ISC_CHECKPOINT("sort&collide");
+}
+
+
+void InsertionSortCollider::findOverlaps(VecBounds& V)
+{
+		InteractionContainer* interactions       = scene->interactions.get();
 		// go through potential aabb collisions, create interactions as necessary
 		if (!periodic) {
 #ifdef YADE_OPENMP
 			std::vector<std::vector<std::pair<Body::id_t, Body::id_t>>> newInts;
 			newInts.resize(ompThreads, std::vector<std::pair<Body::id_t, Body::id_t>>());
 			for (int kk = 0; kk < ompThreads; kk++)
-				newInts[kk].reserve(unsigned(10 * nBodies / ompThreads));
 #pragma omp parallel for schedule(guided, 200) num_threads(ompThreads)
 #endif
 			for (size_t i = 0; i < V.size(); i++) {
@@ -610,8 +666,6 @@ void InsertionSortCollider::action()
 				}
 			}
 		}
-	}
-	ISC_CHECKPOINT("sort&collide");
 }
 
 

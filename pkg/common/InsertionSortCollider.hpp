@@ -175,6 +175,9 @@ class InsertionSortCollider : public Collider {
 		void                                sort() { std::sort(vec.begin(), vec.end()); }
 		std::vector<Bounds>::const_iterator cbegin() const { return vec.cbegin(); }
 		std::vector<Bounds>::const_iterator cend() const { return vec.cend(); }
+		std::vector<Bounds>::iterator begin() { return vec.begin(); }
+		std::vector<Bounds>::iterator end() { return vec.end(); }
+		std::vector<Bounds>::iterator insert(std::vector<Bounds>::iterator pos, Bounds& bb)  { return vec.insert(pos,bb); }
 
 	private:
 		std::vector<Bounds> vec;
@@ -196,6 +199,7 @@ private:
   	    http://en.wikipedia.org/wiki/Insertion_sort has the algorithm and other details
 	*/
 	void insertionSort(VecBounds& v, InteractionContainer*, Scene*, bool doCollide = true);
+	void findOverlaps(VecBounds& V);
 #ifdef YADE_OPENMP
 	void insertionSortParallel(VecBounds& v, InteractionContainer*, Scene*, bool doCollide = true);
 #endif
@@ -277,8 +281,8 @@ public:
 		((int,numReinit,0,Attr::readonly,"Cummulative number of bound array re-initialization."))
 		((int,numAction,0,,"Cummulative number of collision detection."))
 		((bool,doSort,false,,"Do forced resorting of interactions."))
-		((bool,shortListsInitialized,false,Attr::noSave,"wether or not shortList algorithm is initialized, when true bodies are inserted incrementaly."))
 		((bool,keepListsShort,false,,"if true remove bounds of non-existent or unbounded bodies from the lists |yupdate|; turned true automatically in MPI mode and if bodies are erased with :yref:`BodyContainer.enableRedirection`=True."))
+		((bool,smartInsertErase,false,,"Use an algorithm optimized for heavy insert/delete (avoid initSort) - experimental."))
 		((shared_ptr<NewtonIntegrator>, newton,shared_ptr<NewtonIntegrator>(),,"reference to active :yref:`Newton integrator<NewtonIntegrator>`. |yupdate|"))
 		, /* ctor */
 			#ifdef ISC_TIMING
