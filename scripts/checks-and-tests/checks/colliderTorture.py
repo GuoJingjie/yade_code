@@ -137,16 +137,16 @@ def testFraction(fraction,withInsert=True):
 
 
 
-for enableRedirection in [False,True]:
-    O.bodies.enableRedirection=enableRedirection
-    
+for enableRedirection in [False,True]:    
     print("================")
-    print("redirection:", O.bodies.enableRedirection)
+    print("redirection:", enableRedirection)
     print("================")
     
     O.reload()
+    O.bodies.enableRedirection=enableRedirection
     cycle(10,100,doCheck=True,iterations=50) # remove spheres by batches of 100 x 10 times, then insert again, and check corectness
     O.reload()
+    O.bodies.enableRedirection=enableRedirection
     O.step()
     
     Nc=3; Niter=1; substeps=2
@@ -162,5 +162,5 @@ for enableRedirection in [False,True]:
     for fraction in [0, 0.001,0.01,0.04,0.1,0.25,0.4,0.7]:
         t=testFraction(fraction,True)
         print("fraction=",fraction,"collider time:", t[0],"vs. initSort",t[1])
-        #if (t[0]>2*t[1]): raise YadeCheckError("collider run in more than twice the initSort time, ratio:"+str(times[0]/times[1]))
+        #if (t[0]>3*t[1]): raise YadeCheckError("collider run in more than twice the initSort time, ratio:"+str(times[0]/times[1]))
     
