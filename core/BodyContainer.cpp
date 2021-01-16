@@ -81,10 +81,12 @@ bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
 { //default is false (as before)
 	if (!body[id])
 		return false;
+	const shared_ptr<Scene>& scene = Omega::instance().getScene();
 	if (enableRedirection) {
 		useRedirection    = true;
 		dirty             = true;
 		checkedByCollider = false;
+		erasedBodies.push_back(id);
 	} // as soon as a body is erased we switch to algorithm optimized for non-full body container
 	const shared_ptr<Body>& b = Body::byId(id);
 	if ((b) and (b->isClumpMember())) {
@@ -113,7 +115,7 @@ bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
 		body[id].reset();
 		return true;
 	}
-	const shared_ptr<Scene>& scene = Omega::instance().getScene();
+	
 	for (auto it = b->intrs.begin(), end = b->intrs.end(); it != end;) { //Iterate over all body's interactions
 		Body::MapId2IntrT::iterator willBeInvalid = it;
 		++it;

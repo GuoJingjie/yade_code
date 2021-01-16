@@ -81,6 +81,7 @@ public:
 		((bool,dirty,true,(Attr::noSave|Attr::readonly|Attr::hidden),"true if after insertion/removal of bodies, used only if collider::keepListsShort=true"))
 		((bool,checkedByCollider,false,(Attr::noSave|Attr::readonly|Attr::hidden),""))
 		((vector<Body::id_t>,insertedBodies,vector<Body::id_t>(),Attr::readonly,"The list of newly bodies inserted, to be used and purged by collider"))
+		((vector<Body::id_t>,erasedBodies,vector<Body::id_t>(),Attr::readonly,"The list of erased bodies, to be used and purged by collider"))
 		((vector<Body::id_t>,realBodies,vector<Body::id_t>(),Attr::readonly,"Redirection vector to non-null bodies, used to optimize loops after numerous insertion/erase. In MPI runs the list is restricted to bodies and neighbors present in current subdomain."))
 		((bool,useRedirection,false,,"true if the scene uses up-to-date lists for boundedBodies and realBodies; turned true automatically 1/ after removal of bodies if :yref:`enableRedirection=True <BodyContainer.enableRedirection>`, and 2/ in MPI execution. |yupdate|"))
 		((bool,enableRedirection,true,,"let collider switch to optimized algorithm with body redirection when bodies are erased - true by default"))
