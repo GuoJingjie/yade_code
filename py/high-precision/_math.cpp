@@ -80,21 +80,21 @@ template <int N> RealHP<N> roundTrip(const RealHP<N>& x) { return x; }
 
 template <int N> std::pair<RealHP<N>, int> test_frexp(const RealHP<N>& x)
 {
-	int       i   = 0;
+	int       i = 0;
 	RealHP<N> ret = ::yade::math::frexp(x, &i);
 	return std::pair<RealHP<N>, int> { ret, i };
 }
 
 template <int N> std::pair<RealHP<N>, RealHP<N>> test_modf(const RealHP<N>& x)
 {
-	RealHP<N> r   = 0;
+	RealHP<N> r = 0;
 	RealHP<N> ret = ::yade::math::modf(x, &r);
 	return std::pair<RealHP<N>, RealHP<N>> { ret, r };
 }
 
 template <int N> std::pair<RealHP<N>, long> test_remquo(const RealHP<N>& x, const RealHP<N>& y)
 {
-	int       i   = 0;
+	int       i = 0;
 	RealHP<N> ret = ::yade::math::remquo(x, y, &i);
 	return std::pair<RealHP<N>, long> { ret, i };
 }
@@ -193,7 +193,7 @@ template <int N> void testArray()
 		vec.push_back(math::random01HP<N>());
 	compareVec<N>(vec, math::constVectorData(vec));
 	auto      copy = vec;
-	RealHP<N> fac  = 0.25;
+	RealHP<N> fac = 0.25;
 	multVec<N>(math::vectorData(vec), static_cast<::yade::math::UnderlyingRealHP<RealHP<N>>>(fac), vec.size());
 	for (auto a : boost::combine(copy, vec)) {
 		if (a.template get<0>() * fac != a.template get<1>()) {
@@ -724,25 +724,25 @@ template <int N, bool registerConverters> struct RegisterRealHPMath {
 		/********************************************************************************************/
 		/**********************            Eigen numerical traits              **********************/
 		/********************************************************************************************/
-		long defprec  = std::numeric_limits<RealHP<N>>::digits;
+		long defprec = std::numeric_limits<RealHP<N>>::digits;
 		long max_exp2 = std::numeric_limits<RealHP<N>>::max_exponent;
 
-		py::scope().attr("defprec")  = defprec;
+		py::scope().attr("defprec") = defprec;
 		py::scope().attr("max_exp2") = max_exp2;
 
 		// it would work if this enum had a name.
 		//py::enum_<Eigen::NumTraits<RealHP<N>>::EnumName>("traits").value("IsInteger",Eigen::NumTraits<Real>::IsInteger).export_values();
 
-		py::scope().attr("IsInteger")             = int(Eigen::NumTraits<RealHP<N>>::IsInteger);
-		py::scope().attr("IsSigned")              = int(Eigen::NumTraits<RealHP<N>>::IsSigned);
-		py::scope().attr("IsComplex")             = int(Eigen::NumTraits<RealHP<N>>::IsComplex);
+		py::scope().attr("IsInteger") = int(Eigen::NumTraits<RealHP<N>>::IsInteger);
+		py::scope().attr("IsSigned") = int(Eigen::NumTraits<RealHP<N>>::IsSigned);
+		py::scope().attr("IsComplex") = int(Eigen::NumTraits<RealHP<N>>::IsComplex);
 		py::scope().attr("RequireInitialization") = int(Eigen::NumTraits<RealHP<N>>::RequireInitialization);
-		py::scope().attr("ReadCost")              = int(Eigen::NumTraits<RealHP<N>>::ReadCost);
-		py::scope().attr("AddCost")               = int(Eigen::NumTraits<RealHP<N>>::AddCost);
-		py::scope().attr("MulCost")               = int(Eigen::NumTraits<RealHP<N>>::MulCost);
-		py::scope().attr("ComplexReadCost")       = int(Eigen::NumTraits<ComplexHP<N>>::ReadCost);
-		py::scope().attr("ComplexAddCost")        = int(Eigen::NumTraits<ComplexHP<N>>::AddCost);
-		py::scope().attr("ComplexMulCost")        = int(Eigen::NumTraits<ComplexHP<N>>::MulCost);
+		py::scope().attr("ReadCost") = int(Eigen::NumTraits<RealHP<N>>::ReadCost);
+		py::scope().attr("AddCost") = int(Eigen::NumTraits<RealHP<N>>::AddCost);
+		py::scope().attr("MulCost") = int(Eigen::NumTraits<RealHP<N>>::MulCost);
+		py::scope().attr("ComplexReadCost") = int(Eigen::NumTraits<ComplexHP<N>>::ReadCost);
+		py::scope().attr("ComplexAddCost") = int(Eigen::NumTraits<ComplexHP<N>>::AddCost);
+		py::scope().attr("ComplexMulCost") = int(Eigen::NumTraits<ComplexHP<N>>::MulCost);
 
 		//#if defined(YADE_EIGEN_NUM_TRAITS_HPP) or defined(EIGEN_MPREALSUPPORT_MODULE_H)
 		// The 'if constexpr(…)' is not working for C++14. So I have to simulate it using templates. Otherwise compiler will try to access non-existing types.
@@ -934,15 +934,15 @@ namespace yade {
 template <int N1> struct TestRealHP2 {
 	template <typename N2mpl> void operator()(N2mpl)
 	{
-		constexpr int N2   = N2mpl::value;
-		constexpr int N    = std::max(N1, N2);
+		constexpr int N2 = N2mpl::value;
+		constexpr int N = std::max(N1, N2);
 		std::string   info = " N1=" + boost::lexical_cast<std::string>(N1) + " N2=" + boost::lexical_cast<std::string>(N2) + " "
 		        + boost::core::demangle(typeid(RealHP<N1>).name()) + " " + boost::core::demangle(typeid(RealHP<N2>).name()) + " "
 		        + boost::core::demangle(typeid(ComplexHP<N1>).name()) + " " + boost::core::demangle(typeid(ComplexHP<N2>).name());
 		//LOG_NOFILTER("TestRealHP info:" << info);
 		{
-			RealHP<N1> a  = static_cast<RealHP<N1>>(-1.25);
-			RealHP<N2> b  = static_cast<RealHP<N2>>(2.5);
+			RealHP<N1> a = static_cast<RealHP<N1>>(-1.25);
+			RealHP<N2> b = static_cast<RealHP<N2>>(2.5);
 			auto       c1 = a + b;
 			auto       c2 = a - b;
 			auto       c3 = a * b;
@@ -960,8 +960,8 @@ template <int N1> struct TestRealHP2 {
 			if (d5 != RealHP<N>(2.5)) throw std::runtime_error(("TestRealHP error: Fatal r5" + info).c_str());
 		}
 		{
-			ComplexHP<N1> a  = ComplexHP<N1>(-1.25, 0.5);
-			ComplexHP<N2> b  = ComplexHP<N2>(1.0, 1.0);
+			ComplexHP<N1> a = ComplexHP<N1>(-1.25, 0.5);
+			ComplexHP<N2> b = ComplexHP<N2>(1.0, 1.0);
 			auto          c1 = a + b;
 			auto          c2 = a - b;
 			auto          c3 = a * b;
@@ -979,8 +979,8 @@ template <int N1> struct TestRealHP2 {
 			if (d5 != ComplexHP<N>(-0.5, 3.0)) throw std::runtime_error(("TestRealHP error: Fatal c5" + info).c_str());
 		}
 		{
-			ComplexHP<N1> a  = ComplexHP<N1>(-1.25, 0.5);
-			RealHP<N2>    b  = RealHP<N2>(1.0);
+			ComplexHP<N1> a = ComplexHP<N1>(-1.25, 0.5);
+			RealHP<N2>    b = RealHP<N2>(1.0);
 			auto          c1 = a + b;
 			auto          c2 = a - b;
 			auto          c3 = a * b;

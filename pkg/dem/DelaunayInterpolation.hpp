@@ -89,7 +89,7 @@ getIncidentVtxWeights(
 	CGAL_triangulation_precondition(dt.dimension() == 3);
 	Locate_type lt;
 	int         li, lj;
-	Cell_handle c             = dt.locate(Q, lt, li, lj, start);
+	Cell_handle c = dt.locate(Q, lt, li, lj, start);
 	bool        updateNormals = (c != start || normals.size() < 4);
 	if (updateNormals) normals.clear();
 	if (lt == Dt::VERTEX) {
@@ -105,8 +105,8 @@ getIncidentVtxWeights(
 			normals[k] = normals[k] / ((c->vertex(k)->point() - c->vertex(comb[k])->point()) * normals[k]);
 		}
 		Coord_type closeness = ((Q - c->vertex(comb[k])->point()) * normals[k]);
-		Coord_type w         = closeness;
-		*nn_out++            = std::make_pair(c->vertex(k), w);
+		Coord_type w = closeness;
+		*nn_out++ = std::make_pair(c->vertex(k), w);
 		norm_coeff += w;
 	}
 	start = c;

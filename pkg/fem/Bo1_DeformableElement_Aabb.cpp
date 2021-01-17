@@ -19,7 +19,7 @@ void Bo1_DeformableElement_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Boun
 	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 
 	Aabb*    aabb = static_cast<Aabb*>(bv.get());
-	Real     inf  = std::numeric_limits<Real>::infinity();
+	Real     inf = std::numeric_limits<Real>::infinity();
 	Vector3r min, max;
 	min = Vector3r(inf, inf, inf);
 	max = Vector3r(-inf, -inf, -inf);

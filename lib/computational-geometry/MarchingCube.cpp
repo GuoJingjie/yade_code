@@ -59,7 +59,7 @@ void MarchingCube::resizeScalarField(vector<vector<vector<Real>>>& scalarField, 
 
 void MarchingCube::computeTriangulation(const vector<vector<vector<Real>>>& scalarField, Real iso)
 {
-	isoValue    = iso;
+	isoValue = iso;
 	nbTriangles = 0;
 	for (int i = 1; i < sizeX - 2; i++)
 		for (int j = 1; j < sizeY - 2; j++)
@@ -127,17 +127,17 @@ void MarchingCube::polygonize(const vector<vector<vector<Real>>>& scalarField, i
 	for (i = 0; tri[i] != -1; ++i) {
 		offset = nbTriangles * 3;
 
-		index             = tri[i];
+		index = tri[i];
 		triangles[offset] = vertexList[index];
 		computeNormal(scalarField, x, y, z, offset, index);
 
 		offset++;
-		index             = tri[++i];
+		index = tri[++i];
 		triangles[offset] = vertexList[index];
 		computeNormal(scalarField, x, y, z, offset, index);
 
 		offset++;
-		index             = tri[++i];
+		index = tri[++i];
 		triangles[offset] = vertexList[index];
 		computeNormal(scalarField, x, y, z, offset, index);
 
@@ -185,7 +185,7 @@ const Vector3r& MarchingCube::computeNormalX(const vector<vector<vector<Real>>>&
 {
 	static Vector3r normal;
 
-	Real xyz   = scalarField[x][y][z];
+	Real xyz = scalarField[x][y][z];
 	Real xp1yz = scalarField[x + 1][y][z];
 
 	normal[0] = interpolateValue(xp1yz, xyz, scalarField[x + 2][y][z] - xyz, xp1yz - scalarField[x - 1][y][z]);
@@ -203,7 +203,7 @@ const Vector3r& MarchingCube::computeNormalY(const vector<vector<vector<Real>>>&
 {
 	static Vector3r normal;
 
-	Real xyz   = scalarField[x][y][z];
+	Real xyz = scalarField[x][y][z];
 	Real xyp1z = scalarField[x][y + 1][z];
 
 	normal[0] = interpolateValue(xyz, xyp1z, scalarField[x + 1][y][z], scalarField[x + 1][y + 1][z])
@@ -221,7 +221,7 @@ const Vector3r& MarchingCube::computeNormalZ(const vector<vector<vector<Real>>>&
 {
 	static Vector3r normal;
 
-	Real xyz   = scalarField[x][y][z];
+	Real xyz = scalarField[x][y][z];
 	Real xyzp1 = scalarField[x][y][z + 1];
 
 	normal[0] = interpolateValue(xyz, xyzp1, scalarField[x + 1][y][z], scalarField[x + 1][y][z + 1])

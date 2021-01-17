@@ -17,9 +17,9 @@ public:
 
 	void insertBody(int id)
 	{
-		const shared_ptr<Scene>&   scene         = Omega::instance().getScene();
+		const shared_ptr<Scene>&   scene = Omega::instance().getScene();
 		shared_ptr<BodyContainer>& bodycontainer = scene->bodies;
-		shared_ptr<Body>           b             = (*bodycontainer)[id];
+		shared_ptr<Body>           b = (*bodycontainer)[id];
 		// if empty,  put body
 		if (bContainer.size() == 0) {
 			bContainer.push_back(b);

@@ -55,7 +55,7 @@ void ForceContainer::ensureSize(Body::id_t id, int threadN)
 ForceContainer::ForceContainer()
 {
 	nThreads = omp_get_max_threads();
-	size     = 0;
+	size = 0;
 	for (int i = 0; i < nThreads; i++) {
 		_forceData.push_back(vvector());
 		_torqueData.push_back(vvector());
@@ -104,7 +104,7 @@ void ForceContainer::setPermForce(Body::id_t id, const Vector3r& f)
 	}
 	_permForce[id] = f;
 	if (not permForceUsed) {
-		synced        = false;
+		synced = false;
 		permForceUsed = true;
 	}
 }
@@ -117,7 +117,7 @@ void ForceContainer::setPermTorque(Body::id_t id, const Vector3r& t)
 	}
 	_permTorque[id] = t;
 	if (not permForceUsed) {
-		synced        = false;
+		synced = false;
 		permForceUsed = true;
 	}
 }
@@ -165,7 +165,7 @@ void ForceContainer::sync()
 	if (synced) return; // if synced meanwhile
 
 	syncSizesOfContainers();
-	const bool  redirect   = Omega::instance().getScene()->bodies->useRedirection;
+	const bool  redirect = Omega::instance().getScene()->bodies->useRedirection;
 	const auto& realBodies = Omega::instance().getScene()->bodies->realBodies;
 	if (redirect) Omega::instance().getScene()->bodies->updateShortLists();
 	const unsigned long len = redirect ? (unsigned long)realBodies.size() : (unsigned long)size;
@@ -177,7 +177,7 @@ void ForceContainer::sync()
 		for (int thread = 0; thread < nThreads; thread++) {
 			sumF += _forceData[thread][id];
 			sumT += _torqueData[thread][id];
-			_forceData[thread][id]  = Vector3r::Zero();
+			_forceData[thread][id] = Vector3r::Zero();
 			_torqueData[thread][id] = Vector3r::Zero();
 		} //reset here so we don't have to do it later
 		_force[id] += sumF;
@@ -188,7 +188,7 @@ void ForceContainer::sync()
 		}
 	}
 	permForceSynced = true;
-	synced          = true;
+	synced = true;
 	syncCount++;
 }
 
@@ -206,7 +206,7 @@ void ForceContainer::reset(long iter, bool resetAll)
 	if (scene->bodies->useRedirection) { //if using short lists we only reset forces for bodies not-vanished
 		scene->bodies->updateShortLists();
 		const auto& sdIds = scene->bodies->realBodies;
-		currSize          = sdIds.size();
+		currSize = sdIds.size();
 // no need to reset force-torque per thread since they are set to zero in sync() already
 #pragma omp parallel for schedule(static)
 		for (unsigned long k = 0; k < currSize; k++) /*_force[sdIds[k]]=Vector3r::Zero(); */
@@ -238,7 +238,7 @@ void ForceContainer::reset(long iter, bool resetAll)
 	else
 		synced = false;
 	permForceSynced = false;
-	lastReset       = iter;
+	lastReset = iter;
 }
 
 #pragma GCC diagnostic pop
@@ -253,7 +253,7 @@ void ForceContainer::reset(long iter, bool resetAll)
 	if (scene->bodies->useRedirection) { //if using short lists we only reset forces for bodies not-vanished
 		scene->bodies->updateShortLists();
 		const auto& sdIds = scene->bodies->realBodies;
-		currSize          = sdIds.size();
+		currSize = sdIds.size();
 // no need to reset force-torque per thread since they are set to zero in sync() already
 #pragma omp parallel for schedule(static)
 		for (unsigned long k = 0; k < currSize; k++)
@@ -296,8 +296,8 @@ void ForceContainer::resize(size_t newSize, int threadN)
 	_forceData[threadN].resize(newSize, Vector3r::Zero());
 	_torqueData[threadN].resize(newSize, Vector3r::Zero());
 	sizeOfThreads[threadN] = newSize;
-	_maxId[threadN]        = newSize - 1;
-	syncedSizes            = false;
+	_maxId[threadN] = newSize - 1;
+	syncedSizes = false;
 }
 
 int  ForceContainer::getNumAllocatedThreads() const { return nThreads; }
@@ -324,7 +324,7 @@ void ForceContainer::syncSizesOfContainers()
 	}
 	if (permForceUsed) resizePerm(newSize);
 	syncedSizes = true;
-	size        = newSize;
+	size = newSize;
 }
 #endif
 

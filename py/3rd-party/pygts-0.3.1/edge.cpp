@@ -567,7 +567,7 @@ GtsTriangleClass* pygts_parent_triangle_class(void)
 			                                          (GtsObjectInitFunc)(super->info.object_init_func),
 			                                          (GtsArgSetFunc)NULL,
 			                                          (GtsArgGetFunc)NULL };
-		klass                                         = (GtsTriangleClass*)gts_object_class_new(gts_object_class(), &pygts_parent_triangle_info);
+		klass = (GtsTriangleClass*)gts_object_class_new(gts_object_class(), &pygts_parent_triangle_info);
 	}
 
 	return klass;
@@ -589,7 +589,7 @@ GtsEdgeClass* pygts_parent_edge_class(void)
 			                                      (GtsObjectInitFunc)(super->info.object_init_func),
 			                                      (GtsArgSetFunc)NULL,
 			                                      (GtsArgGetFunc)NULL };
-		klass                                     = (GtsEdgeClass*)gts_object_class_new(gts_object_class(), &pygts_parent_edge_info);
+		klass = (GtsEdgeClass*)gts_object_class_new(gts_object_class(), &pygts_parent_edge_info);
 	}
 
 	return klass;

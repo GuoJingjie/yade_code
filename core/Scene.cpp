@@ -127,10 +127,10 @@ void Scene::moveToNextTimeStep()
 		if (iter == 0) { //For the first time
 			prevTime = boost::posix_time::microsec_clock::local_time();
 		} else {
-			boost::posix_time::ptime         timeNow  = boost::posix_time::microsec_clock::local_time();
+			boost::posix_time::ptime         timeNow = boost::posix_time::microsec_clock::local_time();
 			boost::posix_time::time_duration duration = timeNow - prevTime;
-			long                             dif      = duration.total_microseconds();
-			SpeedElements(iter % nSpeedIter, 0)       = 1000000.0 / dif;
+			long                             dif = duration.total_microseconds();
+			SpeedElements(iter % nSpeedIter, 0) = 1000000.0 / dif;
 
 			speed = SpeedElements.mean();
 
@@ -204,7 +204,7 @@ bool Scene::timeStepperPresent()
 
 bool Scene::timeStepperActive()
 {
-	int  n   = 0;
+	int  n = 0;
 	bool ret = false;
 	for (const auto& e : engines) {
 		TimeStepper* ts = dynamic_cast<TimeStepper*>(e.get());

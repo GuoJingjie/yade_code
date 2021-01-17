@@ -47,8 +47,8 @@ void DeformableCohesiveElement::addPair(const shared_ptr<Body>& nodeBody1, const
 		        ("Node that has Body id #" + boost::lexical_cast<string>(subId2) + " is already part of this cohesive deformable element"));
 
 	nodepair pair;
-	pair.node1            = nodeBody1;
-	pair.node2            = nodeBody2;
+	pair.node1 = nodeBody1;
+	pair.node2 = nodeBody2;
 	this->nodepairs[pair] = Se3r();
 	// Add body to localmap
 	this->nodepairs[pair].position = nodeBody1->state->pos - nodeBody2->state->pos; // Initial difference on positions

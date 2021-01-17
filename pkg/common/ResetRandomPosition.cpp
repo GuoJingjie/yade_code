@@ -52,7 +52,7 @@ void ResetRandomPosition::action()
 				return;
 			}
 		}
-		first_run   = false;
+		first_run = false;
 		randomFacet = shared_ptr<RandomInt>(new RandomInt(boost::minstd_rand(), boost::uniform_int<>(0, factoryFacets.size() - 1)));
 	}
 
@@ -60,8 +60,8 @@ void ResetRandomPosition::action()
 
 	FOREACH(int id, subscribedBodies)
 	{
-		shared_ptr<Body> b        = Body::byId(id);
-		State*           rb       = b->state.get();
+		shared_ptr<Body> b = Body::byId(id);
+		State*           rb = b->state.get();
 		Vector3r&        position = rb->se3.position;
 
 		if ((position - point).dot(normal) < 0) {
@@ -107,10 +107,10 @@ void ResetRandomPosition::action()
 				return;
 			}
 
-			rb->vel    = Vector3r( //
-                                velocity[0] + velocityRange[0] * randomSymmetricUnit(),
-                                velocity[1] + velocityRange[1] * randomSymmetricUnit(),
-                                velocity[2] + velocityRange[2] * randomSymmetricUnit());
+			rb->vel = Vector3r( //
+			        velocity[0] + velocityRange[0] * randomSymmetricUnit(),
+			        velocity[1] + velocityRange[1] * randomSymmetricUnit(),
+			        velocity[2] + velocityRange[2] * randomSymmetricUnit());
 			rb->angVel = Vector3r( //
 			        angularVelocity[0] + angularVelocityRange[0] * randomSymmetricUnit(),
 			        angularVelocity[1] + angularVelocityRange[1] * randomSymmetricUnit(),
@@ -124,10 +124,10 @@ void ResetRandomPosition::action()
 Vector3r ResetRandomPosition::generatePositionOnSurface()
 {
 	Body::id_t facetId = factoryFacets[(*randomFacet)()];
-	Real       t1      = randomUnit();
-	Real       t2      = randomUnit() * (1 - t1);
+	Real       t1 = randomUnit();
+	Real       t2 = randomUnit() * (1 - t1);
 
-	shared_ptr<Body> facet  = Body::byId(facetId);
+	shared_ptr<Body> facet = Body::byId(facetId);
 	Facet*           ifacet = static_cast<Facet*>(facet->shape.get());
 
 	return t1 * (ifacet->vertices[1] - ifacet->vertices[0]) + t2 * (ifacet->vertices[2] - ifacet->vertices[0]) + ifacet->vertices[0]
@@ -138,7 +138,7 @@ Vector3r ResetRandomPosition::generatePositionInVolume()
 {
 	Vector3r p1 = generatePositionOnSurface();
 	Vector3r p2 = generatePositionOnSurface();
-	Real     t  = randomUnit();
+	Real     t = randomUnit();
 	return p1 + t * (p2 - p1);
 }
 

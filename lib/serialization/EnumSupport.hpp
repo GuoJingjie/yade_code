@@ -120,7 +120,7 @@ template <typename ArbitraryEnum> struct ArbitraryEnum_from_python {
 				boost::python::object                         main = boost::python::import("yade");                                            \
 				boost::python::scope                          setScope(main);                                                                  \
 				boost::python::type_info                      info = boost::python::type_id<FULL_SCOPE::ENUM_TYPE>();                          \
-				const boost::python::converter::registration* reg  = boost::python::converter::registry::query(info);                          \
+				const boost::python::converter::registration* reg = boost::python::converter::registry::query(info);                           \
 				if ((reg == NULL) or (reg->m_to_python == NULL)) {                                                                             \
 					yade::ArbitraryEnum_from_python<FULL_SCOPE::ENUM_TYPE>();                                                              \
 					boost::python::enum_<FULL_SCOPE::ENUM_TYPE>(                                                                           \

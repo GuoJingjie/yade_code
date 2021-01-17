@@ -68,11 +68,11 @@ namespace yade { // Cannot have #include directive inside.
  */
 
 namespace units { // C++ standard uses int64_t because ↓ it supports ±292.5 years in nanoseconds.
-	using Seconds      = ::std::chrono::duration<int64_t, std::ratio<int64_t(1), int64_t(1)>>;
+	using Seconds = ::std::chrono::duration<int64_t, std::ratio<int64_t(1), int64_t(1)>>;
 	using MilliSeconds = ::std::chrono::duration<int64_t, std::ratio<int64_t(1), int64_t(1000)>>;
 
-	template <typename TimeUnit> const constexpr bool isSecond        = std::is_same<TimeUnit, Seconds>::value;
-	template <typename TimeUnit> const constexpr bool isMilliSecond   = std::is_same<TimeUnit, MilliSeconds>::value;
+	template <typename TimeUnit> const constexpr bool isSecond = std::is_same<TimeUnit, Seconds>::value;
+	template <typename TimeUnit> const constexpr bool isMilliSecond = std::is_same<TimeUnit, MilliSeconds>::value;
 	template <typename TimeUnit> const constexpr bool isSecOrMilliSec = isSecond<TimeUnit> or isMilliSecond<TimeUnit>;
 }
 

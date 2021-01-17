@@ -18,13 +18,13 @@ class LBMlink : public Serializable {
 public:
 	void ReinitDynamicalProperties()
 	{
-		sid         = -1;
-		fid         = -1;
+		sid = -1;
+		fid = -1;
 		idx_sigma_i = -1;
-		isBd        = false;
-		VbMid       = Vector3r::Zero();
-		DistMid     = Vector3r::Zero();
-		ct          = 0.;
+		isBd = false;
+		VbMid = Vector3r::Zero();
+		DistMid = Vector3r::Zero();
+		ct = 0.;
 		return;
 	};
 	virtual ~LBMlink() {};

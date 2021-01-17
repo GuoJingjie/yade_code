@@ -83,7 +83,7 @@ public:
 Real simplePolygonArea2d(vector<Vector2r> P)
 {
 	Real   ret = 0.;
-	size_t n   = P.size();
+	size_t n = P.size();
 	for (size_t i = 0; i < n - 1; i++) {
 		ret += P[i][0] * P[i + 1][1] - P[i + 1][0] * P[i][1];
 	}

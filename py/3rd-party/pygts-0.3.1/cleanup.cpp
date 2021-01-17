@@ -72,13 +72,13 @@ GList* pygts_vertices_merge(GList* vertices, gdouble epsilon, gboolean (*check)(
 	GSList *     selected, *j;
 	GtsVertex*   sv;
 	PygtsObject* obj;
-	PygtsVertex* vertex  = NULL;
+	PygtsVertex* vertex = NULL;
 	GSList *     parents = NULL, *ii, *cur;
 
 	g_return_val_if_fail(vertices != NULL, 0);
 
 	array = g_ptr_array_new();
-	i     = vertices;
+	i = vertices;
 	while (i) {
 		g_ptr_array_add(array, i->data);
 		i = g_list_next(i);
@@ -114,10 +114,10 @@ GList* pygts_vertices_merge(GList* vertices, gdouble epsilon, gboolean (*check)(
 						ii = sv->segments;
 						while (ii != NULL) {
 							cur = ii;
-							ii  = g_slist_next(ii);
+							ii = g_slist_next(ii);
 							if (PYGTS_IS_PARENT_SEGMENT(cur->data)) {
 								sv->segments = g_slist_remove_link(sv->segments, cur);
-								parents      = g_slist_prepend(parents, cur->data);
+								parents = g_slist_prepend(parents, cur->data);
 								g_slist_free_1(cur);
 							}
 						}
@@ -131,7 +131,7 @@ GList* pygts_vertices_merge(GList* vertices, gdouble epsilon, gboolean (*check)(
 						ii = parents;
 						while (ii != NULL) {
 							sv->segments = g_slist_prepend(sv->segments, ii->data);
-							ii           = g_slist_next(ii);
+							ii = g_slist_next(ii);
 						}
 						g_slist_free(parents);
 						parents = NULL;
@@ -155,7 +155,7 @@ GList* pygts_vertices_merge(GList* vertices, gdouble epsilon, gboolean (*check)(
 
 	i = vertices;
 	while (i) {
-		v    = (GtsVertex*)i->data;
+		v = (GtsVertex*)i->data;
 		next = g_list_next(i);
 		if (GTS_OBJECT(v)->reserved) { /* v is inactive */
 			if (g_hash_table_lookup(obj_table, GTS_OBJECT(v)) == NULL) {
@@ -233,10 +233,10 @@ void pygts_edge_cleanup(GtsSurface* s)
 					ii = e->triangles;
 					while (ii != NULL) {
 						cur = ii;
-						ii  = g_slist_next(ii);
+						ii = g_slist_next(ii);
 						if (PYGTS_IS_PARENT_TRIANGLE(cur->data)) {
 							e->triangles = g_slist_remove_link(e->triangles, cur);
-							parents      = g_slist_prepend(parents, cur->data);
+							parents = g_slist_prepend(parents, cur->data);
 							g_slist_free_1(cur);
 						}
 					}
@@ -250,7 +250,7 @@ void pygts_edge_cleanup(GtsSurface* s)
 					ii = parents;
 					while (ii != NULL) {
 						e->triangles = g_slist_prepend(e->triangles, ii->data);
-						ii           = g_slist_next(ii);
+						ii = g_slist_next(ii);
 					}
 					g_slist_free(parents);
 					parents = NULL;

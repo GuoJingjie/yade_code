@@ -56,10 +56,10 @@ bool Gl1_Facet::normals = false;
 
 void Gl1_Facet::go(const shared_ptr<Shape>& cm, const shared_ptr<State>&, bool wire, const GLViewInfo&)
 {
-	Facet*                  facet    = static_cast<Facet*>(cm.get());
+	Facet*                  facet = static_cast<Facet*>(cm.get());
 	const vector<Vector3r>& vertices = facet->vertices;
-	const Vector3r*         ne       = facet->ne;
-	const Real&             icr      = facet->icr;
+	const Vector3r*         ne = facet->ne;
+	const Real&             icr = facet->icr;
 
 	if (cm->wire || wire) {
 		// facet
@@ -116,9 +116,9 @@ bool             Gl1_Sphere::circleView;
 Real             Gl1_Sphere::circleRelThickness;
 vector<Vector3r> Gl1_Sphere::vertices, Gl1_Sphere::faces;
 int              Gl1_Sphere::glStripedSphereList = -1;
-int              Gl1_Sphere::glGlutSphereList    = -1;
-Real             Gl1_Sphere::prevQuality         = 0;
-string           Gl1_Sphere::prevDisplayMode     = "";
+int              Gl1_Sphere::glGlutSphereList = -1;
+Real             Gl1_Sphere::prevQuality = 0;
+string           Gl1_Sphere::prevDisplayMode = "";
 char             Gl1_Sphere::circleAllowedRotationAxis;
 char             Gl1_Sphere::prevCircleAllowedRotationAxis = 'z';
 
@@ -135,7 +135,7 @@ void Gl1_Sphere::go(const shared_ptr<Shape>& cm, const shared_ptr<State>&, bool 
 		           || prevCircleAllowedRotationAxis != circleAllowedRotationAxis);
 		if (somethingChanged) {
 			prevCircleAllowedRotationAxis = circleAllowedRotationAxis;
-			prevDisplayMode               = "torus";
+			prevDisplayMode = "torus";
 			glDeleteLists(glGlutSphereList, 1);
 			glGlutSphereList = glGenLists(1);
 			glNewList(glGlutSphereList, GL_COMPILE)
@@ -166,7 +166,7 @@ void Gl1_Sphere::go(const shared_ptr<Shape>& cm, const shared_ptr<State>&, bool 
 			if (somethingChanged) {
 				initStripedGlList();
 				initGlutGlList();
-				prevQuality     = quality;
+				prevQuality = quality;
 				prevDisplayMode = "sphere";
 			}
 			glScale(r, r, r);

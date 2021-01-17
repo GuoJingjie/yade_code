@@ -18,7 +18,7 @@ using math::min; // using inside .cpp file is ok.
 
 py::tuple negPosExtremeIds(int axis, Real distFactor)
 {
-	const auto extrema  = Shop::aabbExtrema();
+	const auto extrema = Shop::aabbExtrema();
 	Real       minCoord = extrema.first[axis], maxCoord = extrema.second[axis];
 	py::list   minIds, maxIds;
 	for (const auto& b : *Omega::instance().getScene()->bodies) {
@@ -84,7 +84,7 @@ py::tuple interactionAnglesHistogram(int axis, int mask, size_t bins, py::tuple 
 		GenericSpheresContact* geom = dynamic_cast<GenericSpheresContact*>(i->geom.get());
 		if (!geom) continue;
 		Vector3r n(geom->normal);
-		n[axis]   = 0.;
+		n[axis] = 0.;
 		Real nLen = n.norm();
 		if (nLen < minProjLen) continue; // this interaction is (almost) exactly parallel to our axis; skip that one
 		Real theta = acos(n[axis2] / nLen) * (n[axis3] > 0 ? 1 : -1);
@@ -212,7 +212,7 @@ Real sumForces(py::list ids, const Vector3r& direction)
 	size_t len = py::len(ids);
 	for (size_t i = 0; i < len; i++) {
 		Body::id_t      id = py::extract<int>(ids[i]);
-		const Vector3r& f  = rb->forces.getForce(id);
+		const Vector3r& f = rb->forces.getForce(id);
 		ret += direction.dot(f);
 	}
 	return ret;
@@ -232,7 +232,7 @@ Real sumFacetNormalForces(vector<Body::id_t> ids, int axis)
 		if (axis < 0) ret += rb->forces.getForce(id).dot(f->normal);
 		else {
 			Vector3r ff = rb->forces.getForce(id);
-			ff[axis]    = 0;
+			ff[axis] = 0;
 			ret += ff.dot(f->normal);
 		}
 	}
@@ -288,7 +288,7 @@ bool pointInsidePolygon(py::tuple xy, py::object vertices)
 	Real           testx = py::extract<Real>(xy[0])(), testy = py::extract<Real>(xy[1])();
 	char**         vertData;
 	int            rows, cols;
-	PyArrayObject* vert   = (PyArrayObject*)vertices.ptr();
+	PyArrayObject* vert = (PyArrayObject*)vertices.ptr();
 	int            result = PyArray_As2D((PyObject**)&vert /* is replaced */, &vertData, &rows, &cols, PyArray_DOUBLE);
 	if (result != 0) throw invalid_argument("Unable to cast vertices to 2d array");
 	if (cols != 2 || rows < 3) throw invalid_argument("Vertices must have 2 columns (x and y) and at least 3 rows.");
@@ -358,8 +358,8 @@ Vector3r forcesOnPlane(const Vector3r& planePt, const Vector3r& normal)
 		NormShearPhys* nsi = dynamic_cast<NormShearPhys*>(I->phys.get());
 		if (!nsi) continue;
 		Vector3r pos1, pos2;
-		pos1      = Body::byId(I->getId1(), scene)->state->pos;
-		pos2      = Body::byId(I->getId2(), scene)->state->pos;
+		pos1 = Body::byId(I->getId1(), scene)->state->pos;
+		pos2 = Body::byId(I->getId2(), scene)->state->pos;
 		Real dot1 = (pos1 - planePt).dot(normal), dot2 = (pos2 - planePt).dot(normal);
 		if (dot1 * dot2 > 0) continue; // both (centers of) bodies are on the same side of the plane=> this interaction has to be disregarded
 		// if pt1 is on the negative plane side, d3dg->normal.Dot(normal)>0, the force is well oriented;
@@ -419,7 +419,7 @@ py::object Shop__kineticEnergy(bool findMaxId)
 Real maxOverlapRatio()
 {
 	Scene* scene = Omega::instance().getScene().get();
-	Real   ret   = -1;
+	Real   ret = -1;
 	FOREACH(const shared_ptr<Interaction> I, *scene->interactions)
 	{
 		if (!I->isReal()) continue;
@@ -429,7 +429,7 @@ Real maxOverlapRatio()
 		ScGeom* geom = dynamic_cast<ScGeom*>(I->geom.get());
 		if (!geom) continue;
 		Real rEq = 2 * s1->radius * s2->radius / (s1->radius + s2->radius);
-		ret      = max(ret, geom->penetrationDepth / rEq);
+		ret = max(ret, geom->penetrationDepth / rEq);
 	}
 	return ret;
 }
@@ -453,7 +453,7 @@ py::list Shop__getBodyIdsContacts(Body::id_t bodyID) { return Shop::getBodyIdsCo
 
 Real shiftBodies(py::list ids, const Vector3r& shift)
 {
-	shared_ptr<Scene> rb  = Omega::instance().getScene();
+	shared_ptr<Scene> rb = Omega::instance().getScene();
 	size_t            len = py::len(ids);
 	for (size_t i = 0; i < len; i++) {
 		const Body* b = (*rb->bodies)[py::extract<int>(ids[i])].get();
@@ -467,19 +467,19 @@ void Shop__calm(int mask) { return Shop::calm(Omega::instance().getScene(), mask
 
 void setNewVerticesOfFacet(const shared_ptr<Body>& b, const Vector3r& v1, const Vector3r& v2, const Vector3r& v3)
 {
-	Vector3r center    = inscribedCircleCenter(v1, v2, v3);
-	Facet*   facet     = YADE_CAST<Facet*>(b->shape.get());
+	Vector3r center = inscribedCircleCenter(v1, v2, v3);
+	Facet*   facet = YADE_CAST<Facet*>(b->shape.get());
 	facet->vertices[0] = v1 - center;
 	facet->vertices[1] = v2 - center;
 	facet->vertices[2] = v3 - center;
-	b->state->pos      = center;
+	b->state->pos = center;
 }
 
 py::list intrsOfEachBody()
 {
 	py::list          ret, temp;
 	shared_ptr<Scene> rb = Omega::instance().getScene();
-	size_t            n  = rb->bodies->size();
+	size_t            n = rb->bodies->size();
 	// create list of size len(O.bodies) full of zeros
 	for (size_t i = 0; i < n; i++) {
 		ret.append(py::list());
@@ -500,7 +500,7 @@ py::list numIntrsOfEachBody()
 {
 	py::list          ret;
 	shared_ptr<Scene> rb = Omega::instance().getScene();
-	size_t            n  = rb->bodies->size();
+	size_t            n = rb->bodies->size();
 	// create list of size len(O.bodies) full of zeros
 	for (size_t i = 0; i < n; i++) {
 		ret.append(0);
@@ -522,7 +522,7 @@ py::tuple Shop__getStressAndTangent(Real volume = 0, bool symmetry = true) { ret
 void setBodyPosition(int id, Vector3r newPos, string axis)
 {
 	shared_ptr<Scene> rb = Omega::instance().getScene();
-	const Body*       b  = (*rb->bodies)[id].get();
+	const Body*       b = (*rb->bodies)[id].get();
 	for (char c : axis) {
 		if (c == 'x') {
 			b->state->pos[0] = newPos[0];
@@ -542,7 +542,7 @@ void setBodyPosition(int id, Vector3r newPos, string axis)
 void setBodyVelocity(int id, Vector3r newVel, string axis)
 {
 	shared_ptr<Scene> rb = Omega::instance().getScene();
-	const Body*       b  = (*rb->bodies)[id].get();
+	const Body*       b = (*rb->bodies)[id].get();
 	for (char c : axis) {
 		if (c == 'x') {
 			b->state->vel[0] = newVel[0];
@@ -562,22 +562,22 @@ void setBodyVelocity(int id, Vector3r newVel, string axis)
 void setBodyOrientation(int id, Quaternionr newOri)
 {
 	shared_ptr<Scene> rb = Omega::instance().getScene();
-	const Body*       b  = (*rb->bodies)[id].get();
-	b->state->ori        = newOri;
+	const Body*       b = (*rb->bodies)[id].get();
+	b->state->ori = newOri;
 }
 
 void setBodyAngularVelocity(int id, Vector3r newAngVel)
 {
 	shared_ptr<Scene> rb = Omega::instance().getScene();
-	const Body*       b  = (*rb->bodies)[id].get();
-	b->state->angVel     = newAngVel;
+	const Body*       b = (*rb->bodies)[id].get();
+	b->state->angVel = newAngVel;
 }
 
 void setBodyColor(int id, Vector3r newColor)
 {
 	shared_ptr<Scene> rb = Omega::instance().getScene();
-	const Body*       b  = (*rb->bodies)[id].get();
-	b->shape->color      = newColor;
+	const Body*       b = (*rb->bodies)[id].get();
+	b->shape->color = newColor;
 }
 
 } // namespace yade
@@ -644,10 +644,10 @@ try {
 	py::def("interactionAnglesHistogram",
 	        interactionAnglesHistogram,
 	        (py::arg("axis"),
-	         py::arg("mask")       = 0,
-	         py::arg("bins")       = 20,
-	         py::arg("aabb")       = py::tuple(),
-	         py::arg("sphSph")     = 0,
+	         py::arg("mask") = 0,
+	         py::arg("bins") = 20,
+	         py::arg("aabb") = py::tuple(),
+	         py::arg("sphSph") = 0,
 	         py::arg("minProjLen") = 1e-6));
 	py::def("bodyNumInteractionsHistogram", bodyNumInteractionsHistogram, (py::arg("aabb")));
 	py::def("inscribedCircleCenter",
@@ -703,9 +703,9 @@ try {
 	        spiralProject,
 	        (py::arg("pt"),
 	         py::arg("dH_dTheta"),
-	         py::arg("axis")        = 2,
+	         py::arg("axis") = 2,
 	         py::arg("periodStart") = std::numeric_limits<Real>::quiet_NaN(),
-	         py::arg("theta0")      = 0));
+	         py::arg("theta0") = 0));
 	py::def("pointInsidePolygon", pointInsidePolygon);
 	py::def("scalarOnColorScale",
 	        Shop::scalarOnColorScale,

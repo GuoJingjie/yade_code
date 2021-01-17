@@ -49,7 +49,7 @@ void FlatGridCollider::action()
 void FlatGridCollider::initIndices()
 {
 	sphereIdx = facetIdx = wallIdx = boxIdx = -1;
-	sphereIdx                               = Sphere::getClassIndexStatic();
+	sphereIdx = Sphere::getClassIndexStatic();
 	LOG_DEBUG("sphereIdx=" << sphereIdx);
 }
 
@@ -62,10 +62,10 @@ void FlatGridCollider::updateGrid()
 		throw std::runtime_error("FlatGridCollider::{aabbMin,aabbMax} must give positive volume.");
 	// compute new size
 	grid.step = step;
-	grid.mn   = aabbMin;
+	grid.mn = aabbMin;
 	for (int i = 0; i < 3; i++)
 		grid.size[i] = (int)ceil((aabbMax[i] - aabbMin[i]) / step);
-	grid.mx    = aabbMin + Vector3r(grid.size[0] * step, grid.size[1] * step, grid.size[2] * step);
+	grid.mx = aabbMin + Vector3r(grid.size[0] * step, grid.size[1] * step, grid.size[2] * step);
 	size_t len = grid.size[0] * grid.size[1] * grid.size[2];
 	// reset grid data
 	grid.data.clear();
@@ -115,7 +115,7 @@ void FlatGridCollider::updateBodyCells(const shared_ptr<Body>& b)
 void FlatGridCollider::updateCollisions()
 {
 	shared_ptr<InteractionContainer>& intrs = scene->interactions;
-	const long&                       iter  = scene->iter;
+	const long&                       iter = scene->iter;
 	// create interactions for all combinations of bodies within one cell
 	FOREACH(const Grid::idVector& v, grid.data)
 	{

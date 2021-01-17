@@ -52,7 +52,7 @@ public:
 	{
 		if (import_mpi4py() < 0) return; // must be somewhere to initialize mpi4py in c++, else segfault
 		PyObject* py_obj = py_comm.ptr();
-		myComm_p         = PyMPIComm_Get(py_obj);
+		myComm_p = PyMPIComm_Get(py_obj);
 		if (myComm_p == NULL) LOG_ERROR("invalid COMM received from Python");
 	}
 	PyObject* getMyComm() { return PyMPIComm_New(*myComm_p); }
@@ -61,7 +61,7 @@ public:
 	std::vector<Real> getStateValuesFromIds(const vector<Body::id_t>& search)
 	{
 		const shared_ptr<Scene>& scene = Omega::instance().getScene();
-		unsigned int             N     = search.size();
+		unsigned int             N = search.size();
 		std::vector<Real>        res;
 		res.reserve(N * 13);
 		for (unsigned k = 0; k < N; k++) {
@@ -83,7 +83,7 @@ public:
 	std::vector<Real> getStateBoundsValuesFromIds(const vector<Body::id_t>& search)
 	{
 		const shared_ptr<Scene>& scene = Omega::instance().getScene();
-		unsigned int             N     = search.size();
+		unsigned int             N = search.size();
 		std::vector<Real>        res;
 		res.reserve(N * 19);
 		for (unsigned k = 0; k < N; k++) {
@@ -135,38 +135,38 @@ public:
 	void setStateValuesFromIds(const vector<Body::id_t>& b_ids, const std::vector<Real>& input)
 	{
 		const shared_ptr<Scene>& scene = Omega::instance().getScene();
-		unsigned int             N     = b_ids.size();
+		unsigned int             N = b_ids.size();
 		if ((N * 13) != input.size()) LOG_ERROR("size mismatch" << N * 13 << " vs " << input.size() << " in " << scene->subdomain);
 		for (unsigned k = 0; k < N; k++) {
 			unsigned int            idx = k * 13;
-			const shared_ptr<Body>& b   = (*(scene->bodies))[b_ids[k]];
+			const shared_ptr<Body>& b = (*(scene->bodies))[b_ids[k]];
 			if (!b) {
 				LOG_ERROR(" Body id not found " << b_ids[k] << "  rank = " << subdomainRank);
 				return;
 			}
 			const shared_ptr<State>& s = (*(scene->bodies))[b_ids[k]]->state;
-			s->pos                     = Vector3r(input[idx], input[idx + 1], input[idx + 2]);
-			s->vel                     = Vector3r(input[idx + 3], input[idx + 4], input[idx + 5]);
-			s->angVel                  = Vector3r(input[idx + 6], input[idx + 7], input[idx + 8]);
-			s->ori                     = Quaternionr(
-                                input[idx + 12], input[idx + 9], input[idx + 10], input[idx + 11]); //note q.coeffs() and q(w,x,y,z) take different oredrings
+			s->pos = Vector3r(input[idx], input[idx + 1], input[idx + 2]);
+			s->vel = Vector3r(input[idx + 3], input[idx + 4], input[idx + 5]);
+			s->angVel = Vector3r(input[idx + 6], input[idx + 7], input[idx + 8]);
+			s->ori = Quaternionr(
+			        input[idx + 12], input[idx + 9], input[idx + 10], input[idx + 11]); //note q.coeffs() and q(w,x,y,z) take different oredrings
 		}
 	}
 
 	void setStateBoundsValuesFromIds(const vector<Body::id_t>& b_ids, const std::vector<Real>& input)
 	{
 		const shared_ptr<Scene>& scene = Omega::instance().getScene();
-		unsigned int             N     = b_ids.size();
+		unsigned int             N = b_ids.size();
 		if ((N * 19) != input.size()) LOG_ERROR("size mismatch" << N * 19 << " vs " << input.size() << " in " << scene->subdomain);
 		for (unsigned k = 0; k < N; k++) {
-			const shared_ptr<Body>&  b   = (*(scene->bodies))[b_ids[k]];
-			const shared_ptr<State>& s   = b->state;
+			const shared_ptr<Body>&  b = (*(scene->bodies))[b_ids[k]];
+			const shared_ptr<State>& s = b->state;
 			unsigned int             idx = k * 19;
-			s->pos                       = Vector3r(input[idx], input[idx + 1], input[idx + 2]);
-			s->vel                       = Vector3r(input[idx + 3], input[idx + 4], input[idx + 5]);
-			s->angVel                    = Vector3r(input[idx + 6], input[idx + 7], input[idx + 8]);
-			s->ori                       = Quaternionr(
-                                input[idx + 12], input[idx + 9], input[idx + 10], input[idx + 11]); //note q.coeffs() and q(w,x,y,z) take different oredrings
+			s->pos = Vector3r(input[idx], input[idx + 1], input[idx + 2]);
+			s->vel = Vector3r(input[idx + 3], input[idx + 4], input[idx + 5]);
+			s->angVel = Vector3r(input[idx + 6], input[idx + 7], input[idx + 8]);
+			s->ori = Quaternionr(
+			        input[idx + 12], input[idx + 9], input[idx + 10], input[idx + 11]); //note q.coeffs() and q(w,x,y,z) take different oredrings
 
 			//b-bound should not be instanciate except pour the last body (k = N-1)
 			if (!b->bound) { b->bound = boost::make_shared<Aabb>(); }
@@ -196,8 +196,8 @@ public:
 		if (mirrorIntersections.size() <= otherSubdomain) LOG_ERROR("inconsistent size of mirrorIntersections and/or stateBuffer");
 		if (stateBuffer.size() <= otherSubdomain) stateBuffer.resize(otherSubdomain + 1);
 		const vector<Body::id_t>& b_ids = mirrorIntersections[otherSubdomain];
-		unsigned                  nb    = b_ids.size() * 13;
-		vector<Real>&             vals  = stateBuffer[otherSubdomain];
+		unsigned                  nb = b_ids.size() * 13;
+		vector<Real>&             vals = stateBuffer[otherSubdomain];
 		vals.resize(nb);
 		int        recv_count;
 		MPI_Status recv_status;
@@ -213,8 +213,8 @@ public:
 		if (mpiReqs.size() <= otherSubdomain) mpiReqs.resize(otherSubdomain + 1);
 
 		const vector<Body::id_t>& b_ids = mirrorIntersections[otherSubdomain];
-		unsigned                  nb    = b_ids.size() * 13;
-		vector<Real>&             vals  = stateBuffer[otherSubdomain];
+		unsigned                  nb = b_ids.size() * 13;
+		vector<Real>&             vals = stateBuffer[otherSubdomain];
 		vals.resize(nb);
 
 		MPI_Irecv(&vals.front(), nb, MPI_DOUBLE, otherSubdomain, 177, selfComm(), &mpiReqs[otherSubdomain]);
@@ -289,7 +289,7 @@ public:
 	std::vector<std::pair<std::string, int>> sendContainer; // list containing the serialized data (string) to be sent with the destination rank.
 	int  subdomainRank, commSize; //NOTE: subdomainRank is redundant with scene->subdomain, would be better to avoid to be sure they don't diverge
 	int  TAG_STRING = 420, TAG_COUNT = 20, TAG_WALL_INTR = 100, TAG_FORCE = 200, TAG_BODY = 111, TAG_INTERSECTIONS = 112;
-	bool commContainer   = false;
+	bool commContainer = false;
 	bool containersRecvd = false;
 	std::vector<shared_ptr<MPIBodyContainer>> recvdBodyContainers;
 	std::vector<bool>                         commFlag;
@@ -302,7 +302,7 @@ public:
 	std::vector<std::string>                  stringBuff;
 	std::vector<int>                          recvRanks;
 	std::vector<int>                          remoteCount;
-	bool                                      ranksSet  = false;
+	bool                                      ranksSet = false;
 	bool                                      bodiesSet = false; // flag
 
 	// Geometry and other helper functions
@@ -312,7 +312,7 @@ public:
 	Vector3r centerOfMass() const
 	{
 		Vector3r                 center(0, 0, 0);
-		Real                     mass  = 0;
+		Real                     mass = 0;
 		const shared_ptr<Scene>& scene = Omega::instance().getScene();
 		for (unsigned k = 0; k < ids.size(); k++) {
 			const shared_ptr<Body>& b = Body::byId(ids[k], scene);

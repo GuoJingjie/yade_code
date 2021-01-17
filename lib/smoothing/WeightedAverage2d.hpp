@@ -138,10 +138,10 @@ template <typename T, typename Tvalue> struct WeightedAverage {
 	Real                               weightedSupportArea; // must be computed by derived class
 	WeightedAverage(const shared_ptr<GridContainer<T>>& _grid)
 	        : grid(_grid) {};
-	virtual Vector2r         getPosition(const T&)                      = 0;
+	virtual Vector2r         getPosition(const T&) = 0;
 	virtual Real             getWeight(const Vector2r& refPt, const T&) = 0;
-	virtual Tvalue           getValue(const T&)                         = 0;
-	virtual vector<Vector2i> filterCells(const Vector2r& refPt)         = 0;
+	virtual Tvalue           getValue(const T&) = 0;
+	virtual vector<Vector2i> filterCells(const Vector2r& refPt) = 0;
 	Tvalue                   computeAverage(const Vector2r& refPt)
 	{
 		Real sumValues, sumWeights;
@@ -193,8 +193,8 @@ struct SGDA_Scalar2d : public WeightedAverage<Scalar2d, Real> {
 
 		// FIXME: algorithm not correct, as it takes 1d quantile, while we would need PDF for symmetric 2d gaussian!
 		Real clippedQuantile = boost::math::cdf(distrib, -stDev * relThreshold);
-		Real area            = M_PI * pow(relThreshold * stDev, 2); // area of the support
-		weightedSupportArea  = (1 - 2 * clippedQuantile) * area;
+		Real area = M_PI * pow(relThreshold * stDev, 2); // area of the support
+		weightedSupportArea = (1 - 2 * clippedQuantile) * area;
 	}
 	virtual Real getWeight(const Vector2r& meanPt, const Scalar2d& e)
 	{
@@ -233,7 +233,7 @@ public:
 	pyGaussAverage(boost::python::tuple lo, boost::python::tuple hi, boost::python::tuple nCells, Real stDev, Real relThreshold = 3.)
 	{
 		shared_ptr<GridContainer<Scalar2d>> g(new GridContainer<Scalar2d>(tuple2vec2r(lo), tuple2vec2r(hi), tuple2vec2i(nCells)));
-		sgda               = shared_ptr<SGDA_Scalar2d>(new SGDA_Scalar2d(g, stDev));
+		sgda = shared_ptr<SGDA_Scalar2d>(new SGDA_Scalar2d(g, stDev));
 		sgda->relThreshold = relThreshold;
 	}
 	bool pointInsidePolygon(const Vector2r&, const vector<Vector2r>&);
@@ -287,7 +287,7 @@ public:
 		clips.clear();
 		for (int i = 0; i < boost::python::len(l); i++) {
 			boost::python::tuple polyDesc = boost::python::extract<boost::python::tuple>(l[i])();
-			boost::python::list  coords   = boost::python::extract<boost::python::list>(polyDesc[0]);
+			boost::python::list  coords = boost::python::extract<boost::python::list>(polyDesc[0]);
 			Poly2d               poly;
 			poly.inclusive = boost::python::extract<bool>(polyDesc[1]);
 			for (int j = 0; j < boost::python::len(coords); j++) {

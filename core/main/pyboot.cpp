@@ -39,7 +39,7 @@ void yadeInitialize(boost::python::list& pp, const std::string& confDir)
 	O.init();
 	O.origArgv = NULL;
 	O.origArgc = 0; // not needed, anyway
-	O.confDir  = confDir;
+	O.confDir = confDir;
 	O.initTemps();
 #ifdef YADE_DEBUG
 	std::ofstream gdbBatch;
@@ -63,7 +63,7 @@ void yadeFinalize() { yade::Omega::instance().cleanupTemps(); }
 BOOST_PYTHON_MODULE(boot)
 try {
 	boost::python::scope().attr("initialize") = &yadeInitialize;
-	boost::python::scope().attr("finalize")   = &yadeFinalize; //,"Finalize yade (only to be used internally).")
+	boost::python::scope().attr("finalize") = &yadeFinalize; //,"Finalize yade (only to be used internally).")
 
 } catch (...) {
 	LOG_FATAL("Importing this module caused an exception and this module is in an inconsistent state now.");

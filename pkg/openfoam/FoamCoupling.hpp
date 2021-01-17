@@ -33,14 +33,14 @@ private:
 	int        rank, commSize; // for serial Yade-OpenFOAM
 	MPI_Status status;
 	int        szdff, localCommSize, worldCommSize, localRank, worldRank;
-	const int  TAG_GRID_BBOX  = 1001;
-	const int  TAG_PRT_DATA   = 1002;
-	const int  TAG_FORCE      = 1005;
+	const int  TAG_GRID_BBOX = 1001;
+	const int  TAG_PRT_DATA = 1002;
+	const int  TAG_FORCE = 1005;
 	const int  TAG_SEARCH_RES = 1004;
-	const int  yadeMaster     = 0;
-	const int  TAG_SZ_BUFF    = 1003;
-	const int  TAG_FLUID_DT   = 1050;
-	const int  TAG_YADE_DT    = 1060;
+	const int  yadeMaster = 0;
+	const int  TAG_SZ_BUFF = 1003;
+	const int  TAG_FLUID_DT = 1050;
+	const int  TAG_YADE_DT = 1060;
 
 public:
 	// clang-format off

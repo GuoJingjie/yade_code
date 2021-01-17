@@ -10,7 +10,7 @@ ForceContainer::ForceContainer() {};
 void ForceContainer::ensureSize(Body::id_t id)
 {
 	const Body::id_t idMaxTmp = max(id, _maxId);
-	_maxId                    = 0;
+	_maxId = 0;
 	if (size <= (size_t)idMaxTmp) { resize(min((size_t)1.5 * (idMaxTmp + 100), (size_t)(idMaxTmp + 2000))); };
 }
 
@@ -44,14 +44,14 @@ void ForceContainer::setPermForce(Body::id_t id, const Vector3r& f)
 {
 	ensureSize(id);
 	_permForce[id] = f;
-	permForceUsed  = true;
+	permForceUsed = true;
 }
 
 void ForceContainer::setPermTorque(Body::id_t id, const Vector3r& t)
 {
 	ensureSize(id);
 	_permTorque[id] = t;
-	permForceUsed   = true;
+	permForceUsed = true;
 }
 
 const Vector3r& ForceContainer::getPermForce(Body::id_t id)

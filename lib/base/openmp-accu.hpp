@@ -58,7 +58,7 @@ public:
 		if (nCL_new > nCL) {
 			for (size_t th = 0; th < nThreads; th++) {
 				void* oldChunk = (void*)chunks[th];
-				int   succ     = posix_memalign((void**)(&chunks[th]), /*alignment*/ CLS, /*size*/ nCL_new * CLS);
+				int   succ = posix_memalign((void**)(&chunks[th]), /*alignment*/ CLS, /*size*/ nCL_new * CLS);
 				if (succ != 0) throw std::runtime_error("OpenMPArrayAccumulator: posix_memalign failed to allocate memory.");
 				if (oldChunk) { // initialized to NULL initially, that must not be copied and freed
 #if (YADE_REAL_BIT > 64)

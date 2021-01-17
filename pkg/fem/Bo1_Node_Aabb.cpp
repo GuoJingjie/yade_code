@@ -17,7 +17,7 @@ void Bo1_Node_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const
 {
 	Node* node = static_cast<Node*>(cm.get());
 	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
-	Aabb*    aabb     = static_cast<Aabb*>(bv.get());
+	Aabb*    aabb = static_cast<Aabb*>(bv.get());
 	Vector3r halfSize = (aabbEnlargeFactor > 0 ? aabbEnlargeFactor : 1.) * Vector3r(node->radius, node->radius, node->radius);
 	if (!scene->isPeriodic) {
 		aabb->min = se3.position - halfSize;

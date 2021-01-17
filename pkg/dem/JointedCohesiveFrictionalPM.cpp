@@ -28,8 +28,8 @@ static std::mutex clusterInts_mutex;
 
 bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip, Interaction* contact)
 {
-	const int& id1  = contact->getId1();
-	const int& id2  = contact->getId2();
+	const int& id1 = contact->getId1();
+	const int& id2 = contact->getId2();
 	ScGeom*    geom = static_cast<ScGeom*>(ig.get());
 	JCFpmPhys* phys = static_cast<JCFpmPhys*>(ip.get());
 
@@ -38,7 +38,7 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 
 	Real Dtensile = phys->FnMax / phys->kn;
 
-	string fileCracks  = "cracks_" + Key + ".txt";
+	string fileCracks = "cracks_" + Key + ".txt";
 	string fileMoments = "moments_" + Key + ".txt";
 	/// Defines the interparticular distance used for computation
 	Real D = 0;
@@ -46,7 +46,7 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 	/*this is for setting the equilibrium distance between all cohesive elements at the first contact detection*/
 	if (contact->isFresh(scene)) {
 		phys->normalForce = Vector3r::Zero();
-		phys->shearForce  = Vector3r::Zero();
+		phys->shearForce = Vector3r::Zero();
 		if ((smoothJoint) && (phys->isOnJoint)) {
 			phys->jointNormal
 			        = geom->normal.dot(phys->jointNormal) * phys->jointNormal; //to set the joint normal colinear with the interaction normal
@@ -61,11 +61,11 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 		if (phys->more || (phys->jointCumulativeSliding > (2 * min(geom->radius1, geom->radius2)))) {
 			if (!neverErase) return false;
 			else {
-				phys->shearForce  = Vector3r::Zero();
+				phys->shearForce = Vector3r::Zero();
 				phys->normalForce = Vector3r::Zero();
-				phys->isCohesive  = 0;
-				phys->FnMax       = 0;
-				phys->FsMax       = 0;
+				phys->isCohesive = 0;
+				phys->FnMax = 0;
+				phys->FsMax = 0;
 				return true;
 			}
 		} else {
@@ -109,11 +109,11 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 		if (!phys->isCohesive) {
 			if (!neverErase) return false;
 			else {
-				phys->shearForce  = Vector3r::Zero();
+				phys->shearForce = Vector3r::Zero();
 				phys->normalForce = Vector3r::Zero();
-				phys->isCohesive  = 0;
-				phys->FnMax       = 0;
-				phys->FsMax       = 0;
+				phys->isCohesive = 0;
+				phys->FnMax = 0;
+				phys->FsMax = 0;
 				return true;
 			}
 		}
@@ -121,11 +121,11 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 		if (phys->isCohesive && (phys->FnMax > 0) && (math::abs(D) > Dtensile)) {
 			nbTensCracks++;
 			phys->isCohesive = 0;
-			phys->FnMax      = 0;
-			phys->FsMax      = 0;
+			phys->FnMax = 0;
+			phys->FsMax = 0;
 			/// Do we need both the following lines?
 			phys->breakOccurred = true; // flag to trigger remesh for DFNFlowEngine
-			phys->isBroken      = true; // flag for DFNFlowEngine
+			phys->isBroken = true;      // flag for DFNFlowEngine
 
 			// update body state with the number of broken bonds -> do we really need that?
 			JCFpmState* st1 = dynamic_cast<JCFpmState*>(b1->state.get());
@@ -167,7 +167,7 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 
 			if (!neverErase) return false;
 			else {
-				phys->shearForce  = Vector3r::Zero();
+				phys->shearForce = Vector3r::Zero();
 				phys->normalForce = Vector3r::Zero();
 				return true;
 			}
@@ -176,16 +176,16 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 
 	/* NormalForce */
 	Real Fn = 0;
-	Fn      = phys->kn * D;
+	Fn = phys->kn * D;
 
 	/* ShearForce */
-	Vector3r& shearForce   = phys->shearForce;
+	Vector3r& shearForce = phys->shearForce;
 	Real      jointSliding = 0;
 
 	if ((smoothJoint) && (phys->isOnJoint)) {
 		/// incremental formulation (OK?)
-		Vector3r relativeVelocity   = (b2->state->vel - b1->state->vel); // angVel are not taken into account as particles on joint don't rotate ????
-		Vector3r slidingVelocity    = relativeVelocity - phys->jointNormal.dot(relativeVelocity) * phys->jointNormal;
+		Vector3r relativeVelocity = (b2->state->vel - b1->state->vel); // angVel are not taken into account as particles on joint don't rotate ????
+		Vector3r slidingVelocity = relativeVelocity - phys->jointNormal.dot(relativeVelocity) * phys->jointNormal;
 		Vector3r incrementalSliding = slidingVelocity * scene->dt;
 		shearForce -= phys->ks * incrementalSliding;
 
@@ -193,13 +193,13 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 		phys->jointCumulativeSliding += jointSliding;
 
 	} else {
-		shearForce                       = geom->rotate(phys->shearForce);
+		shearForce = geom->rotate(phys->shearForce);
 		const Vector3r& incrementalShear = geom->shearIncrement();
 		shearForce -= phys->ks * incrementalShear;
 	}
 
 	/* Mohr-Coulomb criterion */
-	Real maxFs            = phys->FsMax + Fn * phys->tanFrictionAngle;
+	Real maxFs = phys->FsMax + Fn * phys->tanFrictionAngle;
 	Real scalarShearForce = shearForce.norm();
 
 	if (scalarShearForce > maxFs) {
@@ -228,12 +228,12 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 		if (phys->isCohesive) {
 			nbShearCracks++;
 			phys->isCohesive = 0;
-			phys->FnMax      = 0;
-			phys->FsMax      = 0;
+			phys->FnMax = 0;
+			phys->FsMax = 0;
 			/// Do we need both the following lines?
 			phys->breakOccurred = true; // flag to trigger remesh for DFNFlowEngine
-			phys->isBroken      = true; // flag for DFNFlowEngine
-			phys->momentBroken  = true;
+			phys->isBroken = true;      // flag for DFNFlowEngine
+			phys->momentBroken = true;
 			// update body state with the number of broken bonds -> do we really need that?
 			JCFpmState* st1 = dynamic_cast<JCFpmState*>(b1->state.get());
 			JCFpmState* st2 = dynamic_cast<JCFpmState*>(b2->state.get());
@@ -285,7 +285,7 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 			if (D < 0) { // spheres do not touch
 				if (!neverErase) return false;
 				else {
-					phys->shearForce  = Vector3r::Zero();
+					phys->shearForce = Vector3r::Zero();
 					phys->normalForce = Vector3r::Zero();
 					return true;
 				}
@@ -318,14 +318,14 @@ bool Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::go(shared_ptr<IGeom>& ig
 
 void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::computeKineticEnergy(JCFpmPhys* phys, Body* b1, Body* b2)
 {
-	JCFpmState* state1  = YADE_CAST<JCFpmState*>(b1->state.get());
-	JCFpmState* state2  = YADE_CAST<JCFpmState*>(b2->state.get());
-	Real        m1      = state1->mass;
-	Real        m2      = state2->mass;
-	Vector3r    vel1    = state1->vel;
-	Vector3r    vel2    = state2->vel;
-	Vector3r    inert1  = state1->inertia;
-	Vector3r    inert2  = state2->inertia;
+	JCFpmState* state1 = YADE_CAST<JCFpmState*>(b1->state.get());
+	JCFpmState* state2 = YADE_CAST<JCFpmState*>(b2->state.get());
+	Real        m1 = state1->mass;
+	Real        m2 = state2->mass;
+	Vector3r    vel1 = state1->vel;
+	Vector3r    vel2 = state2->vel;
+	Vector3r    inert1 = state1->inertia;
+	Vector3r    inert2 = state2->inertia;
 	Vector3r    angVel1 = state1->angVel;
 	Vector3r    angVel2 = state2->angVel;
 
@@ -372,10 +372,10 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::clusterInteractions(JCFp
 {
 	JCFpmPhys* originalPhys = YADE_CAST<JCFpmPhys*>(phys->originalEvent->phys.get());
 	addUniqueIntsToList(originalPhys, phys); //NEED TO PUSHBACK ONLY UNIQUE INTS. we don't want a list with duplicate events (also updates reference strain)
-	phys->interactionsAdded   = true;
+	phys->interactionsAdded = true;
 	originalPhys->elapsedIter = 1; // reset the temporal window? do we want this?
 	//originalPhys->firstMomentCalc=true; // do we need a new reference strain energy for the calculation of strain energy change?
-	phys->momentMagnitude          = 0; // dirty way to avoid recording these clustered events twice? maybe dont need this if proper recording is applied
+	phys->momentMagnitude = 0; // dirty way to avoid recording these clustered events twice? maybe dont need this if proper recording is applied
 	originalPhys->computedCentroid = false; // set flag to compute a new centroid since we added more ints
 	const std::lock_guard<std::mutex> lock(clusterInts_mutex);
 	originalPhys->clusterInts.push_back(
@@ -385,13 +385,13 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::clusterInteractions(JCFp
 // function used to check if the newly broken bond belongs in a cluster or not, if so attach to proper cluster and set appropriate flags
 void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::checkForCluster(JCFpmPhys* phys, ScGeom* geom, Body* b1, Body* b2, Interaction* contact)
 {
-	const shared_ptr<Shape>& sphere1                   = b1->shape;
-	const shared_ptr<Shape>& sphere2                   = b2->shape;
-	const Real               sphereRadius1             = static_cast<Sphere*>(sphere1.get())->radius;
-	const Real               sphereRadius2             = static_cast<Sphere*>(sphere2.get())->radius;
-	const Real               avgDiameter               = (sphereRadius1 + sphereRadius2);
+	const shared_ptr<Shape>& sphere1 = b1->shape;
+	const shared_ptr<Shape>& sphere2 = b2->shape;
+	const Real               sphereRadius1 = static_cast<Sphere*>(sphere1.get())->radius;
+	const Real               sphereRadius2 = static_cast<Sphere*>(sphere2.get())->radius;
+	const Real               avgDiameter = (sphereRadius1 + sphereRadius2);
 	Vector3r&                brokenInteractionLocation = geom->contactPoint;
-	phys->nearbyFound                                  = 0;
+	phys->nearbyFound = 0;
 
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
@@ -406,21 +406,21 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::checkForCluster(JCFpmPhy
 				nearbyGeom = YADE_CAST<ScGeom*>(I->geom.get());
 				if (!nearbyGeom) continue;
 				Vector3r nearbyInteractionLocation = nearbyGeom->contactPoint;
-				Vector3r proximityVector           = nearbyInteractionLocation - brokenInteractionLocation;
-				Real     proximity                 = proximityVector.norm();
+				Vector3r proximityVector = nearbyInteractionLocation - brokenInteractionLocation;
+				Real     proximity = proximityVector.norm();
 
 				// this logic is finding interactions within a radius of the broken one, and identifiying if it is an original event or if it belongs in a cluster
 				if (proximity < avgDiameter * momentRadiusFactor && proximity != 0) {
 					if (nearbyPhys->originalClusterEvent && !nearbyPhys->momentCalculated && !phys->clusteredEvent && clusterMoments) {
-						phys->eventNumber    = nearbyPhys->eventNumber;
+						phys->eventNumber = nearbyPhys->eventNumber;
 						phys->clusteredEvent = true;
-						phys->originalEvent  = I;
+						phys->originalEvent = I;
 					} else if (nearbyPhys->clusteredEvent && !phys->clusteredEvent && clusterMoments) {
 						JCFpmPhys* originalPhys = YADE_CAST<JCFpmPhys*>(nearbyPhys->originalEvent->phys.get());
 						if (!originalPhys->momentCalculated) {
-							phys->eventNumber    = nearbyPhys->eventNumber;
+							phys->eventNumber = nearbyPhys->eventNumber;
 							phys->clusteredEvent = true;
-							phys->originalEvent  = nearbyPhys->originalEvent;
+							phys->originalEvent = nearbyPhys->originalEvent;
 						}
 					}
 
@@ -434,7 +434,7 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::checkForCluster(JCFpmPhy
 		phys->originalClusterEvent
 		        = true; // if not clustered, its an original event. We use this interaction as the master for the cluster. Its list of nearbyInts will expand if other ints break nearby.
 		phys->eventBeginTime = scene->time;
-		phys->originalEvent  = scene->interactions->find(contact->getId1(), contact->getId2());
+		phys->originalEvent = scene->interactions->find(contact->getId1(), contact->getId2());
 		eventNumber += 1;
 		phys->eventNumber = eventNumber;
 	}
@@ -444,7 +444,7 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::checkForCluster(JCFpmPhy
 // function cycles through the list of interactions associated with a cluster and computes moment
 void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::computeClusteredMoment(JCFpmPhys* phys)
 {
-	Real totalMomentEnergy  = 0;
+	Real totalMomentEnergy = 0;
 	Real momentEnergyChange = 0;
 	for (unsigned int i = 0; i < phys->nearbyInts.size(); i++) {
 		const JCFpmPhys* nearbyPhys;
@@ -454,7 +454,7 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::computeClusteredMoment(J
 		totalMomentEnergy += (useStrainEnergy ? nearbyPhys->strainEnergy : nearbyPhys->kineticEnergy);
 	}
 	if (phys->firstMomentCalc) {
-		phys->momentEnergy    = totalMomentEnergy;
+		phys->momentEnergy = totalMomentEnergy;
 		phys->firstMomentCalc = false;
 	}
 	momentEnergyChange = totalMomentEnergy - phys->momentEnergy;
@@ -472,16 +472,16 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::computeClusteredMoment(J
 // function used to compute the temporal window based on the PWave velocity of the medium
 void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::computeTemporalWindow(JCFpmPhys* phys, Body* b1, Body* b2)
 {
-	const shared_ptr<Shape>&    sphere1       = b1->shape;
-	const shared_ptr<Shape>&    sphere2       = b2->shape;
+	const shared_ptr<Shape>&    sphere1 = b1->shape;
+	const shared_ptr<Shape>&    sphere2 = b2->shape;
 	const Real                  sphereRadius1 = static_cast<Sphere*>(sphere1.get())->radius;
 	const Real                  sphereRadius2 = static_cast<Sphere*>(sphere2.get())->radius;
-	const Real                  avgDiameter   = (sphereRadius1 + sphereRadius2);
+	const Real                  avgDiameter = (sphereRadius1 + sphereRadius2);
 	const Real                  spatialWindow = avgDiameter * momentRadiusFactor;
-	const shared_ptr<ElastMat>& elasticMat1   = YADE_PTR_DYN_CAST<ElastMat>(b1->material);
-	const shared_ptr<ElastMat>& elasticMat2   = YADE_PTR_DYN_CAST<ElastMat>(b2->material);
-	const Real                  velocityP1    = sqrt(elasticMat1->young / elasticMat1->density);
-	const Real                  velocityP2    = sqrt(elasticMat2->young / elasticMat2->density);
+	const shared_ptr<ElastMat>& elasticMat1 = YADE_PTR_DYN_CAST<ElastMat>(b1->material);
+	const shared_ptr<ElastMat>& elasticMat2 = YADE_PTR_DYN_CAST<ElastMat>(b2->material);
+	const Real                  velocityP1 = sqrt(elasticMat1->young / elasticMat1->density);
+	const Real                  velocityP2 = sqrt(elasticMat2->young / elasticMat2->density);
 
 	phys->temporalWindow = int(math::floor(spatialWindow / (max(velocityP1, velocityP2) * scene->dt)));
 }
@@ -490,18 +490,18 @@ void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::computeTemporalWindow(JC
 // function computes the centroid of a cluster
 void Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM::computeCentroid(JCFpmPhys* phys)
 {
-	JCFpmPhys* originalPhys    = YADE_CAST<JCFpmPhys*>(phys->originalEvent->phys.get());
+	JCFpmPhys* originalPhys = YADE_CAST<JCFpmPhys*>(phys->originalEvent->phys.get());
 	Vector3r   summedLocations = Vector3r::Zero();
 	for (unsigned int i = 0; i < originalPhys->clusterInts.size(); i++) {
 		ScGeom* nearbyGeom;
 		if (!originalPhys->clusterInts[i]) continue;
 		if (originalPhys->clusterInts[i]->geom.get()) {
-			nearbyGeom                         = YADE_CAST<ScGeom*>(originalPhys->clusterInts[i]->geom.get());
+			nearbyGeom = YADE_CAST<ScGeom*>(originalPhys->clusterInts[i]->geom.get());
 			Vector3r nearbyInteractionLocation = nearbyGeom->contactPoint;
 			summedLocations += nearbyInteractionLocation;
 		}
 	}
-	originalPhys->momentCentroid   = summedLocations / originalPhys->clusterInts.size(); // new location of event is average of all clustered events
+	originalPhys->momentCentroid = summedLocations / originalPhys->clusterInts.size(); // new location of event is average of all clustered events
 	originalPhys->computedCentroid = true;
 }
 
@@ -517,24 +517,24 @@ void Ip2_JCFpmMat_JCFpmMat_JCFpmPhys::go(const shared_ptr<Material>& b1, const s
 
 	const shared_ptr<JCFpmMat>& yade1 = YADE_PTR_CAST<JCFpmMat>(b1);
 	const shared_ptr<JCFpmMat>& yade2 = YADE_PTR_CAST<JCFpmMat>(b2);
-	JCFpmState*                 st1   = dynamic_cast<JCFpmState*>(Body::byId(interaction->getId1(), scene)->state.get());
-	JCFpmState*                 st2   = dynamic_cast<JCFpmState*>(Body::byId(interaction->getId2(), scene)->state.get());
+	JCFpmState*                 st1 = dynamic_cast<JCFpmState*>(Body::byId(interaction->getId1(), scene)->state.get());
+	JCFpmState*                 st2 = dynamic_cast<JCFpmState*>(Body::byId(interaction->getId2(), scene)->state.get());
 
 	shared_ptr<JCFpmPhys> contactPhysics(new JCFpmPhys());
 
 	/* From material properties */
-	Real E1    = yade1->young;
-	Real E2    = yade2->young;
-	Real v1    = yade1->poisson;
-	Real v2    = yade2->poisson;
-	Real f1    = yade1->frictionAngle;
-	Real f2    = yade2->frictionAngle;
-	Real rf1   = yade1->residualFrictionAngle >= 0 ? yade1->residualFrictionAngle : yade1->frictionAngle;
-	Real rf2   = yade2->residualFrictionAngle >= 0 ? yade2->residualFrictionAngle : yade2->frictionAngle;
+	Real E1 = yade1->young;
+	Real E2 = yade2->young;
+	Real v1 = yade1->poisson;
+	Real v2 = yade2->poisson;
+	Real f1 = yade1->frictionAngle;
+	Real f2 = yade2->frictionAngle;
+	Real rf1 = yade1->residualFrictionAngle >= 0 ? yade1->residualFrictionAngle : yade1->frictionAngle;
+	Real rf2 = yade2->residualFrictionAngle >= 0 ? yade2->residualFrictionAngle : yade2->frictionAngle;
 	Real SigT1 = yade1->tensileStrength;
 	Real SigT2 = yade2->tensileStrength;
-	Real Coh1  = yade1->cohesion;
-	Real Coh2  = yade2->cohesion;
+	Real Coh1 = yade1->cohesion;
+	Real Coh2 = yade2->cohesion;
 
 	/* From interaction geometry */
 	Real R1 = geom->radius1;
@@ -581,19 +581,19 @@ void Ip2_JCFpmMat_JCFpmMat_JCFpmPhys::go(const shared_ptr<Material>& b1, const s
 		if ((((st1->jointNormal1.cross(st2->jointNormal1)).norm() < 0.1) && (st1->jointNormal1.dot(st2->jointNormal1) < 0))
 		    || (((st1->jointNormal1.cross(st2->jointNormal2)).norm() < 0.1) && (st1->jointNormal1.dot(st2->jointNormal2) < 0))
 		    || (((st1->jointNormal1.cross(st2->jointNormal3)).norm() < 0.1) && (st1->jointNormal1.dot(st2->jointNormal3) < 0))) {
-			contactPhysics->isOnJoint   = true;
+			contactPhysics->isOnJoint = true;
 			contactPhysics->jointNormal = st1->jointNormal1;
 		} else if (
 		        (((st1->jointNormal2.cross(st2->jointNormal1)).norm() < 0.1) && (st1->jointNormal2.dot(st2->jointNormal1) < 0))
 		        || (((st1->jointNormal2.cross(st2->jointNormal2)).norm() < 0.1) && (st1->jointNormal2.dot(st2->jointNormal2) < 0))
 		        || (((st1->jointNormal2.cross(st2->jointNormal3)).norm() < 0.1) && (st1->jointNormal2.dot(st2->jointNormal3) < 0))) {
-			contactPhysics->isOnJoint   = true;
+			contactPhysics->isOnJoint = true;
 			contactPhysics->jointNormal = st1->jointNormal2;
 		} else if (
 		        (((st1->jointNormal3.cross(st2->jointNormal1)).norm() < 0.1) && (st1->jointNormal3.dot(st2->jointNormal1) < 0))
 		        || (((st1->jointNormal3.cross(st2->jointNormal2)).norm() < 0.1) && (st1->jointNormal3.dot(st2->jointNormal2) < 0))
 		        || (((st1->jointNormal3.cross(st2->jointNormal3)).norm() < 0.1) && (st1->jointNormal3.dot(st2->jointNormal3) < 0))) {
-			contactPhysics->isOnJoint   = true;
+			contactPhysics->isOnJoint = true;
 			contactPhysics->jointNormal = st1->jointNormal3;
 		} else if (
 		        (st1->joint > 3 || st2->joint > 3)
@@ -603,24 +603,24 @@ void Ip2_JCFpmMat_JCFpmMat_JCFpmPhys::go(const shared_ptr<Material>& b1, const s
 		                && ((st1->jointNormal2.cross(st2->jointNormal3)).norm() > 0.1))
 		            || (((st1->jointNormal3.cross(st2->jointNormal1)).norm() > 0.1) && ((st1->jointNormal3.cross(st2->jointNormal2)).norm() > 0.1)
 		                && ((st1->jointNormal3.cross(st2->jointNormal3)).norm() > 0.1)))) {
-			contactPhysics->isOnJoint   = true;
-			contactPhysics->more        = true;
+			contactPhysics->isOnJoint = true;
+			contactPhysics->more = true;
 			contactPhysics->jointNormal = geom->normal;
 		}
 	}
 
 	///to specify joint properties
 	if (contactPhysics->isOnJoint) {
-		Real jf1    = yade1->jointFrictionAngle;
-		Real jf2    = yade2->jointFrictionAngle;
-		Real jkn1   = yade1->jointNormalStiffness;
-		Real jkn2   = yade2->jointNormalStiffness;
-		Real jks1   = yade1->jointShearStiffness;
-		Real jks2   = yade2->jointShearStiffness;
-		Real jdil1  = yade1->jointDilationAngle;
-		Real jdil2  = yade2->jointDilationAngle;
-		Real jcoh1  = yade1->jointCohesion;
-		Real jcoh2  = yade2->jointCohesion;
+		Real jf1 = yade1->jointFrictionAngle;
+		Real jf2 = yade2->jointFrictionAngle;
+		Real jkn1 = yade1->jointNormalStiffness;
+		Real jkn2 = yade2->jointNormalStiffness;
+		Real jks1 = yade1->jointShearStiffness;
+		Real jks2 = yade2->jointShearStiffness;
+		Real jdil1 = yade1->jointDilationAngle;
+		Real jdil2 = yade2->jointDilationAngle;
+		Real jcoh1 = yade1->jointCohesion;
+		Real jcoh2 = yade2->jointCohesion;
 		Real jSigT1 = yade1->jointTensileStrength;
 		Real jSigT2 = yade2->jointTensileStrength;
 
@@ -641,8 +641,8 @@ void Ip2_JCFpmMat_JCFpmMat_JCFpmPhys::go(const shared_ptr<Material>& b1, const s
 			st2->nbInitBonds++;
 		} else {
 			contactPhysics->isCohesive = false;
-			contactPhysics->FnMax      = 0;
-			contactPhysics->FsMax      = 0;
+			contactPhysics->FnMax = 0;
+			contactPhysics->FsMax = 0;
 		}
 
 		if (contactPhysics->isCohesive) {
@@ -662,7 +662,7 @@ void Ip2_JCFpmMat_JCFpmMat_JCFpmPhys::distributeCrossSectionsWeibull(shared_ptr<
 	if (correction < weibullCutOffMin) correction = weibullCutOffMin;
 	else if (correction > weibullCutOffMax)
 		correction = weibullCutOffMax;
-	Real interactingRadius       = correction * min(R1, R2);
+	Real interactingRadius = correction * min(R1, R2);
 	contactPhysics->crossSection = Mathr::PI * pow(interactingRadius, 2);
 }
 

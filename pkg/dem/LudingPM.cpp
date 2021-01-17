@@ -20,28 +20,28 @@ void Ip2_LudingMat_LudingMat_LudingPhys::go(const shared_ptr<Material>& b1, cons
 	LudingMat* mat1 = static_cast<LudingMat*>(b1.get());
 	LudingMat* mat2 = static_cast<LudingMat*>(b2.get());
 
-	const Real k11   = mat1->k1;
-	const Real k12   = mat2->k1;
-	const Real kp1   = mat1->kp;
-	const Real kp2   = mat2->kp;
-	const Real kc1   = mat1->kc;
-	const Real kc2   = mat2->kc;
-	const Real ks1   = mat1->ks;
-	const Real ks2   = mat2->ks;
-	const Real G01   = mat1->G0;
-	const Real G02   = mat2->G0;
+	const Real k11 = mat1->k1;
+	const Real k12 = mat2->k1;
+	const Real kp1 = mat1->kp;
+	const Real kp2 = mat2->kp;
+	const Real kc1 = mat1->kc;
+	const Real kc2 = mat2->kc;
+	const Real ks1 = mat1->ks;
+	const Real ks2 = mat2->ks;
+	const Real G01 = mat1->G0;
+	const Real G02 = mat2->G0;
 	const Real PhiF1 = mat1->PhiF;
 	const Real PhiF2 = mat2->PhiF;
 
 	LudingPhys* phys = new LudingPhys();
 
-	phys->k1   = this->reduced(k11, k12);
-	phys->kp   = this->reduced(kp1, kp2);
-	phys->kc   = this->reduced(kc1, kc2);
-	phys->ks   = this->reduced(ks1, ks2);
+	phys->k1 = this->reduced(k11, k12);
+	phys->kp = this->reduced(kp1, kp2);
+	phys->kc = this->reduced(kc1, kc2);
+	phys->ks = this->reduced(ks1, ks2);
 	phys->PhiF = this->reduced(PhiF1, PhiF2);
-	phys->k2   = 0.0;
-	phys->G0   = this->reduced(G01, G02);
+	phys->k2 = 0.0;
+	phys->G0 = this->reduced(G01, G02);
 
 
 	Real    a1 = 0.0;
@@ -84,20 +84,20 @@ void Ip2_LudingMat_LudingMat_LudingPhys::go(const shared_ptr<Material>& b1, cons
 	phys->tangensOfFrictionAngle = math::tan(math::min(mat1->frictionAngle, mat2->frictionAngle));
 
 	phys->shearForce = Vector3r(0, 0, 0);
-	phys->DeltMax    = 0.0;
-	phys->DeltNull   = 0.0;
-	phys->DeltPMax   = phys->kp / (phys->kp - phys->k1) * phys->PhiF * 2 * a1 * a2 / (a1 + a2); // [Luding2008], equation (7)
-	                                                                                            // [Singh2013], equation (11)
-	phys->DeltPNull   = phys->PhiF * 2 * a1 * a2 / (a1 + a2);                                   // [Singh2013], equation (12)
-	phys->DeltPrev    = 0.0;
-	phys->DeltMin     = 0.0;
+	phys->DeltMax = 0.0;
+	phys->DeltNull = 0.0;
+	phys->DeltPMax = phys->kp / (phys->kp - phys->k1) * phys->PhiF * 2 * a1 * a2 / (a1 + a2); // [Luding2008], equation (7)
+	                                                                                          // [Singh2013], equation (11)
+	phys->DeltPNull = phys->PhiF * 2 * a1 * a2 / (a1 + a2);                                   // [Singh2013], equation (12)
+	phys->DeltPrev = 0.0;
+	phys->DeltMin = 0.0;
 	interaction->phys = shared_ptr<LudingPhys>(phys);
 }
 
 Real Ip2_LudingMat_LudingMat_LudingPhys::reduced(Real a1, Real a2)
 {
 	Real a = (a1 ? 1 / a1 : 0) + (a2 ? 1 / a2 : 0);
-	a      = a ? 1 / a : 0;
+	a = a ? 1 / a : 0;
 	return 2.0 * a;
 }
 
@@ -110,9 +110,9 @@ bool Law2_ScGeom_LudingPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys
 	const int id2 = I->getId2();
 
 	const BodyContainer& bodies = *scene->bodies;
-	const State&         de1    = *static_cast<State*>(bodies[id1]->state.get());
-	const State&         de2    = *static_cast<State*>(bodies[id2]->state.get());
-	Real                 addDR  = 0.;
+	const State&         de1 = *static_cast<State*>(bodies[id1]->state.get());
+	const State&         de2 = *static_cast<State*>(bodies[id2]->state.get());
+	Real                 addDR = 0.;
 
 #ifdef YADE_DEFORM
 	addDR = de1.dR + de2.dR;
@@ -136,7 +136,7 @@ bool Law2_ScGeom_LudingPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys
 	phys.DeltMin = (phys.k2 - phys.k1) / (phys.k2 + phys.kc);
 
 	if (Delt > phys.DeltMax) {
-		phys.DeltMax  = Delt;
+		phys.DeltMax = Delt;
 		phys.DeltNull = math::min((1.0 - phys.k1 / phys.k2) * phys.DeltMax, phys.DeltPNull); // [Luding2008], equation over Fig 1
 		                                                                                     // [Singh2013], equation (8)
 	}
@@ -154,8 +154,8 @@ bool Law2_ScGeom_LudingPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys
 		forceHys = k2DeltTtmp;
 	} else if (k2DeltTtmp <= -phys.kc * Delt) {
 		if ((Delt - phys.DeltPrev) < 0) {
-			forceHys      = -phys.kc * Delt;
-			phys.DeltMax  = Delt * (phys.k2 + phys.kc) / (phys.k2 - phys.k1);                    // [Singh2013], equation (9)
+			forceHys = -phys.kc * Delt;
+			phys.DeltMax = Delt * (phys.k2 + phys.kc) / (phys.k2 - phys.k1);                     // [Singh2013], equation (9)
 			phys.DeltNull = math::min((1.0 - phys.k1 / phys.k2) * phys.DeltMax, phys.DeltPNull); // [Luding2008], equation over Fig 1
 			                                                                                     // [Singh2013], equation (8)
 		} else {
@@ -174,12 +174,12 @@ bool Law2_ScGeom_LudingPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys
 	Vector3r& shearForce = phys.shearForce;
 	if (I->isFresh(scene)) shearForce = Vector3r(0, 0, 0);
 	const Real& dt = scene->dt;
-	shearForce     = geom.rotate(shearForce);
+	shearForce = geom.rotate(shearForce);
 
 
 	// Handle periodicity.
 
-	const Vector3r shift2   = scene->isPeriodic ? scene->cell->intrShiftPos(I->cellDist) : Vector3r::Zero();
+	const Vector3r shift2 = scene->isPeriodic ? scene->cell->intrShiftPos(I->cellDist) : Vector3r::Zero();
 	const Vector3r shiftVel = scene->isPeriodic ? scene->cell->intrShiftVel(I->cellDist) : Vector3r::Zero();
 
 
@@ -188,8 +188,8 @@ bool Law2_ScGeom_LudingPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys
 
 
 	const Vector3r relativeVelocity = (de1.vel + de1.angVel.cross(c1x)) - (de2.vel + de2.angVel.cross(c2x)) + shiftVel;
-	const Real     normalVelocity   = geom.normal.dot(relativeVelocity);
-	const Vector3r shearVelocity    = relativeVelocity - normalVelocity * geom.normal;
+	const Real     normalVelocity = geom.normal.dot(relativeVelocity);
+	const Vector3r shearVelocity = relativeVelocity - normalVelocity * geom.normal;
 
 	shearForce += phys.ks * dt * shearVelocity; // the elastic shear force have a history, but
 	Vector3r shearForceVisc = Vector3r::Zero(); // the viscous shear damping haven't a history because it is a function of the instant velocity

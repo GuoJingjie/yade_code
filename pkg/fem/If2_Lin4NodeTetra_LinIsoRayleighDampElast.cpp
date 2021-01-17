@@ -29,7 +29,7 @@ CREATE_LOGGER(If2_Lin4NodeTetra_LinIsoRayleighDampElast);
 void If2_Lin4NodeTetra_LinIsoRayleighDampElast::go(const shared_ptr<Shape>& element, const shared_ptr<Material>& material, const shared_ptr<Body>& /*bdy*/)
 {
 	shared_ptr<Lin4NodeTetra>              tetel = YADE_PTR_CAST<Lin4NodeTetra>(element);
-	shared_ptr<LinIsoRayleighDampElastMat> mat   = YADE_PTR_CAST<LinIsoRayleighDampElastMat>(material);
+	shared_ptr<LinIsoRayleighDampElastMat> mat = YADE_PTR_CAST<LinIsoRayleighDampElastMat>(material);
 
 	DeformableElement::NodeMap::iterator i0(tetel->localmap.begin());
 	DeformableElement::NodeMap::iterator i1(i0);

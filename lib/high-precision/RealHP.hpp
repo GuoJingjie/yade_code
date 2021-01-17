@@ -55,14 +55,14 @@ struct RealHP {
 namespace yade {
 namespace math {
 	template <typename A> const constexpr bool IsWrapped = std::is_same<ThinRealWrapper<long double>, typename std::decay<A>::type>::value;
-	template <typename A> using MakeWrappedComplexHP     = ThinComplexWrapper<A>;
+	template <typename A> using MakeWrappedComplexHP = ThinComplexWrapper<A>;
 }
 }
 #else
 namespace yade {
 namespace math { // store info that ThinRealWrapper is not used.
 	template <typename A> const constexpr bool IsWrapped = false;
-	template <typename A> using MakeWrappedComplexHP     = A;
+	template <typename A> using MakeWrappedComplexHP = A;
 }
 }
 #endif
@@ -126,9 +126,9 @@ namespace math {
 	// first declare helper templates needed to find the position in RealHPLadder
 	namespace detail {
 		// posRealHP is position of HP in the RealHPLadder. If it's found then it equals to findPosRealHP + 1, otherwise it equals to 0.
-		const constexpr int                        ladderSize    = boost::mpl::size<RealHPLadder>::value;
+		const constexpr int                        ladderSize = boost::mpl::size<RealHPLadder>::value;
 		template <typename HP> const constexpr int findPosRealHP = boost::mpl::find<RealHPLadder, HP>::type::pos::value;
-		template <typename HP> const constexpr int posRealHP     = (findPosRealHP<HP> == ladderSize) ? (0) : (findPosRealHP<HP> + 1);
+		template <typename HP> const constexpr int posRealHP = (findPosRealHP<HP> == ladderSize) ? (0) : (findPosRealHP<HP> + 1);
 
 		// calculates the Level 'N' for types higher than those in RealHPLadder, they use MPFR or cpp_bin_float
 		template <typename HP>
@@ -148,7 +148,7 @@ namespace math {
 	/*************************************************************************/
 	// Extract UnderlyingReal (strip ThinRealWrapper) from type 'HP' which may be any of the RealHP<N> types.
 	// This implementation might be revised in the future if ThinRealWrapper or UnderlyingReal will acquire some new meaning. But interface shall remain the same.
-	template <typename HP> using UnderlyingRealHP    = typename std::conditional<IsWrapped<HP>, long double, HP>::type;
+	template <typename HP> using UnderlyingRealHP = typename std::conditional<IsWrapped<HP>, long double, HP>::type;
 	template <typename HP> using UnderlyingComplexHP = std::complex<UnderlyingRealHP<HP>>;
 
 	/*************************************************************************/
@@ -178,8 +178,8 @@ namespace math {
 
 #else
 	// RealHP<…> won't work on this system, cmake sets YADE_DISABLE_REAL_MULTI_HP to use RealHP<1> for all precisions RealHP<N>.
-	template <int Level> using RealHP                     = Real;    // ignore Level
-	template <int Level> using ComplexHP                  = Complex; // ignore Level
+	template <int Level> using RealHP = Real;       // ignore Level
+	template <int Level> using ComplexHP = Complex; // ignore Level
 #endif
 
 	/*************************************************************************/
@@ -189,25 +189,25 @@ namespace math {
 	// And make sure that they are  ⇒→ undefined ←⇐  when the argument is not from the RealHP<N> family.
 
 	template <typename HP, bool = boost::is_complex<HP>::value> struct InspectHP {
-		using RT                         = HP;
-		using Under                      = UnderlyingRealHP<RT>;
+		using RT = HP;
+		using Under = UnderlyingRealHP<RT>;
 		static const constexpr bool isHP = (levelOrZero<HP> != 0 and std::is_same<RealHP<levelOrZero<HP>>, typename std::decay<HP>::type>::value);
 	};
 	template <typename HP> struct InspectHP<HP, true> {
-		using RT                         = typename HP::value_type;
-		using Under                      = UnderlyingComplexHP<RT>;
+		using RT = typename HP::value_type;
+		using Under = UnderlyingComplexHP<RT>;
 		static const constexpr bool isHP = (levelOrZero<RT> != 0 and std::is_same<ComplexHP<levelOrZero<RT>>, typename std::decay<HP>::type>::value);
 	};
 
-	template <typename HP> using RealOf                                                                                 = typename InspectHP<HP>::RT;
-	template <typename HP> using UnderlyingHP                                                                           = typename InspectHP<HP>::Under;
-	template <typename HP> const constexpr bool                                                             isHP        = InspectHP<HP>::isHP;
-	template <typename HP> const constexpr bool                                                             isReal      = not boost::is_complex<HP>::value;
-	template <typename HP> const constexpr bool                                                             isComplex   = not isReal<HP>;
-	template <typename HP> const constexpr bool                                                             isRealHP    = (isReal<HP> and isHP<HP>);
+	template <typename HP> using RealOf = typename InspectHP<HP>::RT;
+	template <typename HP> using UnderlyingHP = typename InspectHP<HP>::Under;
+	template <typename HP> const constexpr bool                                                             isHP = InspectHP<HP>::isHP;
+	template <typename HP> const constexpr bool                                                             isReal = not boost::is_complex<HP>::value;
+	template <typename HP> const constexpr bool                                                             isComplex = not isReal<HP>;
+	template <typename HP> const constexpr bool                                                             isRealHP = (isReal<HP> and isHP<HP>);
 	template <typename HP> const constexpr bool                                                             isComplexHP = (isComplex<HP> and isHP<HP>);
-	template <typename HP, typename boost::enable_if_c<isHP<HP>, int>::type = 0> const constexpr int        levelOfHP   = levelOrZero<RealOf<HP>>;
-	template <typename HP, typename boost::enable_if_c<isRealHP<HP>, int>::type = 0> const constexpr int    levelOfRealHP    = levelOfHP<HP>;
+	template <typename HP, typename boost::enable_if_c<isHP<HP>, int>::type = 0> const constexpr int        levelOfHP = levelOrZero<RealOf<HP>>;
+	template <typename HP, typename boost::enable_if_c<isRealHP<HP>, int>::type = 0> const constexpr int    levelOfRealHP = levelOfHP<HP>;
 	template <typename HP, typename boost::enable_if_c<isComplexHP<HP>, int>::type = 0> const constexpr int levelOfComplexHP = levelOfHP<HP>;
 	// check if it's float128
 #ifdef BOOST_MP_FLOAT128_HPP

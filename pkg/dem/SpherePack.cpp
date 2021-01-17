@@ -98,7 +98,7 @@ void SpherePack::fromSimulation()
 		pack.push_back(Sph(b->state->pos, intSph->radius, (b->isClumpMember() ? b->clumpId : -1)));
 	}
 	if (scene->isPeriodic) {
-		cellSize   = scene->cell->getSize();
+		cellSize = scene->cell->getSize();
 		isPeriodic = true;
 	}
 }
@@ -125,11 +125,11 @@ long SpherePack::makeCloud(
 
 	vector<Real> psdRadii; // holds plain radii (rather than diameters), scaled down in some situations to get the target number
 	vector<Real> psdCumm2; // psdCumm but dimensionally transformed to match mass distribution
-	const auto   size       = mx - mn;
+	const auto   size = mx - mn;
 	bool         hSizeFound = (hSize != Matrix3r::Zero()); //is hSize passed to the function?
 	if (!hSizeFound) { hSize = size.asDiagonal(); }
 	if (hSizeFound && !periodic) LOG_WARN("hSize can be defined only for periodic cells.");
-	Real     volume   = hSize.determinant();
+	Real     volume = hSize.determinant();
 	Matrix3r invHsize = hSize.inverse();
 	Real area = math::abs(size[0] * size[2] + size[0] * size[1] + size[1] * size[2]); //2 terms will be null if one coordinate is 0, the other is the area
 	if (!volume) {
@@ -141,7 +141,7 @@ long SpherePack::makeCloud(
 			         "wrong input values; check that min and max corners are defined correctly.");
 	}
 	auto mode = e_Mode::UNDEFINED;
-	bool err  = false;
+	bool err = false;
 	// determine the way we generate radii
 	if (porosity <= 0 and rMean <= 0) {
 		LOG_WARN("porosity or rMean must be >0, setting  porosity=0.5 for you.");
@@ -162,7 +162,7 @@ long SpherePack::makeCloud(
 	}
 	// transform sizes and cummulated fractions values in something convenient for the generation process
 	if (psdSizes.size() > 0) {
-		err  = (mode != e_Mode::UNDEFINED);
+		err = (mode != e_Mode::UNDEFINED);
 		mode = e_Mode::RDIST_PSD;
 		if (psdSizes.size() != psdCumm.size())
 			throw invalid_argument(("SpherePack.makeCloud: psdSizes and psdCumm must have same dimensions ("
@@ -243,10 +243,10 @@ long SpherePack::makeCloud(
 			case e_Mode::RDIST_PSD:
 				if (distributeMass) {
 					int piece = psdGetPiece(rand, psdCumm2, norm);
-					r         = pow3Interp(norm, psdRadii[piece], psdRadii[piece + 1]);
+					r = pow3Interp(norm, psdRadii[piece], psdRadii[piece + 1]);
 				} else {
 					int piece = psdGetPiece(rand, psdCumm, norm);
-					r         = psdRadii[piece] + norm * (psdRadii[piece + 1] - psdRadii[piece]);
+					r = psdRadii[piece] + norm * (psdRadii[piece + 1] - psdRadii[piece]);
 				}
 		}
 		// try to put the sphere into a free spot
@@ -265,7 +265,7 @@ long SpherePack::makeCloud(
 			}
 
 			size_t packSize = pack.size();
-			bool   overlap  = false;
+			bool   overlap = false;
 			if (!periodic) {
 				for (size_t j = 0; j < packSize; j++) {
 					if (pow(pack[j].r + r, 2) >= (pack[j].c - c).squaredNorm()) {
@@ -378,11 +378,11 @@ Real SpherePack::pow3Interp(Real x, Real a, Real b) const { return pow(x * (pow(
 int SpherePack::psdGetPiece(Real x, const vector<Real>& cumm, Real& norm) const
 {
 	int sz = cumm.size();
-	int i  = 0;
+	int i = 0;
 	while (i < sz && cumm[i] <= x)
 		i++; // upper interval limit index
 	if ((i == sz - 1) && cumm[i] <= x) {
-		i    = sz - 2;
+		i = sz - 2;
 		norm = 1.;
 		return i;
 	}
@@ -400,7 +400,7 @@ py::tuple SpherePack::psd(int bins, bool mass) const
 	Real maxD = -minD;
 	// volume, but divided by π*4/3
 	Real vol = 0;
-	long N   = pack.size();
+	long N = pack.size();
 	for (const auto& s : pack) {
 		maxD = max(2 * s.r, maxD);
 		minD = min(2 * s.r, minD);
@@ -420,7 +420,7 @@ py::tuple SpherePack::psd(int bins, bool mass) const
 	// weight each grain by its "volume" relative to overall "volume"
 	for (const Sph& s : pack) {
 		int bin = int(bins * (2 * s.r - minD) / (maxD - minD));
-		bin     = min(bin, bins - 1); // to make sure
+		bin = min(bin, bins - 1); // to make sure
 		if (mass) hist[bin] += pow(s.r, 3) / vol;
 		else
 			hist[bin] += 1. / N;
@@ -455,13 +455,13 @@ long SpherePack::makeClumpCloud(const Vector3r& mn, const Vector3r& mx, const ve
 	const auto           sizePack = mx - mn;
 	if (periodic) { cellSize = sizePack; }
 	const auto                       maxTry = 200;
-	int                              nGen   = 0; // number of clumps generated
+	int                              nGen = 0; // number of clumps generated
 	std::random_device               rd;
 	std::mt19937                     gen(seed >= 0 ? seed : rd());
 	std::uniform_real_distribution<> dis(0.0, 1.0);
 	while (nGen < num || num < 0) {
 		int clumpChoice = (int)(dis(gen) * (clumps.size() - 1e-20));
-		int tries       = 0;
+		int tries = 0;
 		while (true) { // check for tries at the end
 			Vector3r pos(0., 0., 0.);
 			for (int i = 0; i < 3; i++) {
@@ -537,10 +537,10 @@ long SpherePack::makeClumpCloud(const Vector3r& mn, const Vector3r& mx, const ve
 			// add the clump, if no collisions
 			/*number clumps consecutively*/
 			ci.clumpId = nGen;
-			ci.center  = pos;
-			ci.rad     = rad;
-			ci.minId   = pack.size();
-			ci.maxId   = pack.size() + C.pack.size() - 1;
+			ci.center = pos;
+			ci.rad = rad;
+			ci.minId = pack.size();
+			ci.maxId = pack.size() + C.pack.size() - 1;
 			for (const auto& s : C.pack) {
 				pack.push_back(Sph(s.c, s.r, ci.clumpId));
 			}
@@ -621,8 +621,8 @@ boost::python::tuple SpherePack::aabb_py() const
 void SpherePack::aabb(Vector3r& mn, Vector3r& mx) const
 {
 	Real inf = std::numeric_limits<Real>::infinity();
-	mn       = Vector3r(inf, inf, inf);
-	mx       = Vector3r(-inf, -inf, -inf);
+	mn = Vector3r(inf, inf, inf);
+	mx = Vector3r(-inf, -inf, -inf);
 	for (const auto& s : pack) {
 		Vector3r r(s.r, s.r, s.r);
 		mn = mn.cwiseMin(s.c - r);
@@ -640,7 +640,7 @@ Vector3r SpherePack::midPt() const
 Real SpherePack::relDensity() const
 {
 	Real     sphVol = 0;
-	Vector3r dd     = dim();
+	Vector3r dd = dim();
 	for (const Sph& s : pack) {
 		sphVol += pow(s.r, 3);
 	}

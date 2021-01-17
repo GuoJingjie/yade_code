@@ -14,7 +14,7 @@ void Ip2_MortarMat_MortarMat_MortarPhys::go(
 	if (interaction->phys) return;
 	if (scene->iter >= cohesiveThresholdIter) { LOG_ERROR("MortarMat not implemented for non-cohesive contacts"); }
 	shared_ptr<MortarPhys> phys(new MortarPhys());
-	interaction->phys           = phys;
+	interaction->phys = phys;
 	MortarMat*             mat1 = YADE_CAST<MortarMat*>(material1.get());
 	MortarMat*             mat2 = YADE_CAST<MortarMat*>(material2.get());
 	GenericSpheresContact* geom = YADE_CAST<GenericSpheresContact*>(interaction->geom.get());
@@ -38,20 +38,20 @@ void Ip2_MortarMat_MortarMat_MortarPhys::go(
 		_AVGATTR(ellAspect);
 #undef _AVGATTR
 #undef _MINATTR
-		phys->neverDamage            = mat1->neverDamage || mat2->neverDamage;
+		phys->neverDamage = mat1->neverDamage || mat2->neverDamage;
 		phys->tangensOfFrictionAngle = math::tan(.5 * (mat1->frictionAngle + mat2->frictionAngle));
 	}
 	//
-	const Real& r1     = geom->refR1;
-	const Real& r2     = geom->refR2;
+	const Real& r1 = geom->refR1;
+	const Real& r2 = geom->refR2;
 	Real        minRad = r1 <= 0 ? r2 : r2 <= 0 ? r1 : math::min(r1, r2);
 	phys->crossSection = math::pow(minRad, 2);
-	const Real& E1     = mat1->young;
-	const Real& E2     = mat2->young;
-	const Real& n1     = mat1->poisson;
-	const Real& n2     = mat2->poisson;
-	phys->kn           = 2 * E1 * r1 * E2 * r2 / (E1 * r1 + E2 * r2);
-	phys->ks           = 2 * E1 * r1 * n1 * E2 * r2 * n2 / (E1 * r1 * n1 + E2 * r2 * n2);
+	const Real& E1 = mat1->young;
+	const Real& E2 = mat2->young;
+	const Real& n1 = mat1->poisson;
+	const Real& n2 = mat2->poisson;
+	phys->kn = 2 * E1 * r1 * E2 * r2 / (E1 * r1 + E2 * r2);
+	phys->ks = 2 * E1 * r1 * n1 * E2 * r2 * n2 / (E1 * r1 * n1 + E2 * r2 * n2);
 }
 
 
@@ -77,8 +77,8 @@ bool Law2_ScGeom_MortarPhys_Lourenco::go(shared_ptr<IGeom>& iGeom, shared_ptr<IP
 
 	Body::id_t             id1 = interaction->getId1();
 	Body::id_t             id2 = interaction->getId2();
-	const shared_ptr<Body> b1  = Body::byId(id1, scene);
-	const shared_ptr<Body> b2  = Body::byId(id2, scene);
+	const shared_ptr<Body> b1 = Body::byId(id1, scene);
+	const shared_ptr<Body> b2 = Body::byId(id2, scene);
 
 	/* shorthands */
 	const Real& crossSection(phys->crossSection);

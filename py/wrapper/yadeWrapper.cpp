@@ -57,7 +57,7 @@ class pyBodyIterator {
 public:
 	pyBodyIterator(const shared_ptr<BodyContainer>& bc)
 	{
-		I    = bc->begin();
+		I = bc->begin();
 		Iend = bc->end();
 	}
 	pyBodyIterator   pyIter() { return *this; }
@@ -144,8 +144,8 @@ public:
 		// create and add clump itself
 		Scene*            scene(Omega::instance().getScene().get());
 		shared_ptr<Body>  clumpBody = shared_ptr<Body>(new Body());
-		shared_ptr<Clump> clump     = shared_ptr<Clump>(new Clump());
-		clumpBody->shape            = clump;
+		shared_ptr<Clump> clump = shared_ptr<Clump>(new Clump());
+		clumpBody->shape = clump;
 		clumpBody->setBounded(false);
 		proxee->insert(clumpBody);
 		// add clump members to the clump
@@ -208,7 +208,7 @@ public:
 		//}else{
 		Scene* scene(Omega::instance().getScene().get());
 		int    totalNumber = clump->ids.size();
-		int    count       = 0;
+		int    count = 0;
 		while (count < totalNumber) {
 			//for (int i=0; i<clump->ids.size(); i++){
 			shared_ptr<Body> memberBody(YADE_PTR_CAST<Body>(Body::byId(clump->ids[/*i */ 0], scene)));
@@ -242,7 +242,7 @@ public:
 				Clump::add(clp, bp); //add clump bid to clump cid
 				eraseList.push_back(bid);
 			} else if (bp->isClumpMember()) {
-				Body::id_t       bpClumpId      = bp->clumpId;
+				Body::id_t       bpClumpId = bp->clumpId;
 				shared_ptr<Body> bpClumpPointer = Body::byId(bpClumpId, scene);
 				if (bpClumpPointer == clp) {
 					PyErr_Warn(
@@ -263,13 +263,13 @@ public:
 	void releaseFromClump(Body::id_t bid, Body::id_t cid, unsigned int discretization)
 	{
 		Scene*           scene(Omega::instance().getScene().get()); // get scene
-		shared_ptr<Body> bp  = Body::byId(bid, scene);              // get body pointer
+		shared_ptr<Body> bp = Body::byId(bid, scene);               // get body pointer
 		shared_ptr<Body> clp = Body::byId(cid, scene);              // get clump pointer
 		checkClump(clp);
 		if (bp->isClumpMember()) {
 			Body::id_t bpClumpId = bp->clumpId;
 			if (cid == bpClumpId) {
-				const shared_ptr<Clump>&    clump   = YADE_PTR_CAST<Clump>(clp->shape);
+				const shared_ptr<Clump>&    clump = YADE_PTR_CAST<Clump>(clp->shape);
 				std::map<Body::id_t, Se3r>& members = clump->members;
 				if (members.size() == 2) {
 					PyErr_Warn(
@@ -344,8 +344,8 @@ public:
 			//relPosList: [relPos1,relPos2, ...] (list of vectors)
 
 			//extract attributes from python objects:
-			py::object ctTmp         = ctList[ii];
-			int        numCM         = py::extract<int>(ctTmp.attr("numCM"))(); // number of clump members
+			py::object ctTmp = ctList[ii];
+			int        numCM = py::extract<int>(ctTmp.attr("numCM"))(); // number of clump members
 			py::list   relRadListTmp = py::extract<py::list>(ctTmp.attr("relRadii"))();
 			py::list   relPosListTmp = py::extract<py::list>(ctTmp.attr("relPositions"))();
 
@@ -353,7 +353,7 @@ public:
 			vector<Real>     relRadTmp(numCM), relVolTmp(numCM);
 			vector<Vector3r> relPosTmp(numCM);
 			Vector3r         relPosTmpMean = Vector3r::Zero();
-			Real             rMin          = 1. / 0.;
+			Real             rMin = 1. / 0.;
 			AlignedBox3r     aabb;
 			for (int jj = 0; jj < numCM; jj++) {
 				relRadTmp[jj] = py::extract<Real>(relRadListTmp[jj])();
@@ -417,7 +417,7 @@ public:
 
 				//convert geometries in global coordinates (scaling):
 				Real               scalingFactorVolume = ((4. / 3.) * Mathr::PI * pow(sphere->radius, 3.)) / relVolSumTmp;
-				Real               scalingFactor1D     = pow(scalingFactorVolume, 1. / 3.); //=((vol. sphere)/(relative clump volume))^(1/3)
+				Real               scalingFactor1D = pow(scalingFactorVolume, 1. / 3.); //=((vol. sphere)/(relative clump volume))^(1/3)
 				vector<Vector3r>   newPosTmp(numCM);
 				vector<Real>       newRadTmp(numCM);
 				vector<Body::id_t> idsTmp(numCM);
@@ -429,23 +429,23 @@ public:
 					newPosTmp[jj] += b->state->pos;                  //translate new position to spheres center
 
 					//create spheres:
-					shared_ptr<Body> newSphere    = shared_ptr<Body>(new Body());
+					shared_ptr<Body> newSphere = shared_ptr<Body>(new Body());
 					newSphere->state->blockedDOFs = State::DOF_NONE;
 					newSphere->state->mass = scalingFactorVolume * relVolTmp[jj] * matTmp->density; //vol. corrected mass for clump members
-					Real inertiaTmp        = 2.0 / 5.0 * newSphere->state->mass * newRadTmp[jj] * newRadTmp[jj];
+					Real inertiaTmp = 2.0 / 5.0 * newSphere->state->mass * newRadTmp[jj] * newRadTmp[jj];
 					newSphere->state->inertia = Vector3r(inertiaTmp, inertiaTmp, inertiaTmp);
-					newSphere->state->pos     = newPosTmp[jj];
-					newSphere->material       = matTmp;
+					newSphere->state->pos = newPosTmp[jj];
+					newSphere->material = matTmp;
 
 					shared_ptr<Sphere> sphereTmp = shared_ptr<Sphere>(new Sphere());
-					sphereTmp->radius            = newRadTmp[jj];
-					sphereTmp->color             = Vector3r(math::unitRandom(), math::unitRandom(), math::unitRandom());
+					sphereTmp->radius = newRadTmp[jj];
+					sphereTmp->color = Vector3r(math::unitRandom(), math::unitRandom(), math::unitRandom());
 					sphereTmp->color.normalize();
 					newSphere->shape = sphereTmp;
 
 					shared_ptr<Aabb> aabbTmp = shared_ptr<Aabb>(new Aabb());
-					aabbTmp->color           = Vector3r(0, 1, 0);
-					newSphere->bound         = aabbTmp;
+					aabbTmp->color = Vector3r(0, 1, 0);
+					newSphere->bound = aabbTmp;
 					proxee->insert(newSphere);
 					LOG_DEBUG("New body (sphere) " << newSphere->id << " added.");
 					idsTmp[jj] = newSphere->id;
@@ -476,14 +476,14 @@ public:
 					c += 1;
 				}
 				if (b->isClump()) {
-					R2                                  = 0.0;
-					dens                                = 0.0;
-					vol                                 = 0.0;
-					const shared_ptr<Clump>&    clump   = YADE_PTR_CAST<Clump>(b->shape);
+					R2 = 0.0;
+					dens = 0.0;
+					vol = 0.0;
+					const shared_ptr<Clump>&    clump = YADE_PTR_CAST<Clump>(b->shape);
 					std::map<Body::id_t, Se3r>& members = clump->members;
 					for (MemberMap::value_type& mm : members) {
 						const Body::id_t&       memberId = mm.first;
-						const shared_ptr<Body>& member   = Body::byId(memberId, scene);
+						const shared_ptr<Body>& member = Body::byId(memberId, scene);
 						assert(member->isClumpMember());
 						if (member->shape->getClassIndex() == Sph_Index) { //clump member should be a sphere
 							const Sphere* sphere = YADE_CAST<Sphere*>(member->shape.get());
@@ -586,7 +586,7 @@ class pyInteractionIterator {
 public:
 	pyInteractionIterator(const shared_ptr<InteractionContainer>& ic)
 	{
-		I    = ic->begin();
+		I = ic->begin();
 		Iend = ic->end();
 	}
 	pyInteractionIterator   pyIter() { return *this; }
@@ -1005,7 +1005,7 @@ public:
 		} else
 			return;
 		timespec t1, t2;
-		t1.tv_sec  = 0;
+		t1.tv_sec = 0;
 		t1.tv_nsec = 40000000; /* 40 ms */
 		Py_BEGIN_ALLOW_THREADS;
 		while (OMEGA.isRunning())
@@ -1176,7 +1176,7 @@ void stringToScene(const string& sstring, string mark = "")
 	Py_END_ALLOW_THREADS;
 	assertScene();
 	OMEGA.memSavedSimulations[":memory:" + mark] = sstring;
-	OMEGA.sceneFile                              = ":memory:" + mark;
+	OMEGA.sceneFile = ":memory:" + mark;
 	load(OMEGA.sceneFile, true);
 }
 
@@ -1272,7 +1272,7 @@ void interactionContainer_set(string clss)
 	Scene* rb = OMEGA.getScene().get();
 	if (rb->interactions->size() > 0) throw std::runtime_error("Interaction container not empty, will not change its class.");
 	shared_ptr<InteractionContainer> ic = YADE_PTR_DYN_CAST<InteractionContainer>(ClassFactory::instance().createShared(clss));
-	rb->interactions                    = ic;
+	rb->interactions = ic;
 }
 string interactionContainer_get(string /*clss*/) { return OMEGA.getScene()->interactions->getClassName(); }
 
@@ -1281,7 +1281,7 @@ void bodyContainer_set(string clss)
 	Scene* rb = OMEGA.getScene().get();
 	if (rb->bodies->size() > 0) throw std::runtime_error("Body container not empty, will not change its class.");
 	shared_ptr<BodyContainer> bc = YADE_PTR_DYN_CAST<BodyContainer>(ClassFactory::instance().createShared(clss));
-	rb->bodies                   = bc;
+	rb->bodies = bc;
 }
 string bodyContainer_get(string /*clss*/) { return OMEGA.getScene()->bodies->getClassName(); }
 #ifdef YADE_OPENMP
@@ -1350,9 +1350,9 @@ public:
 	void applyPotential(Real const& u, LubricationPhys& phys, Vector3r const& n)
 	{
 		TRACE;
-		phys.normalContactForce   = contactForce(u, phys.a) * n;
+		phys.normalContactForce = contactForce(u, phys.a) * n;
 		phys.normalPotentialForce = potentialForce(u, phys.a) * n;
-		phys.contact              = hasContact(u, phys.a);
+		phys.contact = hasContact(u, phys.a);
 	}
 
 	virtual Real contactForce(Real const& u, Real const& a) const
@@ -1387,7 +1387,7 @@ public:
 BOOST_PYTHON_MODULE(wrapper)
 try {
 	using namespace yade; // 'using namespace' inside function keeps namespace pollution under control. Alernatively I could add y:: in front of function names below and put 'namespace y  = ::yade;' here.
-	namespace py                = ::boost::python;
+	namespace py = ::boost::python;
 	py::scope().attr("__doc__") = "Wrapper for c++ internals of yade.";
 
 	YADE_SET_DOCSTRING_OPTS;

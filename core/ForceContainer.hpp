@@ -68,10 +68,10 @@ private:
 	Body::id_t _maxId = 0;
 #endif
 	vvector        _force, _torque, _permForce, _permTorque;
-	size_t         size        = 0;
+	size_t         size = 0;
 	bool           syncedSizes = true;
 	int            nThreads;
-	bool           permForceUsed   = false;
+	bool           permForceUsed = false;
 	bool           permForceSynced = false;
 	std::mutex     globalMutex;
 	const Vector3r _zero = Vector3r::Zero();
@@ -83,7 +83,7 @@ private:
 	template <class ArchiveT> void serialize(ArchiveT& ar, unsigned int version) { }
 
 public:
-	bool          synced    = true;
+	bool          synced = true;
 	unsigned long syncCount = 0;
 	long          lastReset = 0;
 	ForceContainer();

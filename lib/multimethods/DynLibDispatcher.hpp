@@ -76,7 +76,7 @@ private:
 	typedef typename ::boost::mpl::at_c<BaseClassList, 0>::type BaseClass1; // 1D
 	typedef typename ::boost::mpl::at_c<BaseClassList, 1>::type BaseClass2; // 2D
 
-	using MatrixType    = typename RecursiveVector<shared_ptr<Executor>, boost::mpl::size<BaseClassList>::value>::vec;
+	using MatrixType = typename RecursiveVector<shared_ptr<Executor>, boost::mpl::size<BaseClassList>::value>::vec;
 	using MatrixIntType = typename RecursiveVector<int, boost::mpl::size<BaseClassList>::value>::vec;
 
 	MatrixType    callBacks;     // multidimensional matrix that stores functors ( 1D, 2D, 3D, 4D, ....)
@@ -197,8 +197,8 @@ public:
 	{
 		shared_ptr<BaseClass1> baseClass1 = YADE_PTR_CAST<BaseClass1>(ClassFactory::instance().createShared(baseClassName1));
 		shared_ptr<BaseClass2> baseClass2 = YADE_PTR_CAST<BaseClass2>(ClassFactory::instance().createShared(baseClassName2));
-		shared_ptr<Indexable>  base1      = YADE_PTR_CAST<Indexable>(baseClass1);
-		shared_ptr<Indexable>  base2      = YADE_PTR_CAST<Indexable>(baseClass2);
+		shared_ptr<Indexable>  base1 = YADE_PTR_CAST<Indexable>(baseClass1);
+		shared_ptr<Indexable>  base2 = YADE_PTR_CAST<Indexable>(baseClass2);
 
 		assert(base1);
 		assert(base2);
@@ -228,7 +228,7 @@ public:
 			callBacks[index2][index1] = executor;
 			callBacks[index1][index2] = executor;
 
-			string order        = baseClassName1 + " " + baseClassName2;
+			string order = baseClassName1 + " " + baseClassName2;
 			string reverseOrder = baseClassName2 + " " + baseClassName1;
 
 			if (autoSymmetry || executor->checkOrder() == order) // if you want autoSymmetry, you don't have to DEFINE_FUNCTOR_ORDER_2D
@@ -243,7 +243,7 @@ public:
 			}
 		} else // classes are different, no symmetry possible
 		{
-			callBacks[index1][index2]     = executor;
+			callBacks[index1][index2] = executor;
 			callBacksInfo[index1][index2] = 0;
 		}
 	}
@@ -256,7 +256,7 @@ public:
 		assert(index >= 0 && (unsigned int)(index) < callBacks.size());
 		if (callBacks[index]) return true;
 
-		int depth     = 1;
+		int depth = 1;
 		int index_tmp = base->getBaseClassIndex(depth);
 		while (1)
 			if (index_tmp == -1) return false;
@@ -267,7 +267,7 @@ public:
 				if (callBacks.size() <= (unsigned int)index) callBacks.resize(index + 1);
 				// END
 				callBacksInfo[index] = callBacksInfo[index_tmp];
-				callBacks[index]     = callBacks[index_tmp];
+				callBacks[index] = callBacks[index_tmp];
 				return true;
 			} else
 				index_tmp = base->getBaseClassIndex(++depth);
@@ -335,9 +335,9 @@ public:
 						dumpDispatchMatrix2D(cerr, "AMBIGUOUS: ");
 						throw runtime_error("Ambiguous dispatch.");
 					}
-					foundIx1                      = ix1;
-					foundIx2                      = ix2;
-					callBacks[index1][index2]     = callBacks[ix1][ix2];
+					foundIx1 = ix1;
+					foundIx2 = ix2;
+					callBacks[index1][index2] = callBacks[ix1][ix2];
 					callBacksInfo[index1][index2] = callBacksInfo[ix1][ix2];
 					_DISP_TRACE("Found callback [" << ix1 << "][" << ix2 << "] → " << callBacks[ix1][ix2]->getClassName());
 				}

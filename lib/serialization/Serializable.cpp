@@ -43,11 +43,11 @@ void Serializable::checkPyClassRegistersItself(const std::string& thisClassName)
 
 void Serializable::pyUpdateAttrs(const boost::python::dict& d)
 {
-	boost::python::list l  = d.items();
+	boost::python::list l = d.items();
 	size_t              ll = boost::python::len(l);
 	if (ll == 0) return;
 	for (size_t i = 0; i < ll; i++) {
-		boost::python::tuple t   = boost::python::extract<boost::python::tuple>(l[i]);
+		boost::python::tuple t = boost::python::extract<boost::python::tuple>(l[i]);
 		string               key = boost::python::extract<string>(t[0]);
 		pySetAttr(key, t[1]);
 	}

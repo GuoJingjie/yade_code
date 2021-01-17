@@ -16,10 +16,10 @@ void InteractionLoop::pyHandleCustomCtorArgs(boost::python::tuple& t, boost::pyt
 	// parse custom arguments (3 lists) and do in-place modification of args
 	using vecGeom = std::vector<shared_ptr<IGeomFunctor>>;
 	using vecPhys = std::vector<shared_ptr<IPhysFunctor>>;
-	using vecLaw  = std::vector<shared_ptr<LawFunctor>>;
-	vecGeom vg    = boost::python::extract<vecGeom>(t[0])();
-	vecPhys vp    = boost::python::extract<vecPhys>(t[1])();
-	vecLaw  vl    = boost::python::extract<vecLaw>(t[2])();
+	using vecLaw = std::vector<shared_ptr<LawFunctor>>;
+	vecGeom vg = boost::python::extract<vecGeom>(t[0])();
+	vecPhys vp = boost::python::extract<vecPhys>(t[1])();
+	vecLaw  vl = boost::python::extract<vecLaw>(t[2])();
 	for (const auto gf : vg)
 		this->geomDispatcher->add(gf);
 	for (const auto pf : vp)
@@ -32,7 +32,7 @@ void InteractionLoop::pyHandleCustomCtorArgs(boost::python::tuple& t, boost::pyt
 void InteractionLoop::action()
 {
 	// update Scene* of the dispatchers
-	lawDispatcher->scene  = scene;
+	lawDispatcher->scene = scene;
 	physDispatcher->scene = scene;
 	geomDispatcher->scene = scene;
 

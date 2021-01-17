@@ -42,10 +42,10 @@ void InsertionSortCollider::insertionSort(VecBounds& v, InteractionContainer* in
 	assert(!periodic);
 	//assert(v.size()==v.vec.size());
 	for (size_t i = 1; i < v.size(); i++) {
-		const Bounds viInit   = v[i];
-		long         j        = i - 1; /* cache hasBB; otherwise 1% overall performance hit */
+		const Bounds viInit = v[i];
+		long         j = i - 1; /* cache hasBB; otherwise 1% overall performance hit */
 		const bool   viInitBB = viInit.flags.hasBB;
-		const bool   isMin    = viInit.flags.isMin;
+		const bool   isMin = viInit.flags.isMin;
 
 		while (j >= 0 && v[j] > viInit) {
 			v[j + 1] = v[j];
@@ -79,7 +79,7 @@ void InsertionSortCollider::insertionSortParallel(VecBounds& v, InteractionConta
 
 	///chunks defines subsets of the bounds lists, we make sure they are not too small wrt. verlet dist.
 	std::vector<Body::id_t> chunks;
-	unsigned                nChunks   = ompThreads;
+	unsigned                nChunks = ompThreads;
 	unsigned                chunkSize = unsigned(v.size() / nChunks) + 1;
 	for (unsigned n = 0; n < nChunks; n++)
 		chunks.push_back(n * chunkSize);
@@ -109,10 +109,10 @@ void InsertionSortCollider::insertionSortParallel(VecBounds& v, InteractionConta
 		int threadNum = omp_get_thread_num();
 		for (auto i = chunks[k] + 1; i < chunks[k + 1]; i++) {
 			const Bounds viInit = v[i];
-			auto         j      = i - 1;
+			auto         j = i - 1;
 			if (not(j >= chunks[k] && v[j] > viInit)) continue; //else we need to assign v[j+1] after the 'while'
 			const bool viInitBB = viInit.flags.hasBB;
-			const bool isMin    = viInit.flags.isMin;
+			const bool isMin = viInit.flags.isMin;
 			while (j >= chunks[k] && v[j] > viInit) {
 				v[j + 1] = v[j];
 				if (isMin && !v[j].flags.isMin && doCollide && viInitBB && v[j].flags.hasBB && (viInit.id != v[j].id)) {
@@ -141,16 +141,16 @@ void InsertionSortCollider::insertionSortParallel(VecBounds& v, InteractionConta
 	bool parallelFailed = false;
 #pragma omp parallel for schedule(dynamic, 1) num_threads(ompThreads > 0 ? min(ompThreads, omp_get_max_threads()) : omp_get_max_threads())
 	for (unsigned k = 1; k < nChunks; k++) {
-		int  threadNum      = omp_get_thread_num();
-		long i              = chunks[k];
+		int  threadNum = omp_get_thread_num();
+		long i = chunks[k];
 		long halfChunkStart = long(i - chunkSize * 0.5);
-		long halfChunkEnd   = long(i + chunkSize * 0.5);
+		long halfChunkEnd = long(i + chunkSize * 0.5);
 		for (; i < halfChunkEnd; i++) {
 			if (!(v[i] < v[i - 1])) break; //contiguous chunks now connected consistently
-			const Bounds viInit   = v[i];
-			long         j        = i - 1; /* cache hasBB; otherwise 1% overall performance hit */
+			const Bounds viInit = v[i];
+			long         j = i - 1; /* cache hasBB; otherwise 1% overall performance hit */
 			const bool   viInitBB = viInit.flags.hasBB;
-			const bool   isMin    = viInit.flags.isMin;
+			const bool   isMin = viInit.flags.isMin;
 
 			while (j >= halfChunkStart && viInit < v[j]) {
 				v[j + 1] = v[j];
@@ -196,10 +196,10 @@ vector<Body::id_t> InsertionSortCollider::probeBoundingVolume(const Bound& bv)
 		if (it->coord > bv.max[0]) break;
 		if (!it->flags.isMin || !it->flags.hasBB) continue;
 		int                     offset = 3 * it->id;
-		const shared_ptr<Body>& b      = Body::byId(it->id, scene);
+		const shared_ptr<Body>& b = Body::byId(it->id, scene);
 		if (!b || !b->bound) continue;
 		const Real& sweepLength = b->bound->sweepLength;
-		Vector3r    disp        = b->state->pos - b->bound->refPos;
+		Vector3r    disp = b->state->pos - b->bound->refPos;
 		if (!(maxima[offset] - sweepLength + disp[0] < bv.min[0] || minima[offset] + sweepLength + disp[0] > bv.max[0]
 		      || minima[offset + 1] + sweepLength + disp[1] > bv.max[1] || maxima[offset + 1] - sweepLength + disp[1] < bv.min[1]
 		      || minima[offset + 2] + sweepLength + disp[2] > bv.max[2] || maxima[offset + 2] - sweepLength + disp[2] < bv.min[2])) {
@@ -229,11 +229,11 @@ void InsertionSortCollider::action()
 	timingDeltas->start();
 #endif
 	numAction++;
-	const size_t nBodies                     = scene->bodies->size();
-	keepListsShort                           = scene->bodies->useRedirection;
-	InteractionContainer* interactions       = scene->interactions.get();
+	const size_t nBodies = scene->bodies->size();
+	keepListsShort = scene->bodies->useRedirection;
+	InteractionContainer* interactions = scene->interactions.get();
 	scene->interactions->iterColliderLastRun = -1;
-	scene->doSort                            = false;
+	scene->doSort = false;
 #ifdef YADE_OPENMP
 	if (ompThreads <= 0) ompThreads = omp_get_max_threads();
 #endif
@@ -249,7 +249,7 @@ void InsertionSortCollider::action()
 	bool doInitSort = false;
 	if (doSort) {
 		doInitSort = true;
-		doSort     = false;
+		doSort = false;
 	}
 	// ### Prepare lists of bounds. First approach: Bounds are from id=0 to id=nBodies, possibly with many null bounds after body erase
 	if (not keepListsShort) {
@@ -279,11 +279,11 @@ void InsertionSortCollider::action()
 		// ### Second approach with using body redirection: Bounds sizes match the number of real bodies in the scene
 	} else if (not scene->bodies->checkedByCollider) {
 		scene->bodies->updateShortLists(); // not needed if we use inserted bodies
-		vector<Body::id_t>&       insrts  = scene->bodies->insertedBodies;
-		const vector<Body::id_t>& erased  = scene->bodies->erasedBodies;
+		vector<Body::id_t>&       insrts = scene->bodies->insertedBodies;
+		const vector<Body::id_t>& erased = scene->bodies->erasedBodies;
 		size_t                    nInsert = insrts.size();
 		size_t                    nErased = erased.size();
-		size_t                    BBsize  = BB[0].size();
+		size_t                    BBsize = BB[0].size();
 
 		// Handle erased bodies
 		int countNoBound = 0;
@@ -295,7 +295,7 @@ void InsertionSortCollider::action()
 
 			size_t idxTarget = 0;
 			for (size_t i = 0; i < 3; i++) {
-				idxTarget      = 0;
+				idxTarget = 0;
 				VecBounds& BBi = BB[i];
 				// move all bounds to the beginning of the vector
 				for (size_t idx = 0; idx < BBsize; idx++) {
@@ -368,15 +368,15 @@ void InsertionSortCollider::action()
 	}
 	// if interactions are dirty, force reinitialization
 	if (scene->interactions->dirty) {
-		doInitSort                 = true;
+		doInitSort = true;
 		scene->interactions->dirty = false;
 	}
 
 	// update bounds via boundDispatcher
-	boundDispatcher->scene              = scene;
-	boundDispatcher->sweepDist          = verletDist;
+	boundDispatcher->scene = scene;
+	boundDispatcher->sweepDist = verletDist;
 	boundDispatcher->minSweepDistFactor = minSweepDistFactor;
-	boundDispatcher->targetInterv       = targetInterv;
+	boundDispatcher->targetInterv = targetInterv;
 	boundDispatcher->updatingDispFactor = updatingDispFactor;
 	boundDispatcher->action();
 	ISC_CHECKPOINT("boundDispatcher");
@@ -415,8 +415,8 @@ void InsertionSortCollider::action()
 		VecBounds& BBj = BB[j];
 		for (size_t i = 0; i < nBounds; i++) {
 			Bounds&                 BBji = BBj[i];
-			const Body::id_t        id   = BBji.id;
-			const shared_ptr<Body>& b    = Body::byId(id, scene);
+			const Body::id_t        id = BBji.id;
+			const shared_ptr<Body>& b = Body::byId(id, scene);
 			if (b) {
 				const shared_ptr<Bound>& bv = b->bound;
 				// coordinate is min/max if has bounding volume, otherwise both are the position. Add periodic shift so that we are inside the cell
@@ -445,18 +445,18 @@ void InsertionSortCollider::action()
 #else
 				if (bv) {
 					if (BBji.flags.isMin && j == 1) {
-						minima[3 * id]     = bv->min[0];
+						minima[3 * id] = bv->min[0];
 						minima[3 * id + 1] = bv->min[1];
 						minima[3 * id + 2] = bv->min[2];
 					}
-					maxima[3 * id]     = bv->max[0];
+					maxima[3 * id] = bv->max[0];
 					maxima[3 * id + 1] = bv->max[1];
 					maxima[3 * id + 2] = bv->max[2];
 				} else if (keepListsShort) {
-					minima[3 * id]     = maxVect[0];
+					minima[3 * id] = maxVect[0];
 					minima[3 * id + 1] = maxVect[1];
 					minima[3 * id + 2] = maxVect[2];
-					maxima[3 * id]     = maxVect[0];
+					maxima[3 * id] = maxVect[0];
 					maxima[3 * id + 1] = maxVect[1];
 					maxima[3 * id + 2] = maxVect[2];
 				}
@@ -518,9 +518,9 @@ void InsertionSortCollider::action()
 					for (int i = 0; i < 3; i++) {
 						auto bMin = Bounds(b->bound->min[i], id1, /*isMin=*/true);
 						auto bMax = Bounds(b->bound->max[i], id1, /*isMin=*/false);
-						auto it   = std::lower_bound(BB[i].begin(), BB[i].end(), bMin);
-						it        = BB[i].insert(it, bMin);
-						it        = std::lower_bound(it, BB[i].end(), bMax);
+						auto it = std::lower_bound(BB[i].begin(), BB[i].end(), bMin);
+						it = BB[i].insert(it, bMin);
+						it = std::lower_bound(it, BB[i].end(), bMax);
 						BB[i].insert(it, bMax);
 					}
 				}
@@ -633,7 +633,7 @@ void InsertionSortCollider::findOverlaps(VecBounds& V)
 Real InsertionSortCollider::cellWrap(const Real x, const Real x0, const Real x1, int& period)
 {
 	Real xNorm = (x - x0) / (x1 - x0);
-	period     = (int)floor(xNorm); // some people say this is very slow; probably optimized by gcc, however (google suggests)
+	period = (int)floor(xNorm); // some people say this is very slow; probably optimized by gcc, however (google suggests)
 	return x0 + (xNorm - period) * (x1 - x0);
 }
 
@@ -651,10 +651,10 @@ void InsertionSortCollider::insertionSortPeri(VecBounds& v, InteractionContainer
 {
 	assert(periodic);
 	size_t&       loIdx = v.loIdx;
-	const size_t& size  = v.size();
+	const size_t& size = v.size();
 	/* We have to visit each bound at least once (first condition), but this is not enough. The correct ordering in the begining of the list needs a second pass to connect begin and end consistently (the second condition). Strictly the second condition should include "+ (v.norm(j+1)==loIdx ? v.cellDim : 0)" but it is ok as is since the shift is added inside the loop. */
 	for (size_t _i = 0; (_i < size) || (v[v.norm(_i)].coord < v[v.norm(_i - 1)].coord); _i++) {
-		const size_t i   = v.norm(_i); //FIXME: useless, and many others can probably be removed
+		const size_t i = v.norm(_i); //FIXME: useless, and many others can probably be removed
 		const size_t i_1 = v.norm(i - 1);
 		//switch period of (i) if the coord is below the lower edge cooridnate-wise and just above the split
 		if (i == loIdx && v[i].coord < 0) {
@@ -670,10 +670,10 @@ void InsertionSortCollider::insertionSortPeri(VecBounds& v, InteractionContainer
 		if (v[i_1].coord <= iCmpCoord) continue;
 		// vi is the copy that will travel down the list, while other elts go up
 		// if will be placed in the list only at the end, to avoid extra copying
-		size_t     j       = i_1;
-		Bounds     vi      = v[i];
+		size_t     j = i_1;
+		Bounds     vi = v[i];
 		const bool viHasBB = vi.flags.hasBB;
-		const bool isMin   = v[i].flags.isMin;
+		const bool isMin = v[i].flags.isMin;
 
 		//For the first pass, the bounds are not travelling down past v[0] (j<_i above prevents that), otherwise we would not know which part of the list has been correctly sorted. Only after the first pass, we sort end vs. begining of the list.
 		while ((j < _i) and v[j].coord > (vi.coord + /* wrap for elt just below split */ (v.norm(j + 1) == loIdx ? v.cellDim : 0))) {
@@ -733,7 +733,7 @@ void InsertionSortCollider::handleBoundInversionPeri(Body::id_t id1, Body::id_t 
 #endif
 	            )) {
 		shared_ptr<Interaction> newI = shared_ptr<Interaction>(new Interaction(id1, id2));
-		newI->cellDist               = periods;
+		newI->cellDist = periods;
 		interactions->insert(newI);
 	}
 }
@@ -761,12 +761,12 @@ bool InsertionSortCollider::spatialOverlapPeri(Body::id_t id1, Body::id_t id2, S
 			assert(maxima[3 * id2 + axis] - minima[3 * id2 + axis] < .99 * dim);
 		}
 		// define normalized positions relative to id1->max, and with +1 shift for id1->min so that body1's bounds cover an interval [shiftedMin; 1] at the end of a b1-centric period
-		Real lmin       = (minima[3 * id2 + axis] - maxima[3 * id1 + axis]) * invSizes[axis];
-		Real lmax       = (maxima[3 * id2 + axis] - maxima[3 * id1 + axis]) * invSizes[axis];
+		Real lmin = (minima[3 * id2 + axis] - maxima[3 * id1 + axis]) * invSizes[axis];
+		Real lmax = (maxima[3 * id2 + axis] - maxima[3 * id1 + axis]) * invSizes[axis];
 		Real shiftedMin = (minima[3 * id1 + axis] - maxima[3 * id1 + axis]) * invSizes[axis] + 1.;
 
 #ifdef YADE_MPI
-		bool subDoverlap      = (Body::byId(id1, scene)->getIsSubdomain() || Body::byId(id2, scene)->getIsSubdomain());
+		bool subDoverlap = (Body::byId(id1, scene)->getIsSubdomain() || Body::byId(id2, scene)->getIsSubdomain());
 		bool fluidBodyOverLap = (Body::byId(id1, scene)->getIsFluidDomainBbox() || Body::byId(id2, scene)->getIsFluidDomainBbox());
 		if (((lmax - lmin) > 0.5 || shiftedMin < 0) && !(subDoverlap or fluidBodyOverLap)) {
 #else

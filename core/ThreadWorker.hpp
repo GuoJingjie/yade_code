@@ -39,7 +39,7 @@ protected:
 	virtual void singleAction() = 0;
 
 public:
-	ThreadWorker()          = default;
+	ThreadWorker() = default;
 	virtual ~ThreadWorker() = default;
 	/// Check whether execution is finished,
 	bool done() const;

@@ -56,7 +56,7 @@ struct custom_Se3r_from_seq {
 		new (storage) Se3r;
 		Se3r* se3 = (Se3r*)storage;
 		if (PySequence_Size(obj_ptr) == 2) { // from vector and quaternion
-			se3->position    = boost::python::extract<Vector3r>(PySequence_GetItem(obj_ptr, 0));
+			se3->position = boost::python::extract<Vector3r>(PySequence_GetItem(obj_ptr, 0));
 			se3->orientation = boost::python::extract<Quaternionr>(PySequence_GetItem(obj_ptr, 1));
 		} else if (PySequence_Size(obj_ptr) == 7) { // 3 vector components, 3 axis components, angle
 			se3->position = Vector3r(
@@ -67,7 +67,7 @@ struct custom_Se3r_from_seq {
 			        boost::python::extract<Real>(PySequence_GetItem(obj_ptr, 3)),
 			        boost::python::extract<Real>(PySequence_GetItem(obj_ptr, 4)),
 			        boost::python::extract<Real>(PySequence_GetItem(obj_ptr, 5)));
-			Real angle       = boost::python::extract<Real>(PySequence_GetItem(obj_ptr, 6));
+			Real angle = boost::python::extract<Real>(PySequence_GetItem(obj_ptr, 6));
 			se3->orientation = Quaternionr(AngleAxisr(angle, axis));
 		} else
 			throw std::logic_error(__FILE__
@@ -211,8 +211,8 @@ struct custom_ptrMatchMaker_from_float {
 		void* storage = ((boost::python::converter::rvalue_from_python_storage<shared_ptr<MatchMaker>>*)(data))->storage.bytes;
 		new (storage) shared_ptr<MatchMaker>(new MatchMaker);            // allocate the object at given address
 		shared_ptr<MatchMaker>* mm = (shared_ptr<MatchMaker>*)(storage); // convert that address to our type
-		(*mm)->algo                = "val";
-		(*mm)->val                 = PyFloat_AsDouble(obj_ptr);
+		(*mm)->algo = "val";
+		(*mm)->val = PyFloat_AsDouble(obj_ptr);
 		(*mm)->postLoad(**mm);
 		data->convertible = storage;
 	}
@@ -249,7 +249,7 @@ struct custom_mask_from_long {
 		if (s.substr(0, 2).compare("0b") == 0) s = s.substr(2);
 		if (s[s.length() - 1] == 'L') s = s.substr(0, s.length() - 1);
 		// TODO?
-		*mask             = mask_t(s);
+		*mask = mask_t(s);
 		data->convertible = storage;
 	}
 };

@@ -110,7 +110,7 @@ public:
 	static Real wrapNum(const Real& x, const Real& sz, int& period)
 	{
 		Real norm = x / sz;
-		period    = (int)floor(norm);
+		period = (int)floor(norm);
 		return (norm - period) * sz;
 	}
 
@@ -137,7 +137,7 @@ public:
 	Matrix3r getVelGrad() const { return velGrad; }
 	void     setVelGrad(const Matrix3r& m)
 	{
-		nextVelGrad    = m;
+		nextVelGrad = m;
 		velGradChanged = true;
 	}
 	//BEGIN Deprecated (see refSize property)

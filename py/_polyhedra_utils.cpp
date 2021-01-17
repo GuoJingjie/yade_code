@@ -25,7 +25,7 @@ using math::min;
 //print polyhedron in basic position
 void PrintPolyhedra(const shared_ptr<Shape>& shape)
 {
-	Polyhedra* A  = static_cast<Polyhedra*>(shape.get());
+	Polyhedra* A = static_cast<Polyhedra*>(shape.get());
 	Polyhedron PA = A->GetPolyhedron();
 	A->Initialize();
 	PrintPolyhedron(PA);
@@ -36,11 +36,11 @@ void PrintPolyhedra(const shared_ptr<Shape>& shape)
 void PrintPolyhedraActualPos(const shared_ptr<Shape>& cm1, const State& state1)
 {
 	const Se3r& se3 = state1.se3;
-	Polyhedra*  A   = static_cast<Polyhedra*>(cm1.get());
+	Polyhedra*  A = static_cast<Polyhedra*>(cm1.get());
 	A->Initialize();
 
 	//move and rotate CGAL structure Polyhedron
-	Matrix3r       rot_mat   = (se3.orientation).toRotationMatrix();
+	Matrix3r       rot_mat = (se3.orientation).toRotationMatrix();
 	Vector3r       trans_vec = se3.position;
 	Transformation t_rot_trans(
 	        rot_mat(0, 0),
@@ -69,11 +69,11 @@ bool do_Polyhedras_Intersect(const shared_ptr<Shape>& cm1, const shared_ptr<Shap
 {
 	const Se3r& se31 = state1.se3;
 	const Se3r& se32 = state2.se3;
-	Polyhedra*  A    = static_cast<Polyhedra*>(cm1.get());
-	Polyhedra*  B    = static_cast<Polyhedra*>(cm2.get());
+	Polyhedra*  A = static_cast<Polyhedra*>(cm1.get());
+	Polyhedra*  B = static_cast<Polyhedra*>(cm2.get());
 
 	//move and rotate 1st the CGAL structure Polyhedron
-	Matrix3r       rot_mat   = (se31.orientation).toRotationMatrix();
+	Matrix3r       rot_mat = (se31.orientation).toRotationMatrix();
 	Vector3r       trans_vec = se31.position;
 	Transformation t_rot_trans(
 	        rot_mat(0, 0),
@@ -93,8 +93,8 @@ bool do_Polyhedras_Intersect(const shared_ptr<Shape>& cm1, const shared_ptr<Shap
 	std::transform(PA.points_begin(), PA.points_end(), PA.points_begin(), t_rot_trans);
 
 	//move and rotate 2st the CGAL structure Polyhedron
-	rot_mat     = (se32.orientation).toRotationMatrix();
-	trans_vec   = se32.position;
+	rot_mat = (se32.orientation).toRotationMatrix();
+	trans_vec = se32.position;
 	t_rot_trans = Transformation(
 	        rot_mat(0, 0),
 	        rot_mat(0, 1),
@@ -126,8 +126,8 @@ bool do_Polyhedras_Intersect(const shared_ptr<Shape>& cm1, const shared_ptr<Shap
 Real PWaveTimeStep()
 {
 	const shared_ptr<Scene> _rb = shared_ptr<Scene>();
-	shared_ptr<Scene>       rb  = (_rb ? _rb : Omega::instance().getScene());
-	Real                    dt  = std::numeric_limits<Real>::infinity();
+	shared_ptr<Scene>       rb = (_rb ? _rb : Omega::instance().getScene());
+	Real                    dt = std::numeric_limits<Real>::infinity();
 	for (const auto& b : *rb->bodies) {
 		if (!b || !b->material || !b->shape) continue;
 		shared_ptr<Sphere>    s = YADE_PTR_DYN_CAST<Sphere>(b->shape);
@@ -138,7 +138,7 @@ Real PWaveTimeStep()
 			shared_ptr<ElastMat> ebp = YADE_PTR_DYN_CAST<ElastMat>(b->material);
 			if (!ebp) continue;
 			Real density = b->state->mass / ((4. / 3.) * Mathr::PI * pow(s->radius, 3));
-			dt           = min(dt, s->radius / sqrt(ebp->young / density));
+			dt = min(dt, s->radius / sqrt(ebp->young / density));
 		} else {
 			//polyhedrons
 			shared_ptr<PolyhedraMat> ebp = YADE_PTR_DYN_CAST<PolyhedraMat>(b->material);
@@ -146,7 +146,7 @@ Real PWaveTimeStep()
 			Real density = b->state->mass / p->GetVolume();
 			//get equivalent radius and use same equation as for sphere
 			Real equi_radius = pow(p->GetVolume() / ((4. / 3.) * Mathr::PI), 1. / 3.);
-			dt               = min(dt, equi_radius / sqrt(ebp->young * equi_radius / density));
+			dt = min(dt, equi_radius / sqrt(ebp->young * equi_radius / density));
 		}
 	}
 	if (dt == std::numeric_limits<Real>::infinity()) {
@@ -167,8 +167,8 @@ Real SieveSize(const shared_ptr<Shape>& cm1)
 	Real minx = 0, maxx = 0, miny = 0, maxy = 0;
 
 	for (vector<Vector3r>::iterator i = A->v.begin(); i != A->v.end(); ++i) {
-		x    = cos(phi) * (*i)[1] + sin(phi) * (*i)[2];
-		y    = -sin(phi) * (*i)[1] + cos(phi) * (*i)[2];
+		x = cos(phi) * (*i)[1] + sin(phi) * (*i)[2];
+		y = -sin(phi) * (*i)[1] + cos(phi) * (*i)[2];
 		minx = min(minx, x);
 		maxx = max(maxx, x);
 		miny = min(miny, y);
@@ -204,7 +204,7 @@ Vector3r SizeOfPolyhedra(const shared_ptr<Shape>& cm1)
 void SieveCurve()
 {
 	const shared_ptr<Scene>            _rb = shared_ptr<Scene>();
-	shared_ptr<Scene>                  rb  = (_rb ? _rb : Omega::instance().getScene());
+	shared_ptr<Scene>                  rb = (_rb ? _rb : Omega::instance().getScene());
 	std::vector<std::pair<Real, Real>> sieve_volume;
 	Real                               total_volume = 0;
 	for (const auto& b : *rb->bodies) {
@@ -233,7 +233,7 @@ void SieveCurve()
 void SizeRatio()
 {
 	const shared_ptr<Scene> _rb = shared_ptr<Scene>();
-	shared_ptr<Scene>       rb  = (_rb ? _rb : Omega::instance().getScene());
+	shared_ptr<Scene>       rb = (_rb ? _rb : Omega::instance().getScene());
 	std::ofstream           myfile;
 	myfile.open("sizes.dat");
 	for (const auto& b : *rb->bodies) {
@@ -249,10 +249,10 @@ void SizeRatio()
 Vector3r MaxCoord(const shared_ptr<Shape>& cm1, const State& state1)
 {
 	const Se3r& se3 = state1.se3;
-	Polyhedra*  A   = static_cast<Polyhedra*>(cm1.get());
+	Polyhedra*  A = static_cast<Polyhedra*>(cm1.get());
 
 	//move and rotate CGAL structure Polyhedron
-	Matrix3r       rot_mat   = (se3.orientation).toRotationMatrix();
+	Matrix3r       rot_mat = (se3.orientation).toRotationMatrix();
 	Vector3r       trans_vec = se3.position;
 	Transformation t_rot_trans(
 	        rot_mat(0, 0),
@@ -286,10 +286,10 @@ Vector3r MaxCoord(const shared_ptr<Shape>& cm1, const State& state1)
 Vector3r MinCoord(const shared_ptr<Shape>& cm1, const State& state1)
 {
 	const Se3r& se3 = state1.se3;
-	Polyhedra*  A   = static_cast<Polyhedra*>(cm1.get());
+	Polyhedra*  A = static_cast<Polyhedra*>(cm1.get());
 
 	//move and rotate CGAL structure Polyhedron
-	Matrix3r       rot_mat   = (se3.orientation).toRotationMatrix();
+	Matrix3r       rot_mat = (se3.orientation).toRotationMatrix();
 	Vector3r       trans_vec = se3.position;
 	Transformation t_rot_trans(
 	        rot_mat(0, 0),
@@ -337,8 +337,8 @@ vector<Vector3r> fillBox_cpp(Vector3r minCoord, Vector3r maxCoord, Vector3r size
 	bool fixed_ratio = 0;
 	if (ratio[0] > 0 && ratio[1] > 0 && ratio[2] > 0) {
 		fixed_ratio = 1;
-		sizemax[0]  = min(min(sizemax[0] / ratio[0], sizemax[1] / ratio[1]), sizemax[2] / ratio[2]);
-		sizemin[0]  = max(max(sizemin[0] / ratio[0], sizemin[1] / ratio[1]), sizemin[2] / ratio[2]);
+		sizemax[0] = min(min(sizemax[0] / ratio[0], sizemax[1] / ratio[1]), sizemax[2] / ratio[2]);
+		sizemin[0] = max(max(sizemin[0] / ratio[0], sizemin[1] / ratio[1]), sizemin[2] / ratio[2]);
 	}
 
 	//it - number of trials to make packing possibly more/less dense
@@ -355,7 +355,7 @@ vector<Vector3r> fillBox_cpp(Vector3r minCoord, Vector3r maxCoord, Vector3r size
 				                / RAND_MAX
 				        + sizemin;
 			trialP.Initialize();
-			trial                  = trialP.GetPolyhedron();
+			trial = trialP.GetPolyhedron();
 			Matrix3r       rot_mat = (trialP.GetOri()).toRotationMatrix();
 			Transformation t_rot(
 			        rot_mat(0, 0),
@@ -408,7 +408,7 @@ vector<Vector3r> fillBox_cpp(Vector3r minCoord, Vector3r maxCoord, Vector3r size
 	Scene* scene = Omega::instance().getScene().get();
 	for (vector<vector<Vector3r>>::iterator p = vv.begin(); p != vv.end(); ++p) {
 		shared_ptr<Body> BP = NewPolyhedra(*p, mat);
-		BP->shape->color    = Vector3r(double(rand()) / RAND_MAX, double(rand()) / RAND_MAX, double(rand()) / RAND_MAX);
+		BP->shape->color = Vector3r(double(rand()) / RAND_MAX, double(rand()) / RAND_MAX, double(rand()) / RAND_MAX);
 		scene->bodies->insert(BP);
 	}
 	return v;
@@ -494,8 +494,8 @@ vector<Vector3r> BallPoints(Vector3r radii, int NumFacets, int seed)
 		Real off = 2. / double(NumFacets);
 		Real y, r, phi;
 		for (int k = 0; k < NumFacets; k++) {
-			y   = Real(k) * off - 1. + (off / 2.);
-			r   = pow(1. - y * y, 0.5);
+			y = Real(k) * off - 1. + (off / 2.);
+			r = pow(1. - y * y, 0.5);
 			phi = Real(k) * inc;
 			v.push_back(Vector3r(cos(phi) * r * radii[0], y * radii[1], sin(phi) * r * radii[2]));
 		}
@@ -532,8 +532,8 @@ fillBoxByBalls_cpp(Vector3r minCoord, Vector3r maxCoord, Vector3r sizemin, Vecto
 	bool fixed_ratio = 0;
 	if (ratio[0] > 0 && ratio[1] > 0 && ratio[2] > 0) {
 		fixed_ratio = 1;
-		sizemax[0]  = min(min(sizemax[0] / ratio[0], sizemax[1] / ratio[1]), sizemax[2] / ratio[2]);
-		sizemin[0]  = max(max(sizemin[0] / ratio[0], sizemin[1] / ratio[1]), sizemin[2] / ratio[2]);
+		sizemax[0] = min(min(sizemax[0] / ratio[0], sizemax[1] / ratio[1]), sizemax[2] / ratio[2]);
+		sizemin[0] = max(max(sizemin[0] / ratio[0], sizemin[1] / ratio[1]), sizemin[2] / ratio[2]);
 	}
 
 	fixed_ratio = 1; //force spherical
@@ -545,7 +545,7 @@ fillBoxByBalls_cpp(Vector3r minCoord, Vector3r maxCoord, Vector3r sizemin, Vecto
 		if (it == 1) {
 			if (fixed_ratio) {
 				Real rrr = (rand() * (sizemax[0] - sizemin[0]) / RAND_MAX + sizemin[0]) / 2.;
-				radii    = Vector3r(rrr, rrr, rrr);
+				radii = Vector3r(rrr, rrr, rrr);
 			} else {
 				radii = Vector3r(
 				                rand() * (sizemax[0] - sizemin[0]) / 2.,
@@ -556,7 +556,7 @@ fillBoxByBalls_cpp(Vector3r minCoord, Vector3r maxCoord, Vector3r sizemin, Vecto
 			}
 			trialP.v = BallPoints(radii, NumPoints, rand());
 			trialP.Initialize();
-			trial                  = trialP.GetPolyhedron();
+			trial = trialP.GetPolyhedron();
 			Matrix3r       rot_mat = (trialP.GetOri()).toRotationMatrix();
 			Transformation t_rot(
 			        rot_mat(0, 0),
@@ -609,7 +609,7 @@ fillBoxByBalls_cpp(Vector3r minCoord, Vector3r maxCoord, Vector3r sizemin, Vecto
 	Scene* scene = Omega::instance().getScene().get();
 	for (vector<vector<Vector3r>>::iterator p = vv.begin(); p != vv.end(); ++p) {
 		shared_ptr<Body> BP = NewPolyhedra(*p, mat);
-		BP->shape->color    = Vector3r(double(rand()) / RAND_MAX, double(rand()) / RAND_MAX, double(rand()) / RAND_MAX);
+		BP->shape->color = Vector3r(double(rand()) / RAND_MAX, double(rand()) / RAND_MAX, double(rand()) / RAND_MAX);
 		scene->bodies->insert(BP);
 	}
 	return v;

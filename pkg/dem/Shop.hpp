@@ -112,7 +112,7 @@ public:
 		Vector3r normStress, shearStress;
 		bodyState()
 		{
-			normStress  = Vector3r(0.0, 0.0, 0.0);
+			normStress = Vector3r(0.0, 0.0, 0.0);
 			shearStress = Vector3r(0.0, 0.0, 0.0);
 		}
 	};
@@ -157,8 +157,8 @@ public:
 	        Matrix3r& fabric,
 	        Matrix3r& fabricStrong,
 	        Matrix3r& fabricWeak,
-	        Real      cutoff         = 0.0,
-	        bool      splitTensor    = false,
+	        Real      cutoff = 0.0,
+	        bool      splitTensor = false,
 	        Real      thresholdForce = NaN);
 	static py::tuple fabricTensor(Real cutoff = 0.0, bool splitTensor = false, Real thresholdForce = NaN);
 

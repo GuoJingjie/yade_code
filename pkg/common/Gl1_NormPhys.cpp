@@ -40,8 +40,8 @@ void Gl1_NormPhys::go(const shared_ptr<IPhys>& ip, const shared_ptr<Interaction>
 	//if(!geom) cerr<<"Gl1_NormPhys: IGeom is not a GenericSpheresContact, but a "<<ig->getClassName()<<endl;
 	Real fnNorm = np->normalForce.dot(geom->normal);
 	if ((signFilter > 0 && fnNorm < 0) || (signFilter < 0 && fnNorm > 0)) return;
-	int fnSign       = fnNorm > 0 ? 1 : -1;
-	fnNorm           = math::abs(fnNorm);
+	int fnSign = fnNorm > 0 ? 1 : -1;
+	fnNorm = math::abs(fnNorm);
 	Real radiusScale = 1.;
 	// weak/strong fabric, only used if maxWeakFn is set
 	if (!math::isnan(maxWeakFn)) {
@@ -62,7 +62,7 @@ void Gl1_NormPhys::go(const shared_ptr<IPhys>& ip, const shared_ptr<Interaction>
 	} else
 		realMaxRadius = maxRadius;
 	Real     radius = radiusScale * realMaxRadius * (fnNorm / maxFn); // use logarithmic scale here?
-	Vector3r color  = Shop::scalarOnColorScale(fnNorm * fnSign, -maxFn, maxFn);
+	Vector3r color = Shop::scalarOnColorScale(fnNorm * fnSign, -maxFn, maxFn);
 #if 0
 			// get endpoints from body positions
 			Vector3r p1=b1->state->pos, p2=b2->state->pos;
@@ -78,9 +78,9 @@ void Gl1_NormPhys::go(const shared_ptr<IPhys>& ip, const shared_ptr<Interaction>
 #else
 	// get endpoints from geom
 	// max(r,0) handles r<0 which is the case for "radius" of the facet
-	Vector3r        cp        = scene->isPeriodic ? scene->cell->wrapShearedPt(geom->contactPoint) : geom->contactPoint;
-	Vector3r        p1        = cp - max(geom->refR1, (Real)0.) * geom->normal;
-	Vector3r        p2        = cp + max(geom->refR2, (Real)0.) * geom->normal;
+	Vector3r        cp = scene->isPeriodic ? scene->cell->wrapShearedPt(geom->contactPoint) : geom->contactPoint;
+	Vector3r        p1 = cp - max(geom->refR1, (Real)0.) * geom->normal;
+	Vector3r        p2 = cp + max(geom->refR2, (Real)0.) * geom->normal;
 	const Vector3r& dispScale = scene->renderer ? scene->renderer->dispScale : Vector3r::Ones();
 	if (dispScale != Vector3r::Ones()) {
 		// move p1 and p2 by the same amounts as particles themselves would be moved
@@ -88,7 +88,7 @@ void Gl1_NormPhys::go(const shared_ptr<IPhys>& ip, const shared_ptr<Interaction>
 		p2 += dispScale.cwiseProduct(Vector3r(b2->state->pos - b2->state->refPos));
 	}
 	Vector3r relPos = p2 - p1;
-	Real     dist   = relPos.norm(); //max(geom->refR1,0.)+max(geom->refR2,0.);
+	Real     dist = relPos.norm(); //max(geom->refR1,0.)+max(geom->refR2,0.);
 #endif
 
 

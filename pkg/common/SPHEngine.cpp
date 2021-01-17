@@ -34,7 +34,7 @@ void SPHEngine::calculateSPHRho(const shared_ptr<Body>& b)
 		// Calculate rho for every particle
 		for (Body::MapId2IntrT::iterator it = b->intrs.begin(), end = b->intrs.end(); it != end; ++it) {
 			const shared_ptr<Body> b2 = Body::byId((*it).first, scene);
-			Sphere*                s  = dynamic_cast<Sphere*>(b->shape.get());
+			Sphere*                s = dynamic_cast<Sphere*>(b->shape.get());
 			if (!s) continue;
 
 			if (((*it).second)->geom and ((*it).second)->phys) {
@@ -93,7 +93,7 @@ Real smoothkernelBSpline1(const double& r, const double& h)
 	// BSpline Kernel function, [Monaghan1985] (21)
 	if (r <= 2.0 * h && h > 0) {
 		const Real coefA = 3. / (2. * M_PI * h * h * h);
-		const Real r_h   = r / h;
+		const Real r_h = r / h;
 		if (r <= h) {
 			return coefA * (2. / 3. - r_h * r_h + 1. / 2. * r_h * r_h * r_h);
 		} else {
@@ -109,7 +109,7 @@ Real smoothkernelBSpline1Grad(const double& r, const double& h)
 	// 1st derivative of BSpline Kernel function, [Monaghan1985] (21)
 	if (r <= 2. * h && h > 0) {
 		const Real coefA = 3. / (2. * M_PI * h * h * h);
-		const Real r_h   = r / h;
+		const Real r_h = r / h;
 		if (r <= h) {
 			return coefA * (-r_h) * (2. - 3. / 2. * r_h);
 		} else {
@@ -125,7 +125,7 @@ Real smoothkernelBSpline1Lapl(const double& r, const double& h)
 	// 2nd derivative of BSpline Kernel function, [Monaghan1985] (21)
 	if (r <= 2.0 * h && h > 0) {
 		const Real coefA = 3. / (2. * M_PI * h * h * h);
-		const Real r_h   = r / h;
+		const Real r_h = r / h;
 		if (r <= h) {
 			return coefA * (-2. + 3. * r_h);
 		} else {
@@ -143,7 +143,7 @@ Real smoothkernelBSpline2(const double& r, const double& h)
 	// BSpline Kernel function, [Monaghan1985] (22)
 	if (r <= 2.0 * h && h > 0) {
 		const Real coefA = 3. / (4. * M_PI * h * h * h);
-		const Real r_h   = r / h;
+		const Real r_h = r / h;
 		if (r <= h) {
 			return coefA * (10. / 3. - 7. * r_h * r_h + 4 * r_h * r_h * r_h);
 		} else {
@@ -159,7 +159,7 @@ Real smoothkernelBSpline2Grad(const double& r, const double& h)
 	// 1st derivative of BSpline Kernel function, [Monaghan1985] (22)
 	if (r <= 2.0 * h && h > 0) {
 		const Real coefA = 3. / (4. * M_PI * h * h * h);
-		const Real r_h   = r / h;
+		const Real r_h = r / h;
 		if (r <= h) {
 			return coefA * (-2.) / (h * h) * (7. * r - 6. * r * r_h);
 		} else {
@@ -175,7 +175,7 @@ Real smoothkernelBSpline2Lapl(const double& r, const double& h)
 	// 2nd derivative of BSpline Kernel function, [Monaghan1985] (22)
 	if (r <= 2.0 * h && h > 0) {
 		const Real coefA = 3. / (4. * M_PI * h * h * h);
-		const Real r_h   = r / h;
+		const Real r_h = r / h;
 		if (r <= h) {
 			return coefA * (-2.) / (h * h) * (7. - 12. * r_h);
 		} else {
@@ -229,9 +229,9 @@ KernelFunction returnKernelFunction(const int a, const int b, const typeKernFunc
 
 bool computeForceSPH(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I, Vector3r& force)
 {
-	const ScGeom& geom  = *static_cast<ScGeom*>(_geom.get());
+	const ScGeom& geom = *static_cast<ScGeom*>(_geom.get());
 	Scene*        scene = Omega::instance().getScene().get();
-	ViscElPhys&   phys  = *static_cast<ViscElPhys*>(_phys.get());
+	ViscElPhys&   phys = *static_cast<ViscElPhys*>(_phys.get());
 
 	const int id1 = I->getId1();
 	const int id2 = I->getId2();
@@ -248,7 +248,7 @@ bool computeForceSPH(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interac
 	//////////////////////////////////////////////////////////////////
 	// Copy-paste
 	// Handle periodicity.
-	const Vector3r shift2   = scene->isPeriodic ? scene->cell->intrShiftPos(I->cellDist) : Vector3r::Zero();
+	const Vector3r shift2 = scene->isPeriodic ? scene->cell->intrShiftPos(I->cellDist) : Vector3r::Zero();
 	const Vector3r shiftVel = scene->isPeriodic ? scene->cell->intrShiftVel(I->cellDist) : Vector3r::Zero();
 
 	const State& de1 = *static_cast<State*>(bodies[id1]->state.get());
@@ -258,7 +258,7 @@ bool computeForceSPH(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interac
 	const Vector3r c2x = (geom.contactPoint - de2.pos - shift2);
 
 	const Vector3r relativeVelocity = (de1.vel + de1.angVel.cross(c1x)) - (de2.vel + de2.angVel.cross(c2x)) + shiftVel;
-	const Real     normalVelocity   = geom.normal.dot(relativeVelocity);
+	const Real     normalVelocity = geom.normal.dot(relativeVelocity);
 
 	// Copy-paste
 	//////////////////////////////////////////////////////////////////

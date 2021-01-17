@@ -26,7 +26,7 @@ bool Law2_ScGeom_PotentialLubricationPhys::go(shared_ptr<IGeom>& iGeom, shared_p
 
 	// inititalization
 	if (phys->u == -1.) {
-		phys->u     = -geom->penetrationDepth;
+		phys->u = -geom->penetrationDepth;
 		phys->delta = math::log(phys->u);
 	}
 
@@ -36,17 +36,17 @@ bool Law2_ScGeom_PotentialLubricationPhys::go(shared_ptr<IGeom>& iGeom, shared_p
 		return false;
 	}
 
-	potential->applyPotential(phys->u, *phys, geom->normal);                                      // Set contactForce, potentialForce, contact.
-	phys->normalLubricationForce = phys->kn * a * phys->prevDotU * geom->normal;                  // From implicit formulation. Prevent computing divisions.
-	phys->normalForce            = phys->kn * (-geom->penetrationDepth - phys->u) * geom->normal; // From regularization expression.
+	potential->applyPotential(phys->u, *phys, geom->normal);                           // Set contactForce, potentialForce, contact.
+	phys->normalLubricationForce = phys->kn * a * phys->prevDotU * geom->normal;       // From implicit formulation. Prevent computing divisions.
+	phys->normalForce = phys->kn * (-geom->penetrationDepth - phys->u) * geom->normal; // From regularization expression.
 
 	// Get bodies properties
 	Body::id_t             id1 = interaction->getId1();
 	Body::id_t             id2 = interaction->getId2();
-	const shared_ptr<Body> b1  = Body::byId(id1, scene);
-	const shared_ptr<Body> b2  = Body::byId(id2, scene);
-	State*                 s1  = b1->state.get();
-	State*                 s2  = b2->state.get();
+	const shared_ptr<Body> b1 = Body::byId(id1, scene);
+	const shared_ptr<Body> b2 = Body::byId(id2, scene);
+	State*                 s1 = b1->state.get();
+	State*                 s2 = b2->state.get();
 
 	// Shear and torques
 	Vector3r C1 = Vector3r::Zero();
@@ -80,7 +80,7 @@ bool Law2_ScGeom_PotentialLubricationPhys::solve_normalForce(Real const& un, Rea
 
 	// Seek to interval containing the zero
 	Real inc = (F1 < 0.) ? 1. : -1;
-	inc      = (F1 < F2) ? inc : -inc;
+	inc = (F1 < F2) ? inc : -inc;
 
 	while (F1 * F2 >= 0 && math::isfinite(F1) && math::isfinite(F2)) {
 		LOG_TRACE("d1=" << d1 << " d2=" << d2 << " F1=" << F1 << " F2=" << F2);
@@ -93,10 +93,10 @@ bool Law2_ScGeom_PotentialLubricationPhys::solve_normalForce(Real const& un, Rea
 	if (!math::isfinite(F1) || !math::isfinite(F2)) {
 		// Reset and search other way
 		LOG_DEBUG("Wrong direction");
-		d1  = pDelta - 1.;
-		d2  = pDelta + 1.;
-		F1  = objf(d1);
-		F2  = objf(d2);
+		d1 = pDelta - 1.;
+		d2 = pDelta + 1.;
+		F1 = objf(d1);
+		F2 = objf(d2);
 		inc = -inc;
 
 		while (F1 * F2 >= 0 && math::isfinite(F1) && math::isfinite(F2)) {
@@ -141,9 +141,9 @@ bool Law2_ScGeom_PotentialLubricationPhys::solve_normalForce(Real const& un, Rea
 	} while (--i);
 
 	// Apply
-	Real up       = math::exp(d);
-	phys.delta    = d;
-	phys.u        = a * math::exp(d);
+	Real up = math::exp(d);
+	phys.delta = d;
+	phys.u = a * math::exp(d);
 	phys.prevDotU = un - up - potential->potential(phys.u, phys) / ga; // dotu'/u'
 
 	return true;
@@ -153,9 +153,9 @@ Real GenericPotential::potential(Real const&, LubricationPhys const&) const { re
 
 void GenericPotential::applyPotential(Real const&, LubricationPhys& phys, Vector3r const&)
 {
-	phys.normalContactForce   = Vector3r::Zero();
+	phys.normalContactForce = Vector3r::Zero();
 	phys.normalPotentialForce = Vector3r::Zero();
-	phys.contact              = false;
+	phys.contact = false;
 }
 
 CREATE_LOGGER(GenericPotential);
@@ -164,8 +164,8 @@ Real CundallStrackPotential::potential(Real const& u, LubricationPhys const& phy
 
 void CundallStrackPotential::applyPotential(Real const& u, LubricationPhys& phys, Vector3r const& n)
 {
-	phys.contact              = u < phys.eps * phys.a;
-	phys.normalContactForce   = (phys.contact) ? Vector3r(-alpha * phys.kn * (phys.eps * phys.a - u) * n) : Vector3r::Zero();
+	phys.contact = u < phys.eps * phys.a;
+	phys.normalContactForce = (phys.contact) ? Vector3r(-alpha * phys.kn * (phys.eps * phys.a - u) * n) : Vector3r::Zero();
 	phys.normalPotentialForce = Vector3r::Zero();
 }
 
@@ -183,8 +183,8 @@ void CundallStrackAdhesivePotential::applyPotential(Real const& u, LubricationPh
 {
 	Real ladh((phys.contact) ? fadh / phys.kn : 0.);
 
-	phys.contact              = u < phys.eps * phys.a + ladh;
-	phys.normalContactForce   = (phys.contact) ? Vector3r(-alpha * phys.kn * (phys.eps * phys.a - u) * n) : Vector3r::Zero();
+	phys.contact = u < phys.eps * phys.a + ladh;
+	phys.normalContactForce = (phys.contact) ? Vector3r(-alpha * phys.kn * (phys.eps * phys.a - u) * n) : Vector3r::Zero();
 	phys.normalPotentialForce = Vector3r::Zero();
 }
 
@@ -197,8 +197,8 @@ Real LinExponentialPotential::potential(Real const& u, LubricationPhys const& ph
 
 void LinExponentialPotential::applyPotential(Real const& u, LubricationPhys& phys, Vector3r const& n)
 {
-	phys.contact              = u < phys.eps * phys.a;
-	phys.normalContactForce   = (phys.contact) ? Vector3r(-alpha * phys.kn * (phys.eps * phys.a - u) * n) : Vector3r::Zero();
+	phys.contact = u < phys.eps * phys.a;
+	phys.normalContactForce = (phys.contact) ? Vector3r(-alpha * phys.kn * (phys.eps * phys.a - u) * n) : Vector3r::Zero();
 	phys.normalPotentialForce = LinExpPotential(u / phys.a) * n;
 }
 
@@ -209,7 +209,7 @@ void LinExponentialPotential::setParameters(Real const& x_0, Real const& x_e, Re
 
 	x0 = x_0;
 	xe = x_e;
-	k  = k_;
+	k = k_;
 	F0 = LinExpPotential(0);
 	Fe = LinExpPotential(xe);
 }
@@ -221,7 +221,7 @@ void LinExponentialPotential::computeParametersFromF0(Real const& F_0, Real cons
 	if (rho <= 0) throw std::runtime_error("xe^2 + 4F0 xe/k must be positive!");
 	if (x_e == 0.) throw std::runtime_error("Extremum can't be at the origin.");
 
-	k  = k_;
+	k = k_;
 	xe = x_e;
 	F0 = F_0;
 	x0 = (xe - math::sqrt(rho)) / 2.;
@@ -241,14 +241,14 @@ void LinExponentialPotential::computeParametersFromF0Fe(Real const& x_e, Real co
 
 	xe = x_e;
 
-	k  = (F_e / (xe * math::exp(Real(-1))));
+	k = (F_e / (xe * math::exp(Real(-1))));
 	x0 = 0.;
 	F0 = F_0;
 	Fe = F_e;
 
 	for (int i(0); i < 100; i++) {
 		x0 = (xe - math::sqrt(xe * xe + 4. * F0 * xe / k)) / 2.;
-		k  = Fe * xe / ((xe - x0) * (xe - x0) * exp(-xe / (xe - x0)));
+		k = Fe * xe / ((xe - x0) * (xe - x0) * exp(-xe / (xe - x0)));
 
 		// Iteration quit if relative difference is below 1%.
 		if (math::sqrt(

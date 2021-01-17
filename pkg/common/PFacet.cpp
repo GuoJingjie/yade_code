@@ -21,7 +21,7 @@ using math::min; // using inside .cpp file is ok.
 boost::tuple<Vector3r, bool, double, double, double> Ig2_Sphere_PFacet_ScGridCoGeom::projection(const shared_ptr<Shape>& cm2, const State& state1)
 {
 	const State* sphereSt = YADE_CAST<const State*>(&state1);
-	PFacet*      Pfacet   = YADE_CAST<PFacet*>(cm2.get());
+	PFacet*      Pfacet = YADE_CAST<PFacet*>(cm2.get());
 
 	vector<Vector3r> vertices;
 	vertices.push_back(Pfacet->node1->state->pos);
@@ -32,18 +32,18 @@ boost::tuple<Vector3r, bool, double, double, double> Ig2_Sphere_PFacet_ScGridCoG
 	                / ((vertices[1] - vertices[0]).norm() + (vertices[2] - vertices[1]).norm() + (vertices[0] - vertices[2]).norm());
 
 
-	Vector3r e[3]   = { vertices[1] - vertices[0], vertices[2] - vertices[1], vertices[0] - vertices[2] };
+	Vector3r e[3] = { vertices[1] - vertices[0], vertices[2] - vertices[1], vertices[0] - vertices[2] };
 	Vector3r normal = e[0].cross(e[1]) / ((e[0].cross(e[1])).norm());
 
 	// 	Vector3r centerS=sphereSt->pos+shift2;//FIXME: periodicity?
 	const Vector3r& centerS = sphereSt->pos;
-	Vector3r        cl      = centerS - center;
+	Vector3r        cl = centerS - center;
 
 	Real dist = normal.dot(cl);
 
 	if (dist < 0) {
 		normal = -normal;
-		dist   = -dist;
+		dist = -dist;
 	}
 
 	Vector3r P = center + (cl - dist * normal);
@@ -61,9 +61,9 @@ boost::tuple<Vector3r, bool, double, double, double> Ig2_Sphere_PFacet_ScGridCoG
 
 	// Compute the barycentric coordinates of the projection P
 	Real invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-	Real p1       = (dot11 * dot02 - dot01 * dot12) * invDenom;
-	Real p2       = (dot00 * dot12 - dot01 * dot02) * invDenom;
-	Real p3       = 1 - p1 - p2;
+	Real p1 = (dot11 * dot02 - dot01 * dot12) * invDenom;
+	Real p2 = (dot00 * dot12 - dot01 * dot02) * invDenom;
+	Real p3 = 1 - p1 - p2;
 
 	// Check if P is in triangle
 	bool isintriangle = (p1 > 0) && (p2 > 0) && (p1 + p2 < 1);
@@ -99,13 +99,13 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 	                / ((vertices[1] - vertices[0]).norm() + (vertices[2] - vertices[1]).norm() + (vertices[0] - vertices[2]).norm());
 
 
-	Vector3r e[3]   = { vertices[1] - vertices[0], vertices[2] - vertices[1], vertices[0] - vertices[2] };
+	Vector3r e[3] = { vertices[1] - vertices[0], vertices[2] - vertices[1], vertices[0] - vertices[2] };
 	Vector3r normal = e[0].cross(e[1]) / ((e[0].cross(e[1])).norm());
 
 	// 	Vector3r centerS=sphereSt->pos+shift2;//FIXME: periodicity?
 	const Vector3r& centerS = sphereSt->pos;
-	Vector3r        cl      = centerS - center;
-	Real            dist    = normal.dot(cl);
+	Vector3r        cl = centerS - center;
+	Real            dist = normal.dot(cl);
 
 	shared_ptr<ScGridCoGeom> scm;
 	bool                     isNew = !(c->geom);
@@ -116,7 +116,7 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 
 	if (scm->isDuplicate == 2 && scm->trueInt != c->id2) return true; //the contact will be deleted into the Law, no need to compute here.
 	scm->isDuplicate = 0;
-	scm->trueInt     = -1;
+	scm->trueInt = -1;
 
 
 	if (math::abs(dist) > (PFacetradius + sphereRadius) && !c->isReal()
@@ -126,16 +126,16 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 	}
 	if (dist < 0) {
 		normal = -normal;
-		dist   = -dist;
+		dist = -dist;
 	}
 
 
 	boost::tuple<Vector3r, bool, double, double, double> projectionres = projection(cm2, state1);
-	Vector3r                                             P             = boost::get<0>(projectionres);
-	bool                                                 isintriangle  = boost::get<1>(projectionres);
-	Real                                                 p1            = boost::get<2>(projectionres);
-	Real                                                 p2            = boost::get<3>(projectionres);
-	Real                                                 p3            = boost::get<4>(projectionres);
+	Vector3r                                             P = boost::get<0>(projectionres);
+	bool                                                 isintriangle = boost::get<1>(projectionres);
+	Real                                                 p1 = boost::get<2>(projectionres);
+	Real                                                 p2 = boost::get<3>(projectionres);
+	Real                                                 p3 = boost::get<4>(projectionres);
 
 
 	shared_ptr<Body> GridList[3] = { Pfacet->conn1, Pfacet->conn2, Pfacet->conn3 };
@@ -146,7 +146,7 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 	bool isconn3 = ((p1 <= 0) && (p2 > 0) && (p1 + p2 < 1)) || ((p1 <= 0) && (p2 <= 0) && (p1 + p2 < 1));
 
 	Real penetrationDepth = 0;
-	int  connnum          = -1;
+	int  connnum = -1;
 
 	GridNode* GridNodeList[3] = { YADE_CAST<GridNode*>(Pfacet->node1->shape.get()),
 		                      YADE_CAST<GridNode*>(Pfacet->node2->shape.get()),
@@ -166,13 +166,13 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 							if (intr
 							    && intr->isReal()) { // if an interaction exist between the sphere and the previous pfacet, import parameters.
 								// 								cout<<"Copying contact with pfacet geom and phys from "<<intr->id1<<"-"<<intr->id2<<" to here ("<<c->id1<<"-"<<c->id2<<")"<<endl;
-								scm              = YADE_PTR_CAST<ScGridCoGeom>(intr->geom);
-								c->geom          = scm;
-								c->phys          = intr->phys;
-								c->iterMadeReal  = intr->iterMadeReal; // iteration from the time when the contact became real
-								scm->trueInt     = c->id2;
+								scm = YADE_PTR_CAST<ScGridCoGeom>(intr->geom);
+								c->geom = scm;
+								c->phys = intr->phys;
+								c->iterMadeReal = intr->iterMadeReal; // iteration from the time when the contact became real
+								scm->trueInt = c->id2;
 								scm->isDuplicate = 2; //command the old contact deletion.
-								isNew            = 0;
+								isNew = 0;
 								break;
 							}
 						}
@@ -203,7 +203,7 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 									return false;
 								} else {
 									scm->isDuplicate = 1;
-									scm->trueInt     = -1;
+									scm->trueInt = -1;
 									return true;
 								}
 							}
@@ -213,24 +213,24 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 			}
 			//SPhere-cylinder contact
 			const State*    sphereSt2 = YADE_CAST<const State*>(&state1);
-			GridConnection* gridCo    = YADE_CAST<GridConnection*>(GridList[connnum]->shape.get());
-			GridNode*       gridNo1   = YADE_CAST<GridNode*>(gridCo->node1->shape.get());
-			GridNode*       gridNo2   = YADE_CAST<GridNode*>(gridCo->node2->shape.get());
+			GridConnection* gridCo = YADE_CAST<GridConnection*>(GridList[connnum]->shape.get());
+			GridNode*       gridNo1 = YADE_CAST<GridNode*>(gridCo->node1->shape.get());
+			GridNode*       gridNo2 = YADE_CAST<GridNode*>(gridCo->node2->shape.get());
 			State*          gridNo1St = YADE_CAST<State*>(gridCo->node1->state.get());
 			State*          gridNo2St = YADE_CAST<State*>(gridCo->node2->state.get());
 
 			Vector3r segt = gridCo->getSegment();
-			Real     len  = gridCo->getLength();
+			Real     len = gridCo->getLength();
 
 			Vector3r spherePos = sphereSt2->pos;
-			Vector3r branch    = spherePos - gridNo1St->pos;
-			Vector3r branchN   = spherePos - gridNo2St->pos;
+			Vector3r branch = spherePos - gridNo1St->pos;
+			Vector3r branchN = spherePos - gridNo2St->pos;
 			for (int i = 0; i < 3; i++) {
 				if (math::abs(branch[i]) < 1e-14) branch[i] = 0.0;
 				if (math::abs(branchN[i]) < 1e-14) branchN[i] = 0.0;
 			}
 			Real relPos = branch.dot(segt) / (len * len);
-			bool SGr    = true;
+			bool SGr = true;
 			if (relPos <= 0) {                          // if the sphere projection is BEFORE the segment ...
 				if (gridNo1->ConnList.size() > 1) { //	if the node is not an extremity of the Grid (only one connection)
 					for (int unsigned i = 0; i < gridNo1->ConnList.size(); i++) { // ... loop on all the Connections of the same Node ...
@@ -239,7 +239,7 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 						Vector3r segtCandidate1 = GC->node1->state->pos
 						        - gridNo1St->pos; // (be sure of the direction of segtPrev to compare relPosPrev.)
 						Vector3r segtCandidate2 = GC->node2->state->pos - gridNo1St->pos;
-						Vector3r segtPrev       = segtCandidate1.norm() > segtCandidate2.norm() ? segtCandidate1 : segtCandidate2;
+						Vector3r segtPrev = segtCandidate1.norm() > segtCandidate2.norm() ? segtCandidate1 : segtCandidate2;
 						for (int j = 0; j < 3; j++) {
 							if (math::abs(segtPrev[j]) < 1e-14) segtPrev[j] = 0.0;
 						}
@@ -270,7 +270,7 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 							} else {
 								//cout<<"The contact "<<c->id1<<"-"<<c->id2<<" HAVE to be copied and deleted NOW."<<endl ;
 								scm->isDuplicate = 1;
-								scm->trueInt     = -1; //trueInt id de l'objet avec lequel il y a un contact -1 = rien faire
+								scm->trueInt = -1; //trueInt id de l'objet avec lequel il y a un contact -1 = rien faire
 								return true;
 							}
 						}
@@ -286,7 +286,7 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 						if (GC == gridCo) continue; //	self comparison.
 						Vector3r segtCandidate1 = GC->node1->state->pos - gridNo2St->pos;
 						Vector3r segtCandidate2 = GC->node2->state->pos - gridNo2St->pos;
-						Vector3r segtNext       = segtCandidate1.norm() > segtCandidate2.norm() ? segtCandidate1 : segtCandidate2;
+						Vector3r segtNext = segtCandidate1.norm() > segtCandidate2.norm() ? segtCandidate1 : segtCandidate2;
 						for (int j = 0; j < 3; j++) {
 							if (math::abs(segtNext[j]) < 1e-14) segtNext[j] = 0.0;
 						}
@@ -313,7 +313,7 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 							if (isNew) SGr = false;
 							else { //cout<<"The contact "<<c->id1<<"-"<<c->id2<<" HAVE to be copied and deleted NOW."<<endl ;
 								scm->isDuplicate = 1;
-								scm->trueInt     = -1;
+								scm->trueInt = -1;
 								return true;
 							}
 						}
@@ -328,7 +328,7 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 						Vector3r segtCandidate1 = GC->node1->state->pos
 						        - gridNo1St->pos; // (be sure of the direction of segtPrev to compare relPosPrev.)
 						Vector3r segtCandidate2 = GC->node2->state->pos - gridNo1St->pos;
-						Vector3r segtPrev       = segtCandidate1.norm() > segtCandidate2.norm() ? segtCandidate1 : segtCandidate2;
+						Vector3r segtPrev = segtCandidate1.norm() > segtCandidate2.norm() ? segtCandidate1 : segtCandidate2;
 						for (int j = 0; j < 3; j++) {
 							if (math::abs(segtPrev[j]) < 1e-14) segtPrev[j] = 0.0;
 						}
@@ -344,13 +344,13 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 										// 									cout<<"1Copying contact geom and phys from "<<intr->id1<<"-"<<intr->id2<<" to here ("<<c->id1<<"-"<<c->id2<<")"<<endl;
 										scm = YADE_PTR_CAST<ScGridCoGeom>(intr->geom);
 										if (isNew) {
-											c->geom         = scm;
-											c->phys         = intr->phys;
+											c->geom = scm;
+											c->phys = intr->phys;
 											c->iterMadeReal = intr->iterMadeReal;
 										}
-										scm->trueInt     = c->id2;
+										scm->trueInt = c->id2;
 										scm->isDuplicate = 2; //command the old contact deletion.
-										isNew            = 0;
+										isNew = 0;
 										break;
 									}
 								}
@@ -368,7 +368,7 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 						if (GC == gridCo) continue; //	self comparison.
 						Vector3r segtCandidate1 = GC->node1->state->pos - gridNo2St->pos;
 						Vector3r segtCandidate2 = GC->node2->state->pos - gridNo2St->pos;
-						Vector3r segtNext       = segtCandidate1.norm() > segtCandidate2.norm() ? segtCandidate1 : segtCandidate2;
+						Vector3r segtNext = segtCandidate1.norm() > segtCandidate2.norm() ? segtCandidate1 : segtCandidate2;
 						for (int j = 0; j < 3; j++) {
 							if (math::abs(segtNext[j]) < 1e-14) segtNext[j] = 0.0;
 						}
@@ -383,11 +383,11 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 									    && intr->isReal()) { // if an ineraction exist between the sphere and the previous connection, import parameters.
 										scm = YADE_PTR_CAST<ScGridCoGeom>(intr->geom);
 										if (isNew) {
-											c->geom         = scm;
-											c->phys         = intr->phys;
+											c->geom = scm;
+											c->phys = intr->phys;
 											c->iterMadeReal = intr->iterMadeReal;
 										}
-										scm->trueInt     = c->id2;
+										scm->trueInt = c->id2;
 										scm->isDuplicate = 2; //command the old contact deletion.
 										break;
 									}
@@ -398,27 +398,27 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 				}
 			}
 			if (SGr) {
-				relPos               = relPos < 0 ? 0 : relPos; //min value of relPos : 0
-				relPos               = relPos > 1 ? 1 : relPos; //max value of relPos : 1
+				relPos = relPos < 0 ? 0 : relPos; //min value of relPos : 0
+				relPos = relPos > 1 ? 1 : relPos; //max value of relPos : 1
 				Vector3r fictiousPos = gridNo1St->pos + relPos * segt;
-				Vector3r branchF     = fictiousPos - spherePos;
+				Vector3r branchF = fictiousPos - spherePos;
 
 				Real dist2 = branchF.norm();
-				bool SG    = !(isNew && (dist2 > (sphere->radius + gridCo->radius)));
+				bool SG = !(isNew && (dist2 > (sphere->radius + gridCo->radius)));
 				if (SG) {
 					//	Create the geometry :
 					if (isNew) c->geom = scm;
 					scm->radius1 = sphere->radius;
 					scm->radius2 = gridCo->radius;
-					scm->id3     = gridCo->node1->getId();
-					scm->id4     = gridCo->node2->getId();
+					scm->id3 = gridCo->node1->getId();
+					scm->id4 = gridCo->node2->getId();
 
-					scm->relPos               = relPos;
-					Vector3r normal2          = branchF / dist2;
-					scm->penetrationDepth     = sphere->radius + gridCo->radius - dist2;
-					scm->fictiousState.pos    = fictiousPos;
-					scm->contactPoint         = spherePos + normal2 * (scm->radius1 - 0.5 * scm->penetrationDepth);
-					scm->fictiousState.vel    = (1 - relPos) * gridNo1St->vel + relPos * gridNo2St->vel;
+					scm->relPos = relPos;
+					Vector3r normal2 = branchF / dist2;
+					scm->penetrationDepth = sphere->radius + gridCo->radius - dist2;
+					scm->fictiousState.pos = fictiousPos;
+					scm->contactPoint = spherePos + normal2 * (scm->radius1 - 0.5 * scm->penetrationDepth);
+					scm->fictiousState.vel = (1 - relPos) * gridNo1St->vel + relPos * gridNo2St->vel;
 					scm->fictiousState.angVel = ((1 - relPos) * gridNo1St->angVel + relPos * gridNo2St->angVel).dot(segt / len) * segt
 					                / len                                  //twist part : interpolated
 					        + segt.cross(gridNo2St->vel - gridNo1St->vel); // non-twist part : defined from nodes velocities
@@ -460,8 +460,8 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 								return false;
 							} else {
 								// 						cout<<"The contact "<<c->id1<<"-"<<c->id2<<" HAVE to be copied and deleted NOW."<<endl ;
-								scm->isDuplicate = 1;  //scm->isDuplicate=1;
-								scm->trueInt     = -1; //trueInt id de l'objet avec lequel il y a un contact -1 = rien faire
+								scm->isDuplicate = 1; //scm->isDuplicate=1;
+								scm->trueInt = -1;    //trueInt id de l'objet avec lequel il y a un contact -1 = rien faire
 								return true;
 							}
 						}
@@ -475,18 +475,18 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 		normal.normalize();
 		if (penetrationDepth > 0 || c->isReal()) {
 			if (isNew) c->geom = scm;
-			scm->radius1              = sphereRadius;
-			scm->radius2              = PFacetradius;
-			scm->id3                  = Pfacet->node1->getId();
-			scm->id4                  = Pfacet->node2->getId();
-			scm->id5                  = Pfacet->node3->getId();
-			scm->weight[0]            = p1;
-			scm->weight[1]            = p2;
-			scm->weight[2]            = p3;
-			scm->penetrationDepth     = penetrationDepth;
-			scm->fictiousState.pos    = P;
-			scm->contactPoint         = centerS - (PFacetradius - 0.5 * penetrationDepth) * normal;
-			scm->fictiousState.vel    = (p1 * Pfacet->node1->state->vel + p2 * Pfacet->node2->state->vel + p3 * Pfacet->node3->state->vel);
+			scm->radius1 = sphereRadius;
+			scm->radius2 = PFacetradius;
+			scm->id3 = Pfacet->node1->getId();
+			scm->id4 = Pfacet->node2->getId();
+			scm->id5 = Pfacet->node3->getId();
+			scm->weight[0] = p1;
+			scm->weight[1] = p2;
+			scm->weight[2] = p3;
+			scm->penetrationDepth = penetrationDepth;
+			scm->fictiousState.pos = P;
+			scm->contactPoint = centerS - (PFacetradius - 0.5 * penetrationDepth) * normal;
+			scm->fictiousState.vel = (p1 * Pfacet->node1->state->vel + p2 * Pfacet->node2->state->vel + p3 * Pfacet->node3->state->vel);
 			scm->fictiousState.angVel = (p1 * Pfacet->node1->state->angVel + p2 * Pfacet->node2->state->angVel + p3 * Pfacet->node3->state->angVel);
 			scm->precompute(
 			        state1, scm->fictiousState, scene, c, -normal, isNew, shift2, true); //use sphere-sphere precompute (with a virtual sphere)
@@ -531,8 +531,8 @@ bool Ig2_GridConnection_PFacet_ScGeom::go(
 	Body::id_t idNode1 = gridCo->node1->getId();
 	Body::id_t idNode2 = gridCo->node2->getId();
 	Body::id_t ids2[3] = { Pfacet->conn1->getId(), Pfacet->conn2->getId(), Pfacet->conn3->getId() };
-	Body::id_t id1     = c->id1;
-	Body::id_t id2     = c->id2;
+	Body::id_t id1 = c->id1;
+	Body::id_t id2 = c->id2;
 	if (!scene->interactions->found(idNode1, id2)) {
 		shared_ptr<Interaction> scm1(new Interaction(idNode1, id2));
 		scene->interactions->insert(scm1);
@@ -583,8 +583,8 @@ bool Ig2_PFacet_PFacet_ScGeom::go(
 {
 	PFacet*    Pfacet1 = YADE_CAST<PFacet*>(cm1.get());
 	PFacet*    Pfacet2 = YADE_CAST<PFacet*>(cm2.get());
-	Body::id_t id1     = c->id1;
-	Body::id_t id2     = c->id2;
+	Body::id_t id1 = c->id1;
+	Body::id_t id2 = c->id2;
 
 	if (Pfacet1->node1 == Pfacet2->node1 || Pfacet1->node1 == Pfacet2->node2 || Pfacet1->node1 == Pfacet2->node3 || Pfacet1->node2 == Pfacet2->node1
 	    || Pfacet1->node2 == Pfacet2->node2 || Pfacet1->node2 == Pfacet2->node3 || Pfacet1->node3 == Pfacet2->node1 || Pfacet1->node3 == Pfacet2->node2
@@ -907,9 +907,9 @@ void Bo1_PFacet_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, con
 	PFacet* Pfacet = YADE_CAST<PFacet*>(cm.get());
 	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 	Aabb*    aabb = static_cast<Aabb*>(bv.get());
-	Vector3r O    = Pfacet->node1->state->pos;
-	Vector3r O2   = Pfacet->node2->state->pos;
-	Vector3r O3   = Pfacet->node3->state->pos;
+	Vector3r O = Pfacet->node1->state->pos;
+	Vector3r O2 = Pfacet->node2->state->pos;
+	Vector3r O3 = Pfacet->node3->state->pos;
 
 	if (!scene->isPeriodic) {
 		for (int k = 0; k < 3; k++) {
@@ -918,14 +918,14 @@ void Bo1_PFacet_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, con
 		}
 		return;
 	} else {
-		O  = scene->cell->unshearPt(O);
+		O = scene->cell->unshearPt(O);
 		O2 = scene->cell->unshearPt(O2);
 		O3 = scene->cell->unshearPt(O3);
 
 		Vector3r T = scene->cell->hSize * Pfacet->cellDist.cast<Real>();
-		O          = O + T;
-		O2         = O2 + T;
-		O3         = O3 + T;
+		O = O + T;
+		O2 = O2 + T;
+		O3 = O3 + T;
 		for (int k = 0; k < 3; k++) {
 			aabb->min[k] = min(min(O[k], O2[k]), O3[k]) - Pfacet->radius;
 			aabb->max[k] = max(max(O[k], O2[k]), O3[k]) + Pfacet->radius;

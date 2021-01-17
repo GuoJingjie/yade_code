@@ -36,8 +36,8 @@ void Ip2_FrictMat_FrictMat_CapillaryPhys::go(
 			        / (Ea * Da * Va + Eb * Db * Va); //harmonic average of two stiffnesses with ks=V*kn for each sphere
 
 			contactPhysics->tangensOfFrictionAngle = math::tan(math::min(fa, fb));
-			contactPhysics->kn                     = Kn;
-			contactPhysics->ks                     = Ks;
+			contactPhysics->kn = Kn;
+			contactPhysics->ks = Ks;
 		}
 	}
 };

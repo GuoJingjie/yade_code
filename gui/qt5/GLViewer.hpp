@@ -98,9 +98,9 @@ public:
 	virtual void drawWithNames();
 	void         displayMessage(const std::string& s) { QGLViewer::displayMessage(QString(s.c_str())); }
 	void         centerScene(
-	                const Real&     suggestedRadius      = -1,
-	                const Vector3r& setGridOrigin        = Vector3r(0, 0, 0),
-	                const Vector3r& suggestedCenter      = Vector3r(0, 0, 0),
+	                const Real&     suggestedRadius = -1,
+	                const Vector3r& setGridOrigin = Vector3r(0, 0, 0),
+	                const Vector3r& suggestedCenter = Vector3r(0, 0, 0),
 	                int             setGridDecimalPlaces = 4);
 	void     centerPeriodic();
 	void     mouseMovesCamera();

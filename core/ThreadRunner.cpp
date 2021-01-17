@@ -34,7 +34,7 @@ void ThreadRunner::run()
 	} catch (std::exception& e) {
 		LOG_FATAL("Exception occured: " << std::endl << e.what());
 		workerException = std::runtime_error(e.what());
-		workerThrew     = true;
+		workerThrew = true;
 		stop();
 		return;
 	}

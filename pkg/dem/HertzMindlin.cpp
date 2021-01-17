@@ -28,8 +28,8 @@ void Ip2_FrictMat_FrictMat_MindlinPhys::go(const shared_ptr<Material>& b1, const
 	if (interaction->phys) return; // no updates of an already existing contact necessary
 	shared_ptr<MindlinPhys> contactPhysics(new MindlinPhys());
 	interaction->phys = contactPhysics;
-	const auto mat1   = YADE_CAST<FrictMat*>(b1.get());
-	const auto mat2   = YADE_CAST<FrictMat*>(b2.get());
+	const auto mat1 = YADE_CAST<FrictMat*>(b1.get());
+	const auto mat2 = YADE_CAST<FrictMat*>(b2.get());
 
 	/* from interaction physics */
 	const Real Ea = mat1->young;
@@ -42,21 +42,21 @@ void Ip2_FrictMat_FrictMat_MindlinPhys::go(const shared_ptr<Material>& b1, const
 
 	/* from interaction geometry */
 	const auto scg = YADE_CAST<GenericSpheresContact*>(interaction->geom.get());
-	const Real Da  = scg->refR1 > 0 ? scg->refR1 : scg->refR2;
-	const Real Db  = scg->refR2;
+	const Real Da = scg->refR1 > 0 ? scg->refR1 : scg->refR2;
+	const Real Db = scg->refR2;
 	//Vector3r normal=scg->normal;        //The variable set but not used
 
 
 	/* calculate stiffness coefficients */
-	const Real Ga            = Ea / (2 * (1 + Va));
-	const Real Gb            = Eb / (2 * (1 + Vb));
-	const Real G             = (Ga + Gb) / 2;                                                           // average of shear modulus
-	const Real V             = (Va + Vb) / 2;                                                           // average of poisson's ratio
-	const Real E             = Ea * Eb / ((1. - math::pow(Va, 2)) * Eb + (1. - math::pow(Vb, 2)) * Ea); // Young modulus
-	const Real R             = Da * Db / (Da + Db);                                                     // equivalent radius
-	const Real Rmean         = (Da + Db) / 2.;                                                          // mean radius
-	const Real Kno           = 4. / 3. * E * sqrt(R);                                                   // coefficient for normal stiffness
-	const Real Kso           = 2 * sqrt(4 * R) * G / (2 - V);                                           // coefficient for shear stiffness
+	const Real Ga = Ea / (2 * (1 + Va));
+	const Real Gb = Eb / (2 * (1 + Vb));
+	const Real G = (Ga + Gb) / 2;                                                           // average of shear modulus
+	const Real V = (Va + Vb) / 2;                                                           // average of poisson's ratio
+	const Real E = Ea * Eb / ((1. - math::pow(Va, 2)) * Eb + (1. - math::pow(Vb, 2)) * Ea); // Young modulus
+	const Real R = Da * Db / (Da + Db);                                                     // equivalent radius
+	const Real Rmean = (Da + Db) / 2.;                                                      // mean radius
+	const Real Kno = 4. / 3. * E * sqrt(R);                                                 // coefficient for normal stiffness
+	const Real Kso = 2 * sqrt(4 * R) * G / (2 - V);                                         // coefficient for shear stiffness
 	const Real frictionAngle = (!frictAngle) ? math::min(fa, fb) : (*frictAngle)(mat1->id, mat2->id, mat1->frictionAngle, mat2->frictionAngle);
 
 	const Real Adhesion = 4. * Mathr::PI * R * gamma; // calculate adhesion force as predicted by DMT theory
@@ -64,12 +64,12 @@ void Ip2_FrictMat_FrictMat_MindlinPhys::go(const shared_ptr<Material>& b1, const
 	/* pass values calculated from above to MindlinPhys */
 	contactPhysics->tangensOfFrictionAngle = math::tan(frictionAngle);
 	//contactPhysics->prevNormal = scg->normal; // used to compute relative rotation
-	contactPhysics->kno           = Kno; // this is just a coeff
-	contactPhysics->kso           = Kso; // this is just a coeff
+	contactPhysics->kno = Kno; // this is just a coeff
+	contactPhysics->kso = Kso; // this is just a coeff
 	contactPhysics->adhesionForce = Adhesion;
 
-	contactPhysics->kr        = krot;
-	contactPhysics->ktw       = ktwist;
+	contactPhysics->kr = krot;
+	contactPhysics->ktw = ktwist;
 	contactPhysics->maxBendPl = eta * Rmean; // does this make sense? why do we take Rmean?
 
 	/* compute viscous coefficients */
@@ -78,7 +78,7 @@ void Ip2_FrictMat_FrictMat_MindlinPhys::go(const shared_ptr<Material>& b1, const
 
 	// en or es specified, just compute alpha, otherwise alpha remains 0
 	if (en || es) {
-		const Real logE       = log((*en)(mat1->id, mat2->id));
+		const Real logE = log((*en)(mat1->id, mat2->id));
 		contactPhysics->alpha = -sqrt(5 / 6.) * 2 * logE / sqrt(pow(logE, 2) + pow(Mathr::PI, 2))
 		        * sqrt(2 * E * sqrt(R)); // (see Tsuji, 1992), also [Antypov2011] eq. 17
 	}
@@ -126,7 +126,7 @@ Real Law2_ScGeom_MindlinPhys_Mindlin::normElastEnergy()
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
 		if (!I->isReal()) continue;
-		ScGeom*      scg  = dynamic_cast<ScGeom*>(I->geom.get());
+		ScGeom*      scg = dynamic_cast<ScGeom*>(I->geom.get());
 		MindlinPhys* phys = dynamic_cast<MindlinPhys*>(I->phys.get());
 		if (phys) {
 			if (includeAdhesion) {
@@ -146,10 +146,10 @@ Real Law2_ScGeom_MindlinPhys_Mindlin::adhesionEnergy()
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
 		if (!I->isReal()) continue;
-		ScGeom*      scg  = dynamic_cast<ScGeom*>(I->geom.get());
+		ScGeom*      scg = dynamic_cast<ScGeom*>(I->geom.get());
 		MindlinPhys* phys = dynamic_cast<MindlinPhys*>(I->phys.get());
 		if (phys && includeAdhesion) {
-			Real R       = scg->radius1 * scg->radius2 / (scg->radius1 + scg->radius2);
+			Real R = scg->radius1 * scg->radius2 / (scg->radius1 + scg->radius2);
 			Real gammapi = phys->adhesionForce / (4. * R);
 			adhesionEnergy += gammapi * pow(phys->radius, 2);
 		} // note that contact radius is calculated if we calculate energy components
@@ -162,7 +162,7 @@ bool Law2_ScGeom_MindlinPhys_MindlinDeresiewitz::go(shared_ptr<IGeom>& ig, share
 	Body::id_t   id1(contact->getId1()), id2(contact->getId2());
 	ScGeom*      geom = static_cast<ScGeom*>(ig.get());
 	MindlinPhys* phys = static_cast<MindlinPhys*>(ip.get());
-	const Real   uN   = geom->penetrationDepth;
+	const Real   uN = geom->penetrationDepth;
 	if (uN < 0) {
 		if (neverErase) {
 			phys->shearForce = phys->normalForce = Vector3r::Zero();
@@ -173,14 +173,14 @@ bool Law2_ScGeom_MindlinPhys_MindlinDeresiewitz::go(shared_ptr<IGeom>& ig, share
 		}
 	}
 	// normal force
-	Real Fn           = phys->kno * pow(uN, 3 / 2.);
+	Real Fn = phys->kno * pow(uN, 3 / 2.);
 	phys->normalForce = Fn * geom->normal;
 	// exactly zero would not work with the shear formulation, and would give zero shear force anyway
 	if (Fn == 0) return true;
 	//phys->kn=3./2.*phys->kno*math::pow(uN,0.5); // update stiffness, not needed
 
 	// contact radius
-	Real R       = geom->radius1 * geom->radius2 / (geom->radius1 + geom->radius2);
+	Real R = geom->radius1 * geom->radius2 / (geom->radius1 + geom->radius2);
 	phys->radius = pow(Fn * pow(R, 3 / 2.) / phys->kno, 1 / 3.);
 
 	// shear force: transform, but keep the old value for now
@@ -211,7 +211,7 @@ bool Law2_ScGeom_MindlinPhys_HertzWithLinearShear::go(shared_ptr<IGeom>& ig, sha
 	Body::id_t   id1(contact->getId1()), id2(contact->getId2());
 	ScGeom*      geom = static_cast<ScGeom*>(ig.get());
 	MindlinPhys* phys = static_cast<MindlinPhys*>(ip.get());
-	const Real   uN   = geom->penetrationDepth;
+	const Real   uN = geom->penetrationDepth;
 	if (uN < 0) {
 		if (neverErase) {
 			phys->shearForce = phys->normalForce = Vector3r::Zero();
@@ -221,7 +221,7 @@ bool Law2_ScGeom_MindlinPhys_HertzWithLinearShear::go(shared_ptr<IGeom>& ig, sha
 			return false;
 	}
 	// normal force
-	Real Fn           = phys->kno * pow(uN, 3 / 2.);
+	Real Fn = phys->kno * pow(uN, 3 / 2.);
 	phys->normalForce = Fn * geom->normal;
 	//phys->kn=3./2.*phys->kno*math::pow(uN,0.5); // update stiffness, not needed
 
@@ -232,13 +232,13 @@ bool Law2_ScGeom_MindlinPhys_HertzWithLinearShear::go(shared_ptr<IGeom>& ig, sha
 	if (nonLin > 1) {
 		auto *   de1 = Body::byId(id1, scene)->state.get(), *de2 = Body::byId(id2, scene)->state.get();
 		Vector3r shiftVel = scene->isPeriodic ? Vector3r(scene->cell->velGrad * scene->cell->hSize * contact->cellDist.cast<Real>()) : Vector3r::Zero();
-		Vector3r shift2   = scene->isPeriodic ? Vector3r(scene->cell->hSize * contact->cellDist.cast<Real>()) : Vector3r::Zero();
+		Vector3r shift2 = scene->isPeriodic ? Vector3r(scene->cell->hSize * contact->cellDist.cast<Real>()) : Vector3r::Zero();
 
 
-		Vector3r incidentV  = geom->getIncidentVel(de1, de2, scene->dt, shift2, shiftVel, /*preventGranularRatcheting*/ nonLin > 2);
+		Vector3r incidentV = geom->getIncidentVel(de1, de2, scene->dt, shift2, shiftVel, /*preventGranularRatcheting*/ nonLin > 2);
 		Vector3r incidentVn = geom->normal.dot(incidentV) * geom->normal; // contact normal velocity
 		Vector3r incidentVs = incidentV - incidentVn;                     // contact shear velocity
-		shearIncrement      = incidentVs * scene->dt;
+		shearIncrement = incidentVs * scene->dt;
 	} else {
 		shearIncrement = geom->shearIncrement();
 	}
@@ -271,14 +271,14 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 	auto* de1 = Body::byId(id1, scene)->state.get();
 	auto* de2 = Body::byId(id2, scene)->state.get();
 
-	ScGeom*      scg  = static_cast<ScGeom*>(ig.get());
+	ScGeom*      scg = static_cast<ScGeom*>(ig.get());
 	MindlinPhys* phys = static_cast<MindlinPhys*>(ip.get());
 
 	const shared_ptr<Body>& b1 = Body::byId(id1, scene);
 	const shared_ptr<Body>& b2 = Body::byId(id2, scene);
 
 	bool useDamping = (phys->betan != 0. || phys->betas != 0. || phys->alpha != 0.);
-	bool LinDamp    = true;
+	bool LinDamp = true;
 	if (phys->alpha != 0.) { LinDamp = false; } // use non linear damping
 
 #ifdef PARTIALSAT
@@ -363,8 +363,8 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 		                   : (de1->mass * de2->mass
 		                      / (de1->mass
 		                         + de2->mass))); // get equivalent mass if both bodies are dynamic, if not set it equal to the one of the dynamic body
-		cn        = phys->alpha * sqrt(mbar) * pow(uN, 0.25); // normal viscous coefficient, see also [Antypov2011] eq. 10
-		cs        = cn;                                       // same value for shear viscous coefficient
+		cn = phys->alpha * sqrt(mbar) * pow(uN, 0.25); // normal viscous coefficient, see also [Antypov2011] eq. 10
+		cs = cn;                                       // same value for shear viscous coefficient
 	}
 
 	/***************/
@@ -373,13 +373,13 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 
 	Vector3r& shearElastic = phys->shearElastic; // reference for shearElastic force
 	// Define shifts to handle periodicity
-	const Vector3r shift2   = scene->isPeriodic ? scene->cell->intrShiftPos(contact->cellDist) : Vector3r::Zero();
+	const Vector3r shift2 = scene->isPeriodic ? scene->cell->intrShiftPos(contact->cellDist) : Vector3r::Zero();
 	const Vector3r shiftVel = scene->isPeriodic ? scene->cell->intrShiftVel(contact->cellDist) : Vector3r::Zero();
 	// 1. Rotate shear force
-	shearElastic            = scg->rotate(shearElastic);
+	shearElastic = scg->rotate(shearElastic);
 	Vector3r prev_FsElastic = shearElastic; // save shear force at previous time step
 	// 2. Get incident velocity, get shear and normal components
-	Vector3r incidentV  = scg->getIncidentVel(de1, de2, dt, shift2, shiftVel, preventGranularRatcheting);
+	Vector3r incidentV = scg->getIncidentVel(de1, de2, dt, shift2, shiftVel, preventGranularRatcheting);
 	Vector3r incidentVn = scg->normal.dot(incidentV) * scg->normal; // contact normal velocity
 	Vector3r incidentVs = incidentV - incidentVn;                   // contact shear velocity
 	// 3. Get shear force (incrementally)
@@ -392,13 +392,13 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 	// normal force must be updated here before we apply the Mohr-Coulomb criterion
 	if (useDamping) { // get normal viscous component
 		phys->normalViscous = cn * incidentVn;
-		Vector3r normTemp   = phys->normalForce - phys->normalViscous; // temporary normal force
+		Vector3r normTemp = phys->normalForce - phys->normalViscous; // temporary normal force
 		// viscous force should not exceed the value of current normal force, i.e. no attraction force should be permitted if particles are non-adhesive
 		// if particles are adhesive, then fixed the viscous force at maximum equal to the adhesion force
 		// *** enforce normal force to zero if no adhesion is permitted ***
 		if (phys->adhesionForce == 0.0 || !includeAdhesion) {
 			if (normTemp.dot(scg->normal) < 0.0) {
-				phys->normalForce   = Vector3r::Zero();
+				phys->normalForce = Vector3r::Zero();
 				phys->normalViscous = phys->normalViscous
 				        + normTemp; // normal viscous force is such that the total applied force is null - it is necessary to compute energy correctly!
 			} else {
@@ -407,9 +407,9 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 		} else if (includeAdhesion && phys->adhesionForce != 0.0) {
 			// *** limit viscous component to the max adhesive force ***
 			if (normTemp.dot(scg->normal) < 0.0 && (phys->normalViscous.norm() > phys->adhesionForce)) {
-				Real     normVisc       = phys->normalViscous.norm();
+				Real     normVisc = phys->normalViscous.norm();
 				Vector3r normViscVector = phys->normalViscous / normVisc;
-				phys->normalViscous     = phys->adhesionForce * normViscVector;
+				phys->normalViscous = phys->adhesionForce * normViscVector;
 				phys->normalForce -= phys->normalViscous;
 			}
 			// *** apply viscous component - in the presence of adhesion ***
@@ -426,17 +426,17 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 	/*************************************/
 
 	Vector3r& us_elastic = phys->usElastic;
-	us_elastic           = scg->rotate(us_elastic); // rotate vector
-	Vector3r prevUs_el   = us_elastic;              // store previous elastic shear displacement (already rotated)
-	us_elastic -= incidentVs * dt;                  // add shear increment
+	us_elastic = scg->rotate(us_elastic); // rotate vector
+	Vector3r prevUs_el = us_elastic;      // store previous elastic shear displacement (already rotated)
+	us_elastic -= incidentVs * dt;        // add shear increment
 
 	/****************************************/
 	/* SHEAR DISPLACEMENT (elastic+plastic) */
 	/****************************************/
 
-	Vector3r& us_total  = phys->usTotal;
-	us_total            = scg->rotate(us_total); // rotate vector
-	Vector3r prevUs_tot = us_total;              // store previous total shear displacement (already rotated)
+	Vector3r& us_total = phys->usTotal;
+	us_total = scg->rotate(us_total); // rotate vector
+	Vector3r prevUs_tot = us_total;   // store previous total shear displacement (already rotated)
 	us_total -= incidentVs
 	        * dt; // add shear increment NOTE: this vector is not passed into the failure criterion, hence it holds also the plastic part of the shear displacement
 
@@ -445,15 +445,15 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 	/********************/
 	/* MOHR-COULOMB law */
 	/********************/
-	phys->isSliding    = false;
+	phys->isSliding = false;
 	phys->shearViscous = Vector3r::Zero(); // reset so that during sliding, the previous values is not there
-	Fn                 = phys->normalForce.norm();
+	Fn = phys->normalForce.norm();
 	if (!includeAdhesion) {
 		Real maxFs = Fn * phys->tangensOfFrictionAngle;
 		if (shearElastic.squaredNorm() > maxFs * maxFs) {
 			phys->isSliding = true;
-			noShearDamp     = true; // no damping is added in the shear direction, hence no need to account for shear damping dissipation
-			Real ratio      = maxFs / shearElastic.norm();
+			noShearDamp = true; // no damping is added in the shear direction, hence no need to account for shear damping dissipation
+			Real ratio = maxFs / shearElastic.norm();
 			shearElastic *= ratio;
 			phys->shearForce = shearElastic; /*store only elastic shear displacement*/
 			us_elastic *= ratio;
@@ -462,7 +462,7 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 			}                                     // calculate energy dissipation due to sliding behavior
 		} else if (useDamping) {                      // add current contact damping if we do not slide and if damping is requested
 			phys->shearViscous = cs * incidentVs; // get shear viscous component
-			phys->shearForce   = shearElastic - phys->shearViscous;
+			phys->shearForce = shearElastic - phys->shearViscous;
 		} else if (!useDamping) {
 			phys->shearForce = shearElastic;
 		} // update the shear force at the elastic value if no damping is present and if we passed MC
@@ -470,8 +470,8 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 		Real maxFs = phys->tangensOfFrictionAngle * (phys->adhesionForce + Fn); // adhesionForce already included in normalForce (above)
 		if (shearElastic.squaredNorm() > maxFs * maxFs) {
 			phys->isSliding = true;
-			noShearDamp     = true; // no damping is added in the shear direction, hence no need to account for shear damping dissipation
-			Real ratio      = maxFs / shearElastic.norm();
+			noShearDamp = true; // no damping is added in the shear direction, hence no need to account for shear damping dissipation
+			Real ratio = maxFs / shearElastic.norm();
 			shearElastic *= ratio;
 			phys->shearForce = shearElastic; /*store only elastic shear displacement*/
 			us_elastic *= ratio;
@@ -480,7 +480,7 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 			}                                     // calculate energy dissipation due to sliding behavior
 		} else if (useDamping) {                      // add current contact damping if we do not slide and if damping is requested
 			phys->shearViscous = cs * incidentVs; // get shear viscous component
-			phys->shearForce   = shearElastic - phys->shearViscous;
+			phys->shearForce = shearElastic - phys->shearViscous;
 		} else if (!useDamping) {
 			phys->shearForce = shearElastic;
 		} // update the shear force at the elastic value if no damping is present and if we passed MC
@@ -532,19 +532,19 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 		Vector3r relAngVel = scg->getRelAngVel(de1, de2, dt);
 		//Vector3r relAngVel = (b2->state->angVel-b1->state->angVel);
 		Vector3r relAngVelBend = relAngVel - scg->normal.dot(relAngVel) * scg->normal; // keep only the bending part
-		Vector3r relRot        = relAngVelBend * dt;                                   // relative rotation due to rolling behaviour
+		Vector3r relRot = relAngVelBend * dt;                                          // relative rotation due to rolling behaviour
 		// incremental formulation for the bending moment (as for the shear part)
 		Vector3r& momentBend = phys->momentBend;
-		momentBend           = scg->rotate(momentBend);        // rotate moment vector (updated)
-		momentBend           = momentBend - phys->kr * relRot; // add incremental rolling to the rolling vector
+		momentBend = scg->rotate(momentBend);        // rotate moment vector (updated)
+		momentBend = momentBend - phys->kr * relRot; // add incremental rolling to the rolling vector
 		// ----------------------------------------------------------------------------------------
 		// *** Torsion ***//
 		Vector3r relAngVelTwist = scg->normal.dot(relAngVel) * scg->normal;
-		Vector3r relRotTwist    = relAngVelTwist * dt; // component of relative rotation along n
+		Vector3r relRotTwist = relAngVelTwist * dt; // component of relative rotation along n
 		// incremental formulation for the torsional moment
 		Vector3r& momentTwist = phys->momentTwist;
-		momentTwist           = scg->rotate(momentTwist); // rotate moment vector (updated)
-		momentTwist           = momentTwist - phys->ktw * relRotTwist;
+		momentTwist = scg->rotate(momentTwist); // rotate moment vector (updated)
+		momentTwist = momentTwist - phys->ktw * relRotTwist;
 
 #if 0
 	// code to compute the relative particle rotation
@@ -577,7 +577,7 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 #endif
 
 		// check plasticity condition (only bending part for the moment)
-		Real MomentMax    = phys->maxBendPl * phys->normalForce.norm();
+		Real MomentMax = phys->maxBendPl * phys->normalForce.norm();
 		Real scalarMoment = phys->momentBend.norm();
 		if (MomentMax > 0) {
 			if (scalarMoment > MomentMax) {
@@ -622,20 +622,20 @@ void Ip2_FrictMat_FrictMat_MindlinCapillaryPhys::go(
 
 	/* from interaction geometry */
 	const auto scg = YADE_CAST<GenericSpheresContact*>(interaction->geom.get());
-	const Real Da  = scg->refR1 > 0 ? scg->refR1 : scg->refR2;
-	const Real Db  = scg->refR2;
+	const Real Da = scg->refR1 > 0 ? scg->refR1 : scg->refR2;
+	const Real Db = scg->refR2;
 	//Vector3r normal=scg->normal;  //The variable set but not used
 
 	/* calculate stiffness coefficients */
-	const Real Ga            = Ea / (2 * (1 + Va));
-	const Real Gb            = Eb / (2 * (1 + Vb));
-	const Real G             = (Ga + Gb) / 2;                                                           // average of shear modulus
-	const Real V             = (Va + Vb) / 2;                                                           // average of poisson's ratio
-	const Real E             = Ea * Eb / ((1. - math::pow(Va, 2)) * Eb + (1. - math::pow(Vb, 2)) * Ea); // Young modulus
-	const Real R             = Da * Db / (Da + Db);                                                     // equivalent radius
-	const Real Rmean         = (Da + Db) / 2.;                                                          // mean radius
-	const Real Kno           = 4. / 3. * E * sqrt(R);                                                   // coefficient for normal stiffness
-	const Real Kso           = 2 * sqrt(4 * R) * G / (2 - V);                                           // coefficient for shear stiffness
+	const Real Ga = Ea / (2 * (1 + Va));
+	const Real Gb = Eb / (2 * (1 + Vb));
+	const Real G = (Ga + Gb) / 2;                                                           // average of shear modulus
+	const Real V = (Va + Vb) / 2;                                                           // average of poisson's ratio
+	const Real E = Ea * Eb / ((1. - math::pow(Va, 2)) * Eb + (1. - math::pow(Vb, 2)) * Ea); // Young modulus
+	const Real R = Da * Db / (Da + Db);                                                     // equivalent radius
+	const Real Rmean = (Da + Db) / 2.;                                                      // mean radius
+	const Real Kno = 4. / 3. * E * sqrt(R);                                                 // coefficient for normal stiffness
+	const Real Kso = 2 * sqrt(4 * R) * G / (2 - V);                                         // coefficient for shear stiffness
 	const Real frictionAngle = math::min(fa, fb);
 
 	const Real Adhesion = 4. * Mathr::PI * R * gamma; // calculate adhesion force as predicted by DMT theory
@@ -643,12 +643,12 @@ void Ip2_FrictMat_FrictMat_MindlinCapillaryPhys::go(
 	/* pass values calculated from above to MindlinCapillaryPhys */
 	contactPhysics->tangensOfFrictionAngle = math::tan(frictionAngle);
 	//mindlinPhys->prevNormal = scg->normal; // used to compute relative rotation
-	contactPhysics->kno           = Kno; // this is just a coeff
-	contactPhysics->kso           = Kso; // this is just a coeff
+	contactPhysics->kno = Kno; // this is just a coeff
+	contactPhysics->kso = Kso; // this is just a coeff
 	contactPhysics->adhesionForce = Adhesion;
 
-	contactPhysics->kr        = krot;
-	contactPhysics->ktw       = ktwist;
+	contactPhysics->kr = krot;
+	contactPhysics->ktw = ktwist;
 	contactPhysics->maxBendPl = eta * Rmean; // does this make sense? why do we take Rmean?
 
 	/* compute viscous coefficients */
@@ -657,7 +657,7 @@ void Ip2_FrictMat_FrictMat_MindlinCapillaryPhys::go(
 
 	// en or es specified, just compute alpha, otherwise alpha remains 0
 	if (en || es) {
-		const Real logE       = log((*en)(mat1->id, mat2->id));
+		const Real logE = log((*en)(mat1->id, mat2->id));
 		contactPhysics->alpha = -sqrt(5 / 6.) * 2 * logE / sqrt(pow(logE, 2) + pow(Mathr::PI, 2)) * sqrt(2 * E * sqrt(R)); // (see Tsuji, 1992)
 	}
 
@@ -677,8 +677,8 @@ void Ip2_PartialSatMat_PartialSatMat_MindlinPhys::go(const shared_ptr<Material>&
 	if (interaction->phys) return; // no updates of an already existing contact necessary
 	shared_ptr<MindlinPhys> contactPhysics(new MindlinPhys());
 	interaction->phys = contactPhysics;
-	const auto mat1   = YADE_CAST<FrictMat*>(b1.get());
-	const auto mat2   = YADE_CAST<FrictMat*>(b2.get());
+	const auto mat1 = YADE_CAST<FrictMat*>(b1.get());
+	const auto mat2 = YADE_CAST<FrictMat*>(b2.get());
 
 	/* from interaction physics */
 	const Real Ea = mat1->young;
@@ -691,21 +691,21 @@ void Ip2_PartialSatMat_PartialSatMat_MindlinPhys::go(const shared_ptr<Material>&
 
 	/* from interaction geometry */
 	const auto scg = YADE_CAST<GenericSpheresContact*>(interaction->geom.get());
-	const Real Da  = scg->refR1 > 0 ? scg->refR1 : scg->refR2;
-	const Real Db  = scg->refR2;
+	const Real Da = scg->refR1 > 0 ? scg->refR1 : scg->refR2;
+	const Real Db = scg->refR2;
 	//Vector3r normal=scg->normal;        //The variable set but not used
 
 
 	/* calculate stiffness coefficients */
-	const Real Ga            = Ea / (2 * (1 + Va));
-	const Real Gb            = Eb / (2 * (1 + Vb));
-	const Real G             = (Ga + Gb) / 2;                                                           // average of shear modulus
-	const Real V             = (Va + Vb) / 2;                                                           // average of poisson's ratio
-	const Real E             = Ea * Eb / ((1. - math::pow(Va, 2)) * Eb + (1. - math::pow(Vb, 2)) * Ea); // Young modulus
-	const Real R             = Da * Db / (Da + Db);                                                     // equivalent radius
-	const Real Rmean         = (Da + Db) / 2.;                                                          // mean radius
-	const Real Kno           = 4. / 3. * E * sqrt(R);                                                   // coefficient for normal stiffness
-	const Real Kso           = 2 * sqrt(4 * R) * G / (2 - V);                                           // coefficient for shear stiffness
+	const Real Ga = Ea / (2 * (1 + Va));
+	const Real Gb = Eb / (2 * (1 + Vb));
+	const Real G = (Ga + Gb) / 2;                                                           // average of shear modulus
+	const Real V = (Va + Vb) / 2;                                                           // average of poisson's ratio
+	const Real E = Ea * Eb / ((1. - math::pow(Va, 2)) * Eb + (1. - math::pow(Vb, 2)) * Ea); // Young modulus
+	const Real R = Da * Db / (Da + Db);                                                     // equivalent radius
+	const Real Rmean = (Da + Db) / 2.;                                                      // mean radius
+	const Real Kno = 4. / 3. * E * sqrt(R);                                                 // coefficient for normal stiffness
+	const Real Kso = 2 * sqrt(4 * R) * G / (2 - V);                                         // coefficient for shear stiffness
 	const Real frictionAngle = (!frictAngle) ? math::min(fa, fb) : (*frictAngle)(mat1->id, mat2->id, mat1->frictionAngle, mat2->frictionAngle);
 
 	const Real Adhesion = 4. * Mathr::PI * R * gamma; // calculate adhesion force as predicted by DMT theory
@@ -713,12 +713,12 @@ void Ip2_PartialSatMat_PartialSatMat_MindlinPhys::go(const shared_ptr<Material>&
 	/* pass values calculated from above to MindlinPhys */
 	contactPhysics->tangensOfFrictionAngle = math::tan(frictionAngle);
 	//contactPhysics->prevNormal = scg->normal; // used to compute relative rotation
-	contactPhysics->kno           = Kno; // this is just a coeff
-	contactPhysics->kso           = Kso; // this is just a coeff
+	contactPhysics->kno = Kno; // this is just a coeff
+	contactPhysics->kso = Kso; // this is just a coeff
 	contactPhysics->adhesionForce = Adhesion;
 
-	contactPhysics->kr        = krot;
-	contactPhysics->ktw       = ktwist;
+	contactPhysics->kr = krot;
+	contactPhysics->ktw = ktwist;
 	contactPhysics->maxBendPl = eta * Rmean; // does this make sense? why do we take Rmean?
 
 	/* compute viscous coefficients */
@@ -727,7 +727,7 @@ void Ip2_PartialSatMat_PartialSatMat_MindlinPhys::go(const shared_ptr<Material>&
 
 	// en or es specified, just compute alpha, otherwise alpha remains 0
 	if (en || es) {
-		const Real logE       = log((*en)(mat1->id, mat2->id));
+		const Real logE = log((*en)(mat1->id, mat2->id));
 		contactPhysics->alpha = -sqrt(5 / 6.) * 2 * logE / sqrt(pow(logE, 2) + pow(Mathr::PI, 2))
 		        * sqrt(2 * E * sqrt(R)); // (see Tsuji, 1992), also [Antypov2011] eq. 17
 	}

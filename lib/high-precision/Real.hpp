@@ -141,7 +141,7 @@ namespace yade {
 namespace math {
 	template <unsigned int DecimalPlaces>
 	using UnderlyingRealBackend = boost::multiprecision::mpfr_float_backend<DecimalPlaces, boost::multiprecision::allocate_stack>;
-	using UnderlyingReal        = boost::multiprecision::number<UnderlyingRealBackend<YADE_REAL_DEC>, boost::multiprecision::et_off>;
+	using UnderlyingReal = boost::multiprecision::number<UnderlyingRealBackend<YADE_REAL_DEC>, boost::multiprecision::et_off>;
 }
 }
 
@@ -185,7 +185,7 @@ namespace math {
 
 namespace yade {
 namespace math {
-	using Real    = ThinRealWrapper<UnderlyingReal>;
+	using Real = ThinRealWrapper<UnderlyingReal>;
 	using Complex = ThinComplexWrapper<std::complex<UnderlyingReal>>;
 }
 }
@@ -195,7 +195,7 @@ namespace math {
 
 namespace yade {
 namespace math {
-	using Real    = UnderlyingReal;
+	using Real = UnderlyingReal;
 	using Complex = std::complex<UnderlyingReal>;
 }
 }
@@ -204,7 +204,7 @@ namespace math {
 
 namespace yade {
 using Complex = math::Complex;
-using Real    = math::Real;
+using Real = math::Real;
 static_assert(sizeof(Real) == sizeof(math::UnderlyingReal), "This compiler introduced padding, which breaks binary compatibility");
 static_assert(sizeof(Complex) == sizeof(std::complex<math::UnderlyingReal>), "This compiler introduced padding, which breaks binary compatibility");
 }

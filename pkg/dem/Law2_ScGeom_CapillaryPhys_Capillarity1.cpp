@@ -39,7 +39,7 @@ Real Law2_ScGeom_CapillaryPhys_Capillarity1::intEnergy()
 	{
 		if (!I->isReal()) continue;
 		ScGeom*         currentGeometry = static_cast<ScGeom*>(I->geom.get());
-		CapillaryPhys1* phys            = dynamic_cast<CapillaryPhys1*>(I->phys.get());
+		CapillaryPhys1* phys = dynamic_cast<CapillaryPhys1*>(I->phys.get());
 		if (phys) {
 			if (phys->SInterface != 0) {
 				energy += liquidTension
@@ -59,7 +59,7 @@ Real Law2_ScGeom_CapillaryPhys_Capillarity1::wnInterface()
 	{
 		if (!I->isReal()) continue;
 		ScGeom*         currentGeometry = static_cast<ScGeom*>(I->geom.get());
-		CapillaryPhys1* phys            = dynamic_cast<CapillaryPhys1*>(I->phys.get());
+		CapillaryPhys1* phys = dynamic_cast<CapillaryPhys1*>(I->phys.get());
 		if (phys) {
 			if (phys->SInterface != 0) {
 				wn += (phys->SInterface
@@ -79,7 +79,7 @@ Real Law2_ScGeom_CapillaryPhys_Capillarity1::swInterface()
 	{
 		if (!I->isReal()) continue;
 		ScGeom*         currentGeometry = static_cast<ScGeom*>(I->geom.get());
-		CapillaryPhys1* phys            = dynamic_cast<CapillaryPhys1*>(I->phys.get());
+		CapillaryPhys1* phys = dynamic_cast<CapillaryPhys1*>(I->phys.get());
 		if (phys) {
 			sw += (2 * 3.141592653589793238462643383279502884
 			       * (pow(currentGeometry->radius1, 2) * (1 - cos(phys->Delta1)) + pow(currentGeometry->radius2, 2) * (1 - cos(phys->Delta2))));
@@ -139,13 +139,13 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::triangulateData()
 YADE_PLUGIN((Law2_ScGeom_CapillaryPhys_Capillarity1));
 
 int firstIteration = 1;
-int x              = 0;
+int x = 0;
 
 void Law2_ScGeom_CapillaryPhys_Capillarity1::action()
 {
-	bool switched                        = (switchTriangulation == (imposePressure or totalVolumeConstant));
-	switchTriangulation                  = (imposePressure or totalVolumeConstant);
-	InteractionContainer::iterator ii    = scene->interactions->begin();
+	bool switched = (switchTriangulation == (imposePressure or totalVolumeConstant));
+	switchTriangulation = (imposePressure or totalVolumeConstant);
+	InteractionContainer::iterator ii = scene->interactions->begin();
 	InteractionContainer::iterator iiEnd = scene->interactions->end();
 	if (imposePressure) {
 		solver(capillaryPressure, switched);
@@ -154,7 +154,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::action()
 		    || (totalVolumeConstant && totalVolumeofWater == -1)) {
 			if (!totalVolumeConstant) x = 1;
 			totalVolumeConstant = 1;
-			Real p0             = capillaryPressure;
+			Real p0 = capillaryPressure;
 			Real slope;
 			Real eps = 0.0000000001;
 			solver(p0, switched);
@@ -168,17 +168,17 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::action()
 			Real V1 = waterVolume();
 			while (abs((totalVolumeofWater - V1) / totalVolumeofWater) > eps) {
 				slope = (p1 - p0) / (V1 - V0);
-				p0    = p1;
-				V0    = V1;
-				p1    = p1 - slope * (V1 - totalVolumeofWater);
+				p0 = p1;
+				V0 = V1;
+				p1 = p1 - slope * (V1 - totalVolumeofWater);
 				if (p1 < 0) {
 					cout << "The requested volume of water is quite big, the simulation will continue at constant suction.:" << p0 << endl;
 					capillaryPressure = p0;
-					imposePressure    = 1;
+					imposePressure = 1;
 					break;
 				}
 				solver(p1, switched);
-				V1                = waterVolume();
+				V1 = waterVolume();
 				capillaryPressure = p1;
 			}
 			if (x == 1) {
@@ -228,7 +228,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::action()
 void Law2_ScGeom_CapillaryPhys_Capillarity1::checkFusion()
 {
 	//Reset fusion numbers
-	InteractionContainer::iterator ii    = scene->interactions->begin();
+	InteractionContainer::iterator ii = scene->interactions->begin();
 	InteractionContainer::iterator iiEnd = scene->interactions->end();
 	for (; ii != iiEnd; ++ii) {
 		if ((*ii)->isReal()) {
@@ -281,7 +281,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::checkFusion()
 					if (angle1 == 0 || angle2 == 0) cerr << "THIS SHOULD NOT HAPPEN!!" << endl;
 
 
-					Vector3r normalFirstMeniscus   = YADE_CAST<ScGeom*>((*firstMeniscus)->geom.get())->normal;
+					Vector3r normalFirstMeniscus = YADE_CAST<ScGeom*>((*firstMeniscus)->geom.get())->normal;
 					Vector3r normalCurrentMeniscus = YADE_CAST<ScGeom*>((*currentMeniscus)->geom.get())->normal;
 
 					Real normalDot = 0;
@@ -324,7 +324,7 @@ bool BodiesMenisciiList1::prepare(Scene* scene)
 	shared_ptr<BodyContainer>& bodies = scene->bodies;
 
 	Body::id_t              MaxId = -1;
-	BodyContainer::iterator bi    = bodies->begin();
+	BodyContainer::iterator bi = bodies->begin();
 	BodyContainer::iterator biEnd = bodies->end();
 	for (; bi != biEnd; ++bi) {
 		MaxId = max(MaxId, (*bi)->getId());
@@ -334,7 +334,7 @@ bool BodiesMenisciiList1::prepare(Scene* scene)
 		interactionsOnBody[i].clear();
 	}
 
-	InteractionContainer::iterator ii    = scene->interactions->begin();
+	InteractionContainer::iterator ii = scene->interactions->begin();
 	InteractionContainer::iterator iiEnd = scene->interactions->end();
 	for (; ii != iiEnd; ++ii) {
 		if ((*ii)->isReal()) {
@@ -392,10 +392,10 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 	shared_ptr<BodyContainer>& bodies = scene->bodies;
 	if (dtPbased.number_of_vertices() < 1) triangulateData();
 	if (fusionDetection && !bodiesMenisciiList.initialized) bodiesMenisciiList.prepare(scene);
-	InteractionContainer::iterator ii               = scene->interactions->begin();
-	InteractionContainer::iterator iiEnd            = scene->interactions->end();
+	InteractionContainer::iterator ii = scene->interactions->begin();
+	InteractionContainer::iterator iiEnd = scene->interactions->end();
 	bool                           hertzInitialized = false;
-	Real                           i                = 0;
+	Real                           i = 0;
 
 	for (; ii != iiEnd; ++ii) {
 		i += 1;
@@ -412,7 +412,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 				else
 					LOG_ERROR("The capillary law is not implemented for interactions using" << interaction->phys->getClassName());
 			}
-			hertzInitialized                            = true;
+			hertzInitialized = true;
 			CapillaryPhys1*       cundallContactPhysics = NULL;
 			MindlinCapillaryPhys* mindlinContactPhysics = NULL;
 
@@ -435,8 +435,8 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 			/// Interacting Grains:
 			// If you want to define a ratio between YADE sphere size and real sphere size
 			Real alpha = 1;
-			Real R1    = alpha * std::max(currentContactGeometry->radius2, currentContactGeometry->radius1);
-			Real R2    = alpha * std::min(currentContactGeometry->radius2, currentContactGeometry->radius1);
+			Real R1 = alpha * std::max(currentContactGeometry->radius2, currentContactGeometry->radius1);
+			Real R2 = alpha * std::min(currentContactGeometry->radius2, currentContactGeometry->radius1);
 
 			shared_ptr<BodyContainer>& bodies = scene->bodies;
 
@@ -444,8 +444,8 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 			Real epsilon1, epsilon2;
 			Real ran1 = (N - id1 + 0.5) / (N + 1);
 			Real ran2 = (N - id2 + 0.5) / (N + 1);
-			epsilon1  = epsilonMean * (2 * (ran1 - 0.5) * disp + 1); //addednow
-			epsilon2  = epsilonMean * (2 * (ran2 - 0.5) * disp + 1);
+			epsilon1 = epsilonMean * (2 * (ran1 - 0.5) * disp + 1); //addednow
+			epsilon2 = epsilonMean * (2 * (ran2 - 0.5) * disp + 1);
 			//   	    cout << epsilon1 << "separate" <<epsilon2 <<endl;
 			R1 = R1 - epsilon1 * R1;
 			R2 = R2 - epsilon2 * R2;
@@ -480,16 +480,16 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 					        = interpolate1(dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), cundallContactPhysics->m, solutions, reset);
 					/// capillary adhesion force
 					Real     Finterpol = solution.force;
-					Vector3r fCap      = Finterpol * R1 * liquidTension * currentContactGeometry->normal;
+					Vector3r fCap = Finterpol * R1 * liquidTension * currentContactGeometry->normal;
 					if (!hertzOn) cundallContactPhysics->fCap = fCap;
 					else
 						mindlinContactPhysics->fCap = fCap;
 					/// meniscus volume
 					//FIXME: hardcoding numerical constants is bad practice generaly, and it probably reveals a flaw in that case (Bruno)
-					Real Vinterpol  = solution.volume * pow(R1, 3);
+					Real Vinterpol = solution.volume * pow(R1, 3);
 					Real SInterface = solution.surface * pow(R1, 2);
 					if (!hertzOn) {
-						cundallContactPhysics->vMeniscus  = Vinterpol;
+						cundallContactPhysics->vMeniscus = Vinterpol;
 						cundallContactPhysics->SInterface = SInterface;
 						if (Vinterpol > 0) cundallContactPhysics->meniscus = true;
 						else
@@ -537,16 +537,16 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 						        dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), cundallContactPhysics->m, solutions, reset);
 						/// capillary adhesion force
 						Real     Finterpol = solution.force;
-						Vector3r fCap      = Finterpol * R1 * liquidTension * currentContactGeometry->normal;
+						Vector3r fCap = Finterpol * R1 * liquidTension * currentContactGeometry->normal;
 						if (!hertzOn) cundallContactPhysics->fCap = fCap;
 						else
 							mindlinContactPhysics->fCap = fCap;
 						/// meniscus volume
 						//FIXME: hardcoding numerical constants is bad practice generaly, and it probably reveals a flaw in that case (Bruno)
-						Real Vinterpol  = solution.volume * pow(R1, 3);
+						Real Vinterpol = solution.volume * pow(R1, 3);
 						Real SInterface = solution.surface * pow(R1, 2);
 						if (!hertzOn) {
-							cundallContactPhysics->vMeniscus  = Vinterpol;
+							cundallContactPhysics->vMeniscus = Vinterpol;
 							cundallContactPhysics->SInterface = SInterface;
 							if (Vinterpol > 0) cundallContactPhysics->meniscus = true;
 							else
@@ -588,28 +588,28 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 						        dtVbased, K::Point_3(R2 / R1, Vinterpol, Dinterpol), cundallContactPhysics->m, solutions, reset);
 						/// capillary adhesion force
 						Real     Finterpol = solution.force;
-						Vector3r fCap      = Finterpol * R1 * liquidTension * currentContactGeometry->normal;
+						Vector3r fCap = Finterpol * R1 * liquidTension * currentContactGeometry->normal;
 						if (!hertzOn) cundallContactPhysics->fCap = fCap;
 						else
 							mindlinContactPhysics->fCap = fCap;
 						/// suction and interfacial area
 
-						Real Pinterpol  = solution.succion * liquidTension / R1;
+						Real Pinterpol = solution.succion * liquidTension / R1;
 						Real SInterface = solution.surface * pow(R1, 2);
 						if (!hertzOn) {
 							cundallContactPhysics->capillaryPressure = Pinterpol;
-							cundallContactPhysics->SInterface        = SInterface;
+							cundallContactPhysics->SInterface = SInterface;
 							if (Finterpol > 0) cundallContactPhysics->meniscus = true;
 							else {
 								cundallContactPhysics->vMeniscus = 0;
-								cundallContactPhysics->meniscus  = false;
+								cundallContactPhysics->meniscus = false;
 							}
 						} else {
 							mindlinContactPhysics->capillaryPressure = Pinterpol;
 							if (Finterpol > 0) mindlinContactPhysics->meniscus = true;
 							else {
 								cundallContactPhysics->vMeniscus = 0;
-								mindlinContactPhysics->meniscus  = false;
+								mindlinContactPhysics->meniscus = false;
 							}
 						}
 						if (!Vinterpol) {

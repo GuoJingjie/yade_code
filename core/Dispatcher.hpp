@@ -58,7 +58,7 @@ Because we need literal functor and class names for registration in python, we p
 	virtual void add(shared_ptr<FunctorT> f)                                                                                                               \
 	{                                                                                                                                                      \
 		bool   dupe = false;                                                                                                                           \
-		string fn   = f->getClassName();                                                                                                               \
+		string fn = f->getClassName();                                                                                                                 \
 		for (const auto& fScan : functors) {                                                                                                           \
 			if (fn == fScan->getClassName()) dupe = true;                                                                                          \
 		}                                                                                                                                              \
@@ -193,7 +193,7 @@ public:
 		boost::python::dict ret;
 		for (const auto& item : dispatcherBase::dataDispatchMatrix1D()) {
 			if (convertIndicesToNames) {
-				string arg1                          = Dispatcher_indexToClassName<argType1>(item.ix1);
+				string arg1 = Dispatcher_indexToClassName<argType1>(item.ix1);
 				ret[boost::python::make_tuple(arg1)] = item.functorName;
 			} else
 				ret[boost::python::make_tuple(item.ix1)] = item.functorName;

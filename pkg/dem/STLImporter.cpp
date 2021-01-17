@@ -34,7 +34,7 @@ vector<shared_ptr<Body>> STLImporter::import(const char* filename)
 	// Create facets
 	for (int i = 0, e = tr.size(); i < e; i += 3) {
 		Vector3r          v[3] = { tr[i], tr[i + 1], tr[i + 2] };
-		Vector3r          icc  = Shop::inscribedCircleCenter(v[0], v[1], v[2]);
+		Vector3r          icc = Shop::inscribedCircleCenter(v[0], v[1], v[2]);
 		shared_ptr<Facet> iFacet(new Facet);
 		iFacet->color = Vector3r(0.8, 0.3, 0.3);
 		for (int j = 0; j < 3; ++j) {
@@ -44,7 +44,7 @@ vector<shared_ptr<Body>> STLImporter::import(const char* filename)
 		shared_ptr<Body> b(new Body);
 		b->state->pos = b->state->refPos = icc;
 		b->state->ori = b->state->refOri = Quaternionr::Identity();
-		b->shape                         = iFacet;
+		b->shape = iFacet;
 		imported.push_back(b);
 	}
 	return imported;

@@ -38,15 +38,15 @@ bool Ig2_Polyhedra_Polyhedra_PolyhedraGeom::go(
 	//get polyhedras
 	const Se3r& se31 = state1.se3;
 	const Se3r& se32 = state2.se3;
-	Polyhedra*  A    = static_cast<Polyhedra*>(shape1.get());
-	Polyhedra*  B    = static_cast<Polyhedra*>(shape2.get());
+	Polyhedra*  A = static_cast<Polyhedra*>(shape1.get());
+	Polyhedra*  B = static_cast<Polyhedra*>(shape2.get());
 
 	bool isNew = !interaction->geom;
 
 	//move and rotate 1st the CGAL structure Polyhedron
-	Matrix3r    rot_mat   = (se31.orientation).toRotationMatrix();
+	Matrix3r    rot_mat = (se31.orientation).toRotationMatrix();
 	Vector3r    trans_vec = se31.position;
-	const Real& s         = interactionDetectionFactor;
+	const Real& s = interactionDetectionFactor;
 
 	Transformation t_rot_trans(
 	        s * rot_mat(0, 0),
@@ -69,8 +69,8 @@ bool Ig2_Polyhedra_Polyhedra_PolyhedraGeom::go(
 	std::transform(PA.facets_begin(), PA.facets_end(), PA.planes_begin(), Plane_equation());
 
 	//move and rotate 2nd the CGAL structure Polyhedron
-	rot_mat     = (se32.orientation).toRotationMatrix();
-	trans_vec   = se32.position + shift2;
+	rot_mat = (se32.orientation).toRotationMatrix();
+	trans_vec = se32.position + shift2;
 	t_rot_trans = Transformation(
 	        s * rot_mat(0, 0),
 	        s * rot_mat(0, 1),
@@ -98,10 +98,10 @@ bool Ig2_Polyhedra_Polyhedra_PolyhedraGeom::go(
 		bang = shared_ptr<PolyhedraGeom>(new PolyhedraGeom());
 		bang->sep_plane.assign(3, 0);
 		bang->contactPoint = Vector3r(0, 0, 0);
-		bang->isShearNew   = true;
+		bang->isShearNew = true;
 	} else {
 		// use data from old interaction
-		bang             = YADE_PTR_CAST<PolyhedraGeom>(interaction->geom);
+		bang = YADE_PTR_CAST<PolyhedraGeom>(interaction->geom);
 		bang->isShearNew = bang->equivalentPenetrationDepth <= 0;
 	}
 
@@ -117,8 +117,8 @@ bool Ig2_Polyhedra_Polyhedra_PolyhedraGeom::go(
 
 	if (math::isnan(volume) || volume <= 1E-25 || volume > min(A->GetVolume(), B->GetVolume())) {
 		bang->equivalentPenetrationDepth = 0;
-		bang->penetrationVolume          = min(A->GetVolume(), B->GetVolume());
-		bang->normal                     = (A->GetVolume() > B->GetVolume() ? 1 : -1) * (se32.position + shift2 - se31.position);
+		bang->penetrationVolume = min(A->GetVolume(), B->GetVolume());
+		bang->normal = (A->GetVolume() > B->GetVolume() ? 1 : -1) * (se32.position + shift2 - se31.position);
 		return !isNew;
 	}
 
@@ -136,11 +136,11 @@ bool Ig2_Polyhedra_Polyhedra_PolyhedraGeom::go(
 
 	Real area = math::pow(volume, 2. / 3.);
 	// store calculated stuff in bang; some is redundant
-	bang->equivalentCrossSection     = area;
-	bang->contactPoint               = centroid;
-	bang->penetrationVolume          = volume;
+	bang->equivalentCrossSection = area;
+	bang->contactPoint = centroid;
+	bang->penetrationVolume = volume;
 	bang->equivalentPenetrationDepth = volume / area;
-	scene                            = Omega::instance().getScene().get();
+	scene = Omega::instance().getScene().get();
 	bang->precompute(state1, state2, scene, interaction, normal, bang->isShearNew, shift2);
 	bang->normal = normal;
 
@@ -186,12 +186,12 @@ bool Ig2_Wall_Polyhedra_PolyhedraGeom::go(
 	const int&  sense(shape1->cast<Wall>().sense);
 	const Se3r& se31 = state1.se3;
 	const Se3r& se32 = state2.se3;
-	Polyhedra*  B    = static_cast<Polyhedra*>(shape2.get());
+	Polyhedra*  B = static_cast<Polyhedra*>(shape2.get());
 
 	bool isNew = !interaction->geom;
 
 	//move and rotate also the CGAL structure Polyhedron
-	Matrix3r rot_mat   = (se32.orientation).toRotationMatrix();
+	Matrix3r rot_mat = (se32.orientation).toRotationMatrix();
 	Vector3r trans_vec = se32.position;
 
 	Transformation t_rot_trans(
@@ -218,18 +218,18 @@ bool Ig2_Wall_Polyhedra_PolyhedraGeom::go(
 	else
 		normal[PA] = se32.position[PA] - se31.position[PA] > 0 ? 1 : -1;
 	CGALvector CGALnormal = CGALvector(normal[0], normal[1], normal[2]);
-	Plane      A          = Plane(CGALpoint(se31.position[0], se31.position[1], se31.position[2]), CGALvector(normal[0], normal[1], normal[2]));
+	Plane      A = Plane(CGALpoint(se31.position[0], se31.position[1], se31.position[2]), CGALvector(normal[0], normal[1], normal[2]));
 
 	shared_ptr<PolyhedraGeom> bang;
 	if (isNew) {
 		// new interaction
-		bang               = shared_ptr<PolyhedraGeom>(new PolyhedraGeom());
+		bang = shared_ptr<PolyhedraGeom>(new PolyhedraGeom());
 		bang->contactPoint = Vector3r(0, 0, 0);
-		bang->isShearNew   = true;
-		interaction->geom  = bang;
+		bang->isShearNew = true;
+		interaction->geom = bang;
 	} else {
 		// use data from old interaction
-		bang             = YADE_PTR_CAST<PolyhedraGeom>(interaction->geom);
+		bang = YADE_PTR_CAST<PolyhedraGeom>(interaction->geom);
 		bang->isShearNew = bang->equivalentPenetrationDepth <= 0;
 	}
 
@@ -254,9 +254,9 @@ bool Ig2_Wall_Polyhedra_PolyhedraGeom::go(
 	Real area = volume / 1E-8;
 
 	// store calculated stuff in bang; some is redundant
-	bang->equivalentCrossSection     = area;
-	bang->contactPoint               = centroid;
-	bang->penetrationVolume          = volume;
+	bang->equivalentCrossSection = area;
+	bang->contactPoint = centroid;
+	bang->penetrationVolume = volume;
 	bang->equivalentPenetrationDepth = volume / area;
 	bang->precompute(state1, state2, scene, interaction, normal, isNew, shift2);
 	bang->normal = FromCGALVector(CGALnormal);
@@ -278,13 +278,13 @@ bool Ig2_Facet_Polyhedra_PolyhedraGeom::go(
 {
 	const Se3r& se31 = state1.se3;
 	const Se3r& se32 = state2.se3;
-	Facet*      A    = static_cast<Facet*>(shape1.get());
-	Polyhedra*  B    = static_cast<Polyhedra*>(shape2.get());
+	Facet*      A = static_cast<Facet*>(shape1.get());
+	Polyhedra*  B = static_cast<Polyhedra*>(shape2.get());
 
 	bool isNew = !interaction->geom;
 
 	//move and rotate 1st the CGAL structure Polyhedron
-	Matrix3r       rot_mat   = (se32.orientation).toRotationMatrix();
+	Matrix3r       rot_mat = (se32.orientation).toRotationMatrix();
 	Vector3r       trans_vec = se32.position;
 	Transformation t_rot_trans(
 	        rot_mat(0, 0),
@@ -331,11 +331,11 @@ bool Ig2_Facet_Polyhedra_PolyhedraGeom::go(
 
 	//construct polyhedron directly
 	Polyhedron::Halfedge_iterator hei = PA.make_tetrahedron(v[4], v[1], v[0], v[2]);
-	hei                               = PA.split_vertex(hei, hei->next()->opposite());
-	hei->vertex()->point()            = v[3];
-	hei                               = PA.split_facet(hei->next()->next()->next(), hei->next());
-	hei                               = PA.split_vertex(hei, hei->next_on_vertex()->next_on_vertex());
-	hei->vertex()->point()            = v[5];
+	hei = PA.split_vertex(hei, hei->next()->opposite());
+	hei->vertex()->point() = v[3];
+	hei = PA.split_facet(hei->next()->next()->next(), hei->next());
+	hei = PA.split_vertex(hei, hei->next_on_vertex()->next_on_vertex());
+	hei->vertex()->point() = v[5];
 
 	shared_ptr<PolyhedraGeom> bang;
 	if (isNew) {
@@ -343,11 +343,11 @@ bool Ig2_Facet_Polyhedra_PolyhedraGeom::go(
 		bang = shared_ptr<PolyhedraGeom>(new PolyhedraGeom());
 		bang->sep_plane.assign(3, 0);
 		bang->contactPoint = Vector3r(0, 0, 0);
-		bang->isShearNew   = true;
-		interaction->geom  = bang;
+		bang->isShearNew = true;
+		interaction->geom = bang;
 	} else {
 		// use data from old interaction
-		bang             = YADE_PTR_CAST<PolyhedraGeom>(interaction->geom);
+		bang = YADE_PTR_CAST<PolyhedraGeom>(interaction->geom);
 		bang->isShearNew = bang->equivalentPenetrationDepth <= 0;
 	}
 
@@ -377,9 +377,9 @@ bool Ig2_Facet_Polyhedra_PolyhedraGeom::go(
 	Real area = volume / 1E-8;
 
 	// store calculated stuff in bang; some is redundant
-	bang->equivalentCrossSection     = area;
-	bang->contactPoint               = centroid;
-	bang->penetrationVolume          = volume;
+	bang->equivalentCrossSection = area;
+	bang->contactPoint = centroid;
+	bang->penetrationVolume = volume;
 	bang->equivalentPenetrationDepth = volume / area;
 	bang->precompute(state1, state2, scene, interaction, normal, bang->isShearNew, shift2);
 	bang->normal = normal;
@@ -402,10 +402,10 @@ bool Ig2_Sphere_Polyhedra_ScGeom::go(
 	const Se3r& se31 = state1.se3;
 	const Se3r& se32 = state2.se3;
 
-	Sphere*    A      = static_cast<Sphere*>(shape1.get());
+	Sphere*    A = static_cast<Sphere*>(shape1.get());
 	Real       radius = A->radius;
-	Real       r2     = radius * radius;
-	Polyhedra* B      = static_cast<Polyhedra*>(shape2.get());
+	Real       r2 = radius * radius;
+	Polyhedra* B = static_cast<Polyhedra*>(shape2.get());
 
 	bool               isNew = !interaction->geom;
 	shared_ptr<ScGeom> geom;
@@ -421,8 +421,8 @@ bool Ig2_Sphere_Polyhedra_ScGeom::go(
 	// find the closest point of polyhedron to the sphere center, see following paper for notation
 	// http://automatica.dei.unipd.it/public/Schenato/PSC/2010_2011/gruppo4-Building_termo_identification/IdentificazioneTermodinamica20062007/eggpsc/Simulatore%20termico/Generazione%20Mesh/1995%20-%203D%20Distance%20from%20a%20Point%20to%20a%20Triangle.pdf
 	bool            isInside = true; // if center is inside polyhedron
-	const Vector3r& p0       = se31.position;
-	const Vector3r& center   = p0;
+	const Vector3r& p0 = se31.position;
+	const Vector3r& center = p0;
 	Vector3r        closest;           // closest point to be found
 	Real            dst2min = DBL_MAX; // minimal squared distance (large number initially)
 	// auxiliary value
@@ -436,13 +436,13 @@ bool Ig2_Sphere_Polyhedra_ScGeom::go(
 		p2 = pts[faceTri[3 * i + 1]];
 		p3 = pts[faceTri[3 * i + 2]];
 		// triangle edges vectors
-		e1  = p2 - p1;
-		e2  = p3 - p2;
-		e3  = p1 - p3;
-		n   = (e1.cross(-e3)).normalized(); // tirangle outer normal
-		dst = (p0 - p1).dot(n);             // oriented distance of p0 to triangle plane
-		if (dst > 0) isInside = false;      // p0 lies in positive halfspace of triangle, cannot be inside
-		p0a = p0 - dst * n;                 // p0 projected to triangle plane
+		e1 = p2 - p1;
+		e2 = p3 - p2;
+		e3 = p1 - p3;
+		n = (e1.cross(-e3)).normalized(); // tirangle outer normal
+		dst = (p0 - p1).dot(n);           // oriented distance of p0 to triangle plane
+		if (dst > 0) isInside = false;    // p0 lies in positive halfspace of triangle, cannot be inside
+		p0a = p0 - dst * n;               // p0 projected to triangle plane
 		p10 = p0a - p1;
 		p20 = p0a - p2;
 		p30 = p0a - p3;
@@ -451,34 +451,34 @@ bool Ig2_Sphere_Polyhedra_ScGeom::go(
 		o2 = (p20.cross(p30)).dot(n);
 		o3 = (p30.cross(p10)).dot(n);
 		if (o1 > 0 && o2 > 0 && o3 > 0) { // p0a is inside triangle
-			pp      = p0a;
+			pp = p0a;
 			relTemp = inside;
 		} else {
 			edst2min = DBL_MAX;
 			for (int j = 0; j < 3; j++) { // iterate over 3 edges end find the closest point of them
-				pa   = j == 0 ? p1 : (j == 1 ? p2 : p3);
-				pb   = j == 0 ? p2 : (j == 1 ? p3 : p1);
-				r    = (((pb - p0a).cross(pa - p0a)).cross(pb - pa)).normalized();
+				pa = j == 0 ? p1 : (j == 1 ? p2 : p3);
+				pb = j == 0 ? p2 : (j == 1 ? p3 : p1);
+				r = (((pb - p0a).cross(pa - p0a)).cross(pb - pa)).normalized();
 				p0aa = p0a + (pa - p0a).dot(r) * r; // projection of p0a on the edge
-				e    = pb - pa;
-				en   = e.norm();
+				e = pb - pa;
+				en = e.norm();
 				e /= en;
 				t = (p0aa - pa).dot(e) / en; // parameter of edge line
 				if (t < 0.) {
-					ppp      = pa;
+					ppp = pa;
 					relTemp2 = vertex;
 				} else if (t > 1.) {
-					ppp      = pb;
+					ppp = pb;
 					relTemp2 = vertex;
 				} else {
-					ppp      = p0aa;
+					ppp = p0aa;
 					relTemp2 = edge;
 				}
 				edst2 = (ppp - p0).squaredNorm();
 				if (edst2 < edst2min) {
 					edst2min = edst2;
-					pp       = ppp;
-					relTemp  = relTemp2;
+					pp = ppp;
+					relTemp = relTemp2;
 				}
 			}
 		}
@@ -486,7 +486,7 @@ bool Ig2_Sphere_Polyhedra_ScGeom::go(
 		if (dst2 < dst2min) { // dst2 is now the minimal squared distance and pp is now the closest found point so far
 			dst2min = dst2;
 			closest = pp;
-			rel     = relTemp;
+			rel = relTemp;
 		}
 	}
 	//******************************************************************************
@@ -494,9 +494,9 @@ bool Ig2_Sphere_Polyhedra_ScGeom::go(
 	if (isNew && !(isInside || dst2min <= r2)) return false;
 
 	if (isNew) {
-		geom          = shared_ptr<ScGeom>(new ScGeom());
+		geom = shared_ptr<ScGeom>(new ScGeom());
 		geom->radius1 = geom->radius2 = radius;
-		interaction->geom             = geom;
+		interaction->geom = geom;
 	} else {
 		geom = YADE_PTR_CAST<ScGeom>(interaction->geom);
 	}
@@ -504,24 +504,24 @@ bool Ig2_Sphere_Polyhedra_ScGeom::go(
 	Real     penetrationDepth;
 	Vector3r normal, contactPoint;
 	if (isInside) { // some artificial tricks for unlikely case
-		normal           = se32.position - center;
-		dst              = normal.norm();
+		normal = se32.position - center;
+		dst = normal.norm();
 		penetrationDepth = radius;
 		normal /= dst;
 		contactPoint = center + normal * (.5 * radius);
 	} else {
 		if (rel == none) { LOG_FATAL("TODO"); }
 		Real coeff = rel == edge ? edgeCoeff : (rel == vertex ? vertexCoeff : 1.0);
-		normal     = closest - center;
-		dst        = normal.norm();
+		normal = closest - center;
+		dst = normal.norm();
 		normal /= dst;
 		penetrationDepth = radius - dst;
-		contactPoint     = center + normal * (radius - .5 * penetrationDepth);
+		contactPoint = center + normal * (radius - .5 * penetrationDepth);
 		penetrationDepth *= coeff;
 	}
-	geom->normal           = normal;
+	geom->normal = normal;
 	geom->penetrationDepth = penetrationDepth;
-	geom->contactPoint     = contactPoint;
+	geom->contactPoint = contactPoint;
 
 	geom->precompute(state1, state2, scene, interaction, normal, isNew, shift2, false /*avoidGranularRatcheting only for sphere-sphere*/);
 
@@ -546,26 +546,26 @@ bool Ig2_Polyhedra_Polyhedra_ScGeom::go(
 	bool               isNew = !interaction->geom;
 	if (isNew) {
 		Ig2_Polyhedra_Polyhedra_PolyhedraGeom ppGeom = Ig2_Polyhedra_Polyhedra_PolyhedraGeom();
-		ppGeom.interactionDetectionFactor            = interactionDetectionFactor;
-		bool pp                                      = ppGeom.go(shape1, shape2, state2, state1, shift2, force, interaction);
+		ppGeom.interactionDetectionFactor = interactionDetectionFactor;
+		bool pp = ppGeom.go(shape1, shape2, state2, state1, shift2, force, interaction);
 		if (!pp) { return false; }
 		shared_ptr<PolyhedraGeom> pGeom = YADE_PTR_CAST<PolyhedraGeom>(interaction->geom);
-		geom                            = shared_ptr<ScGeom>(new ScGeom());
-		geom->radius1                   = (pGeom->contactPoint - se31.position).norm();
-		geom->radius2                   = (pGeom->contactPoint - se32.position + shift2).norm();
-		interaction->geom               = geom;
+		geom = shared_ptr<ScGeom>(new ScGeom());
+		geom->radius1 = (pGeom->contactPoint - se31.position).norm();
+		geom->radius2 = (pGeom->contactPoint - se32.position + shift2).norm();
+		interaction->geom = geom;
 	} else {
 		geom = YADE_PTR_CAST<ScGeom>(interaction->geom);
 	}
 	const Real& radius1 = geom->radius1;
 	const Real& radius2 = geom->radius2;
-	Vector3r    normal  = (se32.position + shift2) - se31.position;
-	Real        norm    = normal.norm();
+	Vector3r    normal = (se32.position + shift2) - se31.position;
+	Real        norm = normal.norm();
 	normal /= norm; // normal is unit vector now
-	Real penetrationDepth  = radius1 + radius2 - norm;
-	geom->contactPoint     = se31.position + (radius1 - 0.5 * penetrationDepth) * normal; //0.5*(pt1+pt2);
+	Real penetrationDepth = radius1 + radius2 - norm;
+	geom->contactPoint = se31.position + (radius1 - 0.5 * penetrationDepth) * normal; //0.5*(pt1+pt2);
 	geom->penetrationDepth = penetrationDepth;
-	scene                  = Omega::instance().getScene().get();
+	scene = Omega::instance().getScene().get();
 	geom->precompute(state1, state2, scene, interaction, normal, isNew, shift2, false);
 	return true;
 }

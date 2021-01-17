@@ -59,12 +59,12 @@ void TriaxialStressController::updateStiffness()
 #endif
 	for (int i = 0; i < 6; ++i)
 		stiffness[i] = 0;
-	InteractionContainer::iterator ii    = scene->interactions->begin();
+	InteractionContainer::iterator ii = scene->interactions->begin();
 	InteractionContainer::iterator iiEnd = scene->interactions->end();
 	for (; ii != iiEnd; ++ii)
 		if ((*ii)->isReal()) {
 			const shared_ptr<Interaction>& contact = *ii;
-			Real                           fn      = (static_cast<FrictPhys*>(contact->phys.get()))->normalForce.norm();
+			Real                           fn = (static_cast<FrictPhys*>(contact->phys.get()))->normalForce.norm();
 			if (fn != 0) {
 				int id1 = contact->getId1(), id2 = contact->getId2();
 				for (int index = 0; index < 6; ++index)
@@ -89,7 +89,7 @@ void TriaxialStressController::controlExternalStress(
 {
 	scene->forces.sync();
 	Real       translation = normal[wall].dot(getForce(scene, wall_id[wall]) - resultantForce);
-	const bool log         = false;
+	const bool log = false;
 	if (log)
 		LOG_DEBUG(
 		        "wall=" << wall << " actualForce=" << getForce(scene, wall_id[wall]) << ", resultantForce=" << resultantForce
@@ -118,30 +118,30 @@ void TriaxialStressController::action()
 	scene->forces.sync();
 	if (first) { // sync boundaries ids in the table
 		wall_id[wall_bottom] = wall_bottom_id;
-		wall_id[wall_top]    = wall_top_id;
-		wall_id[wall_left]   = wall_left_id;
-		wall_id[wall_right]  = wall_right_id;
-		wall_id[wall_front]  = wall_front_id;
-		wall_id[wall_back]   = wall_back_id;
+		wall_id[wall_top] = wall_top_id;
+		wall_id[wall_left] = wall_left_id;
+		wall_id[wall_right] = wall_right_id;
+		wall_id[wall_front] = wall_front_id;
+		wall_id[wall_back] = wall_back_id;
 	}
 
 	if (thickness < 0) thickness = 2.0 * YADE_PTR_CAST<Box>(Body::byId(wall_bottom_id, scene)->shape)->extents.y();
 	State* p_bottom = Body::byId(wall_bottom_id, scene)->state.get();
-	State* p_top    = Body::byId(wall_top_id, scene)->state.get();
-	State* p_left   = Body::byId(wall_left_id, scene)->state.get();
-	State* p_right  = Body::byId(wall_right_id, scene)->state.get();
-	State* p_front  = Body::byId(wall_front_id, scene)->state.get();
-	State* p_back   = Body::byId(wall_back_id, scene)->state.get();
-	height          = p_top->se3.position.y() - p_bottom->se3.position.y() - thickness;
-	width           = p_right->se3.position.x() - p_left->se3.position.x() - thickness;
-	depth           = p_front->se3.position.z() - p_back->se3.position.z() - thickness;
+	State* p_top = Body::byId(wall_top_id, scene)->state.get();
+	State* p_left = Body::byId(wall_left_id, scene)->state.get();
+	State* p_right = Body::byId(wall_right_id, scene)->state.get();
+	State* p_front = Body::byId(wall_front_id, scene)->state.get();
+	State* p_back = Body::byId(wall_back_id, scene)->state.get();
+	height = p_top->se3.position.y() - p_bottom->se3.position.y() - thickness;
+	width = p_right->se3.position.x() - p_left->se3.position.x() - thickness;
+	depth = p_front->se3.position.z() - p_back->se3.position.z() - thickness;
 
 	boxVolume = height * width * depth;
 	if ((first) || (updatePorosity)) {
 		particlesVolume = 0;
 		for (const auto& b : *scene->bodies) {
 			if (b->isClump()) {
-				const shared_ptr<Clump>& clump  = YADE_PTR_CAST<Clump>(b->shape);
+				const shared_ptr<Clump>& clump = YADE_PTR_CAST<Clump>(b->shape);
 				const shared_ptr<Body>&  member = Body::byId(clump->members.begin()->first, scene);
 				particlesVolume += b->state->mass / member->material->density;
 			} else if (b->isDynamic() && !b->isClumpMember()) {
@@ -149,20 +149,20 @@ void TriaxialStressController::action()
 				particlesVolume += 1.3333333 * Mathr::PI * pow(sphere->radius, 3);
 			}
 		}
-		first          = false;
+		first = false;
 		updatePorosity = false;
 	}
 	max_vel1 = 3 * width / (height + width + depth) * max_vel;
 	max_vel2 = 3 * height / (height + width + depth) * max_vel;
 	max_vel3 = 3 * depth / (height + width + depth) * max_vel;
 
-	porosity        = (boxVolume - particlesVolume) / boxVolume;
-	position_top    = p_top->se3.position.y();
+	porosity = (boxVolume - particlesVolume) / boxVolume;
+	position_top = p_top->se3.position.y();
 	position_bottom = p_bottom->se3.position.y();
-	position_right  = p_right->se3.position.x();
-	position_left   = p_left->se3.position.x();
-	position_front  = p_front->se3.position.z();
-	position_back   = p_back->se3.position.z();
+	position_right = p_right->se3.position.x();
+	position_left = p_left->se3.position.x();
+	position_front = p_front->se3.position.z();
+	position_back = p_back->se3.position.z();
 
 	// must be done _after_ height, width, depth have been calculated
 	//Update stiffness only if it has been computed by StiffnessCounter (see "stiffnessUpdateInterval")
@@ -228,11 +228,11 @@ void TriaxialStressController::action()
 	} else //if internal compaction
 	{
 		p_bottom->vel = Vector3r::Zero();
-		p_top->vel    = Vector3r::Zero();
-		p_left->vel   = Vector3r::Zero();
-		p_right->vel  = Vector3r::Zero();
-		p_back->vel   = Vector3r::Zero();
-		p_front->vel  = Vector3r::Zero();
+		p_top->vel = Vector3r::Zero();
+		p_left->vel = Vector3r::Zero();
+		p_right->vel = Vector3r::Zero();
+		p_back->vel = Vector3r::Zero();
+		p_front->vel = Vector3r::Zero();
 		if (isARadiusControlIteration) {
 			Real sigma_iso_ = bool(stressMask & 1) * goal1 + bool(stressMask & 2) * goal2 + bool(stressMask & 4) * goal3;
 			sigma_iso_ /= bool(stressMask & 1) + bool(stressMask & 2) + bool(stressMask & 4);
@@ -260,41 +260,41 @@ void TriaxialStressController::computeStressStrain()
 {
 	scene->forces.sync();
 	State* p_bottom = Body::byId(wall_bottom_id, scene)->state.get();
-	State* p_top    = Body::byId(wall_top_id, scene)->state.get();
-	State* p_left   = Body::byId(wall_left_id, scene)->state.get();
-	State* p_right  = Body::byId(wall_right_id, scene)->state.get();
-	State* p_front  = Body::byId(wall_front_id, scene)->state.get();
-	State* p_back   = Body::byId(wall_back_id, scene)->state.get();
+	State* p_top = Body::byId(wall_top_id, scene)->state.get();
+	State* p_left = Body::byId(wall_left_id, scene)->state.get();
+	State* p_right = Body::byId(wall_right_id, scene)->state.get();
+	State* p_front = Body::byId(wall_front_id, scene)->state.get();
+	State* p_back = Body::byId(wall_back_id, scene)->state.get();
 
 	height = p_top->se3.position.y() - p_bottom->se3.position.y() - thickness;
-	width  = p_right->se3.position.x() - p_left->se3.position.x() - thickness;
-	depth  = p_front->se3.position.z() - p_back->se3.position.z() - thickness;
+	width = p_right->se3.position.x() - p_left->se3.position.x() - thickness;
+	depth = p_front->se3.position.z() - p_back->se3.position.z() - thickness;
 
 	meanStress = 0;
 	if (height0 == 0) height0 = height;
 	if (width0 == 0) width0 = width;
 	if (depth0 == 0) depth0 = depth;
-	strain[0]        = log(width / width0); // all strain values are positiv for extension
-	strain[1]        = log(height / height0);
-	strain[2]        = log(depth / depth0);
+	strain[0] = log(width / width0); // all strain values are positiv for extension
+	strain[1] = log(height / height0);
+	strain[2] = log(depth / depth0);
 	volumetricStrain = strain[0] + strain[1] + strain[2];
 
 	Real invXSurface = 1.f / (height * depth);
 	Real invYSurface = 1.f / (width * depth);
 	Real invZSurface = 1.f / (width * height);
 
-	force[wall_bottom]  = getForce(scene, wall_id[wall_bottom]);
+	force[wall_bottom] = getForce(scene, wall_id[wall_bottom]);
 	stress[wall_bottom] = force[wall_bottom] * invYSurface; // all stress values are positiv for tension
-	force[wall_top]     = getForce(scene, wall_id[wall_top]);
-	stress[wall_top]    = -force[wall_top] * invYSurface;
-	force[wall_left]    = getForce(scene, wall_id[wall_left]);
-	stress[wall_left]   = force[wall_left] * invXSurface;
-	force[wall_right]   = getForce(scene, wall_id[wall_right]);
-	stress[wall_right]  = -force[wall_right] * invXSurface;
-	force[wall_front]   = getForce(scene, wall_id[wall_front]);
-	stress[wall_front]  = -force[wall_front] * invZSurface;
-	force[wall_back]    = getForce(scene, wall_id[wall_back]);
-	stress[wall_back]   = force[wall_back] * invZSurface;
+	force[wall_top] = getForce(scene, wall_id[wall_top]);
+	stress[wall_top] = -force[wall_top] * invYSurface;
+	force[wall_left] = getForce(scene, wall_id[wall_left]);
+	stress[wall_left] = force[wall_left] * invXSurface;
+	force[wall_right] = getForce(scene, wall_id[wall_right]);
+	stress[wall_right] = -force[wall_right] * invXSurface;
+	force[wall_front] = getForce(scene, wall_id[wall_front]);
+	stress[wall_front] = -force[wall_front] * invZSurface;
+	force[wall_back] = getForce(scene, wall_id[wall_back]);
+	stress[wall_back] = force[wall_back] * invZSurface;
 
 	for (int i = 0; i < 6; i++)
 		meanStress += stress[i].dot(pow(-1.0, i) * normal[i]); // normal[i] is always inwards

@@ -40,16 +40,16 @@ void SpatialQuickSortCollider::action()
 	int      n = 0;
 	for (const auto& b : *bodies) {
 		if (!b->bound) continue;
-		min          = b->bound->min;
-		max          = b->bound->max;
-		rank[n]->id  = b->getId();
+		min = b->bound->min;
+		max = b->bound->max;
+		rank[n]->id = b->getId();
 		rank[n]->min = min;
 		rank[n]->max = max;
 		n++;
 	}
 
 	const shared_ptr<InteractionContainer>& interactions = scene->interactions;
-	scene->interactions->iterColliderLastRun             = scene->iter;
+	scene->interactions->iterColliderLastRun = scene->iter;
 
 	sort(rank.begin(), rank.end(), xBoundComparator()); // sorting along X
 
@@ -57,10 +57,10 @@ void SpatialQuickSortCollider::action()
 	size_t                  j;
 	shared_ptr<Interaction> interaction;
 	for (int i = 0, e = nbElements - 1; i < e; ++i) {
-		id  = rank[i]->id;
+		id = rank[i]->id;
 		min = rank[i]->min;
 		max = rank[i]->max;
-		j   = i;
+		j = i;
 		while (++j < nbElements) {
 			if (rank[j]->min[0] > max[0]) break; // skip all others, because it's sorted along X
 			id2 = rank[j]->id;

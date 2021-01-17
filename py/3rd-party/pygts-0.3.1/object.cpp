@@ -118,7 +118,7 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 	if (self == NULL) return NULL;
 
 	/* Object initialization */
-	self->gtsobj        = NULL;
+	self->gtsobj = NULL;
 	self->gtsobj_parent = NULL;
 
 	return (PyObject*)self;

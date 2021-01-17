@@ -55,7 +55,7 @@ void Polyhedra::Initialize()
 		//generate randomly
 		while ((int)v.size() < 4)
 			GenerateRandomGeometry();
-		N        = (int)v.size();
+		N = (int)v.size();
 		isRandom = true;
 	}
 
@@ -85,8 +85,8 @@ void Polyhedra::Initialize()
 	for (Polyhedron::Facet_iterator fIter = P.facets_begin(); fIter != P.facets_end(); fIter++) {
 		Polyhedron::Halfedge_around_facet_circulator hfc0;
 		int                                          n = fIter->facet_degree();
-		hfc0                                           = fIter->facet_begin();
-		int a                                          = std::distance(P.vertices_begin(), hfc0->vertex());
+		hfc0 = fIter->facet_begin();
+		int a = std::distance(P.vertices_begin(), hfc0->vertex());
 		for (int i = 2; i < n; i++) {
 			++hfc0;
 			faceTri.push_back(a);
@@ -123,10 +123,10 @@ void Polyhedra::Initialize()
 	Matrix3r Itet1, Itet2;
 	Matrix3r inertia_tensor(Matrix3r::Zero());
 	for (int i = 0; i < (int)faceTri.size(); i += 3) {
-		vtet  = math::abs((origin - v[faceTri[i + 2]]).dot((v[faceTri[i]] - v[faceTri[i + 2]]).cross(v[faceTri[i + 1]] - v[faceTri[i + 2]])) / 6.);
-		ctet  = (origin + v[faceTri[i]] + v[faceTri[i + 1]] + v[faceTri[i + 2]]) / 4.;
+		vtet = math::abs((origin - v[faceTri[i + 2]]).dot((v[faceTri[i]] - v[faceTri[i + 2]]).cross(v[faceTri[i + 1]] - v[faceTri[i + 2]])) / 6.);
+		ctet = (origin + v[faceTri[i]] + v[faceTri[i + 1]] + v[faceTri[i + 2]]) / 4.;
 		Itet1 = TetraInertiaTensor(origin - ctet, v[faceTri[i]] - ctet, v[faceTri[i + 1]] - ctet, v[faceTri[i + 2]] - ctet);
-		ctet  = ctet - origin;
+		ctet = ctet - origin;
 		Itet2 << ctet[1] * ctet[1] + ctet[2] * ctet[2], -ctet[0] * ctet[1], -ctet[0] * ctet[2], -ctet[0] * ctet[1],
 		        ctet[0] * ctet[0] + ctet[2] * ctet[2], -ctet[2] * ctet[1], -ctet[0] * ctet[2], -ctet[2] * ctet[1],
 		        ctet[1] * ctet[1] + ctet[0] * ctet[0];
@@ -136,7 +136,7 @@ void Polyhedra::Initialize()
 	if (math::abs(inertia_tensor(0, 1)) + math::abs(inertia_tensor(0, 2)) + math::abs(inertia_tensor(1, 2)) < 1E-13) {
 		// no need to rotate, inertia already diagonal
 		orientation = Quaternionr::Identity();
-		inertia     = Vector3r(inertia_tensor(0, 0), inertia_tensor(1, 1), inertia_tensor(2, 2));
+		inertia = Vector3r(inertia_tensor(0, 0), inertia_tensor(1, 1), inertia_tensor(2, 2));
 	} else {
 		// calculate eigenvectors of I
 		Vector3r rot;
@@ -147,36 +147,36 @@ void Polyhedra::Initialize()
 		// set positove direction of vectors - otherwise reloading does not work
 		Matrix3r sign(Matrix3r::Zero());
 		Real     max_v_signed = I_rot(0, 0);
-		Real     max_v        = math::abs(I_rot(0, 0));
+		Real     max_v = math::abs(I_rot(0, 0));
 		if (max_v < math::abs(I_rot(1, 0))) {
 			max_v_signed = I_rot(1, 0);
-			max_v        = math::abs(I_rot(1, 0));
+			max_v = math::abs(I_rot(1, 0));
 		}
 		if (max_v < math::abs(I_rot(2, 0))) {
 			max_v_signed = I_rot(2, 0);
-			max_v        = math::abs(I_rot(2, 0));
+			max_v = math::abs(I_rot(2, 0));
 		}
-		sign(0, 0)   = max_v_signed / max_v;
+		sign(0, 0) = max_v_signed / max_v;
 		max_v_signed = I_rot(0, 1);
-		max_v        = math::abs(I_rot(0, 1));
+		max_v = math::abs(I_rot(0, 1));
 		if (max_v < math::abs(I_rot(1, 1))) {
 			max_v_signed = I_rot(1, 1);
-			max_v        = math::abs(I_rot(1, 1));
+			max_v = math::abs(I_rot(1, 1));
 		}
 		if (max_v < math::abs(I_rot(2, 1))) {
 			max_v_signed = I_rot(2, 1);
-			max_v        = math::abs(I_rot(2, 1));
+			max_v = math::abs(I_rot(2, 1));
 		}
 		sign(1, 1) = max_v_signed / max_v;
 		sign(2, 2) = 1.;
-		I_rot      = I_rot * sign;
+		I_rot = I_rot * sign;
 		// force the eigenvectors to be right-hand oriented
 		Vector3r third = (I_rot.col(0)).cross(I_rot.col(1));
-		I_rot(0, 2)    = third[0];
-		I_rot(1, 2)    = third[1];
-		I_rot(2, 2)    = third[2];
+		I_rot(0, 2) = third[0];
+		I_rot(1, 2) = third[1];
+		I_rot(2, 2) = third[2];
 
-		inertia     = Vector3r(I_new(0, 0), I_new(1, 1), I_new(2, 2));
+		inertia = Vector3r(I_new(0, 0), I_new(1, 1), I_new(2, 2));
 		orientation = Quaternionr(I_rot);
 		//rotate the voronoi cell so that x - is maximal inertia axis and z - is minimal inertia axis
 		//orientation.normalize();  //not needed
@@ -205,7 +205,7 @@ void Polyhedra::Initialize()
 
 void Polyhedra::setVertices(const std::vector<Vector3r>& v)
 {
-	init    = false;
+	init = false;
 	this->v = v;
 	Initialize();
 }
@@ -366,7 +366,7 @@ void Bo1_Polyhedra_Aabb::go(const shared_ptr<Shape>& ig, shared_ptr<Bound>& bv, 
 	int      N = (int)t->v.size();
 	Vector3r v_g, mincoords(0., 0., 0.), maxcoords(0., 0., 0.);
 	for (int i = 0; i < N; i++) {
-		v_g       = se3.orientation * t->v[i]; // vertices in global coordinates
+		v_g = se3.orientation * t->v[i]; // vertices in global coordinates
 		mincoords = Vector3r(min(mincoords[0], v_g[0]), min(mincoords[1], v_g[1]), min(mincoords[2], v_g[2]));
 		maxcoords = Vector3r(max(maxcoords[0], v_g[0]), max(maxcoords[1], v_g[1]), max(maxcoords[2], v_g[2]));
 	}
@@ -388,7 +388,7 @@ void Gl1_Polyhedra::go(const shared_ptr<Shape>& cm, const shared_ptr<State>&, bo
 {
 	glMaterialv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Vector3r(cm->color[0], cm->color[1], cm->color[2]));
 	glColor3v(cm->color);
-	Polyhedra*  t       = static_cast<Polyhedra*>(cm.get());
+	Polyhedra*  t = static_cast<Polyhedra*>(cm.get());
 	vector<int> faceTri = t->GetSurfaceTriangulation();
 
 	if (wire || wire2) {
@@ -448,16 +448,16 @@ void Gl1_PolyhedraPhys::go(
 	PolyhedraPhys*    np = static_cast<PolyhedraPhys*>(ip.get());
 	shared_ptr<IGeom> ig(i->geom);
 	if (!ig) return; // changed meanwhile?
-	PolyhedraGeom* geom   = YADE_CAST<PolyhedraGeom*>(ig.get());
+	PolyhedraGeom* geom = YADE_CAST<PolyhedraGeom*>(ig.get());
 	Real           fnNorm = np->normalForce.dot(geom->normal);
 	if ((signFilter > 0 && fnNorm < 0) || (signFilter < 0 && fnNorm > 0)) return;
-	int fnSign       = fnNorm > 0 ? 1 : -1;
-	fnNorm           = math::abs(fnNorm);
+	int fnSign = fnNorm > 0 ? 1 : -1;
+	fnNorm = math::abs(fnNorm);
 	Real radiusScale = 1.;
-	maxFn            = max(fnNorm, maxFn);
+	maxFn = max(fnNorm, maxFn);
 	Real realMaxRadius;
 	if (maxRadius < 0) {
-		refRadius     = min(0.03, refRadius);
+		refRadius = min(0.03, refRadius);
 		realMaxRadius = refRadius;
 	} else
 		realMaxRadius = maxRadius;
@@ -467,7 +467,7 @@ void Gl1_PolyhedraPhys::go(
 
 	Vector3r p1 = b1->state->pos, p2 = b2->state->pos;
 	Vector3r relPos;
-	relPos    = p2 - p1;
+	relPos = p2 - p1;
 	Real dist = relPos.norm();
 
 	glDisable(GL_CULL_FACE);
@@ -497,19 +497,19 @@ void PolyhedraGeom::precompute(
 {
 	if (!isNew) {
 		orthonormal_axis = normal.cross(currentNormal);
-		Real angle       = scene->dt * 0.5 * normal.dot(rbp1.angVel + rbp2.angVel);
-		twist_axis       = angle * normal;
+		Real angle = scene->dt * 0.5 * normal.dot(rbp1.angVel + rbp2.angVel);
+		twist_axis = angle * normal;
 	} else
 		twist_axis = orthonormal_axis = Vector3r::Zero();
 	//Update contact normal
 	normal = currentNormal;
 	//Precompute shear increment
-	Vector3r c1x              = (contactPoint - rbp1.pos);
-	Vector3r c2x              = (contactPoint - rbp2.pos + shift2);
+	Vector3r c1x = (contactPoint - rbp1.pos);
+	Vector3r c2x = (contactPoint - rbp2.pos + shift2);
 	Vector3r relativeVelocity = (rbp2.vel + rbp2.angVel.cross(c2x)) - (rbp1.vel + rbp1.angVel.cross(c1x));
 	//keep the shear part only
 	relativeVelocity = relativeVelocity - normal.dot(relativeVelocity) * normal;
-	shearInc         = relativeVelocity * scene->dt;
+	shearInc = relativeVelocity * scene->dt;
 }
 
 //**********************************************************************************
@@ -529,18 +529,18 @@ Vector3r& PolyhedraGeom::rotate(Vector3r& shearForce) const
 void Ip2_PolyhedraMat_PolyhedraMat_PolyhedraPhys::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
 {
 	if (interaction->phys) return;
-	const shared_ptr<PolyhedraMat>& mat1            = YADE_PTR_CAST<PolyhedraMat>(b1);
-	const shared_ptr<PolyhedraMat>& mat2            = YADE_PTR_CAST<PolyhedraMat>(b2);
-	interaction->phys                               = shared_ptr<PolyhedraPhys>(new PolyhedraPhys());
+	const shared_ptr<PolyhedraMat>& mat1 = YADE_PTR_CAST<PolyhedraMat>(b1);
+	const shared_ptr<PolyhedraMat>& mat2 = YADE_PTR_CAST<PolyhedraMat>(b2);
+	interaction->phys = shared_ptr<PolyhedraPhys>(new PolyhedraPhys());
 	const shared_ptr<PolyhedraPhys>& contactPhysics = YADE_PTR_CAST<PolyhedraPhys>(interaction->phys);
-	Real                             Kna            = mat1->young;
-	Real                             Knb            = mat2->young;
-	Real                             Ksa            = mat1->young * mat1->poisson;
-	Real                             Ksb            = mat2->young * mat2->poisson;
-	Real                             frictionAngle  = math::min(mat1->frictionAngle, mat2->frictionAngle);
-	contactPhysics->tangensOfFrictionAngle          = math::tan(frictionAngle);
-	contactPhysics->kn                              = Kna * Knb / (Kna + Knb);
-	contactPhysics->ks                              = Ksa * Ksb / (Ksa + Ksb);
+	Real                             Kna = mat1->young;
+	Real                             Knb = mat2->young;
+	Real                             Ksa = mat1->young * mat1->poisson;
+	Real                             Ksb = mat2->young * mat2->poisson;
+	Real                             frictionAngle = math::min(mat1->frictionAngle, mat2->frictionAngle);
+	contactPhysics->tangensOfFrictionAngle = math::tan(frictionAngle);
+	contactPhysics->kn = Kna * Knb / (Kna + Knb);
+	contactPhysics->ks = Ksa * Ksb / (Ksa + Ksb);
 };
 
 void Ip2_FrictMat_PolyhedraMat_FrictPhys::go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction)
@@ -592,11 +592,11 @@ bool Law2_PolyhedraGeom_PolyhedraPhys_Volumetric::go(shared_ptr<IGeom>& /*ig*/, 
 	//zero penetration depth means no interaction force
 	if (!(contactGeom->equivalentPenetrationDepth > 1E-18) || !(contactGeom->penetrationVolume > 0)) {
 		phys->normalForce = Vector3r(0., 0., 0.);
-		phys->shearForce  = Vector3r(0., 0., 0.);
+		phys->shearForce = Vector3r(0., 0., 0.);
 		return true;
 	}
 
-	Real     prop        = math::pow(contactGeom->penetrationVolume, volumePower);
+	Real     prop = math::pow(contactGeom->penetrationVolume, volumePower);
 	Vector3r normalForce = contactGeom->normal * prop * phys->kn;
 
 	//shear force: in case the polyhdras are separated and come to contact again, one
@@ -665,7 +665,7 @@ bool Law2_PolyhedraGeom_PolyhedraPhys_Volumetric::go(shared_ptr<IGeom>& /*ig*/, 
 		*/
 	//needed to be able to acces interaction forces in other parts of yade
 	phys->normalForce = normalForce;
-	phys->shearForce  = shearForce;
+	phys->shearForce = shearForce;
 	return true;
 }
 

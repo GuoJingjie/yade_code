@@ -19,9 +19,9 @@ class FacetTopologyAnalyzer : public GlobalEngine {
 		        , coord(_coord)
 		        , pos(_pos)
 		{
-			index         = 3 * id + vertexNo;
+			index = 3 * id + vertexNo;
 			isLowestIndex = true;
-			vertexId      = -1;
+			vertexId = -1;
 		}
 		//! Facet (body id) that we represent
 		Body::id_t id;

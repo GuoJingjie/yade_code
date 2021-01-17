@@ -50,13 +50,13 @@ template <int levelHP> struct NumTraitsRealHP : GenericNumTraits<::yade::RealHP<
 	typedef ::yade::RealHP<levelHP>              Nested;
 
 	enum {
-		IsInteger             = 0,
-		IsSigned              = 1,
-		IsComplex             = 0,
+		IsInteger = 0,
+		IsSigned = 1,
+		IsComplex = 0,
 		RequireInitialization = 1,
-		ReadCost              = EigenCostRealHP<Underlying>::ReadCost,
-		AddCost               = EigenCostRealHP<Underlying>::AddCost,
-		MulCost               = EigenCostRealHP<Underlying>::MulCost
+		ReadCost = EigenCostRealHP<Underlying>::ReadCost,
+		AddCost = EigenCostRealHP<Underlying>::AddCost,
+		MulCost = EigenCostRealHP<Underlying>::MulCost
 	};
 
 	static constexpr long get_default_prec = std::numeric_limits<Real>::digits;
@@ -127,13 +127,13 @@ template <int levelHP> struct NumTraitsComplexHP : GenericNumTraits<::yade::Comp
 	typedef ::yade::ComplexHP<levelHP>                      Nested;
 
 	enum {
-		IsInteger             = 0,
-		IsSigned              = 1,
-		IsComplex             = 1,
+		IsInteger = 0,
+		IsSigned = 1,
+		IsComplex = 1,
 		RequireInitialization = 1,
-		ReadCost              = 2 * EigenCostRealHP<Underlying>::ReadCost,
-		AddCost               = 2 * EigenCostRealHP<Underlying>::AddCost,
-		MulCost               = 4 * EigenCostRealHP<Underlying>::MulCost + 2 * EigenCostRealHP<Underlying>::AddCost
+		ReadCost = 2 * EigenCostRealHP<Underlying>::ReadCost,
+		AddCost = 2 * EigenCostRealHP<Underlying>::AddCost,
+		MulCost = 4 * EigenCostRealHP<Underlying>::MulCost + 2 * EigenCostRealHP<Underlying>::AddCost
 	};
 
 	static constexpr long get_default_prec = std::numeric_limits<Real>::digits;

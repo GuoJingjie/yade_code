@@ -34,27 +34,27 @@ void Disp2DPropLoadEngine::postLoad(Disp2DPropLoadEngine&)
 void Disp2DPropLoadEngine::action()
 {
 	if (LOG) cerr << "debut applyCondi !!" << endl;
-	leftbox  = Body::byId(id_boxleft);
+	leftbox = Body::byId(id_boxleft);
 	rightbox = Body::byId(id_boxright);
 	frontbox = Body::byId(id_boxfront);
-	backbox  = Body::byId(id_boxback);
-	topbox   = Body::byId(id_topbox);
-	boxbas   = Body::byId(id_boxbas);
+	backbox = Body::byId(id_boxback);
+	topbox = Body::byId(id_topbox);
+	boxbas = Body::byId(id_boxbas);
 
 	if (firstIt) {
-		it_begin       = scene->iter;
-		H0             = topbox->state->pos.y();
-		X0             = topbox->state->pos.x();
+		it_begin = scene->iter;
+		H0 = topbox->state->pos.y();
+		X0 = topbox->state->pos.x();
 		Vector3r F_sup = scene->forces.getForce(id_topbox);
-		Fn0            = F_sup.y();
-		Ft0            = F_sup.x();
+		Fn0 = F_sup.y();
+		Ft0 = F_sup.x();
 
 		Real OnlySsInt = 0 // the half number of real sphere-sphere (only) interactions, at the beginning of the perturbation
 		        ,
 		     TotInt = 0 // the half number of all the real interactions, at the beginning of the perturbation
 		        ;
 
-		InteractionContainer::iterator ii    = scene->interactions->begin();
+		InteractionContainer::iterator ii = scene->interactions->begin();
 		InteractionContainer::iterator iiEnd = scene->interactions->end();
 		for (; ii != iiEnd; ++ii) {
 			if ((*ii)->isReal()) {
@@ -65,8 +65,8 @@ void Disp2DPropLoadEngine::action()
 			}
 		}
 
-		coordSs0  = OnlySsInt / 8590; // 8590 is the number of spheres in the CURRENT case
-		coordTot0 = TotInt / 8596;    // 8596 is the number of bodies in the CURRENT case
+		coordSs0 = OnlySsInt / 8590; // 8590 is the number of spheres in the CURRENT case
+		coordTot0 = TotInt / 8596;   // 8596 is the number of bodies in the CURRENT case
 
 		firstIt = false;
 	}
@@ -85,8 +85,8 @@ void Disp2DPropLoadEngine::action()
 void Disp2DPropLoadEngine::letDisturb()
 {
 	const Real& dt = scene->dt;
-	dgamma         = cos(theta * Mathr::PI / 180.0) * v * dt;
-	dh             = sin(theta * Mathr::PI / 180.0) * v * dt;
+	dgamma = cos(theta * Mathr::PI / 180.0) * v * dt;
+	dh = sin(theta * Mathr::PI / 180.0) * v * dt;
 
 	Real Ysup = topbox->state->pos.y();
 	Real Ylat = leftbox->state->pos.y();
@@ -121,10 +121,10 @@ void Disp2DPropLoadEngine::letDisturb()
 	if (LOG) cout << "Quaternion associe a la rotation incrementale : " << qcorr.w() << " " << qcorr.x() << " " << qcorr.y() << " " << qcorr.z() << endl;
 
 	// On applique la rotation en changeant l'orientation des plaques, leurs vang et en affectant donc alpha
-	leftbox->state->ori    = qcorr * leftbox->state->ori;
+	leftbox->state->ori = qcorr * leftbox->state->ori;
 	leftbox->state->angVel = Vector3r(0, 0, 1) * dalpha / dt;
 
-	rightbox->state->ori    = qcorr * leftbox->state->ori;
+	rightbox->state->ori = qcorr * leftbox->state->ori;
 	rightbox->state->angVel = Vector3r(0, 0, 1) * dalpha / dt;
 }
 
@@ -132,7 +132,7 @@ void Disp2DPropLoadEngine::letDisturb()
 void Disp2DPropLoadEngine::computeAlpha()
 {
 	Quaternionr orientationLeftBox, orientationRightBox;
-	orientationLeftBox  = leftbox->state->ori;
+	orientationLeftBox = leftbox->state->ori;
 	orientationRightBox = rightbox->state->ori;
 	if (orientationLeftBox.matrix() != orientationRightBox.matrix()) {
 		cout << "WARNING !!! your lateral boxes have not the same orientation, you're not in the case of a box imagined for creating these engines"
@@ -150,11 +150,11 @@ void Disp2DPropLoadEngine::stopMovement()
 	topbox->state->vel = Vector3r(0, 0, 0);
 
 	// de la plaque gauche
-	leftbox->state->vel    = Vector3r(0, 0, 0);
+	leftbox->state->vel = Vector3r(0, 0, 0);
 	leftbox->state->angVel = Vector3r(0, 0, 0);
 
 	// de la plaque droite
-	rightbox->state->vel    = Vector3r(0, 0, 0);
+	rightbox->state->vel = Vector3r(0, 0, 0);
 	rightbox->state->angVel = Vector3r(0, 0, 0);
 }
 
@@ -166,11 +166,11 @@ void Disp2DPropLoadEngine::saveData()
 	Real Xright = rightbox->state->pos.x() - (YADE_CAST<Box*>(rightbox->shape.get()))->extents.x();
 
 	Real Zfront = frontbox->state->pos.z() - YADE_CAST<Box*>(frontbox->shape.get())->extents.z();
-	Real Zback  = backbox->state->pos.z() + (YADE_CAST<Box*>(backbox->shape.get()))->extents.z();
+	Real Zback = backbox->state->pos.z() + (YADE_CAST<Box*>(backbox->shape.get()))->extents.z();
 
 	Real Scontact = (Xright - Xleft) * (Zfront - Zback); // that's so the value of section at the middle of the height of the box
 
-	InteractionContainer::iterator ii    = scene->interactions->begin();
+	InteractionContainer::iterator ii = scene->interactions->begin();
 	InteractionContainer::iterator iiEnd = scene->interactions->end();
 
 	Real OnlySsInt = 0 // the half number of real sphere-sphere (only) interactions, at the end of the perturbation
@@ -186,8 +186,8 @@ void Disp2DPropLoadEngine::saveData()
 		}
 	}
 
-	Real coordSs     = OnlySsInt / 8590, // 8590 is the number of spheres in the CURRENT case
-	        coordTot = TotInt / 8596;    // 8596 is the number of bodies in the CURRENT case
+	Real coordSs = OnlySsInt / 8590,  // 8590 is the number of spheres in the CURRENT case
+	        coordTot = TotInt / 8596; // 8596 is the number of bodies in the CURRENT case
 
 	Vector3r F_sup = scene->forces.getForce(id_topbox);
 

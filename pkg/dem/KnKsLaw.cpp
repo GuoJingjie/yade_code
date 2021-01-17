@@ -65,30 +65,30 @@ CREATE_LOGGER(Law2_SCG_KnKsPhys_KnKsLaw);
 
 bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip, Interaction* contact)
 {
-	const Real&        dt         = scene->dt;
-	int                id1        = contact->getId1();
-	int                id2        = contact->getId2();
-	ScGeom*            geom       = static_cast<ScGeom*>(ig.get());
-	KnKsPhys*          phys       = static_cast<KnKsPhys*>(ip.get());
-	State*             de1        = Body::byId(id1, scene)->state.get();
-	State*             de2        = Body::byId(id2, scene)->state.get();
-	Shape*             shape1     = Body::byId(id1, scene)->shape.get();
-	Shape*             shape2     = Body::byId(id2, scene)->shape.get();
-	PotentialParticle* s1         = static_cast<PotentialParticle*>(shape1);
-	PotentialParticle* s2         = static_cast<PotentialParticle*>(shape2);
+	const Real&        dt = scene->dt;
+	int                id1 = contact->getId1();
+	int                id2 = contact->getId2();
+	ScGeom*            geom = static_cast<ScGeom*>(ig.get());
+	KnKsPhys*          phys = static_cast<KnKsPhys*>(ip.get());
+	State*             de1 = Body::byId(id1, scene)->state.get();
+	State*             de2 = Body::byId(id2, scene)->state.get();
+	Shape*             shape1 = Body::byId(id1, scene)->shape.get();
+	Shape*             shape2 = Body::byId(id2, scene)->shape.get();
+	PotentialParticle* s1 = static_cast<PotentialParticle*>(shape1);
+	PotentialParticle* s2 = static_cast<PotentialParticle*>(shape2);
 	Vector3r&          shearForce = phys->shearForce;
-	Real               un         = geom->penetrationDepth;
+	Real               un = geom->penetrationDepth;
 	//TRVAR3(geom->penetrationDepth,de1->se3.position,de2->se3.position);
 
 	/* Need to initialise in python.  In the 1st time step.  All the particles in contact (controlled by initialOverlap) are identified.  The interactions are set to tensile and cohesive (tensionBroken = false and cohesionBroken = false).  If there is no initial tension or cohesion, the contact law is run in a tensionless or cohesionless mode */
 
 	if (un < 0.0) {
 		if (neverErase) {
-			phys->shearForce    = Vector3r::Zero();
-			phys->normalForce   = Vector3r::Zero();
+			phys->shearForce = Vector3r::Zero();
+			phys->normalForce = Vector3r::Zero();
 			phys->normalViscous = Vector3r::Zero();
-			phys->shearViscous  = Vector3r::Zero();
-			geom->normal        = Vector3r::Zero();
+			phys->shearViscous = Vector3r::Zero();
+			geom->normal = Vector3r::Zero();
 			phys->tensionBroken = true;
 		} else {
 			scene->interactions->requestErase(id1, id2);
@@ -104,7 +104,7 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 	//Linear elasticity giving "trial" shear force
 
 	Vector3r shiftVel = scene->isPeriodic ? Vector3r(scene->cell->velGrad * scene->cell->hSize * contact->cellDist.cast<Real>()) : Vector3r::Zero();
-	Vector3r shift2   = scene->isPeriodic ? Vector3r(scene->cell->hSize * contact->cellDist.cast<Real>()) : Vector3r::Zero();
+	Vector3r shift2 = scene->isPeriodic ? Vector3r(scene->cell->hSize * contact->cellDist.cast<Real>()) : Vector3r::Zero();
 
 	const shared_ptr<Body>&b1 = Body::byId(id1, scene), b2 = Body::byId(id2, scene);
 	//erase the interaction when aAbB shows separation, otherwise keep it to be able to store previous separating plane for fast detection of separation
@@ -116,11 +116,11 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 	}
 
 	//	Vector3r shift2(0,0,0);
-	Vector3r incidentV      = geom->getIncidentVel(de1, de2, dt, shift2, shiftVel, /*preventGranularRatcheting*/ false);
-	Vector3r incidentVn     = geom->normal.dot(incidentV) * geom->normal; // contact normal velocity
-	Vector3r incidentVs     = incidentV - incidentVn;                     // contact shear velocity
+	Vector3r incidentV = geom->getIncidentVel(de1, de2, dt, shift2, shiftVel, /*preventGranularRatcheting*/ false);
+	Vector3r incidentVn = geom->normal.dot(incidentV) * geom->normal; // contact normal velocity
+	Vector3r incidentVs = incidentV - incidentVn;                     // contact shear velocity
 	Vector3r shearIncrement = incidentVs * dt;
-	phys->shearDir          = shearIncrement;
+	phys->shearDir = shearIncrement;
 	phys->shearIncrementForCD += shearIncrement.norm();
 	Real du = 0.0;
 	//Real debugFn = 0.0;
@@ -132,7 +132,7 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 	/* Elastic and plastic displacement can have negative signs but must be consistent throughout the simulation */
 	if (phys->initialShearDir.norm() < pow(10, -11)) {
 		phys->initialShearDir = phys->shearDir;
-		du                    = shearIncrement.norm();
+		du = shearIncrement.norm();
 		if (fabs(phys->mobilizedShear) > 0.99999) {
 			phys->u_cumulative += du;
 			phys->cumulative_us += du;
@@ -159,7 +159,7 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 	//		phys->contactArea = phys->unitWidth2D*phys->jointLength;
 	//	}
 	if (s1->isBoundary == true || s2->isBoundary == true) {
-		phys->tensionBroken  = true;
+		phys->tensionBroken = true;
 		phys->cohesionBroken = true;
 	}
 	if (!Talesnick) { //FIXME: Talesnick is not developed for the PPs. Either remove this check or develop it
@@ -179,10 +179,10 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 	if ((un < 0.0 && fabs(phys->prevSigma) > phys->tension && phys->tensionBroken == false /* first time tension is broken */)
 	    || (un < 0.0 && phys->tensionBroken == true)) {
 		if (neverErase) {
-			phys->shearForce    = Vector3r::Zero();
-			phys->normalForce   = Vector3r::Zero();
+			phys->shearForce = Vector3r::Zero();
+			phys->normalForce = Vector3r::Zero();
 			phys->normalViscous = Vector3r::Zero();
-			geom->normal        = Vector3r::Zero();
+			geom->normal = Vector3r::Zero();
 			phys->tensionBroken = true;
 		} else {
 			return false;
@@ -194,12 +194,12 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 	/*ORIGINAL */
 	Vector3r c1x = geom->contactPoint - de1->pos;
 	Vector3r c2x = geom->contactPoint - de2->pos;
-	incidentV    = (de2->vel + de2->angVel.cross(c2x))
+	incidentV = (de2->vel + de2->angVel.cross(c2x))
 	        - (de1->vel
 	           + de1->angVel.cross(
 	                   c1x)); //FIXME: If we need to recalculate the relative velocity here, we should add shiftVel manually in this line, to handle periodicity @vsangelidakis
-	incidentVn     = geom->normal.dot(incidentV) * geom->normal; // contact normal velocity
-	incidentVs     = incidentV - incidentVn;                     // contact shear velocity
+	incidentVn = geom->normal.dot(incidentV) * geom->normal; // contact normal velocity
+	incidentVs = incidentV - incidentVn;                     // contact shear velocity
 	shearIncrement = incidentVs
 	        * dt; //FIXME: Do we need to recalculate incidentV, incidentVn, incidentVs and shearIncrement here? Need to revise whether to subtract shift2 from c2x @vsangelidakis
 
@@ -217,14 +217,14 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 
 	//	const shared_ptr<Body>& b1=Body::byId(id1,scene);
 	//	const shared_ptr<Body>& b2=Body::byId(id2,scene);
-	Real mbar    = (!b1->isDynamic() && b2->isDynamic())
-	           ? de2->mass
-	           : ((!b2->isDynamic() && b1->isDynamic())
-	                      ? de1->mass
-	                      : (de1->mass * de2->mass
-                              / (de1->mass + de2->mass))); // get equivalent mass if both bodies are dynamic, if not set it equal to the one of the dynamic body
-	Real Cn_crit = 2. * sqrt(mbar * phys->kn);            // Critical damping coefficient (normal direction)
-	Real Cs_crit = 2. * sqrt(mbar * phys->ks);            // Critical damping coefficient (shear direction)
+	Real mbar = (!b1->isDynamic() && b2->isDynamic())
+	        ? de2->mass
+	        : ((!b2->isDynamic() && b1->isDynamic())
+	                   ? de1->mass
+	                   : (de1->mass * de2->mass
+	                      / (de1->mass + de2->mass))); // get equivalent mass if both bodies are dynamic, if not set it equal to the one of the dynamic body
+	Real Cn_crit = 2. * sqrt(mbar * phys->kn);         // Critical damping coefficient (normal direction)
+	Real Cs_crit = 2. * sqrt(mbar * phys->ks);         // Critical damping coefficient (shear direction)
 	// Note: to compare with the analytical solution you provide cn and cs directly (since here we used a different method to define c_crit)
 	Real cn = Cn_crit * phys->viscousDamping; // Damping normal coefficient
 	Real cs = Cs_crit * phys->viscousDamping; // Damping tangential coefficient
@@ -268,19 +268,19 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 
 	if (s1->isBoundary == true || s2->isBoundary == true || phys->jointType == 2) { // clay layer at boundary;
 		phys->effective_phi = phys->phi_b;                                      // - 3.25*(1.0-exp(-fabs(phys->cumulative_us)/0.4));
-		tan_effective_phi   = tan(phys->effective_phi / 180.0 * Mathr::PI);
+		tan_effective_phi = tan(phys->effective_phi / 180.0 * Mathr::PI);
 	} else if (phys->intactRock == true) {
 		phys->effective_phi = phys->phi_r + (phys->phi_b - phys->phi_r) * (exp(-fabs(phys->u_cumulative) / degradeLength));
-		tan_effective_phi   = tan(phys->effective_phi / 180.0 * Mathr::PI);
+		tan_effective_phi = tan(phys->effective_phi / 180.0 * Mathr::PI);
 	} else {
 		phys->effective_phi = phys->phi_b;
-		tan_effective_phi   = tan(phys->effective_phi / 180.0 * Mathr::PI);
+		tan_effective_phi = tan(phys->effective_phi / 180.0 * Mathr::PI);
 	}
 
 
 	/* shear loss */
 	Vector3r dampedShearForce = shearForce;
-	Real     maxFs            = 0.0;
+	Real     maxFs = 0.0;
 	if (un > 0.0 /*compression*/) {
 		Real fN = phys->normalForce.norm();
 		if (phys->intactRock == true) {
@@ -288,7 +288,7 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 				maxFs = math::max(fN, 0.0) * tan_effective_phi;
 			} else {
 				Real cohesiveForce = phys->cohesion * math::max(pow(10, -15), phys->contactArea);
-				maxFs              = cohesiveForce + math::max(fN, 0.0) * tan_effective_phi;
+				maxFs = cohesiveForce + math::max(fN, 0.0) * tan_effective_phi;
 			}
 		} else {
 			maxFs = math::max(fN, 0.0) * tan_effective_phi;
@@ -302,25 +302,25 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 	if (!scene->trackEnergy && !traceEnergy) { //Update force but don't compute energy terms (see below))
 		if (shearForce.norm() > maxFs) {
 			phys->isSliding = true;
-			Real ratio      = maxFs / shearForce.norm();
+			Real ratio = maxFs / shearForce.norm();
 			shearForce *= ratio;
 			if (allowBreakage == true) { phys->cohesionBroken = true; }
-			dampedShearForce   = shearForce; /* no damping when it slides */
+			dampedShearForce = shearForce; /* no damping when it slides */
 			phys->shearViscous = Vector3r(0, 0, 0);
 		} else {
 			phys->shearViscous = Vector3r::Zero(); //cs*incidentVs;  //For now we do not consider viscous damping in the shear direction
-			dampedShearForce   = shearForce - phys->shearViscous;
+			dampedShearForce = shearForce - phys->shearViscous;
 		}
 	} else {
 		//almost the same with additional Vector3r instatinated for energy tracing,
 		//duplicated block to make sure there is no cost for the instanciation of the vector when traceEnergy==false
 		if (shearForce.norm() > maxFs) {
-			phys->isSliding               = true;
-			Real               ratio      = maxFs / shearForce.norm();
+			phys->isSliding = true;
+			Real               ratio = maxFs / shearForce.norm();
 			/*const*/ Vector3r trialForce = shearForce; //Store prev force for definition of plastic slip
 			shearForce *= ratio;
 			if (allowBreakage == true) { phys->cohesionBroken = true; }
-			dampedShearForce   = shearForce; /* no damping when it slides */
+			dampedShearForce = shearForce; /* no damping when it slides */
 			phys->shearViscous = Vector3r(0, 0, 0);
 
 			/* Plastic dissipation due to friction */
@@ -330,7 +330,7 @@ bool Law2_SCG_KnKsPhys_KnKsLaw::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip,
 				scene->energy->add(dissip, "plastDissip", plastDissipIx, /*reset at every timestep*/ false);
 		} else {
 			phys->shearViscous = Vector3r::Zero(); //cs*incidentVs;  //For now we do not consider viscous damping in the shear direction
-			dampedShearForce   = shearForce - phys->shearViscous;
+			dampedShearForce = shearForce - phys->shearViscous;
 		}
 
 		// ------------------------------------------------------------------------------------------------------------------------------
@@ -420,12 +420,12 @@ void Ip2_FrictMat_FrictMat_KnKsPhys::go(const shared_ptr<Material>& b1, const sh
 	//	contactPhysics->useOverlapVol = useOverlapVol;
 	contactPhysics->knVol = Knormal; //Kn
 	contactPhysics->ksVol = Kshear;  //Ks
-	contactPhysics->kn_i  = Knormal;
-	contactPhysics->ks_i  = Kshear;
+	contactPhysics->kn_i = Knormal;
+	contactPhysics->ks_i = Kshear;
 	//	contactPhysics->u_peak = u_peak;
-	contactPhysics->maxClosure     = maxClosure;
+	contactPhysics->maxClosure = maxClosure;
 	contactPhysics->cohesionBroken = cohesionBroken;
-	contactPhysics->tensionBroken  = tensionBroken;
+	contactPhysics->tensionBroken = tensionBroken;
 	//	contactPhysics->unitWidth2D = unitWidth2D;
 	contactPhysics->frictionAngle = math::min(fa, fb);
 	if (!useFaceProperties) {
@@ -439,8 +439,8 @@ void Ip2_FrictMat_FrictMat_KnKsPhys::go(const shared_ptr<Material>& b1, const sh
 	                                          //	contactPhysics->calJointLength = calJointLength;
 	                                          //	contactPhysics->twoDimension = twoDimension;
 	contactPhysics->useFaceProperties = useFaceProperties;
-	contactPhysics->brittleLength     = brittleLength;
-	interaction->phys                 = contactPhysics;
+	contactPhysics->brittleLength = brittleLength;
+	interaction->phys = contactPhysics;
 }
 
 /* ***************************************************************************************************************************** */

@@ -20,14 +20,14 @@ namespace CGT {
 
 	template <class TT> _Tesselation<TT>::_Tesselation(void)
 	{
-		Tri                          = new RTriangulation;
-		Tes                          = Tri;
-		computed                     = false;
-		maxId                        = -1;
-		TotalFiniteVoronoiVolume     = 0;
-		area                         = 0;
+		Tri = new RTriangulation;
+		Tes = Tri;
+		computed = false;
+		maxId = -1;
+		TotalFiniteVoronoiVolume = 0;
+		area = 0;
 		TotalInternalVoronoiPorosity = 0;
-		TotalInternalVoronoiVolume   = 0;
+		TotalInternalVoronoiVolume = 0;
 	}
 	template <class TT>
 	_Tesselation<TT>::_Tesselation(RTriangulation& T)
@@ -57,7 +57,7 @@ namespace CGT {
 			Vh->info().setId(id);
 			Vh->info().isFictious = isFictious;
 			assert(vertexHandles.size() > id);
-			vertexHandles[id]             = Vh;
+			vertexHandles[id] = Vh;
 			/*if ( !isFictious ) */ maxId = math::max(maxId, (int)id);
 		} else
 			cout << "Failed to triangulate body with id=" << id << " Point=" << Point(x, y, z) << " rad=" << rad << endl;
@@ -143,36 +143,36 @@ namespace CGT {
 	template <class TT>
 	Point _Tesselation<TT>::circumCenter(const CellHandle& cell, const short facet, const Real wExt, bool& violate, Sphere& SAlpha, CVector& normal)
 	{
-		const Sphere& S0      = cell->vertex(facetVertices[facet][0])->point();
-		const Sphere& S1      = cell->vertex(facetVertices[facet][1])->point();
-		const Sphere& S2      = cell->vertex(facetVertices[facet][2])->point();
-		const Sphere& Sin     = cell->vertex(facet)->point();
+		const Sphere& S0 = cell->vertex(facetVertices[facet][0])->point();
+		const Sphere& S1 = cell->vertex(facetVertices[facet][1])->point();
+		const Sphere& S2 = cell->vertex(facetVertices[facet][2])->point();
+		const Sphere& Sin = cell->vertex(facet)->point();
 		CVector       surface = 0.5 * cross_product(S0.point() - S1.point(), S0.point() - S2.point());
 		//check if the surface vector is inward or outward
 		Real dotP = surface * (S0.point() - Sin.point());
 		if (dotP < 0) surface = -surface;
 		Real area = sqrt(surface.squared_length());
-		normal    = surface / area; //unit normal
-		                            // 	p1 = setCircumCenter(cell1);//starting point of the polygon
-		Point vv  = setCircumCenter(cell);
-		Real  h1  = (S0.point() - vv) * normal; //orthogonal distance from Voronoi vertex to the plane in which the spheres lie, call the intersection V
-		Point p2  = vv + h1 * normal;
+		normal = surface / area; //unit normal
+		                         // 	p1 = setCircumCenter(cell1);//starting point of the polygon
+		Point vv = setCircumCenter(cell);
+		Real  h1 = (S0.point() - vv) * normal; //orthogonal distance from Voronoi vertex to the plane in which the spheres lie, call the intersection V
+		Point p2 = vv + h1 * normal;
 		Real  sqR = (p2 - S0.point()).squared_length(); //squared distance between V and the center of sphere 0
-		Real  temp   = wExt + S0.weight() - sqR;
+		Real  temp = wExt + S0.weight() - sqR;
 		Point OAlpha = p2 + sqrt(temp) * normal; //center of the alpha sphere
-		SAlpha       = Sphere(OAlpha, wExt);
-		p2           = circumCenter(SAlpha, S0, S1, S2);
-		violate      = ((p2 - vv) * normal < 0);
+		SAlpha = Sphere(OAlpha, wExt);
+		p2 = circumCenter(SAlpha, S0, S1, S2);
+		violate = ((p2 - vv) * normal < 0);
 		// 	cerr<<"circumCenter(0) "<<OAlpha<<" "<<vv<<" "<< S0.point() <<" "<<S1.point()  <<" "<< S2.point() <<" "<< Sin.point() <<" "<< S0.point() << " "<<  S0.weight()<<" "<<normal<<" " <<violate<<endl;
 		return p2;
 	}
 
 	template <class TT> Point _Tesselation<TT>::circumCenter(const CellHandle& cell, const short facet, const Sphere& sExt, bool& violate)
 	{
-		const Sphere& S0      = cell->vertex(facetVertices[facet][0])->point();
-		const Sphere& S1      = cell->vertex(facetVertices[facet][1])->point();
-		const Sphere& S2      = cell->vertex(facetVertices[facet][2])->point();
-		const Sphere& Sin     = cell->vertex(facet)->point();
+		const Sphere& S0 = cell->vertex(facetVertices[facet][0])->point();
+		const Sphere& S1 = cell->vertex(facetVertices[facet][1])->point();
+		const Sphere& S2 = cell->vertex(facetVertices[facet][2])->point();
+		const Sphere& Sin = cell->vertex(facet)->point();
 		CVector       surface = 0.5 * cross_product(S0.point() - S1.point(), S0.point() - S2.point());
 		//check if the surface vector is inward or outward
 		Real dotP = surface * (S0.point() - Sin.point());
@@ -182,7 +182,7 @@ namespace CGT {
 		//      p1 = setCircumCenter(cell1);//starting point of the polygon
 		Point vv = setCircumCenter(cell);
 		Point p2 = circumCenter(S0, S1, S2, sExt);
-		violate  = ((p2 - vv) * (S0.point() - Sin.point()) < 0);
+		violate = ((p2 - vv) * (S0.point() - Sin.point()) < 0);
 		return p2;
 	}
 
@@ -304,15 +304,15 @@ namespace CGT {
 			//check if the surface vector is inward or outward
 			Real dotP = surface * (f->first->vertex(facetVertices[f->second][0])->point().point() - pp);
 			if (dotP < 0) surface = -surface;
-			Real    area   = sqrt(surface.squared_length());
+			Real    area = sqrt(surface.squared_length());
 			CVector normal = surface / area; //unit normal
 			                                 // 		std::cerr <<"dotP="<<dotP<<std::endl<<"surface: "<<surface<<std::endl;
 
 			Real h1 = (f->first->vertex(facetVertices[idx][0])->point().point() - vv) * surface
 			        / area; //orthogonal distance from Voronoi vertex to the plane in which the spheres lie, call the intersection V
-			Point V       = vv + h1 * normal;
+			Point V = vv + h1 * normal;
 			Real  distLiu = sqrt((V - Point(0, 0, 0)).squared_length());
-			Real  sqR     = (V - f->first->vertex(facetVertices[idx][0])->point().point())
+			Real  sqR = (V - f->first->vertex(facetVertices[idx][0])->point().point())
 			                   .squared_length(); //squared distance between V and the center of sphere 0
 			Real temp = alpha + f->first->vertex(facetVertices[idx][0])->point().weight() - sqR;
 			if (temp < 0) {
@@ -321,7 +321,7 @@ namespace CGT {
 			}
 			if (temp > maxWeight) temp = maxWeight; //if alpha vertex is too far, crop
 			Real h2 = sqrt(temp);                   // this is now the distance from Voronoi vertex to "alpha" vertex (after cropping if needed)
-			V       = V + h2 * normal;
+			V = V + h2 * normal;
 			std::cerr << "dist alpha center:" << sqrt((V - Point(0, 0, 0)).squared_length()) << "(vs. Liu:" << distLiu << ")" << std::endl;
 		}
 	}
@@ -394,7 +394,7 @@ namespace CGT {
 
 		} else { //insert one sphere per exterior/infinite cell, the radius is derived from the alpha value of the corresponding cell or 4*alpha for infinite cells
 
-			Real             alphaRad   = sqrt(alpha);
+			Real             alphaRad = sqrt(alpha);
 			Real             deltaAlpha = alphaRad - sqrt(shrinkedAlpha);
 			std::list<Facet> facets; // the infinite ones
 			as.get_alpha_shape_facets(std::back_inserter(facets), AlphaShape::REGULAR);
@@ -414,7 +414,7 @@ namespace CGT {
 				} else {
 					if (!outerCell->info().isFictious) {
 						outerCell->info().isFictious = true;
-						Point p                      = setCircumCenter(outerCell);
+						Point p = setCircumCenter(outerCell);
 						Real  weight
 						        = (p - outerCell->vertex(0)->point().point()).squared_length() - outerCell->vertex(0)->point().weight();
 						VertexHandle Vh = Tri->insert(Sphere(p, pow(sqrt(weight) - deltaAlpha, 2)));
@@ -470,7 +470,7 @@ namespace CGT {
 					cerr << " : __Vh==NULL__ :(" << endl;
 			}
 		} else { //insert one sphere per exterior/infinite cell, the radius is derived from the alpha value of the corresponding cell or 4*alpha for infinite cells
-			Real alphaRad   = sqrt(alpha);
+			Real alphaRad = sqrt(alpha);
 			Real deltaAlpha = alphaRad - sqrt(shrinkedAlpha);
 			for (auto fp = facets.begin(); fp != facets.end(); fp++) {
 				Facet f = *fp;
@@ -487,8 +487,8 @@ namespace CGT {
 						cerr << " : __Vh==NULL__ :(" << endl;
 				} else if (!outerCell->info().isFictious) {
 					outerCell->info().isFictious = true;
-					Point p                      = setCircumCenter(outerCell);
-					Real  weight    = (p - outerCell->vertex(0)->point().point()).squared_length() - outerCell->vertex(0)->point().weight();
+					Point p = setCircumCenter(outerCell);
+					Real  weight = (p - outerCell->vertex(0)->point().point()).squared_length() - outerCell->vertex(0)->point().weight();
 					VertexHandle Vh = Tri->insert(Sphere(p, pow(sqrt(weight) - deltaAlpha, 2)));
 					if (Vh != NULL) Vh->info().isFictious = true;
 					else
@@ -504,15 +504,15 @@ namespace CGT {
 				short ftx = 0;
 				while (!e->first->vertex(facetVertices[e->second][ftx])->info().isFictious)
 					ftx++;
-				const Point& fictV         = e->first->vertex(facetVertices[e->second][ftx])->point().point();
-				const int&   id1           = e->first->vertex(facetVertices[e->second][ftx > 0 ? ftx - 1 : 2])->info().id();
-				const int&   id2           = e->first->vertex(facetVertices[e->second][ftx < 2 ? ftx + 1 : 0])->info().id();
-				const Point& p1            = e->first->vertex(facetVertices[e->second][ftx > 0 ? ftx - 1 : 2])->point().point();
-				const Point& p2            = e->first->vertex(facetVertices[e->second][ftx < 2 ? ftx + 1 : 0])->point().point();
-				CVector      u             = setCircumCenter(e->first) - setCircumCenter(e->first->neighbor(e->second));
+				const Point& fictV = e->first->vertex(facetVertices[e->second][ftx])->point().point();
+				const int&   id1 = e->first->vertex(facetVertices[e->second][ftx > 0 ? ftx - 1 : 2])->info().id();
+				const int&   id2 = e->first->vertex(facetVertices[e->second][ftx < 2 ? ftx + 1 : 0])->info().id();
+				const Point& p1 = e->first->vertex(facetVertices[e->second][ftx > 0 ? ftx - 1 : 2])->point().point();
+				const Point& p2 = e->first->vertex(facetVertices[e->second][ftx < 2 ? ftx + 1 : 0])->point().point();
+				CVector      u = setCircumCenter(e->first) - setCircumCenter(e->first->neighbor(e->second));
 				int          makeClockWise = u * cross_product(p2 - p1, fictV - p1) > 0 ? 1 : -1;
-				areas[id1]                 = areas[id1] + (makeClockWise * 0.5) * cross_product(u, setCircumCenter(e->first) - p1);
-				areas[id2]                 = areas[id2] - (makeClockWise * 0.5) * cross_product(u, setCircumCenter(e->first) - p2);
+				areas[id1] = areas[id1] + (makeClockWise * 0.5) * cross_product(u, setCircumCenter(e->first) - p1);
+				areas[id2] = areas[id2] - (makeClockWise * 0.5) * cross_product(u, setCircumCenter(e->first) - p2);
 			}
 		}
 
@@ -521,7 +521,7 @@ namespace CGT {
 		for (short id = 0; id <= maxId; id++) {
 			if (areas[id] != CVector(0, 0, 0)) {
 				AlphaCap cap;
-				cap.id     = id;
+				cap.id = id;
 				cap.normal = areas[id];
 				// 			cerr << "cap: "<<cap.id<<" "<<cap.normal<<endl;
 				faces.push_back(cap);
@@ -549,9 +549,9 @@ namespace CGT {
 		p1 = setCircumCenter(cell1); //starting point of the polygon
 		CVector branch, normal;
 		CVector branchArea(0, 0, 0);
-		pA                = (ed_it.first)->vertex(ed_it.second)->point().point(); //one sphere
-		pB                = (ed_it.first)->vertex(ed_it.third)->point().point();  //another sphere
-		CVector AB        = pB - pA;
+		pA = (ed_it.first)->vertex(ed_it.second)->point().point(); //one sphere
+		pB = (ed_it.first)->vertex(ed_it.third)->point().point();  //another sphere
+		CVector AB = pB - pA;
 		bool    interior1 = true; //keep track of last cell's status
 		bool    interior2;
 		do {
@@ -559,8 +559,8 @@ namespace CGT {
 			interior2 = (as.classify(cell2) == AlphaShape::INTERIOR);
 			if (interior2) { //easy
 				setCircumCenter(cell2);
-				p2         = cell2->info();
-				branch     = p2 - p1;
+				p2 = cell2->info();
+				branch = p2 - p1;
 				branchArea = branchArea + cross_product(branch, p1 - CGAL::ORIGIN);
 				cerr << "branchArea(1) " << branch << " cross " << p1 << endl;
 			} else { //tricky, we have to construct the face between INTERIOR-EXTERIOR, or even EXTERIOR-EXTERIOR
@@ -594,10 +594,10 @@ namespace CGT {
 				Real dotP = surface * (baseCell->vertex(facetVertices[idx][0])->point().point() - baseCell->vertex(idx)->point().point());
 				if (dotP < 0) surface = -surface;
 				Real area = sqrt(surface.squared_length());
-				normal    = surface / area; //unit normal
-				Real h1   = (baseCell->vertex(facetVertices[idx][0])->point().point() - vv)
+				normal = surface / area; //unit normal
+				Real h1 = (baseCell->vertex(facetVertices[idx][0])->point().point() - vv)
 				        * normal; //orthogonal distance from Voronoi vertex to the plane in which the spheres lie, call the intersection V
-				p2       = vv + h1 * normal;
+				p2 = vv + h1 * normal;
 				Real sqR = (p2 - baseCell->vertex(facetVertices[idx][0])->point().point())
 				                   .squared_length(); //squared distance between V and the center of sphere 0
 				Real temp = alpha + baseCell->vertex(facetVertices[idx][0])->point().weight() - sqR;
@@ -607,17 +607,17 @@ namespace CGT {
 				}
 				if (temp > maxWeight) temp = maxWeight; //if alpha vertex is too far, crop
 				Real h2 = sqrt(temp); // this is now the distance from Voronoi vertex to "alpha" vertex (after cropping if needed)
-				p2      = p2 + h2 * normal;
+				p2 = p2 + h2 * normal;
 
 				bool coplanar = false;
 
 				if (!(interior1 or interior2)) {
 					//VERSION 1,intersection of orthogonal planes from two branches
 					CVector tangent = cross_product(AB, p1 - vv0);
-					tangent         = tangent
+					tangent = tangent
 					        / sqrt(tangent.squared_length()); //this is orthogonal to the _previous_ branch segment of the polygonal contour
-					Real dotP2    = tangent * normal;
-					coplanar      = (abs(dotP2) < 1e-2);
+					Real dotP2 = tangent * normal;
+					coplanar = (abs(dotP2) < 1e-2);
 					CVector p1mp2 = p1 - p2;
 					if (!coplanar) {
 						//make sure the construction is not singular (no intermediate vertex)
@@ -639,8 +639,8 @@ namespace CGT {
 				cerr << "branchArea(3) " << p2 - p1 << " cross " << p1 << endl;
 				branchArea = branchArea + cross_product(p2 - p1, p1 - CGAL::ORIGIN);
 			}
-			cell1     = cell2;
-			p1        = p2;
+			cell1 = cell2;
+			p1 = p2;
 			interior1 = interior2;
 
 		} while (cell2 != cell0);
@@ -697,12 +697,12 @@ namespace CGT {
 		int    idx1, idx2;
 
 		do { //this do-while will run twice and it should return the second time, we work with the "exit" and "enter" regions of a polyline wrt. the alpha contour
-			CellCirculator baseCell  = first ? cell0 : cell3; //it plays the role of the internal cell
+			CellCirculator baseCell = first ? cell0 : cell3;  //it plays the role of the internal cell
 			CellCirculator outerCell = first ? cell1 : cell2; //it plays the role of the external cell
 
 			// finding the facet from baseCell to outerCell ...
 			int& idx = first ? idx1 : idx2;
-			idx      = 0;
+			idx = 0;
 			while (baseCell->neighbor(idx) != outerCell) {
 				idx++;
 				if (idx > 3) cerr << "HUUUUUUUH";
@@ -714,43 +714,43 @@ namespace CGT {
 				if (thirdSphere > 3) cerr << "HUAAAUUH";
 			}
 			Sphere& sC = first ? sC1 : sC2;
-			sC         = baseCell->vertex(facetVertices[idx][thirdSphere])->point(); //forming the regular facet with sA and sB
+			sC = baseCell->vertex(facetVertices[idx][thirdSphere])->point(); //forming the regular facet with sA and sB
 
 			// ... then its surface vector
 			//FIXME: for many cases this cross product is not needed if we set/use voronoi centers of alpha cells
 
 
-			Sphere&  SAlpha      = first ? SAlpha1 : SAlpha2;
-			Point&   p           = first ? p1 : p2;
-			bool&    violate     = first ? violate1 : violate2;
+			Sphere&  SAlpha = first ? SAlpha1 : SAlpha2;
+			Point&   p = first ? p1 : p2;
+			bool&    violate = first ? violate1 : violate2;
 			Sphere&  SAlphaSmall = first ? SAlphaSmall1 : SAlphaSmall2;
-			CVector& normal      = first ? normal1 : normal2;
+			CVector& normal = first ? normal1 : normal2;
 
 			p = circumCenter(baseCell, idx, alpha, violate, SAlpha, normal);
 
 			SAlphaSmall = Sphere(SAlpha.point(), pow(sqrt(SAlpha.weight()) - 0.5, 2));
-			p           = circumCenter(baseCell, idx, SAlphaSmall, violate);
-			first       = !first;
+			p = circumCenter(baseCell, idx, SAlphaSmall, violate);
+			first = !first;
 		} while (!first);
 		first = true;
 
 		do {
-			CellCirculator baseCell  = first ? cell0 : cell3; //it plays the role of the internal cell
+			CellCirculator baseCell = first ? cell0 : cell3;  //it plays the role of the internal cell
 			CellCirculator outerCell = first ? cell1 : cell2; //it plays the role of the external cell
 
 			// finding the facet from baseCell to outerCell ...
-			int&    idx            = first ? idx1 : idx2;
-			Sphere& sC             = first ? sC1 : sC2;
-			Sphere& SAlpha         = first ? SAlpha1 : SAlpha2;
-			Point&  p              = first ? p1 : p2;
-			bool&   violate        = first ? violate1 : violate2;
-			Sphere& SAlphaSmall    = first ? SAlphaSmall1 : SAlphaSmall2;
+			int&    idx = first ? idx1 : idx2;
+			Sphere& sC = first ? sC1 : sC2;
+			Sphere& SAlpha = first ? SAlpha1 : SAlpha2;
+			Point&  p = first ? p1 : p2;
+			bool&   violate = first ? violate1 : violate2;
+			Sphere& SAlphaSmall = first ? SAlphaSmall1 : SAlphaSmall2;
 			Sphere& SAlphaSmallInv = first ? SAlphaSmall2 : SAlphaSmall1;
 
 			std::vector<Point> pi; /*pi.reserve(6);*/ //"interior" points
 			                                          //                         cerr<<"violate "<<violate<<endl;
 			bool  infCenter = false;
-			Point pppInv    = circumCenter(SAlphaSmall, sA, sB, SAlphaSmallInv);
+			Point pppInv = circumCenter(SAlphaSmall, sA, sB, SAlphaSmallInv);
 			// 			if (!violate) {
 
 			if ((p - pppInv) * (sA.point() - sC.point()) < 0) {
@@ -772,9 +772,9 @@ namespace CGT {
 					if (infCenter) {
 						Point    ppp2B = circumCenter(baseCell->vertex(idx)->point(), sB, SAlphaSmallInv, SAlphaSmall);
 						Point    ppp3B = circumCenter(baseCell->vertex(idx)->point(), sA, SAlphaSmallInv, SAlphaSmall);
-						Vector3r u     = makeVector3r(ppp2) - makeVector3r(ppp2B);
-						Vector3r v     = makeVector3r(ppp3) - makeVector3r(ppp3B);
-						Vector3r w     = makeVector3r(ppp2) - makeVector3r(ppp3);
+						Vector3r u = makeVector3r(ppp2) - makeVector3r(ppp2B);
+						Vector3r v = makeVector3r(ppp3) - makeVector3r(ppp3B);
+						Vector3r w = makeVector3r(ppp2) - makeVector3r(ppp3);
 						for (int j = 0; j < 8; j++) {
 							vSegments.push_back(makeVector3r(ppp2B) + j * (2 / 23.) * u);
 							vSegments.push_back(makeVector3r(ppp2B) + (2. * j + 1) * (1 / 23.) * u);
@@ -802,9 +802,9 @@ namespace CGT {
 				}
 				//                                 p = circumCenter(sC,sA,sB,SAlpha);
 				for (short k = 0; k < 3; k++) {
-					const int         fct    = facetVertices[idx][k];
-					const int*        f      = facetVertices[fct];
-					const CellHandle& ncell  = baseCell->neighbor(fct);
+					const int         fct = facetVertices[idx][k];
+					const int*        f = facetVertices[fct];
+					const CellHandle& ncell = baseCell->neighbor(fct);
 					short             nfacet = as.mirror_index(baseCell, fct);
 					Point             pp;
 					if (0 /*as.is_infinite(ncell)*/) {
@@ -842,11 +842,11 @@ namespace CGT {
 		vSegments.push_back(makeVector3r(p2));
 
 		CVector tangent = cross_product(AB, p1 - vv0);
-		CVector p1mp2   = p1 - p2;
+		CVector p1mp2 = p1 - p2;
 		//                              bool clockWise = ( tangent*p1mp2>0 );//not sure it works
 		bool clockWise = (cross_product(p1 - vv0, p2 - p1) * AB > 0);
-		tangent        = tangent / sqrt(tangent.squared_length()); //this is orthogonal to the _previous_ branch segment of the polygonal contour
-		Real dotP      = tangent * normal1;
+		tangent = tangent / sqrt(tangent.squared_length()); //this is orthogonal to the _previous_ branch segment of the polygonal contour
+		Real dotP = tangent * normal1;
 
 		branchArea = branchArea + cross_product(p2 - p1, p1 - CGAL::ORIGIN);
 
@@ -882,18 +882,18 @@ namespace CGT {
 		if (as.classify(facet.first) != AlphaShape::INTERIOR) facet = as.mirror_facet(facet);
 		adjactF[0] = facet;
 
-		Point p     = circumCenter(facet.first, facet.second, alpha, violate[0], alphaSph[0], norml[0]);
+		Point p = circumCenter(facet.first, facet.second, alpha, violate[0], alphaSph[0], norml[0]);
 		alphaSph[0] = Sphere(alphaSph[0].point(), shrinkedAlpha);
-		circumC[0]  = circumCenter(facet.first, facet.second, alphaSph[0], violate[0]);
+		circumC[0] = circumCenter(facet.first, facet.second, alphaSph[0], violate[0]);
 
 		for (int k = 0; k < 3; k++) {
 			FacetCirculator f;
-			const short&    ii  = facetVertices[facet.second][k];
+			const short&    ii = facetVertices[facet.second][k];
 			const Sphere&   sii = facet.first->vertex(ii)->point();
-			const short&    jj  = facetVertices[facet.second][k > 1 ? 0 : (k + 1)];
+			const short&    jj = facetVertices[facet.second][k > 1 ? 0 : (k + 1)];
 			const Sphere&   sjj = facet.first->vertex(jj)->point();
-			const short&    kk  = facetVertices[facet.second][k > 0 ? (k - 1) : 2];
-			thirdSph[k]         = facet.first->vertex(kk)->point();
+			const short&    kk = facetVertices[facet.second][k > 0 ? (k - 1) : 2];
+			thirdSph[k] = facet.first->vertex(kk)->point();
 			// 		const Sphere& skk = facet.first->vertex(kk)->point();
 			f = as.incident_facets(
 			        facet.first, //cell
@@ -911,42 +911,42 @@ namespace CGT {
 				adjactF[k] = as.mirror_facet(*f);
 			const Facet& af = adjactF[k];
 
-			Point p2        = circumCenter(af.first, af.second, alpha, violate[k + 1], alphaSph[k + 1], norml[k + 1]);
+			Point p2 = circumCenter(af.first, af.second, alpha, violate[k + 1], alphaSph[k + 1], norml[k + 1]);
 			short mirrorVtx = 0;
 			while (af.first->vertex(facetVertices[af.second][mirrorVtx]) == facet.first->vertex(jj)
 			       or af.first->vertex(facetVertices[af.second][mirrorVtx]) == facet.first->vertex(jj))
 				mirrorVtx++;
 
 			alphaSph[k + 1] = Sphere(alphaSph[k + 1].point(), shrinkedAlpha);
-			circumC[k + 1]  = circumCenter(af.first, af.second, alphaSph[k + 1], violate[k + 1]);
-			edgeC[k]        = circumCenter(alphaSph[0], sii, sjj, alphaSph[k + 1]);
-			mirrorSph[k]    = af.first->vertex(facetVertices[af.second][mirrorVtx])->point();
-			mirrorC[k]      = circumCenter(alphaSph[0], sii, sjj, mirrorSph[k]);
+			circumC[k + 1] = circumCenter(af.first, af.second, alphaSph[k + 1], violate[k + 1]);
+			edgeC[k] = circumCenter(alphaSph[0], sii, sjj, alphaSph[k + 1]);
+			mirrorSph[k] = af.first->vertex(facetVertices[af.second][mirrorVtx])->point();
+			mirrorC[k] = circumCenter(alphaSph[0], sii, sjj, mirrorSph[k]);
 
 			dir[k] = cross_product(sii.point() - sjj.point(), sii.point() - alphaSph[0].point());
 			dir[k] = ((sii.point() - thirdSph[k].point()) * dir[k]) * dir[k];
 			if (((edgeC[k] - circumC[0]) * dir[k]) < 0) {
-				internal     = false;
+				internal = false;
 				externalEdge = k;
 			}
 			// 		cerr<<"edge: "<<alphaSph[0]<<" "<< sii<<" "<<sjj <<" "<<alphaSph[k+1] <<endl;
 		}
 		if (internal) {
 			for (int k = 0; k < 3; k++) {
-				const short&  ii  = facetVertices[facet.second][k];
+				const short&  ii = facetVertices[facet.second][k];
 				const Sphere& sii = facet.first->vertex(ii)->point();
-				const short&  jj  = facetVertices[facet.second][k > 1 ? 0 : (k + 1)];
+				const short&  jj = facetVertices[facet.second][k > 1 ? 0 : (k + 1)];
 				const Sphere& sjj = facet.first->vertex(jj)->point();
-				const short&  kk  = facetVertices[facet.second][k > 0 ? (k - 1) : 2];
+				const short&  kk = facetVertices[facet.second][k > 0 ? (k - 1) : 2];
 				const Sphere& skk = facet.first->vertex(kk)->point();
 				if (((mirrorSph[k].point() - skk.point()) * dir[k]) > 0 and ((mirrorC[k] - edgeC[k]) * dir[k]) < 0) {
 					Point p1 = circumCenter(alphaSph[0], sjj, mirrorSph[k], alphaSph[k + 1]);
 					Point p2 = circumCenter(alphaSph[0], mirrorSph[k], sii, alphaSph[k + 1]);
 					if (((mirrorC[k] - circumC[0]) * dir[k]) > 0) {
 						int     NN = 3;
-						CVector u  = mirrorC[k] - circumC[0];
-						CVector v  = mirrorC[k] - p1;
-						CVector w  = mirrorC[k] - p2;
+						CVector u = mirrorC[k] - circumC[0];
+						CVector v = mirrorC[k] - p1;
+						CVector w = mirrorC[k] - p2;
 						for (int j = 0; j < NN; j++) {
 							vSegments.push_back(makeVector3r(circumC[0] + j * (2 / (2. * NN - 1.)) * u));
 							vSegments.push_back(makeVector3r(circumC[0] + (2. * j + 1) * (1 / (2. * NN - 1.)) * u));
@@ -958,10 +958,10 @@ namespace CGT {
 					} else {
 						Point   p1b = circumCenter(alphaSph[0], sjj, mirrorSph[k], skk);
 						Point   p2b = circumCenter(alphaSph[0], mirrorSph[k], sii, skk);
-						int     NN  = 5;
-						CVector u   = p1b - p2b;
-						CVector v   = p1b - p1;
-						CVector w   = p2b - p2;
+						int     NN = 5;
+						CVector u = p1b - p2b;
+						CVector v = p1b - p1;
+						CVector w = p2b - p2;
 						for (int j = 0; j < NN; j++) {
 							vSegments.push_back(makeVector3r(p2b + j * (2 / (2. * NN - 1.)) * u));
 							vSegments.push_back(makeVector3r(p2b + (2. * j + 1) * (1 / (2. * NN - 1.)) * u));
@@ -976,7 +976,7 @@ namespace CGT {
 						// 				cerr<<"TEST1: "<<edgeC[k]<<" "<<circumC[0]<<" "<<dir[k]<<endl;
 
 						int     NN = 11;
-						CVector u  = edgeC[k] - circumC[0];
+						CVector u = edgeC[k] - circumC[0];
 						for (int j = 0; j < NN; j++) {
 							vSegments.push_back(makeVector3r(circumC[0] + j * (2 / (2. * NN - 1.)) * u));
 							vSegments.push_back(makeVector3r(circumC[0] + (2. * j + 1) * (1 / (2. * NN - 1.)) * u));
@@ -988,8 +988,8 @@ namespace CGT {
 						// 			vSegments.push_back(makeVector3r(edgeC[k])); vSegments.push_back(makeVector3r(p1));
 						// 			vSegments.push_back(makeVector3r(edgeC[k])); vSegments.push_back(makeVector3r(p2));
 						int     NN = 7;
-						CVector u  = edgeC[k > 1 ? 0 : (k + 1)] - p1;
-						CVector v  = edgeC[k > 0 ? (k - 1) : 2] - p2;
+						CVector u = edgeC[k > 1 ? 0 : (k + 1)] - p1;
+						CVector v = edgeC[k > 0 ? (k - 1) : 2] - p2;
 						for (int j = 0; j < NN; j++) {
 							vSegments.push_back(makeVector3r(p1 + j * (2 / (2. * NN - 1.)) * u));
 							vSegments.push_back(makeVector3r(p1 + (2. * j + 1) * (1 / (2. * NN - 1.)) * u));
@@ -1000,15 +1000,15 @@ namespace CGT {
 				}
 			}
 		} else {
-			const short&  k   = externalEdge;
-			const short&  ii  = facetVertices[facet.second][k];
+			const short&  k = externalEdge;
+			const short&  ii = facetVertices[facet.second][k];
 			const Sphere& sii = facet.first->vertex(ii)->point();
-			const short&  jj  = facetVertices[facet.second][k > 1 ? 0 : (k + 1)];
+			const short&  jj = facetVertices[facet.second][k > 1 ? 0 : (k + 1)];
 			const Sphere& sjj = facet.first->vertex(jj)->point();
-			const short&  kk  = facetVertices[facet.second][k > 0 ? (k - 1) : 2];
+			const short&  kk = facetVertices[facet.second][k > 0 ? (k - 1) : 2];
 			const Sphere& skk = facet.first->vertex(kk)->point();
-			Point         p1  = circumCenter(alphaSph[0], sjj, skk, alphaSph[k + 1]);
-			Point         p2  = circumCenter(alphaSph[0], skk, sii, alphaSph[k + 1]);
+			Point         p1 = circumCenter(alphaSph[0], sjj, skk, alphaSph[k + 1]);
+			Point         p2 = circumCenter(alphaSph[0], skk, sii, alphaSph[k + 1]);
 			Point&        p1b = edgeC[k > 1 ? 0 : (k + 1)];
 			Point&        p2b = edgeC[k > 0 ? (k - 1) : 2];
 
@@ -1022,7 +1022,7 @@ namespace CGT {
 				Point p1c = circumCenter(alphaSph[0], sjj, alphaSph[k + 1], mirrorSph[k]);
 				vSegments.push_back(makeVector3r(p1c));
 				vSegments.push_back(makeVector3r(mirror1));
-				p1        = mirror1;
+				p1 = mirror1;
 				Point p2c = circumCenter(alphaSph[0], sii, alphaSph[k + 1], mirrorSph[k]);
 				vSegments.push_back(makeVector3r(p2c));
 				vSegments.push_back(makeVector3r(mirror2));
@@ -1049,8 +1049,8 @@ namespace CGT {
 
 
 			int     NN = 4;
-			CVector u  = p1b - p1;
-			CVector v  = p2b - p2;
+			CVector u = p1b - p1;
+			CVector v = p2b - p2;
 			for (int j = 0; j < NN; j++) {
 				vSegments.push_back(makeVector3r(p1 + j * (2 / (2. * NN - 1.)) * u));
 				vSegments.push_back(makeVector3r(p1 + (2. * j + 1) * (1 / (2. * NN - 1.)) * u));
@@ -1059,9 +1059,9 @@ namespace CGT {
 			}
 		}
 		if (0 /*internal*/) {
-			CVector u  = edgeC[0] - circumC[0];
-			CVector v  = edgeC[1] - circumC[0];
-			CVector w  = edgeC[2] - circumC[0];
+			CVector u = edgeC[0] - circumC[0];
+			CVector v = edgeC[1] - circumC[0];
+			CVector w = edgeC[2] - circumC[0];
 			int     NN = 8;
 			for (int j = 0; j < NN; j++) {
 				if (internal) {
@@ -1137,9 +1137,9 @@ namespace CGT {
 				++cell2;
 			if (cell2 == cell0) return 0;
 		}
-		cell0                = cell2++;
+		cell0 = cell2++;
 		CellCirculator cell1 = cell2++;
-		Real           area  = 0;
+		Real           area = 0;
 
 		while (cell2 != cell0) {
 			area += sqrt(math::abs((Triangle(cell0->info(), cell1->info(), cell2->info())).squared_area()));
@@ -1160,8 +1160,8 @@ namespace CGT {
 				++cell2;
 			if (cell2 == cell0) return;
 		}
-		cell0                      = cell2++;
-		CellCirculator cell1       = cell2++;
+		cell0 = cell2++;
+		CellCirculator cell1 = cell2++;
 		bool           isFictious1 = (ed_it->first)->vertex(ed_it->second)->info().isFictious;
 		bool           isFictious2 = (ed_it->first)->vertex(ed_it->third)->info().isFictious;
 		Real           r;
@@ -1191,7 +1191,7 @@ namespace CGT {
 	{
 		for (VertexIterator vIt = Tri->vertices_begin(); vIt != Tri->vertices_end(); vIt++)
 			vIt->info().v() = 0;
-		TotalFiniteVoronoiVolume     = 0;
+		TotalFiniteVoronoiVolume = 0;
 		TotalInternalVoronoiPorosity = 0;
 	}
 
@@ -1235,12 +1235,12 @@ namespace CGT {
 		if (!Tri) cerr << "!Tri!" << endl;
 		Vh = Tri->insert(Sphere(Point(x, y, z), pow(rad, 2)));
 		if (Vh != NULL) {
-			Vh->info()            = id;
+			Vh->info() = id;
 			Vh->info().isFictious = isFictious;
 			if (duplicateOfId < 0) {
 				assert(vertexHandles.size() > id);
-				vertexHandles[id]  = Vh;
-				maxId              = math::max(maxId, (int)id);
+				vertexHandles[id] = Vh;
+				maxId = math::max(maxId, (int)id);
 				Vh->info().isGhost = 0;
 			} else
 				Vh->info().isGhost = 1;

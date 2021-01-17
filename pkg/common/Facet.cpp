@@ -33,7 +33,7 @@ void Facet::postLoad(Facet&)
 	CHECK_EDGE(2);
 #undef CHECK_EDGE
 	normal = e[0].cross(e[1]);
-	area   = .5 * normal.norm();
+	area = .5 * normal.norm();
 	normal /= 2 * area;
 	for (int i = 0; i < 3; ++i) {
 		ne[i] = e[i].cross(normal);
@@ -42,7 +42,7 @@ void Facet::postLoad(Facet&)
 		vu[i] = vertices[i] / vl[i];
 	}
 	Real p = e[0].norm() + e[1].norm() + e[2].norm();
-	icr    = e[0].norm() * ne[0].dot(e[2]) / p;
+	icr = e[0].norm() * ne[0].dot(e[2]) / p;
 }
 
 YADE_PLUGIN((Facet));

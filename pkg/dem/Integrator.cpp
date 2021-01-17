@@ -111,7 +111,7 @@ stateVector& Integrator::getSceneStateDot(void)
 				}
 
 
-				force  = scene->forces.getForce(id);
+				force = scene->forces.getForce(id);
 				moment = scene->forces.getTorque(id);
 
 				/*
@@ -137,12 +137,12 @@ stateVector& Integrator::getSceneStateDot(void)
 
 				for (int i = 0; i < 3; i++)
 					if (b->state->blockedDOFs_vec_get().find(str[i]) != std::string::npos) {
-						force[i]       = 0;
+						force[i] = 0;
 						vel_current[i] = 0;
 					}
 				for (int i = 3; i < 6; i++)
 					if (b->state->blockedDOFs_vec_get().find(str[i]) != std::string::npos) {
-						moment[i - 3]         = 0;
+						moment[i - 3] = 0;
 						angvel_current[i - 3] = 0;
 					}
 
@@ -155,28 +155,28 @@ stateVector& Integrator::getSceneStateDot(void)
 
 			} else {
 				//is clump member
-				force          = Vector3r::Zero();
-				moment         = Vector3r::Zero();
-				vel_current    = Vector3r::Zero();
+				force = Vector3r::Zero();
+				moment = Vector3r::Zero();
+				vel_current = Vector3r::Zero();
 				angvel_current = Vector3r::Zero();
 				oridot_current = Quaternionr(0, 0, 0, 0); // zero change in quaternion with respect to time
 			}
 
 
 			/*Orientation differantion is straight forward.*/
-			accumstatedotofthescene[id * 7 + 0]                         = vel_current[0];
+			accumstatedotofthescene[id * 7 + 0] = vel_current[0];
 			accumstatedotofthescene[(id + numberofscenebodies) * 7 + 0] = force[0];
-			accumstatedotofthescene[id * 7 + 1]                         = vel_current[1];
+			accumstatedotofthescene[id * 7 + 1] = vel_current[1];
 			accumstatedotofthescene[(id + numberofscenebodies) * 7 + 1] = force[1];
-			accumstatedotofthescene[id * 7 + 2]                         = vel_current[2];
+			accumstatedotofthescene[id * 7 + 2] = vel_current[2];
 			accumstatedotofthescene[(id + numberofscenebodies) * 7 + 2] = force[2];
-			accumstatedotofthescene[id * 7 + 3]                         = oridot_current.w();
+			accumstatedotofthescene[id * 7 + 3] = oridot_current.w();
 			accumstatedotofthescene[(id + numberofscenebodies) * 7 + 3] = moment[0];
-			accumstatedotofthescene[id * 7 + 4]                         = oridot_current.x();
+			accumstatedotofthescene[id * 7 + 4] = oridot_current.x();
 			accumstatedotofthescene[(id + numberofscenebodies) * 7 + 4] = moment[1];
-			accumstatedotofthescene[id * 7 + 5]                         = oridot_current.y();
+			accumstatedotofthescene[id * 7 + 5] = oridot_current.y();
 			accumstatedotofthescene[(id + numberofscenebodies) * 7 + 5] = moment[2];
-			accumstatedotofthescene[id * 7 + 6]                         = oridot_current.z();
+			accumstatedotofthescene[id * 7 + 6] = oridot_current.z();
 			accumstatedotofthescene[(id + numberofscenebodies) * 7 + 6] = 0;
 		}
 		YADE_PARALLEL_FOREACH_BODY_END();
@@ -209,19 +209,19 @@ stateVector& Integrator::getCurrentStates(void)
 
 			Vector3r angvel = b->state->angVel;
 
-			accumstateofthescene[id * 7 + 0]                         = pos_current[0];
+			accumstateofthescene[id * 7 + 0] = pos_current[0];
 			accumstateofthescene[(id + numberofscenebodies) * 7 + 0] = vel_current[0];
-			accumstateofthescene[id * 7 + 1]                         = pos_current[1];
+			accumstateofthescene[id * 7 + 1] = pos_current[1];
 			accumstateofthescene[(id + numberofscenebodies) * 7 + 1] = vel_current[1];
-			accumstateofthescene[id * 7 + 2]                         = pos_current[2];
+			accumstateofthescene[id * 7 + 2] = pos_current[2];
 			accumstateofthescene[(id + numberofscenebodies) * 7 + 2] = vel_current[2];
-			accumstateofthescene[id * 7 + 3]                         = ori.w();
+			accumstateofthescene[id * 7 + 3] = ori.w();
 			accumstateofthescene[(id + numberofscenebodies) * 7 + 3] = angvel[0];
-			accumstateofthescene[id * 7 + 4]                         = ori.x();
+			accumstateofthescene[id * 7 + 4] = ori.x();
 			accumstateofthescene[(id + numberofscenebodies) * 7 + 4] = angvel[1];
-			accumstateofthescene[id * 7 + 5]                         = ori.y();
+			accumstateofthescene[id * 7 + 5] = ori.y();
 			accumstateofthescene[(id + numberofscenebodies) * 7 + 5] = angvel[2];
-			accumstateofthescene[id * 7 + 6]                         = ori.z();
+			accumstateofthescene[id * 7 + 6] = ori.z();
 			accumstateofthescene[(id + numberofscenebodies) * 7 + 6] = 0;
 		}
 		YADE_PARALLEL_FOREACH_BODY_END();
@@ -282,7 +282,7 @@ bool Integrator::setCurrentStates(stateVector yscene)
 
 #ifdef YADE_OPENMP
 			Real& thrMaxVSq = threadMaxVelocitySq[omp_get_thread_num()];
-			thrMaxVSq       = max(thrMaxVSq, b->state->vel.squaredNorm());
+			thrMaxVSq = max(thrMaxVSq, b->state->vel.squaredNorm());
 #else
 			maxVelocitySq = max(maxVelocitySq, b->state->vel.squaredNorm()); // Set maximum velocity of the scene
 #endif
@@ -324,7 +324,7 @@ void Integrator::ensureSync()
 void Integrator::saveMaximaDisplacement(const shared_ptr<Body>& b)
 {
 	if (!b->bound) return; //clumps for instance, have no bounds, hence not saved
-	Vector3r disp    = b->state->pos - b->bound->refPos;
+	Vector3r disp = b->state->pos - b->bound->refPos;
 	Real     maxDisp = max(math::abs(disp[0]), max(math::abs(disp[1]), math::abs(disp[2])));
 	if (!maxDisp
 	    || maxDisp < b->bound->sweepLength) { /*b->bound->isBounding = (updatingDispFactor>0 && (updatingDispFactor*maxDisp)<b->bound->sweepLength);*/

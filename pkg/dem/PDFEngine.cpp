@@ -34,8 +34,8 @@ void PDFEngine::getSpectrums(vector<PDFEngine::PDF>& pdfs)
 		GenericSpheresContact* geom = dynamic_cast<GenericSpheresContact*>(I->geom.get());
 
 		if (geom) {
-			Real theta = acos(geom->normal.y());                    //[0;pi]
-			Real phi   = atan2(geom->normal.x(), geom->normal.z()); //[-pi;pi]
+			Real theta = acos(geom->normal.y());                  //[0;pi]
+			Real phi = atan2(geom->normal.x(), geom->normal.z()); //[-pi;pi]
 
 			bool inversed = false;
 			if (phi < 0) { // Everything has central-symmetry. Let's take only positive angles.
@@ -71,9 +71,9 @@ void PDFEngine::writeToFile(vector<PDFEngine::PDF> const& pdfs)
 			fid << "# time\t";
 			for (uint i(0); i < pdfs.size(); i++) {
 				uint nTheta = pdfs[i].shape()[0];
-				uint nPhi   = pdfs[i].shape()[1];
+				uint nPhi = pdfs[i].shape()[1];
 				Real dTheta = (Mathr::PI / nTheta);
-				Real dPhi   = (Mathr::PI / nPhi);
+				Real dPhi = (Mathr::PI / nPhi);
 
 				for (uint t(0); t < nTheta; t++)
 					for (uint p(0); p < nPhi; p++)
@@ -188,7 +188,7 @@ vector<string> PDFSpheresVelocityCalculator::getDatas() const
 void PDFSpheresVelocityCalculator::cleanData()
 {
 	m_vel = Vector3r::Zero();
-	m_N   = 0;
+	m_N = 0;
 }
 
 

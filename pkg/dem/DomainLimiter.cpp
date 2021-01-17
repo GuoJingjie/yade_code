@@ -101,12 +101,12 @@ void LawTester::action()
 	id1 = I->getId1();
 	id2 = I->getId2();
 	// test object types
-	GenericSpheresContact* gsc      = dynamic_cast<GenericSpheresContact*>(I->geom.get());
-	ScGeom*                scGeom   = dynamic_cast<ScGeom*>(I->geom.get());
-	L3Geom*                l3Geom   = dynamic_cast<L3Geom*>(I->geom.get());
-	L6Geom*                l6Geom   = dynamic_cast<L6Geom*>(I->geom.get());
+	GenericSpheresContact* gsc = dynamic_cast<GenericSpheresContact*>(I->geom.get());
+	ScGeom*                scGeom = dynamic_cast<ScGeom*>(I->geom.get());
+	L3Geom*                l3Geom = dynamic_cast<L3Geom*>(I->geom.get());
+	L6Geom*                l6Geom = dynamic_cast<L6Geom*>(I->geom.get());
 	ScGeom6D*              scGeom6d = dynamic_cast<ScGeom6D*>(I->geom.get());
-	bool                   hasRot   = (l6Geom || scGeom6d);
+	bool                   hasRot = (l6Geom || scGeom6d);
 	//NormShearPhys* phys=dynamic_cast<NormShearPhys*>(I->phys.get());			//Disabled because of warning
 	if (!gsc) throw std::invalid_argument("LawTester: IGeom of " + strIds + " not a GenericSpheresContact.");
 	if (!scGeom && !l3Geom) throw std::invalid_argument("LawTester: IGeom of " + strIds + " is neither ScGeom, nor L3Geom (or L6Geom).");
@@ -127,7 +127,7 @@ void LawTester::action()
 	if (step - 1 > *(_pathT.rbegin())) {
 		LOG_INFO("Last step done, setting zero velocities on #" << id1 << ", #" << id2 << ".");
 		state1->vel = state1->angVel = state2->vel = state2->angVel = Vector3r::Zero();
-		uTest                                                       = uTestNext;
+		uTest = uTestNext;
 		if (doneHook.empty()) {
 			LOG_INFO("No doneHook set, dying.");
 			dead = true;
@@ -169,10 +169,10 @@ void LawTester::action()
 		trsf.row(1) = axY;
 		trsf.row(2) = axZ;
 	} else {
-		trsf            = Matrix3r(l3Geom->trsf);
-		axX             = trsf.row(0);
-		axY             = trsf.row(1);
-		axZ             = trsf.row(2);
+		trsf = Matrix3r(l3Geom->trsf);
+		axX = trsf.row(0);
+		axY = trsf.row(1);
+		axZ = trsf.row(2);
 		uGeom.head<3>() = l3Geom->u;
 		if (l6Geom) uGeom.tail<3>() = l6Geom->phi;
 	}
@@ -181,14 +181,14 @@ void LawTester::action()
 		LOG_INFO("LawTester.rotWeight set to 0 (was " << rotWeight << "), since rotational DoFs are in use.");
 		rotWeight = 0;
 	}
-	contPt       = gsc->contactPoint;
-	refLength    = gsc->refR1 + gsc->refR2;
+	contPt = gsc->contactPoint;
+	refLength = gsc->refR1 + gsc->refR2;
 	renderLength = .5 * refLength;
 
 	// here we go ahead, finally
-	Vector6r uu  = linearInterpolate<Vector6r, int>(step, _pathT, _path, _interpPos);
+	Vector6r uu = linearInterpolate<Vector6r, int>(step, _pathT, _path, _interpPos);
 	Vector6r dUU = uu - uuPrev;
-	uuPrev       = uu;
+	uuPrev = uu;
 	Vector3r dU(dUU.head<3>()), dPhi(dUU.tail<3>());
 	//Vector3r dU=u-uPrev.head<3>(); uPrev.head<3>()=u;
 	//Vector3r dPhi=phi-uPrev.tail<3>(); uPrev.tail<3>()=phi;
@@ -208,7 +208,7 @@ void LawTester::action()
 	Vector3r vel[2], angVel[2];
 	//State* states[]={state1,state2};
 	for (int i = 0; i < 2; i++) {
-		int  sign   = (i == 0 ? -1 : 1);
+		int  sign = (i == 0 ? -1 : 1);
 		Real weight = (i == 0 ? 1 - idWeight : idWeight);
 		// FIXME: this should not use refR1, but real CP-particle distance perhaps?
 		Real radius = (i == 0 ? gsc->refR1 : gsc->refR2);
@@ -219,7 +219,7 @@ void LawTester::action()
 
 		// twist can be still distributed with idWeight (!)
 		Vector3r ddPhi = sign * dPhi * (1 - relRad); /* shear angles must distribute to both, otherwise it would induce shear */
-		ddPhi[0]       = sign * dPhi[0] * weight;    // twist can be still distributed with idWeight
+		ddPhi[0] = sign * dPhi[0] * weight;          // twist can be still distributed with idWeight
 		vel[i] = angVel[i] = Vector3r::Zero();
 
 		// normal displacement
@@ -256,9 +256,9 @@ void LawTester::action()
 		        "vel=" << vel[i] << ", angVel=" << angVel[i] << ", rotY,rotZ=" << rotY << "," << rotZ << ", arcAngle=" << arcAngleY << "," << arcAngleZ
 		               << ", sign=" << sign << ", weight=" << weight);
 	}
-	state1->vel    = vel[0];
+	state1->vel = vel[0];
 	state1->angVel = angVel[0];
-	state2->vel    = vel[1];
+	state2->vel = vel[1];
 	state2->angVel = angVel[1];
 	LOG_DEBUG("Body #" << id1 << ", setting vel=" << vel[0] << ", angVel=" << angVel[0]);
 	LOG_DEBUG("Body #" << id2 << ", setting vel=" << vel[1] << ", angVel=" << angVel[1]);
@@ -312,10 +312,10 @@ void GlExtra_LawTester::render()
 	// local axes
 	glLineWidth(2.);
 	for (int i = 0; i < 3; i++) {
-		Vector3r pt    = Vector3r::Zero();
-		pt[i]          = .5 * tester->renderLength;
+		Vector3r pt = Vector3r::Zero();
+		pt[i] = .5 * tester->renderLength;
 		Vector3r color = .3 * Vector3r::Ones();
-		color[i]       = 1;
+		color[i] = 1;
 		GLUtils::GLDrawLine(Vector3r::Zero(), pt, color);
 		GLUtils::GLDrawText(string(i == 0 ? "x" : (i == 1 ? "y" : "z")), pt, color);
 	}
@@ -335,9 +335,9 @@ void GlExtra_LawTester::render()
 	if (tester->displIsRel) scale = tester->refLength;
 
 	// find maximum displacement, draw axes in the shear plane
-	Real displMax                           = 0;
+	Real displMax = 0;
 	FOREACH(const Vector6r& v, VV) displMax = max(v.head<3>().squaredNorm(), displMax);
-	displMax                                = 1.2 * scale * sqrt(displMax);
+	displMax = 1.2 * scale * sqrt(displMax);
 
 	glLineWidth(1.);
 	GLUtils::GLDrawLine(Vector3r(0, -displMax, 0), Vector3r(0, displMax, 0), Vector3r(.5, 0, 0));
@@ -376,10 +376,10 @@ void GlExtra_OctreeCubes::postLoad(GlExtra_OctreeCubes&)
 		}
 		OctreeBox ob;
 		Vector3r  mn(data[0], data[1], data[2]), mx(data[3], data[4], data[5]);
-		ob.center  = .5 * (mn + mx);
+		ob.center = .5 * (mn + mx);
 		ob.extents = (.5 * (mx - mn));
-		ob.level   = (int)data[6];
-		ob.fill    = (int)data[7];
+		ob.level = (int)data[6];
+		ob.fill = (int)data[7];
 		// for(int i=0; i<=ob.level; i++) cerr<<"\t"; cerr<<ob.level<<": "<<mn<<"; "<<mx<<"; "<<ob.center<<"; "<<ob.extents<<"; "<<ob.fill<<endl;
 		boxes.push_back(ob);
 	}

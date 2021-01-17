@@ -20,21 +20,21 @@ py::dict getEigenFlags()
 	using namespace yade;
 	py::dict ret {};
 	//ret["Index"]         = getEigenFlagTemplate<Index>(); // it's just typedef of `std::ptrdiff_t`, does not have options
-	ret["Vector2i"]  = getEigenFlagTemplate<Vector2i>();
-	ret["Vector2r"]  = getEigenFlagTemplate<Vector2r>();
-	ret["Vector3i"]  = getEigenFlagTemplate<Vector3i>();
-	ret["Vector3r"]  = getEigenFlagTemplate<Vector3r>();
+	ret["Vector2i"] = getEigenFlagTemplate<Vector2i>();
+	ret["Vector2r"] = getEigenFlagTemplate<Vector2r>();
+	ret["Vector3i"] = getEigenFlagTemplate<Vector3i>();
+	ret["Vector3r"] = getEigenFlagTemplate<Vector3r>();
 	ret["Vector3ra"] = getEigenFlagTemplate<Vector3ra::Base>();
-	ret["Vector4r"]  = getEigenFlagTemplate<Vector4r>();
-	ret["Vector6i"]  = getEigenFlagTemplate<Vector6i>();
-	ret["Vector6r"]  = getEigenFlagTemplate<Vector6r>();
-	ret["Matrix3r"]  = getEigenFlagTemplate<Matrix3r>();
-	ret["Matrix6r"]  = getEigenFlagTemplate<Matrix6r>();
-	ret["MatrixXr"]  = getEigenFlagTemplate<MatrixXr>();
-	ret["VectorXr"]  = getEigenFlagTemplate<VectorXr>();
+	ret["Vector4r"] = getEigenFlagTemplate<Vector4r>();
+	ret["Vector6i"] = getEigenFlagTemplate<Vector6i>();
+	ret["Vector6r"] = getEigenFlagTemplate<Vector6r>();
+	ret["Matrix3r"] = getEigenFlagTemplate<Matrix3r>();
+	ret["Matrix6r"] = getEigenFlagTemplate<Matrix6r>();
+	ret["MatrixXr"] = getEigenFlagTemplate<MatrixXr>();
+	ret["VectorXr"] = getEigenFlagTemplate<VectorXr>();
 
-	ret["Quaternionr"]  = getEigenFlagTemplate<Quaternionr>();
-	ret["AngleAxisr"]   = getEigenFlagTemplate<AngleAxisr::VectorType::Base>();
+	ret["Quaternionr"] = getEigenFlagTemplate<Quaternionr>();
+	ret["AngleAxisr"] = getEigenFlagTemplate<AngleAxisr::VectorType::Base>();
 	ret["AlignedBox3r"] = getEigenFlagTemplate<AlignedBox3r::VectorType::Base>();
 	ret["AlignedBox2r"] = getEigenFlagTemplate<AlignedBox2r::VectorType::Base>();
 
@@ -57,21 +57,21 @@ py::dict getEigenStorageOrders()
 	using namespace yade;
 	py::dict ret {};
 	//ret["Index"]         = getEigenStorageOrderTemplate<Index>(); // it's just typedef of `std::ptrdiff_t`, does not have options
-	ret["Vector2i"]  = getEigenStorageOrderTemplate<Vector2i>();
-	ret["Vector2r"]  = getEigenStorageOrderTemplate<Vector2r>();
-	ret["Vector3i"]  = getEigenStorageOrderTemplate<Vector3i>();
-	ret["Vector3r"]  = getEigenStorageOrderTemplate<Vector3r>();
+	ret["Vector2i"] = getEigenStorageOrderTemplate<Vector2i>();
+	ret["Vector2r"] = getEigenStorageOrderTemplate<Vector2r>();
+	ret["Vector3i"] = getEigenStorageOrderTemplate<Vector3i>();
+	ret["Vector3r"] = getEigenStorageOrderTemplate<Vector3r>();
 	ret["Vector3ra"] = getEigenStorageOrderTemplate<Vector3ra>();
-	ret["Vector4r"]  = getEigenStorageOrderTemplate<Vector4r>();
-	ret["Vector6i"]  = getEigenStorageOrderTemplate<Vector6i>();
-	ret["Vector6r"]  = getEigenStorageOrderTemplate<Vector6r>();
-	ret["Matrix3r"]  = getEigenStorageOrderTemplate<Matrix3r>();
-	ret["Matrix6r"]  = getEigenStorageOrderTemplate<Matrix6r>();
-	ret["MatrixXr"]  = getEigenStorageOrderTemplate<MatrixXr>();
-	ret["VectorXr"]  = getEigenStorageOrderTemplate<VectorXr>();
+	ret["Vector4r"] = getEigenStorageOrderTemplate<Vector4r>();
+	ret["Vector6i"] = getEigenStorageOrderTemplate<Vector6i>();
+	ret["Vector6r"] = getEigenStorageOrderTemplate<Vector6r>();
+	ret["Matrix3r"] = getEigenStorageOrderTemplate<Matrix3r>();
+	ret["Matrix6r"] = getEigenStorageOrderTemplate<Matrix6r>();
+	ret["MatrixXr"] = getEigenStorageOrderTemplate<MatrixXr>();
+	ret["VectorXr"] = getEigenStorageOrderTemplate<VectorXr>();
 
-	ret["Quaternionr"]  = getEigenStorageOrderTemplate<Quaternionr::Coefficients>();
-	ret["AngleAxisr"]   = getEigenStorageOrderTemplate<AngleAxisr::VectorType>();
+	ret["Quaternionr"] = getEigenStorageOrderTemplate<Quaternionr::Coefficients>();
+	ret["AngleAxisr"] = getEigenStorageOrderTemplate<AngleAxisr::VectorType>();
 	ret["AlignedBox3r"] = getEigenStorageOrderTemplate<AlignedBox3r::VectorType>();
 	ret["AlignedBox2r"] = getEigenStorageOrderTemplate<AlignedBox2r::VectorType>();
 

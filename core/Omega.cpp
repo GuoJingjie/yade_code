@@ -50,7 +50,7 @@ void Omega::resetAllScenes()
 {
 	RenderMutexLock lock;
 	scenes.resize(1);
-	scenes[0]      = shared_ptr<Scene>(new Scene);
+	scenes[0] = shared_ptr<Scene>(new Scene);
 	currentSceneNb = 0;
 }
 
@@ -76,8 +76,8 @@ boost::posix_time::time_duration Omega::getRealTime_duration() { return boost::p
 void Omega::initTemps()
 {
 	char dirTemplate[] = "/tmp/yade-XXXXXX";
-	tmpFileDir         = mkdtemp(dirTemplate);
-	tmpFileCounter     = 0;
+	tmpFileDir = mkdtemp(dirTemplate);
+	tmpFileCounter = 0;
 }
 
 void Omega::cleanupTemps()
@@ -158,7 +158,7 @@ void Omega::buildDynlibDatabase(const vector<string>& dynlibsList)
 		shared_ptr<Factorable> f;
 		try {
 			LOG_DEBUG("Factoring plugin " << name);
-			f                            = ClassFactory::instance().createShared(name);
+			f = ClassFactory::instance().createShared(name);
 			dynlibs[name].isSerializable = ((YADE_PTR_DYN_CAST<Serializable>(f)).get() != 0);
 			for (int i = 0; i < f->getBaseClassNumber(); i++) {
 				dynlibs[name].baseClasses.insert(f->getBaseClassName(i));
@@ -194,10 +194,10 @@ void Omega::buildDynlibDatabase(const vector<string>& dynlibsList)
 		}
 	}
 
-	std::map<string, DynlibDescriptor>::iterator dli    = dynlibs.begin();
+	std::map<string, DynlibDescriptor>::iterator dli = dynlibs.begin();
 	std::map<string, DynlibDescriptor>::iterator dliEnd = dynlibs.end();
 	for (; dli != dliEnd; ++dli) {
-		std::set<string>::iterator bci    = (*dli).second.baseClasses.begin();
+		std::set<string>::iterator bci = (*dli).second.baseClasses.begin();
 		std::set<string>::iterator bciEnd = (*dli).second.baseClasses.end();
 		for (; bci != bciEnd; ++bci) {
 			string name = *bci;
@@ -239,7 +239,7 @@ void Omega::loadPlugins(vector<string> pluginFiles)
 				size_t pos = err.rfind(":");
 				assert(pos != std::string::npos);
 				std::string sym(err, pos + 2); //2 removes ": " from the beginning
-				int         status        = 0;
+				int         status = 0;
 				char*       demangled_sym = abi::__cxa_demangle(sym.c_str(), 0, 0, &status);
 				LOG_FATAL(plugin << ": undefined symbol `" << demangled_sym << "'");
 				LOG_FATAL(plugin << ": " << err);

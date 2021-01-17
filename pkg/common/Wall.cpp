@@ -22,10 +22,10 @@ void Bo1_Wall_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const
 	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 	Aabb* aabb = static_cast<Aabb*>(bv.get());
 	if (scene->isPeriodic && scene->cell->hasShear()) throw logic_error(__FILE__ "Walls not supported in sheared cell.");
-	const Real& inf       = std::numeric_limits<Real>::infinity();
-	aabb->min             = Vector3r(-inf, -inf, -inf);
+	const Real& inf = std::numeric_limits<Real>::infinity();
+	aabb->min = Vector3r(-inf, -inf, -inf);
 	aabb->min[wall->axis] = se3.position[wall->axis];
-	aabb->max             = Vector3r(inf, inf, inf);
+	aabb->max = Vector3r(inf, inf, inf);
 	aabb->max[wall->axis] = se3.position[wall->axis];
 }
 
@@ -39,16 +39,16 @@ void Gl1_Wall::go(const shared_ptr<Shape>& cm, const shared_ptr<State>& pp, bool
 	int      ax0 = wall->axis, ax1 = (wall->axis + 1) % 3, ax2 = (wall->axis + 2) % 3;
 	Vector3r a1, b1, a2, b2; // beginnings (a) and endings (b) of lines in both senses (0,1)
 	// compensate for our position, since the functor is called with transformation to the wall se3 already, but we really want to be centered in the middle of the scene
-	Real mn1  = glinfo.sceneCenter[ax1] - glinfo.sceneRadius - pp->se3.position[ax1];
-	Real mn2  = glinfo.sceneCenter[ax2] - glinfo.sceneRadius - pp->se3.position[ax2];
+	Real mn1 = glinfo.sceneCenter[ax1] - glinfo.sceneRadius - pp->se3.position[ax1];
+	Real mn2 = glinfo.sceneCenter[ax2] - glinfo.sceneRadius - pp->se3.position[ax2];
 	Real step = 2 * glinfo.sceneRadius / div;
 	//cerr<<"center "<<glinfo.sceneCenter<<", radius "<<glinfo.sceneRadius<<", mn["<<ax1<<"]="<<mn1<<", mn["<<ax2<<"]="<<mn2<<endl;
 
 	a1[ax0] = b1[ax0] = a2[ax0] = b2[ax0] = 0;
-	a1[ax1]                               = mn1 - step;
-	a2[ax2]                               = mn2 - step;
-	b1[ax1]                               = mn1 + step * (div + 2);
-	b2[ax2]                               = mn2 + step * (div + 2);
+	a1[ax1] = mn1 - step;
+	a2[ax2] = mn2 - step;
+	b1[ax1] = mn1 + step * (div + 2);
+	b2[ax2] = mn2 + step * (div + 2);
 	glColor3v(cm->color);
 	glBegin(GL_LINES)
 		;

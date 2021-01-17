@@ -91,7 +91,7 @@ public:
 	template <typename Rr> static Rr rebuild(const std::vector<unsigned char>& bits, const int& exp, const int& sig)
 	{
 		Rr  ret = 0;
-		int i   = 0;
+		int i = 0;
 		for (auto c : bits) {
 			if (c == 1) {
 				ret += pow(static_cast<Rr>(2), static_cast<Rr>(exp - i));
@@ -106,23 +106,23 @@ public:
 	template <typename Rr> DecomposedReal(const Rr& x)
 	{
 		this->levelOfHP = math::levelOfHP<Rr>; // this line will fail if Rr is not a RealHP type.
-		fpInf           = math::isinf(x);
-		fpNan           = math::isnan(x);
-		fpClassify      = math::fpclassify(x);
-		fpNormal        = (fpClassify == FP_NORMAL);
-		fpSubNormal     = (fpClassify == FP_SUBNORMAL);
-		fpZero          = (fpClassify == FP_ZERO);
+		fpInf = math::isinf(x);
+		fpNan = math::isnan(x);
+		fpClassify = math::fpclassify(x);
+		fpNormal = (fpClassify == FP_NORMAL);
+		fpSubNormal = (fpClassify == FP_SUBNORMAL);
+		fpZero = (fpClassify == FP_ZERO);
 		if ((fpInf != (fpClassify == FP_INFINITE)) or (fpNan != (fpClassify == FP_NAN))) { bad = true; }
 		demangledType = boost::core::demangle(typeid(Rr).name());
-		whatEntered   = math::toStringHP(x);
-		bad           = (not math::isfinite(x)); // NaN or Inf
-		int ex        = 0;
-		Rr  norm      = math::frexp(math::abs(x), &ex);
+		whatEntered = math::toStringHP(x);
+		bad = (not math::isfinite(x)); // NaN or Inf
+		int ex = 0;
+		Rr  norm = math::frexp(math::abs(x), &ex);
 		checkNormExp(norm, ex, x); // may set bad=true;
 		if (bad) return;
-		sig     = math::sign(x);
-		exp     = ex - 1;
-		ex      = 0;
+		sig = math::sign(x);
+		exp = ex - 1;
+		ex = 0;
 		int pos = 0;
 		bits.resize(std::numeric_limits<Rr>::digits, 0);
 		while (norm != 0) {
@@ -153,18 +153,18 @@ public:
 		} else { // create None when reconstrucion is not possible, https://www.boost.org/doc/libs/1_42_0/libs/python/doc/v2/object.html#object-spec-ctors
 			ret["reconstructed"] = py::object();
 		}
-		ret["sign"]        = sig;
-		ret["exp"]         = exp;
-		ret["bits"]        = out.str();
-		ret["wrong"]       = wrong();
-		ret["fpInf"]       = fpInf;
-		ret["fpNan"]       = fpNan;
-		ret["fpNormal"]    = fpNormal;
+		ret["sign"] = sig;
+		ret["exp"] = exp;
+		ret["bits"] = out.str();
+		ret["wrong"] = wrong();
+		ret["fpInf"] = fpInf;
+		ret["fpNan"] = fpNan;
+		ret["fpNormal"] = fpNormal;
 		ret["fpSubNormal"] = fpSubNormal;
-		ret["fpZero"]      = fpZero;
-		ret["fpClassify"]  = fpClassify;
-		ret["type"]        = demangledType;
-		ret["input"]       = whatEntered;
+		ret["fpZero"] = fpZero;
+		ret["fpClassify"] = fpClassify;
+		ret["type"] = demangledType;
+		ret["input"] = whatEntered;
 		return ret;
 	}
 
@@ -314,8 +314,8 @@ template <int minHP> class TestBits { // minHP is because the bits absent in low
 private:
 	static const constexpr auto maxN = boost::mpl::back<math::RealHPConfig::SupportedByEigenCgal>::type::value; // the absolutely maximum precision.
 	static const constexpr auto maxP = boost::mpl::back<math::RealHPConfig::SupportedByMinieigen>::type::value; // this one gets exported to python.
-	using Rnd        = std::array<RealHP<minHP>, 3>; // minHP is because the bits absent in lower precision should be zero to avoid ambiguity.
-	using Error      = std::pair<std::vector<std::array<RealHP<maxP>, 3>> /* arguments */, RealHP<maxP> /* ULP error */>;
+	using Rnd = std::array<RealHP<minHP>, 3>; // minHP is because the bits absent in lower precision should be zero to avoid ambiguity.
+	using Error = std::pair<std::vector<std::array<RealHP<maxP>, 3>> /* arguments */, RealHP<maxP> /* ULP error */>;
 	using FuncErrors = std::map<int /* N, the level of HP */, Error>;
 	int                                 testCount;
 	const RealHP<minHP>                 minX;
@@ -500,7 +500,7 @@ public:
 		for (const auto& a : results) {
 			py::dict badBits {};
 			for (const auto& funcErrors : a.second) {
-				const Error&                                    er   = funcErrors.second;
+				const Error&                                    er = funcErrors.second;
 				const std::vector<std::array<RealHP<maxP>, 3>>& args = er.first;
 				py::list                                        pyArgs {};
 				for (const auto& arg : args) {
@@ -592,13 +592,13 @@ void exposeRealHPDiagnostics()
 	py::def("getRealHPErrors",
 	        yade::getRealHPErrors,
 	        (py::arg("testLevelsHP"),
-	         py::arg("testCount")     = 10,
-	         py::arg("minX")          = yade::Real { -10 },
-	         py::arg("maxX")          = yade::Real { 10 },
+	         py::arg("testCount") = 10,
+	         py::arg("minX") = yade::Real { -10 },
+	         py::arg("maxX") = yade::Real { 10 },
 	         py::arg("useRandomArgs") = false,
 	         py::arg("printEveryNth") = 1000,
-	         py::arg("collectArgs")   = false,
-	         py::arg("extraChecks")   = false),
+	         py::arg("collectArgs") = false,
+	         py::arg("extraChecks") = false),
 	        R"""(
 Tests mathematical functions against the highest precision in argument ``testLevelsHP`` and returns the largest `ULP distance <https://en.wikipedia.org/wiki/Unit_in_the_last_place>`__ `found <https://www.boost.org/doc/libs/1_73_0/libs/math/doc/html/math_toolkit/float_comparison.html>`__ with :yref:`getFloatDistanceULP<yade._math.getFloatDistanceULP>`. A ``testCount`` randomized tries with function arguments in range ``minX ... maxX`` are performed on the ``RealHP<N>`` types where ``N`` is from the list provided in ``testLevelsHP`` argument.
 

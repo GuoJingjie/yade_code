@@ -52,24 +52,24 @@ public:
 		Discontinuity(Vector3r pos)
 		{
 			centre = pos;
-			a = b = c = d      = 0; /*persistence = false;*/
-			isBoundary         = false;
-			sliceBoundaries    = false;
+			a = b = c = d = 0; /*persistence = false;*/
+			isBoundary = false;
+			sliceBoundaries = false;
 			constructionJoints = false;
-			phi_b              = 30.0;
-			phi_r              = 30.0;
-			JRC                = 15;
-			JCS                = pow(10, 6);
-			asperity           = 5;
-			sigmaC             = JCS;
-			cohesion           = 0;
-			tension            = 0;
-			lambda0            = 0.0;
-			heatCapacity       = 0.0;
-			hwater             = -1.0;
-			intactRock         = false;
-			throughGoing       = false;
-			jointType          = 0;
+			phi_b = 30.0;
+			phi_r = 30.0;
+			JRC = 15;
+			JCS = pow(10, 6);
+			asperity = 5;
+			sigmaC = JCS;
+			cohesion = 0;
+			tension = 0;
+			lambda0 = 0.0;
+			heatCapacity = 0.0;
+			hwater = -1.0;
+			intactRock = false;
+			throughGoing = false;
+			jointType = 0;
 		}
 		Real a;
 		Real b;
@@ -111,11 +111,11 @@ public:
 		Vector3r centre;
 		Block(Vector3r pos, Real kPP, Real rPP, Real RPP)
 		{
-			centre     = pos;
-			k          = kPP;
-			r          = rPP;
-			R          = RPP;
-			tooSmall   = false;
+			centre = pos;
+			k = kPP;
+			r = rPP;
+			R = RPP;
+			tooSmall = false;
 			isBoundary = false;
 			tempCentre = pos;
 		}

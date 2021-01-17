@@ -76,8 +76,8 @@ template <class MT> struct custom_MatrixAnyAny_from_sequence {
 	{
 		void* storage = ((py::converter::rvalue_from_python_storage<MT>*)(data))->storage.bytes;
 		new (storage) MT;
-		MT&  mx     = *(MT*)storage;
-		int  sz     = PySequence_Size(obj_ptr);
+		MT&  mx = *(MT*)storage;
+		int  sz = PySequence_Size(obj_ptr);
 		bool isFlat = !PySequence_Check(py::handle<>(PySequence_GetItem(obj_ptr, 0)).get());
 		if (MT::RowsAtCompileTime != Eigen::Dynamic) {
 			// do nothing

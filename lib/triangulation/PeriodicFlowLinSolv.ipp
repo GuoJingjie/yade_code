@@ -65,7 +65,7 @@ namespace CGT {
 			T_nnz = 0;
 			ncols = 0;
 			T_cells.clear();
-			T_index               = 0;
+			T_index = 0;
 			unsigned int maxindex = 0;
 			//FIXME: this is way too large since many cells will be ghosts
 			T_cells.resize(Tri.number_of_finite_cells() + 1);
@@ -79,12 +79,12 @@ namespace CGT {
 				// 			indices[cell->info().index]=ncols;
 				++ncols;
 				T_cells[cell->info().index] = cell;
-				maxindex                    = max(maxindex, cell->info().index);
+				maxindex = max(maxindex, cell->info().index);
 			}
 			// 		spatial_sort(orderedCells.begin(),orderedCells.end(), CellTraits_for_spatial_sort());//FIXME: ordering will not work with the new "indices", which needs reordering to
 			T_cells.resize(ncols + 1);
 			isLinearSystemSet = false;
-			areCellsOrdered   = true;
+			areCellsOrdered = true;
 		}
 		if (!isLinearSystemSet) {
 			int n = 3 * (ncols + 1); //number of non-zero in triangular matrix
@@ -123,7 +123,7 @@ namespace CGT {
 					neighbourCell = cell->neighbor(j);
 					if (Tri.is_infinite(neighbourCell)) continue;
 					CellInfo& nInfo = neighbourCell->info();
-					nIndex          = nInfo.index;
+					nIndex = nInfo.index;
 					if (nIndex == index) {
 						cerr << "ERROR: nIndex==index, the cell is neighbour to itself" << index << endl;
 						errorCode = 3;
@@ -167,14 +167,14 @@ namespace CGT {
 	template <class _Tesselation> int PeriodicFlowLinSolv<_Tesselation>::setLinearSystemFullGS(Real dt)
 	{
 		//WARNING : boundary conditions (Pcondition, p values) must have been set for a correct definition
-		RTriangulation& Tri     = T[currentTes].Triangulation();
+		RTriangulation& Tri = T[currentTes].Triangulation();
 		int             n_cells = Tri.number_of_finite_cells();
 
 		if (!isFullLinearSystemGSSet) {
 			T_cells.clear();
-			T_index                           = 0; //FIXME : no need to clear if we don't re-triangulate
-			T_nnz                             = 0;
-			ncols                             = 0;
+			T_index = 0; //FIXME : no need to clear if we don't re-triangulate
+			T_nnz = 0;
+			ncols = 0;
 			const FiniteCellsIterator cellEnd = Tri.finite_cells_end();
 			orderedCells.clear();
 			T_cells.resize(n_cells + 1);
@@ -196,7 +196,7 @@ namespace CGT {
 				fullAvalues[k].resize(5);
 				gsdV[k] = 0;
 			}
-			gsP[0]          = 0;
+			gsP[0] = 0;
 			areCellsOrdered = true;
 		}
 		for (int k = 0; k <= ncols; k++)
@@ -215,8 +215,8 @@ namespace CGT {
 					T_nnz++;
 					for (int j = 0; j < 4; j++) {
 						CellHandle      neighbourCell = cell->neighbor(j);
-						const CellInfo& nInfo         = neighbourCell->info();
-						CellInfo&       cInfo         = cell->info();
+						const CellInfo& nInfo = neighbourCell->info();
+						CellInfo&       cInfo = cell->info();
 						if (Tri.is_infinite(neighbourCell)) {
 							fullAvalues[cInfo.index][j] = 0;
 							//We point to the pressure of the adjacent cell. If the cell is ghost, then it has the index of the real one, and then the pointer is correct
@@ -225,13 +225,13 @@ namespace CGT {
 						}
 						if (!nInfo.Pcondition) {
 							++T_nnz;
-							fullAvalues[cInfo.index][j]  = (cInfo.kNorm())[j];
+							fullAvalues[cInfo.index][j] = (cInfo.kNorm())[j];
 							fullAcolumns[cInfo.index][j] = &gsP[nInfo.index];
 							//DUMP
 							//if the adjacent cell is ghost, we account for the pressure shift in the RHS
 							if (nInfo.isGhost) { gsB[cInfo.index] += cInfo.kNorm()[j] * nInfo.pShift(); }
 						} else {
-							fullAvalues[cInfo.index][j]  = 0;
+							fullAvalues[cInfo.index][j] = 0;
 							fullAcolumns[cInfo.index][j] = &gsP[0];
 							gsB[cInfo.index] += cInfo.kNorm()[j] * nInfo.shiftedP();
 						}
@@ -245,8 +245,8 @@ namespace CGT {
 				if (!cell->info().Pcondition && !cell->info().isGhost) {
 					for (int j = 0; j < 4; j++) {
 						CellHandle      neighbourCell = cell->neighbor(j);
-						const CellInfo& nInfo         = neighbourCell->info();
-						CellInfo&       cInfo         = cell->info();
+						const CellInfo& nInfo = neighbourCell->info();
+						CellInfo&       cInfo = cell->info();
 						if (!nInfo.Pcondition) {
 							if (nInfo.isGhost) gsB[cInfo.index] += cInfo.kNorm()[j] * nInfo.pShift();
 						} else

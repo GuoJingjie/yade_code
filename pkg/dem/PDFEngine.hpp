@@ -18,8 +18,8 @@ public:
 		virtual ~PDFCalculator() {};
 
 		virtual vector<string> getSuffixes() const { return vector<string>({ "" }); }
-		virtual vector<string> getDatas() const                                                                                    = 0;
-		virtual void           cleanData()                                                                                         = 0;
+		virtual vector<string> getDatas() const = 0;
+		virtual void           cleanData() = 0;
 		virtual bool           addData(const shared_ptr<Interaction>&, Real const& dS, Real const& V, int const& N, bool inversed) = 0;
 
 		string name;

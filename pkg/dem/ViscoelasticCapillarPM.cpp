@@ -97,9 +97,9 @@ bool Law2_ScGeom_ViscElCapPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IP
 	const id_t id1 = I->getId1();
 	const id_t id2 = I->getId2();
 
-	const ScGeom&        geom   = *static_cast<ScGeom*>(_geom.get());
-	Scene*               scene  = Omega::instance().getScene().get();
-	ViscElCapPhys&       phys   = *static_cast<ViscElCapPhys*>(_phys.get());
+	const ScGeom&        geom = *static_cast<ScGeom*>(_geom.get());
+	Scene*               scene = Omega::instance().getScene().get();
+	ViscElCapPhys&       phys = *static_cast<ViscElCapPhys*>(_phys.get());
 	const BodyContainer& bodies = *scene->bodies;
 
 	/*
@@ -113,7 +113,7 @@ bool Law2_ScGeom_ViscElCapPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IP
 
 	if (phys.Capillar and not(phys.liqBridgeCreated) and geom.penetrationDepth >= 0) {
 		phys.liqBridgeCreated = true;
-		phys.liqBridgeActive  = false;
+		phys.liqBridgeActive = false;
 #ifdef YADE_LIQMIGRATION
 		if (phys.LiqMigrEnabled) { scene->addIntrs.push_back(I); }
 #endif
@@ -142,7 +142,7 @@ bool Law2_ScGeom_ViscElCapPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IP
 			}
 
 			const auto normalCapForceScalar = CapFunctionsPool[phys.CapillarType](geom, phys);
-			Real       dampCapForceScalar   = 0.0;
+			Real       dampCapForceScalar = 0.0;
 
 			if (phys.dcap) {
 				const State& de1 = *static_cast<State*>(bodies[id1]->state.get());
@@ -152,14 +152,14 @@ bool Law2_ScGeom_ViscElCapPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IP
 				if (I->isFresh(scene)) shearForce = Vector3r(0, 0, 0);
 				shearForce = geom.rotate(shearForce);
 
-				const Vector3r shift2   = scene->isPeriodic ? scene->cell->intrShiftPos(I->cellDist) : Vector3r::Zero();
+				const Vector3r shift2 = scene->isPeriodic ? scene->cell->intrShiftPos(I->cellDist) : Vector3r::Zero();
 				const Vector3r shiftVel = scene->isPeriodic ? scene->cell->intrShiftVel(I->cellDist) : Vector3r::Zero();
 
 				const Vector3r c1x = (geom.contactPoint - de1.pos);
 				const Vector3r c2x = (geom.contactPoint - de2.pos - shift2);
 
 				const Vector3r relativeVelocity = (de1.vel + de1.angVel.cross(c1x)) - (de2.vel + de2.angVel.cross(c2x)) + shiftVel;
-				const auto     normalVelocity   = geom.normal.dot(relativeVelocity);
+				const auto     normalVelocity = geom.normal.dot(relativeVelocity);
 
 				dampCapForceScalar = -phys.dcap * normalVelocity;
 			}
@@ -233,13 +233,13 @@ Real Law2_ScGeom_ViscElCapPhys_Basic::Willett_numeric_f(const ScGeom& geom, Visc
    * Capillar model from [Willett2000]
    */
 
-	const Real R  = phys.R;
-	const Real s  = -geom.penetrationDepth;
+	const Real R = phys.R;
+	const Real s = -geom.penetrationDepth;
 	const Real Vb = phys.Vb;
 
-	const Real VbS   = Vb / (R * R * R);
-	const Real Th1   = phys.theta;
-	const Real Th2   = phys.theta * phys.theta;
+	const Real VbS = Vb / (R * R * R);
+	const Real Th1 = phys.theta;
+	const Real Th2 = phys.theta * phys.theta;
 	const Real Gamma = phys.gamma;
 
 	/*
@@ -262,7 +262,7 @@ Real Law2_ScGeom_ViscElCapPhys_Basic::Willett_numeric_f(const ScGeom& geom, Visc
 	const Real sPl = (s / 2.0) / sqrt(Vb / R);
 
 	const Real lnFS = f1 - f2 * exp(f3 * log(sPl) + f4 * log(sPl) * log(sPl));
-	const Real FS   = exp(lnFS);
+	const Real FS = exp(lnFS);
 
 	const Real fC = FS * 2.0 * M_PI * R * Gamma;
 	return fC;
@@ -275,19 +275,19 @@ Real Law2_ScGeom_ViscElCapPhys_Basic::Willett_analytic_f(const ScGeom& geom, Vis
    * used also in the work of Herminghaus [Herminghaus2005]
    */
 
-	const Real R     = phys.R;
+	const Real R = phys.R;
 	const Real Gamma = phys.gamma;
-	const Real s     = -geom.penetrationDepth;
-	const Real Vb    = phys.Vb;
+	const Real s = -geom.penetrationDepth;
+	const Real Vb = phys.Vb;
 
 	/*
   Real sPl = s/sqrt(Vb/R);                                                            // [Herminghaus2005], equation (sentence between (7) and (8))
   fC = 2.0 * M_PI* R * Gamma * cos(phys.theta)/(1 + 1.05*sPl + 2.5 *sPl * sPl);       // [Herminghaus2005], equation (7)
   */
 
-	const Real sPl    = (s / 2.0) / sqrt(Vb / R); // [Willett2000], equation (sentence after (11)), s - half-separation, so s*2.0
+	const Real sPl = (s / 2.0) / sqrt(Vb / R); // [Willett2000], equation (sentence after (11)), s - half-separation, so s*2.0
 	const Real f_star = cos(phys.theta) / (1 + 2.1 * sPl + 10.0 * pow(sPl, 2.0)); // [Willett2000], equation (12)
-	const Real fC     = f_star * (2 * M_PI * R * Gamma);                          // [Willett2000], equation (13), against F
+	const Real fC = f_star * (2 * M_PI * R * Gamma);                              // [Willett2000], equation (13), against F
 
 	return fC;
 }
@@ -297,8 +297,8 @@ Real Law2_ScGeom_ViscElCapPhys_Basic::Weigert_f(const ScGeom& geom, ViscElCapPhy
 	/*
   *  Capillar model from [Weigert1999]
   */
-	const Real R  = phys.R;
-	const Real a  = -geom.penetrationDepth;
+	const Real R = phys.R;
+	const Real a = -geom.penetrationDepth;
 	const Real Ca = (1.0 + 6.0 * a / (R * 2.0));   // [Weigert1999], equation (16)
 	const Real Ct = (1.0 + 1.1 * sin(phys.theta)); // [Weigert1999], equation (17)
 
@@ -335,21 +335,21 @@ Real Law2_ScGeom_ViscElCapPhys_Basic::Rabinovich_f(const ScGeom& geom, ViscElCap
    * 
    */
 
-	const Real R     = phys.R;
+	const Real R = phys.R;
 	const Real Gamma = phys.gamma;
-	const Real H     = -geom.penetrationDepth;
-	const Real V     = phys.Vb;
+	const Real H = -geom.penetrationDepth;
+	const Real V = phys.Vb;
 
-	Real fC  = 0.0;
+	Real fC = 0.0;
 	Real dsp = 0.0;
 
 	if (H != 0.0) {
-		dsp              = H / 2.0 * (-1.0 + sqrt(1.0 + 2.0 * V / (M_PI * R * H * H)));       // [Rabinov2005], equation (20)
-		fC               = -(2 * M_PI * R * Gamma * cos(phys.theta)) / (1 + (H / (2 * dsp))); // [Lambert2008], equation (65), taken from [Rabinov2005]
-		const Real alpha = sqrt(H / R * (-1 + sqrt(1 + 2.0 * V / (M_PI * R * H * H))));       // [Rabinov2005], equation (A3)
-		fC -= 2 * M_PI * R * Gamma * sin(alpha) * sin(phys.theta + alpha);                    // [Rabinov2005], equation (19)
+		dsp = H / 2.0 * (-1.0 + sqrt(1.0 + 2.0 * V / (M_PI * R * H * H)));              // [Rabinov2005], equation (20)
+		fC = -(2 * M_PI * R * Gamma * cos(phys.theta)) / (1 + (H / (2 * dsp)));         // [Lambert2008], equation (65), taken from [Rabinov2005]
+		const Real alpha = sqrt(H / R * (-1 + sqrt(1 + 2.0 * V / (M_PI * R * H * H)))); // [Rabinov2005], equation (A3)
+		fC -= 2 * M_PI * R * Gamma * sin(alpha) * sin(phys.theta + alpha);              // [Rabinov2005], equation (19)
 	} else {
-		fC               = -(2 * M_PI * R * Gamma * cos(phys.theta));
+		fC = -(2 * M_PI * R * Gamma * cos(phys.theta));
 		const Real alpha = 0.0;
 		fC -= 2 * M_PI * R * Gamma * sin(alpha) * sin(phys.theta + alpha); // [Rabinov2005], equation (19)
 	}
@@ -368,17 +368,17 @@ Real Law2_ScGeom_ViscElCapPhys_Basic::Lambert_f(const ScGeom& geom, ViscElCapPhy
    * 
    */
 
-	const Real R     = phys.R;
+	const Real R = phys.R;
 	const Real Gamma = phys.gamma;
-	const Real H     = -geom.penetrationDepth;
-	const Real V     = phys.Vb;
+	const Real H = -geom.penetrationDepth;
+	const Real V = phys.Vb;
 
-	Real fC  = 0.0;
+	Real fC = 0.0;
 	Real dsp = 0.0;
 
 	if (H != 0.0) {
-		dsp = H / 2.0 * (-1.0 + sqrt(1.0 + 2.0 * V / (M_PI * R * H * H)));       // [Rabinov2005], equation (20)
-		fC  = -(2 * M_PI * R * Gamma * cos(phys.theta)) / (1 + (H / (2 * dsp))); // [Lambert2008], equation (65), taken from [Rabinov2005]
+		dsp = H / 2.0 * (-1.0 + sqrt(1.0 + 2.0 * V / (M_PI * R * H * H)));      // [Rabinov2005], equation (20)
+		fC = -(2 * M_PI * R * Gamma * cos(phys.theta)) / (1 + (H / (2 * dsp))); // [Lambert2008], equation (65), taken from [Rabinov2005]
 	} else {
 		fC = -(2 * M_PI * R * Gamma * cos(phys.theta));
 	}
@@ -399,10 +399,10 @@ Real Law2_ScGeom_ViscElCapPhys_Basic::Soulie_f(const ScGeom& geom, ViscElCapPhys
    * 
    */
 
-	const Real R     = phys.R;
+	const Real R = phys.R;
 	const Real Gamma = phys.gamma;
-	const Real D     = -geom.penetrationDepth;
-	const Real V     = phys.Vb;
+	const Real D = -geom.penetrationDepth;
+	const Real V = phys.Vb;
 	const Real Theta = phys.theta;
 
 	const Real a = -1.1 * pow((V / (R * R * R)), -0.53);
@@ -456,13 +456,13 @@ void LiqControl::action()
 		ViscElCapPhys* Vb = dynamic_cast<ViscElCapPhys*>(scene->addIntrs[i]->phys.get());
 
 		if (mask != 0 && ((b1->groupMask & b2->groupMask & mask) == 0)) {
-			Vb->Vb   = 0.0;
-			Vb->Vf1  = 0.0;
-			Vb->Vf2  = 0.0;
+			Vb->Vb = 0.0;
+			Vb->Vf1 = 0.0;
+			Vb->Vf2 = 0.0;
 			Vb->Vmax = 0.0;
 		} else {
 			const Real Vmax = vMax(b1, b2);
-			Vb->Vmax        = Vmax;
+			Vb->Vmax = Vmax;
 
 			Real Vf1 = 0.0;
 			Real Vf2 = 0.0;
@@ -516,7 +516,7 @@ void LiqControl::updateLiquid(shared_ptr<Body> b)
 
 		// Check how much liquid can accept contacts
 		Real         LiqContactsAccept = 0.0;
-		unsigned int contactN          = 0;
+		unsigned int contactN = 0;
 		for (Body::MapId2IntrT::iterator it = b->intrs.begin(), end = b->intrs.end(); it != end; ++it) {
 			if (!((*it).second) or !(((*it).second)->isReal())) continue;
 			ViscElCapPhys* physT = dynamic_cast<ViscElCapPhys*>(((*it).second)->phys.get());
@@ -531,8 +531,8 @@ void LiqControl::updateLiquid(shared_ptr<Body> b)
 			Real FillLevel = 0.0;
 			if (LiqContactsAccept > LiqCanBeShared) { // Share all available liquid from body to contacts
 				const Real LiquidWillBeShared = b->state->Vf - b->state->Vmin;
-				b->state->Vf                  = b->state->Vmin;
-				FillLevel                     = LiquidWillBeShared / LiqContactsAccept;
+				b->state->Vf = b->state->Vmin;
+				FillLevel = LiquidWillBeShared / LiqContactsAccept;
 			} else { // Not all available liquid from body can be shared
 				b->state->Vf -= LiqContactsAccept;
 				FillLevel = 1.0;
@@ -588,8 +588,8 @@ void LiqControl::addBodyMapReal(mapBodyReal& m, Body::id_t b, Real addV)
 
 Real LiqControl::vMax(shared_ptr<Body> const b1, shared_ptr<Body> const b2)
 {
-	Sphere* s1   = dynamic_cast<Sphere*>(b1->shape.get());
-	Sphere* s2   = dynamic_cast<Sphere*>(b2->shape.get());
+	Sphere* s1 = dynamic_cast<Sphere*>(b1->shape.get());
+	Sphere* s2 = dynamic_cast<Sphere*>(b2->shape.get());
 	Real    minR = 0.0;
 	if (s1 and s2) {
 		minR = std::min(s1->radius, s2->radius);
@@ -632,7 +632,7 @@ Real liqVolIterBody(shared_ptr<Body> b)
 
 Real LiqControl::liqVolBody(id_t id) const
 {
-	Scene*               scene  = Omega::instance().getScene().get();
+	Scene*               scene = Omega::instance().getScene().get();
 	const BodyContainer& bodies = *scene->bodies;
 	if (bodies[id]) {
 		if (bodies[id]->state->Vf > 0) {
@@ -646,7 +646,7 @@ Real LiqControl::liqVolBody(id_t id) const
 
 Real LiqControl::totalLiqVol(int mask = 0) const
 {
-	Scene* scene       = Omega::instance().getScene().get();
+	Scene* scene = Omega::instance().getScene().get();
 	Real   totalLiqVol = 0.0;
 	for (const auto& b : *scene->bodies) {
 		if ((mask > 0 && (b->groupMask & mask) == 0) or (!b)) continue;
@@ -662,7 +662,7 @@ bool LiqControl::addLiqInter(id_t id1, id_t id2, Real liq)
 
 	Scene*                            scene = Omega::instance().getScene().get();
 	shared_ptr<InteractionContainer>& intrs = scene->interactions;
-	const shared_ptr<Interaction>&    I     = intrs->find(id1, id2);
+	const shared_ptr<Interaction>&    I = intrs->find(id1, id2);
 	if (I->isReal()) {
 		ViscElCapPhys* physT = dynamic_cast<ViscElCapPhys*>(I->phys.get());
 		if (physT and physT->Vb <= physT->Vmax and liq <= (physT->Vmax - physT->Vb)) {

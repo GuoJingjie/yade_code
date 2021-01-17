@@ -104,7 +104,7 @@ template <typename MatrixT> void Matrix_computeUnitaryPositive(const MatrixT& in
 	mV = svd.matrixV();
 	mS = svd.singularValues().asDiagonal();
 
-	*unitary  = mU * mV.adjoint();
+	*unitary = mU * mV.adjoint();
 	*positive = mV * mS * mV.adjoint();
 }
 
@@ -112,7 +112,7 @@ template <typename MatrixT> void matrixEigenDecomposition(const MatrixT& m, Matr
 {
 	//assert(mRot); assert(mDiag);
 	Eigen::SelfAdjointEigenSolver<MatrixT> a(m);
-	mRot  = a.eigenvectors();
+	mRot = a.eigenvectors();
 	mDiag = a.eigenvalues().asDiagonal();
 }
 
@@ -150,20 +150,20 @@ template <typename Scalar> void quaterniontoGLMatrix(const Eigen::Quaternion<Sca
 	Scalar x2x = x2 * q.x(), y2x = y2 * q.x(), z2x = z2 * q.x();
 	Scalar x2y = y2 * q.y(), y2y = y2 * q.y(), z2y = z2 * q.y();
 	Scalar x2z = z2 * q.z(), y2z = y2 * q.z(), z2z = z2 * q.z();
-	m[0]  = 1. - (y2y + z2z);
-	m[4]  = y2x - z2w;
-	m[8]  = z2x + y2w;
+	m[0] = 1. - (y2y + z2z);
+	m[4] = y2x - z2w;
+	m[8] = z2x + y2w;
 	m[12] = 0;
-	m[1]  = y2x + z2w;
-	m[5]  = 1. - (x2x + z2z);
-	m[9]  = z2y - x2w;
+	m[1] = y2x + z2w;
+	m[5] = 1. - (x2x + z2z);
+	m[9] = z2y - x2w;
 	m[13] = 0;
-	m[2]  = z2x - y2w;
-	m[6]  = z2y + x2w;
+	m[2] = z2x - y2w;
+	m[6] = z2y + x2w;
 	m[10] = 1. - (x2x + y2y);
 	m[14] = 0;
-	m[3]  = 0.;
-	m[7]  = 0.;
+	m[3] = 0.;
+	m[7] = 0.;
 	m[11] = 0.;
 	m[15] = 1.;
 }

@@ -45,8 +45,8 @@ void FoamCoupling::getRank()
 		MPI_Comm_rank(MPI_COMM_WORLD, &worldRank);
 		MPI_Comm_size(MPI_COMM_WORLD, &worldCommSize);
 		commSizeSet = true;
-		stride      = localCommSize;
-		commSzdff   = abs(localCommSize - worldCommSize);
+		stride = localCommSize;
+		commSzdff = abs(localCommSize - worldCommSize);
 	} else {
 		MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 		MPI_Comm_size(MPI_COMM_WORLD, &commSize);
@@ -58,7 +58,7 @@ void FoamCoupling::setNumParticles(int np)
 {
 	getRank();
 	numParticles = np;
-	initDone     = true;
+	initDone = true;
 }
 
 void FoamCoupling::setIdList(const std::vector<int>& alist)
@@ -118,12 +118,12 @@ void FoamCoupling::castParticle()
 	for (unsigned int i = 0; i < bodyList.size(); ++i) {
 		const Body* b = (*scene->bodies)[bodyList[i]].get();
 		if (scene->isPeriodic) {
-			const Vector3r& pos      = scene->cell->wrapPt(b->state->pos);
-			particleData[i * 10]     = pos[0];
+			const Vector3r& pos = scene->cell->wrapPt(b->state->pos);
+			particleData[i * 10] = pos[0];
 			particleData[i * 10 + 1] = pos[1];
 			particleData[i * 10 + 2] = pos[2];
 		} else {
-			particleData[i * 10]     = b->state->pos[0];
+			particleData[i * 10] = b->state->pos[0];
 			particleData[i * 10 + 1] = b->state->pos[1];
 			particleData[i * 10 + 2] = b->state->pos[2];
 		}
@@ -133,7 +133,7 @@ void FoamCoupling::castParticle()
 		particleData[i * 10 + 6] = b->state->angVel[0];
 		particleData[i * 10 + 7] = b->state->angVel[1];
 		particleData[i * 10 + 8] = b->state->angVel[2];
-		shared_ptr<Sphere> s     = YADE_PTR_DYN_CAST<Sphere>(b->shape);
+		shared_ptr<Sphere> s = YADE_PTR_DYN_CAST<Sphere>(b->shape);
 		particleData[i * 10 + 9] = s->radius;
 	}
 
@@ -273,10 +273,10 @@ void FoamCoupling::getFluidDomainBbox()
 		shared_ptr<Body>            flBody(shared_ptr<Body>(new Body()));
 		shared_ptr<FluidDomainBbox> flBodyshape(shared_ptr<FluidDomainBbox>(new FluidDomainBbox()));
 		flBodyshape->setMinMax(minMaxBuff[fd]);
-		flBodyshape->domainRank      = stride + fd;
+		flBodyshape->domainRank = stride + fd;
 		flBodyshape->hasIntersection = false;
-		flBody->shape                = flBodyshape;
-		flBody->subdomain            = 0;
+		flBody->shape = flBodyshape;
+		flBody->subdomain = 0;
 		flBody->setIsFluidDomainBbox(true);
 		fluidDomains[fd] = scene->bodies->insert(flBody);
 	}
@@ -423,7 +423,7 @@ bool FoamCoupling::ifDomainBodies(const shared_ptr<Body>& b)
 {
 	// check if body is subdomain, wall, facet, or other fluidDomainBbox
 
-	shared_ptr<Box>             boxShape   = YADE_PTR_DYN_CAST<Box>(b->shape);
+	shared_ptr<Box>             boxShape = YADE_PTR_DYN_CAST<Box>(b->shape);
 	shared_ptr<FluidDomainBbox> fluidShape = YADE_PTR_DYN_CAST<FluidDomainBbox>(b->shape);
 	shared_ptr<Facet>           facetShape = YADE_PTR_DYN_CAST<Facet>(b->shape);
 
@@ -482,12 +482,12 @@ void FoamCoupling::sendBodyData()
 					const shared_ptr<Body>& b = (*scene->bodies)[flbox->bIds[i]];
 					if (isPeriodic) {
 						const Vector3r& pos = scene->cell->wrapPt(b->state->pos);
-						prtData[10 * i]     = pos[0];
+						prtData[10 * i] = pos[0];
 						prtData[10 * i + 1] = pos[1];
 						prtData[10 * i + 2] = pos[2];
 
 					} else {
-						prtData[10 * i]     = b->state->pos[0];
+						prtData[10 * i] = b->state->pos[0];
 						prtData[10 * i + 1] = b->state->pos[1];
 						prtData[10 * i + 2] = b->state->pos[2];
 					}
@@ -499,7 +499,7 @@ void FoamCoupling::sendBodyData()
 					prtData[10 * i + 8] = b->state->angVel[2];
 
 					const shared_ptr<Sphere>& sph = YADE_PTR_CAST<Sphere>(b->shape);
-					prtData[10 * i + 9]           = sph->radius;
+					prtData[10 * i + 9] = sph->radius;
 				}
 
 				int sz = prtData.size();
@@ -530,7 +530,7 @@ void FoamCoupling::verifyParticleDetection()
 
 	// recv the vec.
 	for (auto& it : verifyTracking) {
-		std::vector<int>& vt  = it.second;
+		std::vector<int>& vt = it.second;
 		int               rnk = it.first;
 		MPI_Status        status;
 		int               buffSz = vt.size();
@@ -542,8 +542,8 @@ void FoamCoupling::verifyParticleDetection()
 	std::vector<Body::id_t> unFoundSharedIds;
 	for (const auto& vt : verifyTracking) {
 		const int&                         flBdyIndx = abs(vt.first - stride);
-		const shared_ptr<FluidDomainBbox>& flbody    = YADE_PTR_CAST<FluidDomainBbox>((*scene->bodies)[fluidDomains[flBdyIndx]]->shape);
-		int                                bIndx     = 0;
+		const shared_ptr<FluidDomainBbox>& flbody = YADE_PTR_CAST<FluidDomainBbox>((*scene->bodies)[fluidDomains[flBdyIndx]]->shape);
+		int                                bIndx = 0;
 		for (const auto& val : vt.second) {
 			if (val < 0) {
 				// this body was not found in the fluid domain.
@@ -604,7 +604,7 @@ void FoamCoupling::getParticleForce()
 	for (auto& recvForce : hForce) {
 		std::vector<double>& tmpForce = recvForce.second;
 		int                  recvRank = recvForce.first;
-		int                  buffSz   = tmpForce.size();
+		int                  buffSz = tmpForce.size();
 		MPI_Status           status;
 		/* fluid procs having no particles will send 0 force, torque */
 		MPI_Recv(&tmpForce.front(), buffSz, MPI_DOUBLE, recvRank, TAG_FORCE, MPI_COMM_WORLD, &status);
@@ -633,9 +633,9 @@ void FoamCoupling::setHydroForceParallel()
 	// add the force
 	if (localRank == yadeMaster) { return; }
 	for (const auto& rf : hForce) {
-		int                                indx     = abs(rf.first - localCommSize);
+		int                                indx = abs(rf.first - localCommSize);
 		const std::vector<double>&         forceVec = rf.second;
-		const shared_ptr<FluidDomainBbox>& flbox    = YADE_PTR_CAST<FluidDomainBbox>((*scene->bodies)[fluidDomains[indx]]->shape);
+		const shared_ptr<FluidDomainBbox>& flbox = YADE_PTR_CAST<FluidDomainBbox>((*scene->bodies)[fluidDomains[indx]]->shape);
 		for (unsigned int i = 0; i != flbox->bIds.size(); ++i) {
 			Vector3r fx;
 			fx[0] = forceVec[6 * i];

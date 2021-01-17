@@ -38,31 +38,31 @@ void ThreeDTriaxialEngine::action()
 		if (updateFrictionAngle) setContactProperties(frictionAngleDegree);
 
 		height0 = height;
-		depth0  = depth;
-		width0  = width;
+		depth0 = depth;
+		width0 = width;
 
 		if (stressControl_1) {
 			wall_right_activated = true;
-			wall_left_activated  = true; //are the right walls for direction 1?
+			wall_left_activated = true; //are the right walls for direction 1?
 		} else {
 			wall_right_activated = false;
-			wall_left_activated  = false;
+			wall_left_activated = false;
 		}
 
 		if (stressControl_2) {
 			wall_bottom_activated = true;
-			wall_top_activated    = true;
+			wall_top_activated = true;
 		} else {
 			wall_bottom_activated = false;
-			wall_top_activated    = false;
+			wall_top_activated = false;
 		}
 
 		if (stressControl_3) {
 			wall_front_activated = true;
-			wall_back_activated  = true; //are the right walls for direction 3?
+			wall_back_activated = true; //are the right walls for direction 3?
 		} else {
 			wall_front_activated = false;
-			wall_back_activated  = false;
+			wall_back_activated = false;
 		}
 
 		//internalCompaction=false;  //is needed to avoid a control for internal compaction by the TriaxialStressController engine
@@ -125,7 +125,7 @@ void ThreeDTriaxialEngine::action()
 
 void ThreeDTriaxialEngine::setContactProperties(Real frictionDegree)
 {
-	scene                             = Omega::instance().getScene().get();
+	scene = Omega::instance().getScene().get();
 	shared_ptr<BodyContainer>& bodies = scene->bodies;
 	for (const auto& b : *scene->bodies) {
 		if (b->isDynamic()) YADE_PTR_CAST<FrictMat>(b->material)->frictionAngle = frictionDegree * Mathr::PI / 180.0;
@@ -137,9 +137,9 @@ void ThreeDTriaxialEngine::setContactProperties(Real frictionDegree)
 		const shared_ptr<FrictMat>& sdec1 = YADE_PTR_CAST<FrictMat>((*bodies)[(Body::id_t)((ii)->getId1())]->material);
 		const shared_ptr<FrictMat>& sdec2 = YADE_PTR_CAST<FrictMat>((*bodies)[(Body::id_t)((ii)->getId2())]->material);
 		//FIXME - why dynamic_cast fails here?
-		FrictPhys* contactPhysics              = YADE_CAST<FrictPhys*>((ii)->phys.get());
-		Real       fa                          = sdec1->frictionAngle;
-		Real       fb                          = sdec2->frictionAngle;
+		FrictPhys* contactPhysics = YADE_CAST<FrictPhys*>((ii)->phys.get());
+		Real       fa = sdec1->frictionAngle;
+		Real       fb = sdec2->frictionAngle;
 		contactPhysics->tangensOfFrictionAngle = math::tan(math::min(fa, fb));
 	}
 }

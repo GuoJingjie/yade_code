@@ -69,7 +69,7 @@ public:
 	{
 		if (chains.size() <= currentChain) chains.resize(currentChain + 1);
 		chainNumber = currentChain;
-		rank        = chains[currentChain].size();
+		rank = chains[currentChain].size();
 		chains[currentChain].push_back(bodyId);
 		bId = bodyId;
 		// 			if (rank>0) statePrev = Body::byId(chains[chainNumber][rank-1],scene)->state;

@@ -33,27 +33,27 @@ bool InteractionContainer::insert(const shared_ptr<Interaction>& i)
 	if (!b1->intrs.insert(Body::MapId2IntrT::value_type(id2, i)).second) return false; // already exists
 	if (!b2->intrs.insert(Body::MapId2IntrT::value_type(id1, i)).second) return false;
 
-	linIntrs.resize(++currSize);           // currSize updated
-	linIntrs[currSize - 1] = i;            // assign last element
-	i->linIx               = currSize - 1; // store the index back-reference in the interaction (so that it knows how to erase/move itself)
+	linIntrs.resize(++currSize); // currSize updated
+	linIntrs[currSize - 1] = i;  // assign last element
+	i->linIx = currSize - 1;     // store the index back-reference in the interaction (so that it knows how to erase/move itself)
 
 	const shared_ptr<Scene>& scene = Omega::instance().getScene();
-	i->iterBorn                    = scene->iter;
+	i->iterBorn = scene->iter;
 
 	return true;
 }
 
 bool InteractionContainer::insertInteractionMPI(shared_ptr<Interaction>& i)
 {
-	bool                           res  = true;
+	bool                           res = true;
 	const shared_ptr<Interaction>& iOld = find(Body::id_t(i->id1), Body::id_t(i->id2));
 	if (not iOld) {
 		int iterBorn = i->iterBorn;
-		res          = insert(i); // if it doesn't exist, insert it
-		i->iterBorn  = iterBorn;
+		res = insert(i); // if it doesn't exist, insert it
+		i->iterBorn = iterBorn;
 	} else /*if (i->isReal())*/ {
-		i->linIx                         = iOld->linIx; // else replace existing one (with special care to linIx, only valid locally)
-		(*this)[i->linIx]                = i;
+		i->linIx = iOld->linIx; // else replace existing one (with special care to linIx, only valid locally)
+		(*this)[i->linIx] = i;
 		(*bodies)[i->id1]->intrs[i->id2] = i;
 		(*bodies)[i->id2]->intrs[i->id1] = i;
 	}
@@ -69,7 +69,7 @@ void InteractionContainer::clear()
 	}
 	linIntrs.clear();
 	currSize = 0;
-	dirty    = true;
+	dirty = true;
 }
 
 bool InteractionContainer::erase(Body::id_t id1, Body::id_t id2, int linPos)
@@ -107,7 +107,7 @@ bool InteractionContainer::erase(Body::id_t id1, Body::id_t id2, int linPos)
 	}
 	// iid is not the last element; we have to move last one to its place
 	if (linIx < (int)currSize - 1) {
-		linIntrs[linIx]        = linIntrs[currSize - 1];
+		linIntrs[linIx] = linIntrs[currSize - 1];
 		linIntrs[linIx]->linIx = linIx; // update the back-reference inside the interaction
 	}
 	// in either case, last element can be removed now

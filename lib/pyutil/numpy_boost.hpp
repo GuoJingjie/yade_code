@@ -160,7 +160,7 @@ private:
 		/* We don't want any additional offsets.  If they exist, Numpy has
        already handled that for us when calculating the data pointer
        and strides. */
-		super::origin_offset_      = 0;
+		super::origin_offset_ = 0;
 		super::directional_offset_ = 0;
 
 		/* Calculate the number of elements.  This has nothing to do with

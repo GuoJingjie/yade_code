@@ -189,8 +189,8 @@ void testTimedLevels()
 
 	// with `using namespace std::chrono_literals` you can write this:
 	constexpr auto wait_half = 500ms;
-	constexpr auto wait_1s   = 1s;
-	constexpr auto wait_2s   = 2s;
+	constexpr auto wait_1s = 1s;
+	constexpr auto wait_2s = 2s;
 	// without `using namespace std::chrono_literals` you have to write this:
 	constexpr std::chrono::duration<int64_t, std::ratio<int64_t(1), int64_t(1000)>> wait_half_without_using(
 	        500); // int64_t type supports ±292.5 years in nanoseconds.
@@ -310,12 +310,12 @@ Saves log config to specified file.
 :return: the default log config file, which is loaded at startup, if it exists.
 	)""");
 
-	py::scope().attr("TRACE")    = int(6);
-	py::scope().attr("DEBUG")    = int(5);
-	py::scope().attr("INFO")     = int(4);
-	py::scope().attr("WARN")     = int(3);
-	py::scope().attr("ERROR")    = int(2);
-	py::scope().attr("FATAL")    = int(1);
+	py::scope().attr("TRACE") = int(6);
+	py::scope().attr("DEBUG") = int(5);
+	py::scope().attr("INFO") = int(4);
+	py::scope().attr("WARN") = int(3);
+	py::scope().attr("ERROR") = int(2);
+	py::scope().attr("FATAL") = int(1);
 	py::scope().attr("NOFILTER") = int(0);
 
 } catch (...) {

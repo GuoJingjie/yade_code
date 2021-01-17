@@ -53,7 +53,7 @@ void GLUtils::QGLViewer::drawArrow(double length, double radius, int nbSubdivisi
 
 	if (radius < 0.0) radius = 0.05 * length;
 
-	const double head           = 2.5 * (radius / length) + 0.1;
+	const double head = 2.5 * (radius / length) + 0.1;
 	const double coneRadiusCoef = 4.0 - 5.0 * head;
 
 	gluCylinder(quadric, radius, radius, length * (1.0 - head / coneRadiusCoef), nbSubdivisions, 1);

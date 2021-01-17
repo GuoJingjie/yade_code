@@ -16,7 +16,7 @@ void Bo1_Sphere_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, con
 {
 	Sphere* sphere = static_cast<Sphere*>(cm.get());
 	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
-	Aabb*    aabb     = static_cast<Aabb*>(bv.get());
+	Aabb*    aabb = static_cast<Aabb*>(bv.get());
 	Vector3r halfSize = (aabbEnlargeFactor > 0 ? aabbEnlargeFactor : 1.) * Vector3r(sphere->radius, sphere->radius, sphere->radius);
 	if (!scene->isPeriodic) {
 		aabb->min = se3.position - halfSize;
@@ -42,26 +42,26 @@ void Bo1_Sphere_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, con
 void Bo1_Facet_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body* /*b*/)
 {
 	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
-	Aabb*                   aabb       = static_cast<Aabb*>(bv.get());
-	Facet*                  facet      = static_cast<Facet*>(cm.get());
-	const Vector3r&         O          = se3.position;
+	Aabb*                   aabb = static_cast<Aabb*>(bv.get());
+	Facet*                  facet = static_cast<Facet*>(cm.get());
+	const Vector3r&         O = se3.position;
 	Matrix3r                facetAxisT = se3.orientation.toRotationMatrix();
-	const vector<Vector3r>& vertices   = facet->vertices;
+	const vector<Vector3r>& vertices = facet->vertices;
 	if (!scene->isPeriodic) {
 		aabb->min = aabb->max = O + facetAxisT * vertices[0];
 		for (int i = 1; i < 3; ++i) {
 			Vector3r v = O + facetAxisT * vertices[i];
-			aabb->min  = aabb->min.cwiseMin(v);
-			aabb->max  = aabb->max.cwiseMax(v);
+			aabb->min = aabb->min.cwiseMin(v);
+			aabb->max = aabb->max.cwiseMax(v);
 		}
 	} else {
-		Real inf  = std::numeric_limits<Real>::infinity();
+		Real inf = std::numeric_limits<Real>::infinity();
 		aabb->min = Vector3r(inf, inf, inf);
 		aabb->max = Vector3r(-inf, -inf, -inf);
 		for (int i = 0; i < 3; i++) {
 			Vector3r v = scene->cell->unshearPt(O + facetAxisT * vertices[i]);
-			aabb->min  = aabb->min.cwiseMin(v);
-			aabb->max  = aabb->max.cwiseMax(v);
+			aabb->min = aabb->min.cwiseMin(v);
+			aabb->max = aabb->max.cwiseMax(v);
 		}
 	}
 }

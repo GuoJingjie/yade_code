@@ -105,17 +105,17 @@ public:
 
 	const MeniscusPhysicalData& operator=(const MeniscusPhysicalData& m1)
 	{
-		R         = m1.R;
-		volume    = m1.volume;
-		distance  = m1.distance;
-		surface   = m1.surface;
-		energy    = m1.energy;
-		force     = m1.force;
-		succion   = m1.succion;
-		delta1    = m1.delta1;
-		delta2    = m1.delta2;
+		R = m1.R;
+		volume = m1.volume;
+		distance = m1.distance;
+		surface = m1.surface;
+		energy = m1.energy;
+		force = m1.force;
+		succion = m1.succion;
+		delta1 = m1.delta1;
+		delta2 = m1.delta2;
 		arcLength = m1.arcLength;
-		ending    = m1.ending;
+		ending = m1.ending;
 		return *this;
 	}
 };

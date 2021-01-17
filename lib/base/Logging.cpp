@@ -21,7 +21,7 @@ SINGLETON_SELF(Logging);
 bool logFilterLevels(
         boost::log::value_ref<Logging::SeverityLevel, tag::severity> const& level, boost::log::value_ref<std::string, tag::class_name_tag> const& name)
 {
-	auto      itEnd     = Logging::instance().getClassLogLevels().end();
+	auto      itEnd = Logging::instance().getClassLogLevels().end();
 	short int itDefault = Logging::instance().getDefaultLogLevel();
 	if (not level) { // something is seriously broken, we resort to std::cerr to report that.
 		std::cerr << "LOGGER Warning: Logging::SeverityLevel is missing. Expect problems with logging.\n";
@@ -171,7 +171,7 @@ std::string Logging::defaultConfigFileName() { return yade::Omega::instance().co
 void Logging::setDefaultLogLevel(short int level)
 {
 	classLogLevels["Default"] = level;
-	defaultLogLevel           = level;
+	defaultLogLevel = level;
 }
 
 short int Logging::getNamedLogLevel(const std::string& name) { return findFilterName(name)->second; }

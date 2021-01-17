@@ -107,7 +107,7 @@ static PyObject* is_boundary(PygtsVertex* self, PyObject* args)
 static PyObject* contacts(PygtsVertex* self, PyObject* args)
 {
 	PyObject* sever_ = NULL;
-	gboolean  sever  = FALSE;
+	gboolean  sever = FALSE;
 	guint     n;
 
 	SELF_CHECK
@@ -181,10 +181,10 @@ static PyObject* replace(PygtsVertex* self, PyObject* args)
 		i = PYGTS_VERTEX_AS_GTS_VERTEX(self)->segments;
 		while (i != NULL) {
 			cur = i;
-			i   = g_slist_next(i);
+			i = g_slist_next(i);
 			if (PYGTS_IS_PARENT_SEGMENT(cur->data)) {
 				PYGTS_VERTEX_AS_GTS_VERTEX(self)->segments = g_slist_remove_link(PYGTS_VERTEX_AS_GTS_VERTEX(self)->segments, cur);
-				parents                                    = g_slist_prepend(parents, cur->data);
+				parents = g_slist_prepend(parents, cur->data);
 				g_slist_free_1(cur);
 			}
 		}
@@ -196,7 +196,7 @@ static PyObject* replace(PygtsVertex* self, PyObject* args)
 		i = parents;
 		while (i != NULL) {
 			PYGTS_VERTEX_AS_GTS_VERTEX(self)->segments = g_slist_prepend(PYGTS_VERTEX_AS_GTS_VERTEX(self)->segments, i->data);
-			i                                          = g_slist_next(i);
+			i = g_slist_next(i);
 		}
 		g_slist_free(parents);
 	}
@@ -209,7 +209,7 @@ static PyObject* replace(PygtsVertex* self, PyObject* args)
 static PyObject* neighbors(PygtsVertex* self, PyObject* args)
 {
 	PyObject*    s_ = NULL;
-	GtsSurface*  s  = NULL;
+	GtsSurface*  s = NULL;
 	GSList *     vertices, *v;
 	PygtsVertex* vertex;
 	PyObject*    tuple;
@@ -231,7 +231,7 @@ static PyObject* neighbors(PygtsVertex* self, PyObject* args)
 
 	/* Get the neighbors */
 	vertices = gts_vertex_neighbors(PYGTS_VERTEX_AS_GTS_VERTEX(self), NULL, s);
-	N        = g_slist_length(vertices);
+	N = g_slist_length(vertices);
 
 	/* Create the tuple */
 	if ((tuple = PyTuple_New(N)) == NULL) {
@@ -270,7 +270,7 @@ static PyObject* neighbors(PygtsVertex* self, PyObject* args)
 static PyObject* faces(PygtsVertex* self, PyObject* args)
 {
 	PyObject*   s_ = NULL;
-	GtsSurface* s  = NULL;
+	GtsSurface* s = NULL;
 	GSList *    faces, *f;
 	PygtsFace*  face;
 	PyObject*   tuple;
@@ -292,7 +292,7 @@ static PyObject* faces(PygtsVertex* self, PyObject* args)
 
 	/* Get the faces */
 	faces = gts_vertex_faces(PYGTS_VERTEX_AS_GTS_VERTEX(self), s, NULL);
-	N     = g_slist_length(faces);
+	N = g_slist_length(faces);
 
 	/* Create the tuple */
 	if ((tuple = PyTuple_New(N)) == NULL) {
@@ -354,7 +354,7 @@ static PyObject* triangles(PygtsVertex* self, PyObject* args)
 	SELF_CHECK
 
 	triangles = gts_vertex_triangles(PYGTS_VERTEX_AS_GTS_VERTEX(self), NULL);
-	N         = g_slist_length(triangles);
+	N = g_slist_length(triangles);
 
 	/* Create the tuple */
 	if ((tuple = PyTuple_New(N)) == NULL) {
@@ -668,8 +668,8 @@ PygtsVertex* pygts_vertex_new(GtsVertex* v)
 	}
 
 	/* Build a new Vertex */
-	args   = Py_BuildValue("ddd", 0, 0, 0);
-	kwds   = Py_BuildValue("{s:O}", "alloc_gtsobj", Py_False);
+	args = Py_BuildValue("ddd", 0, 0, 0);
+	kwds = Py_BuildValue("{s:O}", "alloc_gtsobj", Py_False);
 	vertex = PYGTS_VERTEX(PygtsVertexType.tp_new(&PygtsVertexType, args, kwds));
 	Py_DECREF(args);
 	Py_DECREF(kwds);
@@ -771,7 +771,7 @@ GtsSegmentClass* pygts_parent_segment_class(void)
 			                                         (GtsObjectInitFunc)(super->info.object_init_func),
 			                                         (GtsArgSetFunc)NULL,
 			                                         (GtsArgGetFunc)NULL };
-		klass                                        = (GtsSegmentClass*)gts_object_class_new(gts_object_class(), &pygts_parent_segment_info);
+		klass = (GtsSegmentClass*)gts_object_class_new(gts_object_class(), &pygts_parent_segment_info);
 	}
 
 	return klass;
@@ -793,7 +793,7 @@ GtsVertexClass* pygts_parent_vertex_class(void)
 			                                        (GtsObjectInitFunc)(super->info.object_init_func),
 			                                        (GtsArgSetFunc)NULL,
 			                                        (GtsArgGetFunc)NULL };
-		klass                                       = (GtsVertexClass*)gts_object_class_new(gts_object_class(), &pygts_parent_vertex_info);
+		klass = (GtsVertexClass*)gts_object_class_new(gts_object_class(), &pygts_parent_vertex_info);
 	}
 
 	return klass;

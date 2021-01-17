@@ -87,7 +87,7 @@ void GLViewer::draw()
 			throw runtime_error(string("Error opening file ") + nextFrameSnapshotFilename + ": " + strerror(err));
 		}
 		LOG_DEBUG("Start saving snapshot to " << nextFrameSnapshotFilename);
-		size_t nBodies  = Omega::instance().getScene()->bodies->size();
+		size_t nBodies = Omega::instance().getScene()->bodies->size();
 		int    sortAlgo = (nBodies < 100 ? GL2PS_BSP_SORT : GL2PS_SIMPLE_SORT);
 		gl2psBeginPage(
 		        /*const char *title*/ "Some title",
@@ -109,10 +109,10 @@ void GLViewer::draw()
 	}
 #endif
 
-	qglviewer::Vec vd       = camera()->viewDirection();
+	qglviewer::Vec vd = camera()->viewDirection();
 	renderer->viewDirection = Vector3r(vd[0], vd[1], vd[2]);
 	if (Omega::instance().getScene()) {
-		const shared_ptr<Scene>& scene     = Omega::instance().getScene();
+		const shared_ptr<Scene>& scene = Omega::instance().getScene();
 		int                      selection = selectedName();
 		if (selection != -1 && (*(Omega::instance().getScene()->bodies)).exists(selection) && isMoving) {
 			static Real lastTimeMoved(0);
@@ -125,13 +125,13 @@ void GLViewer::draw()
 #endif
 			if (last == selection) // delay by one redraw, so the body will not jump into 0,0,0 coords
 			{
-				Quaternionr& q      = (*(Omega::instance().getScene()->bodies))[selection]->state->ori;
-				Vector3r&    v      = (*(Omega::instance().getScene()->bodies))[selection]->state->pos;
-				Vector3r&    vel    = (*(Omega::instance().getScene()->bodies))[selection]->state->vel;
+				Quaternionr& q = (*(Omega::instance().getScene()->bodies))[selection]->state->ori;
+				Vector3r&    v = (*(Omega::instance().getScene()->bodies))[selection]->state->pos;
+				Vector3r&    vel = (*(Omega::instance().getScene()->bodies))[selection]->state->vel;
 				Vector3r&    angVel = (*(Omega::instance().getScene()->bodies))[selection]->state->angVel;
-				angVel              = Vector3r::Zero();
-				Real dt             = (scene->time - lastTimeMoved);
-				lastTimeMoved       = scene->time;
+				angVel = Vector3r::Zero();
+				Real dt = (scene->time - lastTimeMoved);
+				lastTimeMoved = scene->time;
 				if (dt != 0) {
 					vel[0] = -(v[0] - v0) / dt;
 					vel[1] = -(v[1] - v1) / dt;
@@ -164,11 +164,11 @@ void GLViewer::draw()
 			const Se3r& oldSe3 = renderer->clipPlaneSe3[manipulatedClipPlane];
 			for (const auto& planeId : boundClipPlanes) {
 				if (planeId >= renderer->numClipPlanes || !renderer->clipPlaneActive[planeId] || planeId == manipulatedClipPlane) continue;
-				Se3r&       boundSe3  = renderer->clipPlaneSe3[planeId];
+				Se3r&       boundSe3 = renderer->clipPlaneSe3[planeId];
 				Quaternionr relOrient = oldSe3.orientation.conjugate() * boundSe3.orientation;
 				relOrient.normalize();
-				Vector3r relPos      = oldSe3.orientation.conjugate() * (boundSe3.position - oldSe3.position);
-				boundSe3.position    = newSe3.position + newSe3.orientation * relPos;
+				Vector3r relPos = oldSe3.orientation.conjugate() * (boundSe3.position - oldSe3.position);
+				boundSe3.position = newSe3.position + newSe3.orientation * relPos;
 				boundSe3.orientation = newSe3.orientation * relOrient;
 				boundSe3.orientation.normalize();
 			}
@@ -181,7 +181,7 @@ void GLViewer::draw()
 
 void GLViewer::drawWithNames()
 {
-	qglviewer::Vec vd       = camera()->viewDirection();
+	qglviewer::Vec vd = camera()->viewDirection();
 	renderer->viewDirection = Vector3r(vd[0], vd[1], vd[2]);
 	const shared_ptr<Scene> scene(Omega::instance().getScene());
 	scene->renderer = renderer;
@@ -230,7 +230,7 @@ void GLViewer::postDraw()
 	Real wholeDiameter = QGLViewer::camera()->sceneRadius() * 2;
 
 	renderer->viewInfo.sceneRadius = QGLViewer::camera()->sceneRadius();
-	qglviewer::Vec c               = QGLViewer::camera()->sceneCenter();
+	qglviewer::Vec c = QGLViewer::camera()->sceneCenter();
 	renderer->viewInfo.sceneCenter = Vector3r(c[0], c[1], c[2]);
 
 	const auto radiusCenter = displayedSceneRadiusCenter();
@@ -243,7 +243,7 @@ void GLViewer::postDraw()
 	glPushMatrix();
 
 	auto nHalfSegments = ((int)(wholeDiameter / gridStep)) + 1;
-	auto nSegments     = static_cast<int>(2 * nHalfSegments);
+	auto nSegments = static_cast<int>(2 * nHalfSegments);
 	if (nSegments > 500) {
 		LOG_TIMED_WARN(
 		        10s,
@@ -256,11 +256,11 @@ void GLViewer::postDraw()
 		                << QGLViewer::camera()->sceneCenter()[2] << "),gridDecimalPlaces=" << gridDecimalPlaces
 		                << ")\nPress '-' (decrease grid density) in View window to remove this warning.\n");
 		nSegments = prevSegments;
-		gridStep  = prevGridStep;
+		gridStep = prevGridStep;
 	}
 	prevGridStep = gridStep;
 	if (autoGrid) requestedGridStep = gridStep;
-	nHalfSegments       = ((int)(wholeDiameter / gridStep)) + 1;
+	nHalfSegments = ((int)(wholeDiameter / gridStep)) + 1;
 	const auto realSize = nHalfSegments * gridStep;
 	//LOG_TRACE("nHalfSegments="<<nHalfSegments<<",gridStep="<<gridStep<<",realSize="<<realSize);
 	prevSegments = nSegments;
@@ -351,9 +351,9 @@ void GLViewer::postDraw()
 		int            extremalDxDy[2] = { 0, 0 };
 		for (int axis = 0; axis < 3; axis++) {
 			qglviewer::Vec delta(0, 0, 0);
-			delta[axis]           = static_cast<double>(segmentSize);
+			delta[axis] = static_cast<double>(segmentSize);
 			qglviewer::Vec center = radiusCenter.second;
-			screenDxDy[axis]      = camera()->projectedCoordinatesOf(center + delta) - camera()->projectedCoordinatesOf(center);
+			screenDxDy[axis] = camera()->projectedCoordinatesOf(center + delta) - camera()->projectedCoordinatesOf(center);
 			for (int xy = 0; xy < 2; xy++)
 				extremalDxDy[xy]
 				        = int(std::round(axis > 0 ? std::min(extremalDxDy[xy], int(std::round(screenDxDy[axis][xy]))) : screenDxDy[axis][xy]));
@@ -416,7 +416,7 @@ void GLViewer::postDraw()
 		glColor3v(Vector3r(1, 1, 1));
 		if (timeDispMask & GLViewer::TIME_VIRT) {
 			std::ostringstream oss;
-			const Real&        t   = Omega::instance().getScene()->time;
+			const Real&        t = Omega::instance().getScene()->time;
 			unsigned           min = ((unsigned)t / 60), sec = (((unsigned)t) % 60), msec = ((unsigned)(1e3 * t)) % 1000,
 			         usec = ((unsigned long)(1e6 * t)) % 1000, nsec = ((unsigned long)(1e9 * t)) % 1000;
 			if (min > 0) oss << _W2 << min << ":" << _W2 << sec << "." << _W3 << msec << "m" << _W3 << usec << "u" << _W3 << nsec << "n";

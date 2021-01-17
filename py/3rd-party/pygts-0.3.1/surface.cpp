@@ -814,11 +814,11 @@ static PyObject* face_indices(PygtsSurface* self, PyObject* args)
    * face is processed.
    */
 	data.vertices = vertices;
-	data.indices  = indices;
-	data.Nv       = Nv;
-	data.Ni       = Nf;
-	data.n        = 0;
-	data.errflag  = FALSE;
+	data.indices = indices;
+	data.Nv = Nv;
+	data.Ni = Nf;
+	data.n = 0;
+	data.errflag = FALSE;
 
 	/* Process each face */
 	gts_surface_foreach_face(PYGTS_SURFACE_AS_GTS_SURFACE(self), (GtsFunc)get_indices, &data);
@@ -1293,10 +1293,10 @@ static PyObject* rotate(PygtsSurface* self, PyObject* args, PyObject* keywds)
 
 	SELF_CHECK
 
-	data.dx      = 0;
-	data.dy      = 0;
-	data.dz      = 0;
-	data.a       = 0;
+	data.dx = 0;
+	data.dy = 0;
+	data.dz = 0;
+	data.a = 0;
 	data.errflag = FALSE;
 
 	/* Parse the args */
@@ -1326,10 +1326,10 @@ static PyObject* scale(PygtsSurface* self, PyObject* args, PyObject* keywds)
 
 	SELF_CHECK
 
-	data.dx      = 1;
-	data.dy      = 1;
-	data.dz      = 1;
-	data.a       = 0;
+	data.dx = 1;
+	data.dy = 1;
+	data.dz = 1;
+	data.a = 0;
 	data.errflag = FALSE;
 
 	/* Parse the args */
@@ -1359,10 +1359,10 @@ static PyObject* translate(PygtsSurface* self, PyObject* args, PyObject* keywds)
 
 	SELF_CHECK
 
-	data.dx      = 0;
-	data.dy      = 0;
-	data.dz      = 0;
-	data.a       = 0;
+	data.dx = 0;
+	data.dy = 0;
+	data.dz = 0;
+	data.a = 0;
 	data.errflag = FALSE;
 
 	/* Parse the args */
@@ -1425,7 +1425,7 @@ static PyObject* cleanup(PygtsSurface* self, PyObject* args)
 static PyObject* coarsen(PygtsSurface* self, PyObject* args)
 {
 	guint                    n;
-	gdouble                  amin   = 0.;
+	gdouble                  amin = 0.;
 	GtsVolumeOptimizedParams params = { 0.5, 0.5, 1.e-10 };
 
 	SELF_CHECK
@@ -2025,8 +2025,8 @@ PygtsSurface* pygts_surface_new(GtsSurface* s)
 	}
 
 	/* Build a new Surface */
-	args    = Py_BuildValue("()");
-	kwds    = Py_BuildValue("{s:O}", "alloc_gtsobj", Py_False);
+	args = Py_BuildValue("()");
+	kwds = Py_BuildValue("{s:O}", "alloc_gtsobj", Py_False);
 	surface = PYGTS_OBJECT(PygtsSurfaceType.tp_new(&PygtsSurfaceType, args, kwds));
 	Py_DECREF(args);
 	Py_DECREF(kwds);

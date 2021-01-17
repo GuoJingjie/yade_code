@@ -85,10 +85,10 @@ void TranslationEngine::apply(const vector<Body::id_t>& ids)
 void HarmonicMotionEngine::apply(const vector<Body::id_t>& ids)
 {
 	if (ids.size() > 0) {
-		Vector3r w        = f * 2.0 * Mathr::PI; //Angular frequency
+		Vector3r w = f * 2.0 * Mathr::PI; //Angular frequency
 		Vector3r velocity = (((w * scene->time + fi).array().sin()) * (-1.0));
-		velocity          = velocity.cwiseProduct(A);
-		velocity          = velocity.cwiseProduct(w);
+		velocity = velocity.cwiseProduct(A);
+		velocity = velocity.cwiseProduct(w);
 		FOREACH(Body::id_t id, ids)
 		{
 			assert(id < (Body::id_t)scene->bodies->size());
@@ -104,9 +104,9 @@ void HarmonicMotionEngine::apply(const vector<Body::id_t>& ids)
 
 void InterpolatingHelixEngine::apply(const vector<Body::id_t>& ids)
 {
-	Real virtTime   = wrap ? Shop::periodicWrap(scene->time, *times.begin(), *times.rbegin()) : scene->time;
+	Real virtTime = wrap ? Shop::periodicWrap(scene->time, *times.begin(), *times.rbegin()) : scene->time;
 	angularVelocity = linearInterpolate<Real, Real>(virtTime, times, angularVelocities, _pos);
-	linearVelocity  = angularVelocity * slope;
+	linearVelocity = angularVelocity * slope;
 	HelixEngine::apply(ids);
 }
 
@@ -161,8 +161,8 @@ void RotationEngine::apply(const vector<Body::id_t>& ids)
 void HarmonicRotationEngine::apply(const vector<Body::id_t>& ids)
 {
 	const Real& time = scene->time;
-	Real        w    = f * 2.0 * Mathr::PI; //Angular frequency
-	angularVelocity  = -1.0 * A * w * sin(w * time + fi);
+	Real        w = f * 2.0 * Mathr::PI; //Angular frequency
+	angularVelocity = -1.0 * A * w * sin(w * time + fi);
 	RotationEngine::apply(ids);
 }
 
@@ -196,11 +196,11 @@ void ServoPIDController::apply(const vector<Body::id_t>& ids)
 		if (math::abs(curVel) > math::abs(maxVelocity)) { curVel *= math::abs(maxVelocity) / math::abs(curVel); }
 
 		iterPrevStart = scene->iter;
-		current       = tmpForce;
+		current = tmpForce;
 	}
 
 	translationAxis = axis;
-	velocity        = curVel;
+	velocity = curVel;
 
 	TranslationEngine::apply(ids);
 }

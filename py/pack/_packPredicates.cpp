@@ -32,7 +32,7 @@ py::tuple vvec2tuple(const Vector3r& a, const Vector3r& b) { return py::make_tup
 struct Predicate {
 public:
 	virtual bool      operator()(const Vector3r& pt, Real pad = 0.) const = 0;
-	virtual py::tuple aabb() const                                        = 0;
+	virtual py::tuple aabb() const = 0;
 	Vector3r          dim() const
 	{
 		Vector3r mn, mx;
@@ -193,16 +193,16 @@ public:
 	{
 		Vector3r A(o), B(a), C(a + (b - o)), D(b), E(c), F(c + (a - o)), G(c + (a - o) + (b - o)), H(c + (b - o));
 		Vector3r x(B - A), y(D - A), z(E - A);
-		n[0]   = -y.cross(z).normalized();
-		n[1]   = -n[0];
+		n[0] = -y.cross(z).normalized();
+		n[1] = -n[0];
 		pts[0] = A;
 		pts[1] = B;
-		n[2]   = -z.cross(x).normalized();
-		n[3]   = -n[2];
+		n[2] = -z.cross(x).normalized();
+		n[3] = -n[2];
 		pts[2] = A;
 		pts[3] = D;
-		n[4]   = -x.cross(y).normalized();
-		n[5]   = -n[4];
+		n[4] = -x.cross(y).normalized();
+		n[5] = -n[4];
 		pts[4] = A;
 		pts[5] = E;
 		// bounding box
@@ -230,11 +230,11 @@ class inCylinder : public Predicate {
 public:
 	inCylinder(const Vector3r& _c1, const Vector3r& _c2, Real _radius)
 	{
-		c1     = _c1;
-		c2     = _c2;
-		c12    = c2 - c1;
+		c1 = _c1;
+		c2 = _c2;
+		c12 = c2 - c1;
 		radius = _radius;
-		ht     = c12.norm();
+		ht = c12.norm();
 	}
 	bool operator()(const Vector3r& pt, Real pad = 0.) const
 	{
@@ -269,22 +269,22 @@ class inHyperboloid : public Predicate {
 public:
 	inHyperboloid(const Vector3r& _c1, const Vector3r& _c2, Real _R, Real _r)
 	{
-		c1        = _c1;
-		c2        = _c2;
-		R         = _R;
-		a         = _r;
-		c12       = c2 - c1;
-		ht        = c12.norm();
+		c1 = _c1;
+		c2 = _c2;
+		R = _R;
+		a = _r;
+		c12 = c2 - c1;
+		ht = c12.norm();
 		Real uMax = sqrt(pow(R / a, 2) - 1);
-		c         = ht / (2 * uMax);
+		c = ht / (2 * uMax);
 	}
 	// WARN: this is not accurate, since padding is taken as perpendicular to the axis, not the the surface
 	bool operator()(const Vector3r& pt, Real pad = 0.) const
 	{
 		Real v = (pt.dot(c12) - c1.dot(c12)) / (ht * ht);            // normalized coordinate along the c1--c2 axis
 		if ((v * ht < 0 + pad) || (v * ht > ht - pad)) return false; // out of cylinder along the axis
-		Real u        = (v - .5) * ht / c;                           // u from the wolfram parametrization; u is 0 in the center
-		Real rHere    = a * sqrt(1 + u * u);                         // pad is taken perpendicular to the axis, not to the surface (inaccurate)
+		Real u = (v - .5) * ht / c;                                  // u from the wolfram parametrization; u is 0 in the center
+		Real rHere = a * sqrt(1 + u * u);                            // pad is taken perpendicular to the axis, not to the surface (inaccurate)
 		Real axisDist = ((pt - c1).cross(pt - c2)).norm() / ht;
 		if (axisDist > rHere - pad) return false;
 		return true;
@@ -303,7 +303,7 @@ class inEllipsoid : public Predicate {
 public:
 	inEllipsoid(const Vector3r& _c, const Vector3r& _abc)
 	{
-		c   = _c;
+		c = _c;
 		abc = _abc;
 	}
 	bool operator()(const Vector3r& pt, Real pad = 0.) const
@@ -358,13 +358,13 @@ class notInNotch : public Predicate {
 public:
 	notInNotch(const Vector3r& _c, const Vector3r& _edge, const Vector3r& _normal, Real _aperture)
 	{
-		c    = _c;
+		c = _c;
 		edge = _edge;
 		edge.normalize();
 		normal = _normal;
 		normal -= edge * edge.dot(normal);
 		normal.normalize();
-		inside   = edge.cross(normal);
+		inside = edge.cross(normal);
 		aperture = _aperture;
 		// LOG_DEBUG("edge="<<edge<<", normal="<<normal<<", inside="<<inside<<", aperture="<<aperture);
 	}
@@ -410,7 +410,7 @@ static void vertex_aabb(GtsVertex* vertex, std::pair<Vector3r, Vector3r>* bb)
 {
 	GtsPoint* _p = GTS_POINT(vertex);
 	Vector3r  p(_p->x, _p->y, _p->z);
-	bb->first  = bb->first.cwiseMin(p);
+	bb->first = bb->first.cwiseMin(p);
 	bb->second = bb->second.cwiseMax(p);
 }
 
@@ -442,7 +442,7 @@ public:
 	{
 		Real                          inf = std::numeric_limits<Real>::infinity();
 		std::pair<Vector3r, Vector3r> bb;
-		bb.first  = Vector3r(inf, inf, inf);
+		bb.first = Vector3r(inf, inf, inf);
 		bb.second = Vector3r(-inf, -inf, -inf);
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"
@@ -480,7 +480,7 @@ public:
 BOOST_PYTHON_MODULE(_packPredicates)
 try {
 	using namespace yade; // 'using namespace' inside function keeps namespace pollution under control. Alernatively I could add y:: in front of function names below and put 'namespace y  = ::yade;' here.
-	namespace py                = ::boost::python;
+	namespace py = ::boost::python;
 	py::scope().attr("__doc__") = "Spatial predicates for volumes (defined analytically or by triangulation).";
 	YADE_SET_DOCSTRING_OPTS;
 	// base predicate class

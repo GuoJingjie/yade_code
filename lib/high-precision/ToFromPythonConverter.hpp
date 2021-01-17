@@ -29,7 +29,7 @@ template <typename Rr> struct prepareMpmath {
 	{
 		// http://mpmath.org/doc/current/technical.html
 		::boost::python::object mpmath = ::boost::python::import("mpmath"); // this code is never compiled if python3-mpmath package is unavailable.
-		mpmath.attr("mp").attr("dps")  = int(std::numeric_limits<Rr>::digits10 + ::yade::math::RealHPConfig::extraStringDigits10);
+		mpmath.attr("mp").attr("dps") = int(std::numeric_limits<Rr>::digits10 + ::yade::math::RealHPConfig::extraStringDigits10);
 		return mpmath;
 	}
 };
@@ -82,7 +82,7 @@ template <typename ArbitraryReal> struct ArbitraryReal_from_python {
 		new (storage) ArbitraryReal;
 		ArbitraryReal* val = (ArbitraryReal*)storage;
 		// ensure that "nan" "inf" are read correctly
-		*val              = ::yade::math::fromStringRealHP<ArbitraryReal>(ss.str());
+		*val = ::yade::math::fromStringRealHP<ArbitraryReal>(ss.str());
 		data->convertible = storage;
 	}
 };
@@ -128,9 +128,9 @@ template <typename ArbitraryComplex> struct ArbitraryComplex_from_python {
 		ArbitraryComplex*                     val = (ArbitraryComplex*)storage;
 		typename ArbitraryComplex::value_type re { 0 }, im { 0 };
 		// ensure that "nan" "inf" are read correctly
-		re                = ::yade::math::fromStringRealHP<typename ArbitraryComplex::value_type>(ss_real.str());
-		im                = ::yade::math::fromStringRealHP<typename ArbitraryComplex::value_type>(ss_imag.str());
-		*val              = ArbitraryComplex(re, im); // must explicitly call the constructor, static_cast won't work.
+		re = ::yade::math::fromStringRealHP<typename ArbitraryComplex::value_type>(ss_real.str());
+		im = ::yade::math::fromStringRealHP<typename ArbitraryComplex::value_type>(ss_imag.str());
+		*val = ArbitraryComplex(re, im); // must explicitly call the constructor, static_cast won't work.
 		data->convertible = storage;
 	}
 };

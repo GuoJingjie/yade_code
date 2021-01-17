@@ -61,16 +61,16 @@ public:
 	long makeCloud(
 	        Vector3r            min,
 	        Vector3r            max,
-	        Real                rMean          = -1,
-	        Real                rFuzz          = 0,
-	        int                 num            = -1,
-	        bool                periodic       = false,
-	        Real                porosity       = -1,
-	        const vector<Real>& psdSizes       = vector<Real>(),
-	        const vector<Real>& psdCumm        = vector<Real>(),
+	        Real                rMean = -1,
+	        Real                rFuzz = 0,
+	        int                 num = -1,
+	        bool                periodic = false,
+	        Real                porosity = -1,
+	        const vector<Real>& psdSizes = vector<Real>(),
+	        const vector<Real>& psdCumm = vector<Real>(),
 	        bool                distributeMass = false,
-	        int                 seed           = 0,
-	        Matrix3r            hSize          = Matrix3r::Zero());
+	        int                 seed = 0,
+	        Matrix3r            hSize = Matrix3r::Zero());
 	// return number of piece for x in piecewise function defined by cumm with non-decreasing elements ∈(0,1)
 	// norm holds normalized coordinate withing the piece
 	int psdGetPiece(Real x, const vector<Real>& cumm, Real& norm) const;

@@ -25,7 +25,7 @@ void Gl1_PFacet::go(const shared_ptr<Shape>& cm, const shared_ptr<State>& st, bo
 	vertices[2] = vertices[2] - pos;
 
 	vector<Vector3r> verticesF1 = vertices;
-	Vector3r         normal     = (vertices[1] - vertices[0]).cross(vertices[2] - vertices[1]);
+	Vector3r         normal = (vertices[1] - vertices[0]).cross(vertices[2] - vertices[1]);
 	normal.normalize();
 	verticesF1[0] = vertices[0] + normal * Pfacet->radius;
 	verticesF1[1] = vertices[1] + normal * Pfacet->radius;

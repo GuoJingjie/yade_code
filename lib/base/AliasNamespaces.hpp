@@ -18,6 +18,6 @@ namespace filesystem {
 }
 
 namespace yade {
-namespace py  = ::boost::python;
+namespace py = ::boost::python;
 namespace bfs = ::boost::filesystem;
 }

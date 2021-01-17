@@ -102,17 +102,17 @@ void OpenGLRenderer::setBodiesDispInfo()
 		for (unsigned k = 0; k < scene->bodies->size(); k++)
 			bodyDisp[k].hidden = 0;
 	}
-	bool scaleRotations     = (rotScale != 1.0);
+	bool scaleRotations = (rotScale != 1.0);
 	bool scaleDisplacements = (dispScale != Vector3r::Ones());
 	for (const auto& b : *scene->bodies) {
 		if (!b || !b->state) continue;
-		size_t             id      = b->getId();
-		const Vector3r&    pos     = b->state->pos;
-		const Vector3r&    refPos  = b->state->refPos;
-		const Quaternionr& ori     = b->state->ori;
-		const Quaternionr& refOri  = b->state->refOri;
+		size_t             id = b->getId();
+		const Vector3r&    pos = b->state->pos;
+		const Vector3r&    refPos = b->state->refPos;
+		const Quaternionr& ori = b->state->ori;
+		const Quaternionr& refOri = b->state->refOri;
 		Vector3r           cellPos = (!scene->isPeriodic ? pos : scene->cell->wrapShearedPt(pos)); // inside the cell if periodic, same as pos otherwise
-		bodyDisp[id].isDisplayed   = !pointClipped(cellPos);
+		bodyDisp[id].isDisplayed = !pointClipped(cellPos);
 		// if no scaling and no periodic, return quickly
 		if (!(scaleDisplacements || scaleRotations || scene->isPeriodic)) {
 			bodyDisp[id].pos = pos;
@@ -156,7 +156,7 @@ void OpenGLRenderer::resetSpecularEmission()
 {
 	glMateriali(GL_FRONT, GL_SHININESS, 80);
 	const GLfloat glutMatSpecular[4] = { 0.3f, 0.3f, 0.3f, 0.5f };
-	const GLfloat glutMatEmit[4]     = { 0.2f, 0.2f, 0.2f, 1.0f };
+	const GLfloat glutMatEmit[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
 	glMaterialfv(GL_FRONT, GL_SPECULAR, glutMatSpecular);
 	glMaterialfv(GL_FRONT, GL_EMISSION, glutMatEmit);
 }
@@ -181,7 +181,7 @@ void OpenGLRenderer::render(const shared_ptr<Scene>& _scene, Body::id_t selectio
 	if (!scene->bound) scene->bound = shared_ptr<Aabb>(new Aabb);
 
 	// recompute emissive light colors for highlighted bodies
-	Real now              = TimingInfo::getNow(/*even if timing is disabled*/ true) * 1e-9;
+	Real now = TimingInfo::getNow(/*even if timing is disabled*/ true) * 1e-9;
 	highlightEmission0[0] = highlightEmission0[1] = highlightEmission0[2] = ((blinkHighlight == BlinkHighlight::WEAK) ? 0.2 : 0.8) * normSquare(now, 1);
 	highlightEmission1[0] = highlightEmission1[1] = highlightEmission1[2] = ((blinkHighlight == BlinkHighlight::WEAK) ? 0.2 : 0.6) * normSaw(now, 2);
 
@@ -204,10 +204,10 @@ void OpenGLRenderer::render(const shared_ptr<Scene>& _scene, Body::id_t selectio
 	// set light sources
 	glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, 1); // important: do lighting calculations on both sides of polygons
 
-	const GLfloat pos[4]           = { (float)lightPos[0], (float)lightPos[1], (float)lightPos[2], 1.0 };
-	const GLfloat ambientColor[4]  = { 0.2f, 0.2f, 0.2f, 1.0f };
+	const GLfloat pos[4] = { (float)lightPos[0], (float)lightPos[1], (float)lightPos[2], 1.0 };
+	const GLfloat ambientColor[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
 	const GLfloat specularColor[4] = { 1, 1, 1, 1.f };
-	const GLfloat diffuseLight[4]  = { (float)lightColor[0], (float)lightColor[1], (float)lightColor[2], 1.0f };
+	const GLfloat diffuseLight[4] = { (float)lightColor[0], (float)lightColor[1], (float)lightColor[2], 1.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, pos);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, specularColor);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientColor);
@@ -216,10 +216,10 @@ void OpenGLRenderer::render(const shared_ptr<Scene>& _scene, Body::id_t selectio
 	else
 		glDisable(GL_LIGHT0);
 
-	const GLfloat pos2[4]           = { (float)light2Pos[0], (float)light2Pos[1], (float)light2Pos[2], 1.0 };
-	const GLfloat ambientColor2[4]  = { 0.0, 0.0, 0.0, 1.0 };
+	const GLfloat pos2[4] = { (float)light2Pos[0], (float)light2Pos[1], (float)light2Pos[2], 1.0 };
+	const GLfloat ambientColor2[4] = { 0.0, 0.0, 0.0, 1.0 };
 	const GLfloat specularColor2[4] = { 1.f, 1.f, 0.6f, 1.f };
-	const GLfloat diffuseLight2[4]  = { (float)light2Color[0], (float)light2Color[1], (float)light2Color[2], 1.0f };
+	const GLfloat diffuseLight2[4] = { (float)light2Color[0], (float)light2Color[1], (float)light2Color[2], 1.0f };
 	glLightfv(GL_LIGHT1, GL_POSITION, pos2);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, specularColor2);
 	glLightfv(GL_LIGHT1, GL_AMBIENT, ambientColor2);
@@ -270,11 +270,11 @@ void OpenGLRenderer::renderAllInteractionsWire()
 		// Only reading the soon-to-be-deleted (in next 50 miliseconds) body position.
 		if ((not b1) or (not b2)) { continue; }
 		glColor3v(i->isReal() ? Vector3r(0, 1, 0) : Vector3r(.5, 0, 1));
-		Vector3r        p1   = b1->state->pos;
+		Vector3r        p1 = b1->state->pos;
 		const Vector3r& size = scene->cell->getSize();
 		Vector3r        shift2(i->cellDist[0] * size[0], i->cellDist[1] * size[1], i->cellDist[2] * size[2]);
 		// in sheared cell, apply shear on the mutual position as well
-		shift2       = scene->cell->shearPt(shift2);
+		shift2 = scene->cell->shearPt(shift2);
 		Vector3r rel = b2->state->pos + shift2 - p1;
 		if (scene->isPeriodic) p1 = scene->cell->wrapShearedPt(p1);
 		glBegin(GL_LINES)
@@ -287,7 +287,7 @@ void OpenGLRenderer::renderAllInteractionsWire()
 
 void OpenGLRenderer::renderDOF_ID()
 {
-	const GLfloat ambientColorSelected[4]   = { 10.0, 0.0, 0.0, 1.0 };
+	const GLfloat ambientColorSelected[4] = { 10.0, 0.0, 0.0, 1.0 };
 	const GLfloat ambientColorUnselected[4] = { 0.5, 0.5, 0.5, 1.0 };
 	FOREACH(const shared_ptr<Body> b, *scene->bodies)
 	{
@@ -297,7 +297,7 @@ void OpenGLRenderer::renderDOF_ID()
 			if (selId == b->getId()) { glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColorSelected); }
 			{ // write text
 				glColor3(1.0 - bgColor[0], 1.0 - bgColor[1], 1.0 - bgColor[2]);
-				unsigned    d    = b->state->blockedDOFs;
+				unsigned    d = b->state->blockedDOFs;
 				std::string sDof = std::string() + (((d & State::DOF_X) != 0) ? "x" : "") + (((d & State::DOF_Y) != 0) ? "y" : " ")
 				        + (((d & State::DOF_Z) != 0) ? "z" : "") + (((d & State::DOF_RX) != 0) ? "X" : "")
 				        + (((d & State::DOF_RY) != 0) ? "Y" : "") + (((d & State::DOF_RZ) != 0) ? "Z" : "");
@@ -374,7 +374,7 @@ void OpenGLRenderer::renderBound()
 	if (!scene->isPeriodic) {
 		if (!scene->bound) scene->updateBound();
 		glColor3v(Vector3r(0, 1, 0));
-		Vector3r size   = scene->bound->max - scene->bound->min;
+		Vector3r size = scene->bound->max - scene->bound->min;
 		Vector3r center = .5 * (scene->bound->min + scene->bound->max);
 		glPushMatrix();
 		glTranslatev(center);
@@ -436,7 +436,7 @@ void OpenGLRenderer::renderShape()
 				// move the label towards the camera by the bounding box so that it is not hidden inside the body
 				const Vector3r& mn = b->bound->min;
 				const Vector3r& mx = b->bound->max;
-				const Vector3r& p  = pos;
+				const Vector3r& p = pos;
 				Vector3r        ext(
                                         viewDirection[0] > 0 ? p[0] - mn[0] : p[0] - mx[0],
 				        viewDirection[1] > 0 ? p[1] - mn[1] : p[1] - mx[1],

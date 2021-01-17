@@ -10,10 +10,10 @@ CREATE_CPP_LOCAL_LOGGER("_packSpheres.cpp");
 // BOOST_PYTHON_MODULE cannot be inside yade namespace, it has 'extern "C"' keyword, which strips it out of any namespaces.
 BOOST_PYTHON_MODULE(_packSpheres)
 try {
-	using SpherePack                       = ::yade::SpherePack;
-	using Vector3r                         = ::yade::Vector3r;
-	using Matrix3r                         = ::yade::Matrix3r;
-	using Real                             = ::yade::Real;
+	using SpherePack = ::yade::SpherePack;
+	using Vector3r = ::yade::Vector3r;
+	using Matrix3r = ::yade::Matrix3r;
+	using Real = ::yade::Real;
 	boost::python::scope().attr("__doc__") = "Creation, manipulation, IO for generic sphere packings.";
 	YADE_SET_DOCSTRING_OPTS;
 	boost::python::class_<SpherePack>(
@@ -39,18 +39,18 @@ try {
 	        //The basic sphere generator
 	        .def("makeCloud",
 	             &SpherePack::makeCloud,
-	             (boost::python::arg("minCorner")      = Vector3r(Vector3r::Zero()),
-	              boost::python::arg("maxCorner")      = Vector3r(Vector3r::Zero()),
-	              boost::python::arg("rMean")          = -1,
-	              boost::python::arg("rRelFuzz")       = 0,
-	              boost::python::arg("num")            = -1,
-	              boost::python::arg("periodic")       = false,
-	              boost::python::arg("porosity")       = 0.65,
-	              boost::python::arg("psdSizes")       = std::vector<Real>(),
-	              boost::python::arg("psdCumm")        = std::vector<Real>(),
+	             (boost::python::arg("minCorner") = Vector3r(Vector3r::Zero()),
+	              boost::python::arg("maxCorner") = Vector3r(Vector3r::Zero()),
+	              boost::python::arg("rMean") = -1,
+	              boost::python::arg("rRelFuzz") = 0,
+	              boost::python::arg("num") = -1,
+	              boost::python::arg("periodic") = false,
+	              boost::python::arg("porosity") = 0.65,
+	              boost::python::arg("psdSizes") = std::vector<Real>(),
+	              boost::python::arg("psdCumm") = std::vector<Real>(),
 	              boost::python::arg("distributeMass") = false,
-	              boost::python::arg("seed")           = -1,
-	              boost::python::arg("hSize")          = Matrix3r(Matrix3r::Zero())),
+	              boost::python::arg("seed") = -1,
+	              boost::python::arg("hSize") = Matrix3r(Matrix3r::Zero())),
 	             R"""(Create a random cloud of particles enclosed in a parallelepiped. The resulting packing is a gas-like state with no contacts between particles initially. Usually used as a first step before reaching a dense packing.
 
 				:param Vector3 minCorner: lower corner of an axis-aligned box
@@ -94,8 +94,8 @@ try {
 	              boost::python::arg("maxCorner"),
 	              boost::python::arg("clumps"),
 	              boost::python::arg("periodic") = false,
-	              boost::python::arg("num")      = -1,
-	              boost::python::arg("seed")     = -1),
+	              boost::python::arg("num") = -1,
+	              boost::python::arg("seed") = -1),
 	             R"""(Create a random loose packing of clumps the same way `makeCloud <https://yade-dem.org/doc/yade.pack.html?highlight=makecloud#yade._packSpheres.SpherePack.makeCloud>`_ does with spheres. The parameters ``minCorner``, ``maxCorner``, ``periodic``, ``num`` and ``seed`` are the same as in makeCloud_. The parameter ``clumps`` is a list containing all the different clumps to be appended as ``SpherePack`` objects. Here is an exemple that shows how to create a cloud made of 10 identical clumps :
 
 				.. code-block:: python

@@ -28,7 +28,7 @@ void SampleCapillaryPressureEngine::updateParameters()
 
 	if (!Phase1 && UnbalancedForce <= StabilityCriterion && !pressureVariationActivated) {
 		internalCompaction = false;
-		Phase1             = true;
+		Phase1 = true;
 	}
 
 	if (Phase1 && UnbalancedForce <= StabilityCriterion && !pressureVariationActivated) {
@@ -54,11 +54,11 @@ void SampleCapillaryPressureEngine::action()
 		capillaryCohesiveLaw->capillaryPressure = Pressure;
 
 		capillaryCohesiveLaw->fusionDetection = fusionDetection;
-		capillaryCohesiveLaw->binaryFusion    = binaryFusion;
+		capillaryCohesiveLaw->binaryFusion = binaryFusion;
 	} else {
 		capillaryCohesiveLaw->capillaryPressure = Pressure;
-		capillaryCohesiveLaw->fusionDetection   = fusionDetection;
-		capillaryCohesiveLaw->binaryFusion      = binaryFusion;
+		capillaryCohesiveLaw->fusionDetection = fusionDetection;
+		capillaryCohesiveLaw->binaryFusion = binaryFusion;
 	}
 	if (scene->iter % 100 == 0) cerr << "capillary pressure = " << Pressure << endl;
 	capillaryCohesiveLaw->scene = scene;

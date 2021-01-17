@@ -44,11 +44,11 @@ Real computeOBB(const std::vector<Vector3r>& pts, const Matrix3r& rot, Vector3r&
 	FOREACH(const Vector3r& pt, pts)
 	{
 		Vector3r ptT = rot * pt;
-		mn           = mn.cwiseMin(ptT);
-		mx           = mx.cwiseMax(ptT);
+		mn = mn.cwiseMin(ptT);
+		mx = mx.cwiseMax(ptT);
 	}
 	halfSize = .5 * (mx - mn);
-	center   = .5 * (mn + mx);
+	center = .5 * (mn + mx);
 	return 8 * halfSize[0] * halfSize[1] * halfSize[2];
 }
 
@@ -58,10 +58,10 @@ void bestFitOBB(const std::vector<Vector3r>& pts, Vector3r& center, Vector3r& ha
 	Vector3r center0;
 	Vector3r halfSize0;
 	Real     bestVolume = std::numeric_limits<Real>::infinity();
-	Real     sweep      = Mathr::PI / 4;
-	Real     steps      = 7.;
+	Real     sweep = Mathr::PI / 4;
+	Real     steps = 7.;
 	while (sweep >= Mathr::PI / 180.) {
-		bool found    = false;
+		bool found = false;
 		Real stepSize = sweep / steps;
 		for (Real x = angle0[0] - sweep; x <= angle0[0] + sweep; x += stepSize) {
 			for (Real y = angle0[1] - sweep; y < angle0[1] + sweep; y += stepSize) {
@@ -70,13 +70,13 @@ void bestFitOBB(const std::vector<Vector3r>& pts, Vector3r& center, Vector3r& ha
 					Real     volume = computeOBB(pts, rot0, center0, halfSize0);
 					if (volume < bestVolume) {
 						bestVolume = volume;
-						angle      = angle0;
+						angle = angle0;
 						// set return values, in case this will be really the best fit
-						rot      = Quaternionr(rot0);
-						rot      = rot.conjugate();
-						center   = center0;
+						rot = Quaternionr(rot0);
+						rot = rot.conjugate();
+						center = center0;
 						halfSize = halfSize0;
-						found    = true;
+						found = true;
 					}
 				}
 			}

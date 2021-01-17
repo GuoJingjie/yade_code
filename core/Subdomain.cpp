@@ -28,7 +28,7 @@ void Subdomain::setMinMax()
 {
 	Scene* scene(Omega::instance().getScene().get()); // get scene
 	                                                  // 	Vector3r min, max;
-	Real inf  = std::numeric_limits<Real>::infinity();
+	Real inf = std::numeric_limits<Real>::infinity();
 	boundsMin = Vector3r(inf, inf, inf);
 	boundsMax = Vector3r(-inf, -inf, -inf);
 	if (ids.size() == 0) LOG_WARN("empty subdomain!");
@@ -128,12 +128,12 @@ void Subdomain::appendList(const boost::python::list& lst)
 void Bo1_Subdomain_Aabb::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& /*se3*/, const Body* /*b*/)
 {
 	// 	LOG_WARN("Bo1_Subdomain_Aabb::go()")
-	scene             = Omega::instance().getScene().get();
+	scene = Omega::instance().getScene().get();
 	Subdomain* domain = static_cast<Subdomain*>(cm.get());
 	if (!bv) { bv = shared_ptr<Bound>(new Aabb); }
 	Aabb* aabb = static_cast<Aabb*>(bv.get());
-	aabb->min  = domain->boundsMin;
-	aabb->max  = domain->boundsMax;
+	aabb->min = domain->boundsMin;
+	aabb->max = domain->boundsMax;
 	return;
 }
 
@@ -204,13 +204,13 @@ void Subdomain::mergeOp()
 	sendAllBodiesToMaster();
 	recvBodyContainersFromWorkers();
 	if (subdomainRank == master) {
-		Scene* scene           = Omega::instance().getScene().get();
-		bool   ifMerge         = true;
+		Scene* scene = Omega::instance().getScene().get();
+		bool   ifMerge = true;
 		bool   overWriteBodies = true;
 		processContainerStrings();
 		setBodiesToBodyContainer(scene, recvdBodyContainers, ifMerge, overWriteBodies);
 		recvdBodyContainers.clear();
-		bodiesSet       = false; // reset flag for next merge op.
+		bodiesSet = false; // reset flag for next merge op.
 		containersRecvd = false;
 	}
 }
@@ -228,7 +228,7 @@ void Subdomain::setCommunicationContainers()
 	for (unsigned int i = 1; i != intersections.size(); ++i) {
 		if ((intersections[i].size() == zero) || (i == (unsigned)subdomainRank)) { continue; } // exclude self or if no intersections with others)
 		shared_ptr<MPIBodyContainer> container(shared_ptr<MPIBodyContainer>(new MPIBodyContainer()));
-		container->subdomainRank    = subdomainRank; // used to identify the origin rank at the reciever side. (maybe not needed?)
+		container->subdomainRank = subdomainRank; // used to identify the origin rank at the reciever side. (maybe not needed?)
 		std::string containerString = fillContainerGetString(container, intersections[i]);
 		sendContainer.push_back(std::make_pair(containerString, i));
 	}
@@ -266,8 +266,8 @@ void Subdomain::processContainerStrings()
 	}
 	for (unsigned int i = 0; i != recvdStringSizes.size(); ++i) {
 		char* cbuf = recvdCharBuff[i];
-		int   sz   = recvdStringSizes[i];
-		cbuf[sz]   = '\0';
+		int   sz = recvdStringSizes[i];
+		cbuf[sz] = '\0';
 		shared_ptr<MPIBodyContainer> cntr(deSerializeMPIBodyContainer(cbuf, sz));
 		recvdBodyContainers.push_back(cntr);
 	}
@@ -290,7 +290,7 @@ void Subdomain::sendBodies(const int receiver, const vector<Body::id_t>& idsToSe
 {
 	shared_ptr<MPIBodyContainer> container(shared_ptr<MPIBodyContainer>(new MPIBodyContainer()));
 	std::string                  s = idsToSerializedMPIBodyContainer(idsToSend);
-	stringBuff[receiver]           = s;
+	stringBuff[receiver] = s;
 	MPI_Request req;
 	MPI_Isend(stringBuff[receiver].data(), s.size(), MPI_CHAR, receiver, TAG_BODY, selfComm(), &req);
 	sendBodyReqs.push_back(req);
@@ -300,7 +300,7 @@ void Subdomain::receiveBodies(const int sender)
 {
 	// 	cout<<"receiving in "<<subdomainRank<<" from "<<sender<<" ";
 	int   recv_size = probeIncomingBlocking(sender, TAG_BODY);
-	char* cbuf      = new char[recv_size + 1];
+	char* cbuf = new char[recv_size + 1];
 	recvBuffBlocking(cbuf, recv_size, TAG_BODY, sender);
 	cbuf[recv_size] = '\0';
 	shared_ptr<MPIBodyContainer> mpiBC(deSerializeMPIBodyContainer(cbuf, recv_size));
@@ -337,10 +337,10 @@ void Subdomain::recvBodyContainersFromWorkers()
 	} else if (subdomainRank == master) {
 		//if (! allocContainerMaster){ initMasterContainer(); std::cout << "init Done in  MASTER " << subdomainRank << std::endl;}
 		for (int sourceRank = 1; sourceRank != commSize; ++sourceRank) {
-			int sz                           = probeIncomingBlocking(sourceRank, TAG_BODY + subdomainRank);
+			int sz = probeIncomingBlocking(sourceRank, TAG_BODY + subdomainRank);
 			recvdStringSizes[sourceRank - 1] = sz;
-			int   sztmp                      = sz + 1;
-			char* cbuf                       = new char[sztmp];
+			int   sztmp = sz + 1;
+			char* cbuf = new char[sztmp];
 			recvBuffBlocking(cbuf, sz, TAG_BODY + subdomainRank, sourceRank);
 			recvdCharBuff[sourceRank - 1] = cbuf;
 		}
@@ -356,13 +356,13 @@ void Subdomain::setBodiesToBodyContainer(Scene* scene, std::vector<shared_ptr<MP
 	shared_ptr<BodyContainer>& bodyContainer = scene->bodies;
 	for (unsigned int i = 0; i != containers.size(); ++i) {
 		shared_ptr<MPIBodyContainer>&  mpiContainer = containers[i];
-		std::vector<shared_ptr<Body>>& bContainer   = mpiContainer->bContainer;
+		std::vector<shared_ptr<Body>>& bContainer = mpiContainer->bContainer;
 		for (auto bIter = bContainer.begin(); bIter != bContainer.end(); ++bIter) {
 			const shared_ptr<Body>& newBody = *(bIter);
 			// check if the body already exists in the existing bodycontainer
-			const Body::id_t&                             idx        = newBody->id;
+			const Body::id_t&                             idx = newBody->id;
 			std::map<Body::id_t, shared_ptr<Interaction>> intrsToSet = newBody->intrs;
-			shared_ptr<Body>&                             b          = (*bodyContainer)[idx];
+			shared_ptr<Body>&                             b = (*bodyContainer)[idx];
 			if (!b) newBody->intrs.clear(); //we can clear here, interactions are stored in intrsToSet and will be reinserted
 			else
 				newBody->intrs = b->intrs; //keep interactions generated in current subdomain as they may not exist on the sender's side
@@ -371,8 +371,8 @@ void Subdomain::setBodiesToBodyContainer(Scene* scene, std::vector<shared_ptr<MP
 
 			if (!b) bodyContainer->insertAtId(newBody, newBody->id);
 			else if (overwriteBodies) {
-				b                                = newBody;
-				bodyContainer->dirty             = true;
+				b = newBody;
+				bodyContainer->dirty = true;
 				bodyContainer->checkedByCollider = false;
 			}
 
@@ -404,7 +404,7 @@ void Subdomain::setBodiesToBodyContainer(Scene* scene, std::vector<shared_ptr<MP
 void Subdomain::splitBodiesToWorkers(const bool& eraseWorkerIds)
 {
 	if (!eraseWorkerIds) { return; }
-	shared_ptr<Scene>                    scene         = Omega::instance().getScene();
+	shared_ptr<Scene>                    scene = Omega::instance().getScene();
 	shared_ptr<BodyContainer>            bodyContainer = scene->bodies;
 	std::vector<std::vector<Body::id_t>> idsToSend;
 
@@ -630,7 +630,7 @@ void Subdomain::getMirrorIntersections()
 Real Subdomain::boundOnAxis(Bound& b, const Vector3r& direction, bool min)
         const //return projected extremum of an AABB in a particular direction (in the the '+' or '-' sign depending on 'min' )
 {
-	Vector3r size     = b.max - b.min;
+	Vector3r size = b.max - b.min;
 	Real     extremum = 0;
 	for (unsigned k = 0; k < 3; k++)
 		extremum += math::abs(size[k] * direction[k]); // this is equivalent to taking the vertex maximizing projected length
@@ -645,7 +645,7 @@ std::vector<projectedBoundElem> Subdomain::projectedBoundsCPP(int otherSD, const
 {
 	std::vector<projectedBoundElem> pos;
 
-	const shared_ptr<Scene>& scene              = Omega::instance().getScene();
+	const shared_ptr<Scene>& scene = Omega::instance().getScene();
 	const shared_ptr<Body>&  otherSubdomainBody = (*scene->bodies)[subdomains[otherSD - 1]];
 	if (!otherSubdomainBody) {
 		LOG_ERROR("invalid subdomain id, perhaps not in intersection?, other subd =  " << otherSD);
@@ -656,9 +656,9 @@ std::vector<projectedBoundElem> Subdomain::projectedBoundsCPP(int otherSD, const
 
 	if (useAABB) {
 		const auto& otherSubDBound = otherSubdomainBody->bound;
-		const auto& thisSubDBound  = (*scene->bodies)[subdomains[subdomainRank - 1]]->bound;
-		pt1                        = 0.5 * (thisSubDBound->min + thisSubDBound->max);
-		pt2                        = 0.5 * (otherSubDBound->min + otherSubDBound->max);
+		const auto& thisSubDBound = (*scene->bodies)[subdomains[subdomainRank - 1]]->bound;
+		pt1 = 0.5 * (thisSubDBound->min + thisSubDBound->max);
+		pt2 = 0.5 * (otherSubDBound->min + otherSubDBound->max);
 	} else {
 		pt1 = subDCM;
 		pt2 = otherSubDCM;
@@ -696,7 +696,7 @@ std::vector<Body::id_t> Subdomain::medianFilterCPP(int otherSD, const Vector3r& 
 	std::vector<projectedBoundElem> pos = projectedBoundsCPP(otherSD, otherSubDCM, subDCM, useAABB);
 	if (!pos.size()) LOG_ERROR("ERROR IN CALCULATING PROJECTED BOUNDS WITH SUBDOMAIN = " << otherSD << "  from Subdomain = " << subdomainRank);
 	int firstJ = pos.size();
-	int lastI  = 0;
+	int lastI = 0;
 	for (int n = 0; n < (int)pos.size(); n++) {
 		if (pos[n].second.first != subdomainRank and n < firstJ) firstJ = n;
 		if (pos[n].second.first == subdomainRank) lastI = n;
@@ -712,7 +712,7 @@ std::vector<Body::id_t> Subdomain::medianFilterCPP(int otherSD, const Vector3r& 
 
 void Subdomain::migrateBodiesSend(const std::vector<Body::id_t>& sendIds, int destination)
 {
-	const shared_ptr<Scene>& scene    = Omega::instance().getScene();
+	const shared_ptr<Scene>& scene = Omega::instance().getScene();
 	const auto&              thisSubd = subdomains[subdomainRank - 1];
 	for (const auto& bId : sendIds) {
 		const shared_ptr<Body>& bdy = (*scene->bodies)[bId];
@@ -756,13 +756,13 @@ void Subdomain::updateLocalIds(bool eraseRemoteMaster)
 			}
 			// in master
 			const shared_ptr<Scene>& scene = Omega::instance().getScene();
-			worker                         = 1;
+			worker = 1;
 			for (const auto& workerIds : workerIdsVec) {
 				for (const auto& bId : workerIds) {
 					(*scene->bodies)[bId]->subdomain = worker;
 				}
 				const auto& workerSubD = YADE_PTR_CAST<Subdomain>((*scene->bodies)[subdomains[worker - 1]]->shape);
-				workerSubD->ids        = workerIds;
+				workerSubD->ids = workerIds;
 				++worker;
 			}
 		}

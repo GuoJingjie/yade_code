@@ -212,7 +212,7 @@ static PyObject* segments(PyObject* self, PyObject* args)
 	while (s != NULL) {
 		/* Skip any parent segments */
 		if (PYGTS_IS_PARENT_SEGMENT(s->data) || PYGTS_IS_PARENT_EDGE(s->data)) {
-			s       = g_slist_next(s);
+			s = g_slist_next(s);
 			segment = NULL;
 			continue;
 		}
@@ -297,7 +297,7 @@ static PyObject* triangles(PyObject* self, PyObject* args)
 	while (t != NULL) {
 		/* Skip any parent triangles */
 		if (PYGTS_IS_PARENT_TRIANGLE(t->data)) {
-			t        = g_slist_next(t);
+			t = g_slist_next(t);
 			triangle = NULL;
 			continue;
 		}
@@ -480,8 +480,8 @@ static PyObject* sphere(PyObject* self, PyObject* args)
 	if (!PyArg_ParseTuple(args, "i", &geodesation_order)) return NULL;
 
 	/* Chain up object allocation */
-	args    = Py_BuildValue("()");
-	kwds    = Py_BuildValue("{s:O}", "alloc_gtsobj", Py_True);
+	args = Py_BuildValue("()");
+	kwds = Py_BuildValue("{s:O}", "alloc_gtsobj", Py_True);
 	surface = PYGTS_SURFACE(PygtsSurfaceType.tp_new(&PygtsSurfaceType, args, kwds));
 	Py_DECREF(args);
 	Py_DECREF(kwds);
@@ -550,25 +550,25 @@ static PyObject* isosurface(PyObject* self, PyObject* args, PyObject* kwds)
 
 	if (extents) {
 		int s = PyArray_STRIDES(extents)[0];
-		g.x   = *((gdouble*)PyArray_DATA(extents) + 0 * s);
-		g.nx  = PyArray_DIMS(scalars)[0];
-		g.dx  = (*((gdouble*)PyArray_DATA(extents) + 1 * s) - *((gdouble*)PyArray_DATA(extents) + 0 * s)) / (g.nx - 1);
+		g.x = *((gdouble*)PyArray_DATA(extents) + 0 * s);
+		g.nx = PyArray_DIMS(scalars)[0];
+		g.dx = (*((gdouble*)PyArray_DATA(extents) + 1 * s) - *((gdouble*)PyArray_DATA(extents) + 0 * s)) / (g.nx - 1);
 
-		g.y  = *((gdouble*)PyArray_DATA(extents) + 2 * s);
+		g.y = *((gdouble*)PyArray_DATA(extents) + 2 * s);
 		g.ny = PyArray_DIMS(scalars)[1];
 		g.dy = (*((gdouble*)PyArray_DATA(extents) + 3 * s) - *((gdouble*)PyArray_DATA(extents) + 2 * s)) / (g.ny - 1);
 
-		g.z  = *((gdouble*)PyArray_DATA(extents) + 4 * s);
+		g.z = *((gdouble*)PyArray_DATA(extents) + 4 * s);
 		g.nz = PyArray_DIMS(scalars)[2];
 		g.dz = (*((gdouble*)PyArray_DATA(extents) + 5 * s) - *((gdouble*)PyArray_DATA(extents) + 4 * s)) / (g.nz - 1);
 	} else {
-		g.x  = -1.0;
+		g.x = -1.0;
 		g.nx = PyArray_DIMS(scalars)[0];
 		g.dx = 2.0 / (PyArray_DIMS(scalars)[0] - 1);
-		g.y  = -1.0;
+		g.y = -1.0;
 		g.ny = PyArray_DIMS(scalars)[1];
 		g.dy = 2.0 / (PyArray_DIMS(scalars)[1] - 1);
-		g.z  = -1.0;
+		g.z = -1.0;
 		g.nz = PyArray_DIMS(scalars)[2];
 		g.dz = 2.0 / (PyArray_DIMS(scalars)[2] - 1);
 	}

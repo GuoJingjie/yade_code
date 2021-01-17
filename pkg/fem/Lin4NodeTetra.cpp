@@ -95,7 +95,7 @@ MatrixXr Lin4NodeTetra::calculateStiffness(Real E, Real v, Vector3r pos0, Vector
 
 	Emtr << 1 - v, v, v, 0, 0, 0, v, 1 - v, v, 0, 0, 0, v, v, 1 - v, 0, 0, 0, 0, 0, 0, 0.5 - v, 0, 0, 0, 0, 0, 0, 0.5 - v, 0, 0, 0, 0, 0, 0, 0.5 - v;
 
-	Emtr               = E / ((1 + v) * (1 - v)) * Emtr;
+	Emtr = E / ((1 + v) * (1 - v)) * Emtr;
 	MatrixXr stiffness = V * B.transpose() * Emtr * B;
 
 	return stiffness;

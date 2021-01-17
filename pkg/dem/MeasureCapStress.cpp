@@ -15,9 +15,9 @@ void MeasureCapStress::action()
 {
 	shared_ptr<BodyContainer>& bodies = scene->bodies;
 
-	muSsw   = Matrix3r::Zero();
+	muSsw = Matrix3r::Zero();
 	muGamma = Matrix3r::Zero();
-	muSnw   = Matrix3r::Zero();
+	muSnw = Matrix3r::Zero();
 
 	vW = 0; // was the case at the creation of the Engine, but has to be reset at each execution...
 
@@ -36,15 +36,15 @@ void MeasureCapStress::action()
 			Real rB2 = YADE_PTR_DYN_CAST<Sphere>(b2->shape)->radius;
 
 			Real     deltaB1, deltaB2;
-			Vector3r vecN          = geom->normal;     // from body1 to body2
+			Vector3r vecN = geom->normal;              // from body1 to body2
 			Vector3r vecSmallToBig = Vector3r::Zero(); // is this one useful ???
 			if (rB1 > rB2) {                           // body1 is the biggest, i.e. the one with Delta2
-				deltaB1       = phys->Delta2;
-				deltaB2       = phys->Delta1;
+				deltaB1 = phys->Delta2;
+				deltaB2 = phys->Delta1;
 				vecSmallToBig = -vecN;
 			} else {
-				deltaB1       = phys->Delta1;
-				deltaB2       = phys->Delta2;
+				deltaB1 = phys->Delta1;
+				deltaB2 = phys->Delta2;
 				vecSmallToBig = vecN;
 			}
 
@@ -68,7 +68,7 @@ void MeasureCapStress::action()
 	if (scene->isPeriodic) volume = scene->cell->hSize.determinant();
 	else {
 		const auto extrema = Shop::aabbExtrema();
-		volume             = (extrema.second[0] - extrema.first[0]) * (extrema.second[1] - extrema.first[1]) * (extrema.second[2] - extrema.first[2]);
+		volume = (extrema.second[0] - extrema.first[0]) * (extrema.second[1] - extrema.first[1]) * (extrema.second[2] - extrema.first[2]);
 	}
 	if (debug) cout << "c++ : volume = " << volume << endl;
 	if (volume == 0) LOG_ERROR("Could not get a non-zero volume value");

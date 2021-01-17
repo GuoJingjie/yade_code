@@ -17,7 +17,7 @@ namespace yade { // Cannot have #include directive inside.
 typedef DeformableElement::NodeMap NodeMap;
 void                               Gl1_DeformableElement::go(const shared_ptr<Shape>& cm, const shared_ptr<State>&, bool wire, const GLViewInfo&)
 {
-	DeformableElement*    element   = static_cast<DeformableElement*>(cm.get());
+	DeformableElement*    element = static_cast<DeformableElement*>(cm.get());
 	std::vector<Vector3r> triangles = element->faces;
 
 

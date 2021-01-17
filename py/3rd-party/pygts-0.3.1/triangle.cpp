@@ -204,10 +204,10 @@ static PyObject* common_edge(PygtsTriangle* self, PyObject* args)
 static PyObject* opposite(PygtsTriangle* self, PyObject* args)
 {
 	PyObject*    o_;
-	PygtsEdge*   e      = NULL;
-	PygtsVertex* v      = NULL;
+	PygtsEdge*   e = NULL;
+	PygtsVertex* v = NULL;
 	GtsVertex *  vertex = NULL, *v1, *v2, *v3;
-	GtsEdge*     edge   = NULL;
+	GtsEdge*     edge = NULL;
 	GtsTriangle* triangle;
 
 	SELF_CHECK
@@ -630,7 +630,7 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 			e1 = PYGTS_EDGE_AS_GTS_EDGE(o1_);
 		} else {
 			if (pygts_vertex_check(o1_)) {
-				v1   = PYGTS_VERTEX_AS_GTS_VERTEX(o1_);
+				v1 = PYGTS_VERTEX_AS_GTS_VERTEX(o1_);
 				flag = TRUE;
 			}
 		}
@@ -639,7 +639,7 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 			e2 = PYGTS_EDGE_AS_GTS_EDGE(o2_);
 		} else {
 			if (pygts_vertex_check(o2_)) {
-				v2   = PYGTS_VERTEX_AS_GTS_VERTEX(o2_);
+				v2 = PYGTS_VERTEX_AS_GTS_VERTEX(o2_);
 				flag = TRUE;
 			}
 		}
@@ -648,7 +648,7 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 			e3 = PYGTS_EDGE_AS_GTS_EDGE(o3_);
 		} else {
 			if (pygts_vertex_check(o3_)) {
-				v3   = PYGTS_VERTEX_AS_GTS_VERTEX(o3_);
+				v3 = PYGTS_VERTEX_AS_GTS_VERTEX(o3_);
 				flag = TRUE;
 			}
 		}
@@ -875,8 +875,8 @@ PygtsTriangle* pygts_triangle_new(GtsTriangle* t)
 	}
 
 	/* Build a new Triangle */
-	args     = Py_BuildValue("OOO", Py_None, Py_None, Py_None);
-	kwds     = Py_BuildValue("{s:O}", "alloc_gtsobj", Py_False);
+	args = Py_BuildValue("OOO", Py_None, Py_None, Py_None);
+	kwds = Py_BuildValue("{s:O}", "alloc_gtsobj", Py_False);
 	triangle = PYGTS_OBJECT(PygtsTriangleType.tp_new(&PygtsTriangleType, args, kwds));
 	Py_DECREF(args);
 	Py_DECREF(kwds);

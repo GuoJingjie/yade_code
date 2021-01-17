@@ -28,30 +28,30 @@ Real MatchMaker::operator()(int id1, int id2, Real val1, Real val2) const
 void MatchMaker::postLoad(MatchMaker&)
 {
 	if (algo == "val") {
-		fbPtr         = &MatchMaker::fbVal;
+		fbPtr = &MatchMaker::fbVal;
 		fbNeedsValues = false;
 	} else if (algo == "zero") {
-		fbPtr         = &MatchMaker::fbZero;
+		fbPtr = &MatchMaker::fbZero;
 		fbNeedsValues = false;
 	} else if (algo == "avg") {
-		fbPtr         = &MatchMaker::fbAvg;
+		fbPtr = &MatchMaker::fbAvg;
 		fbNeedsValues = true;
 	} else if (algo == "min") {
-		fbPtr         = &MatchMaker::fbMin;
+		fbPtr = &MatchMaker::fbMin;
 		fbNeedsValues = true;
 	} else if (algo == "max") {
-		fbPtr         = &MatchMaker::fbMax;
+		fbPtr = &MatchMaker::fbMax;
 		fbNeedsValues = true;
 	} else if (algo == "harmAvg") {
-		fbPtr         = &MatchMaker::fbHarmAvg;
+		fbPtr = &MatchMaker::fbHarmAvg;
 		fbNeedsValues = true;
 	} else
 		throw std::invalid_argument("MatchMaker:: algo '" + algo + "' not recognized (possible values: val, avg, min, max, harmAvg).");
 
 	// Fill matchSet with values for a fast coefficient search
 	for (const auto& m : matches) {
-		const int  minId  = std::min((int)m[0], (int)m[1]);
-		const int  maxId  = std::max((int)m[0], (int)m[1]);
+		const int  minId = std::min((int)m[0], (int)m[1]);
+		const int  maxId = std::max((int)m[0], (int)m[1]);
 		const auto idPair = std::make_pair(minId, maxId);
 		matchSet.insert(std::make_pair(idPair, m[2]));
 	}

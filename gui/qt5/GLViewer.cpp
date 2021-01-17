@@ -71,20 +71,20 @@ GLViewer::GLViewer(int _viewId, const shared_ptr<OpenGLRenderer>& _renderer, QGL
         , renderer(_renderer)
         , viewId(_viewId)
 {
-	isMoving           = false;
-	drawGrid           = 0;
-	drawScale          = true;
-	timeDispMask       = TIME_REAL | TIME_VIRT | TIME_ITER;
-	cut_plane          = 0;
-	cut_plane_delta    = -2;
-	gridSubdivide      = true;
+	isMoving = false;
+	drawGrid = 0;
+	drawScale = true;
+	timeDispMask = TIME_REAL | TIME_VIRT | TIME_ITER;
+	cut_plane = 0;
+	cut_plane_delta = -2;
+	gridSubdivide = true;
 	displayGridNumbers = true;
-	autoGrid           = true;
-	prevGridStep       = 1;
+	autoGrid = true;
+	prevGridStep = 1;
 	requestedGridStep
 	        = 1; // it's possible that it is requested to draw too dense grid (which would take too long to draw). This is why prevGridStep is separate variable.
-	prevSegments      = 2;
-	gridOrigin        = Vector3r(0, 0, 0);
+	prevSegments = 2;
+	gridOrigin = Vector3r(0, 0, 0);
 	gridDecimalPlaces = 4;
 	resize(550, 550);
 	last = -1;
@@ -156,7 +156,7 @@ void GLViewer::resetManipulation()
 {
 	mouseMovesCamera();
 	setSelectedName(-1);
-	isMoving             = false;
+	isMoving = false;
 	manipulatedClipPlane = -1;
 }
 
@@ -181,7 +181,7 @@ void GLViewer::startClipPlaneManipulation(int planeNo)
 string GLViewer::getState()
 {
 	QString origStateFileName = stateFileName();
-	string  tmpFile           = Omega::instance().tmpFilename();
+	string  tmpFile = Omega::instance().tmpFilename();
 	setStateFileName(QString(tmpFile.c_str()));
 	saveStateToFile();
 	setStateFileName(origStateFileName);
@@ -322,9 +322,9 @@ void GLViewer::keyPressEvent(QKeyEvent* e)
 		if (timeDispMask > (TIME_REAL | TIME_VIRT | TIME_ITER)) timeDispMask = 0;
 	} else if (e->key() == Qt::Key_G) {
 		if (e->modifiers() & Qt::ShiftModifier) {
-			drawGrid          = 0;
-			autoGrid          = true;
-			gridOrigin        = Vector3r(0, 0, 0);
+			drawGrid = 0;
+			autoGrid = true;
+			gridOrigin = Vector3r(0, 0, 0);
 			gridDecimalPlaces = 4;
 			return;
 		} else
@@ -335,18 +335,18 @@ void GLViewer::keyPressEvent(QKeyEvent* e)
 			displayMessage("Moving done.");
 			if (last >= 0) {
 				Body::byId(Body::id_t(last))->state->blockedDOFs = initBlocked;
-				last                                             = -1;
+				last = -1;
 			}
 			mouseMovesCamera();
 		} else {
 			displayMessage("Moving selected object");
 
-			long selection                                        = Omega::instance().getScene()->selectedBody;
-			initBlocked                                           = Body::byId(Body::id_t(selection))->state->blockedDOFs;
-			last                                                  = selection;
+			long selection = Omega::instance().getScene()->selectedBody;
+			initBlocked = Body::byId(Body::id_t(selection))->state->blockedDOFs;
+			last = selection;
 			Body::byId(Body::id_t(selection))->state->blockedDOFs = State::DOF_ALL;
-			Quaternionr& q                                        = Body::byId(selection)->state->ori;
-			Vector3r&    v                                        = Body::byId(selection)->state->pos;
+			Quaternionr& q = Body::byId(selection)->state->ori;
+			Vector3r&    v = Body::byId(selection)->state->pos;
 			manipulatedFrame()->setPositionAndOrientation(
 			        qglviewer::Vec((static_cast<double>(v[0])), (static_cast<double>(v[1])), (static_cast<double>(v[2]))),
 			        qglviewer::Quaternion(
@@ -366,7 +366,7 @@ void GLViewer::keyPressEvent(QKeyEvent* e)
 		if (manipulatedClipPlane >= 0 && manipulatedClipPlane < renderer->numClipPlanes) {
 			/* here, we must update both manipulatedFrame orientation and renderer->clipPlaneSe3 orientation in the same way */
 			Quaternionr& ori = renderer->clipPlaneSe3[manipulatedClipPlane].orientation;
-			ori              = Quaternionr(AngleAxisr(Mathr::PI, Vector3r(0, 1, 0))) * ori;
+			ori = Quaternionr(AngleAxisr(Mathr::PI, Vector3r(0, 1, 0))) * ori;
 			manipulatedFrame()->setOrientation(
 			        qglviewer::Quaternion(qglviewer::Vec(0, 1, 0), static_cast<double>(Mathr::PI)) * manipulatedFrame()->orientation());
 			displayMessage("Plane #" + boost::lexical_cast<string>(manipulatedClipPlane + 1) + " reversed.");
@@ -387,8 +387,8 @@ void GLViewer::keyPressEvent(QKeyEvent* e)
 		int axisIdx = (e->key() == Qt::Key_X ? 0 : (e->key() == Qt::Key_Y ? 1 : 2));
 		if (manipulatedClipPlane < 0) {
 			qglviewer::Vec up(0, 0, 0), vDir(0, 0, 0);
-			bool           alt                  = (e->modifiers() & Qt::ShiftModifier);
-			up[axisIdx]                         = 1;
+			bool           alt = (e->modifiers() & Qt::ShiftModifier);
+			up[axisIdx] = 1;
 			vDir[(axisIdx + (alt ? 2 : 1)) % 3] = alt ? 1 : -1;
 			camera()->setViewDirection(vDir);
 			camera()->setUpVector(up);
@@ -397,7 +397,7 @@ void GLViewer::keyPressEvent(QKeyEvent* e)
 			// x: (0,1,0),pi/2; y: (0,0,1),pi/2; z: (1,0,0),0
 			qglviewer::Vec axis(0, 0, 0);
 			axis[(axisIdx + 1) % 3] = 1;
-			Real angle              = axisIdx == 2 ? 0 : Mathr::PI / 2;
+			Real angle = axisIdx == 2 ? 0 : Mathr::PI / 2;
 			manipulatedFrame()->setOrientation(qglviewer::Quaternion(axis, static_cast<double>(angle)));
 		}
 	} else if (e->key() == Qt::Key_Period)
@@ -456,9 +456,9 @@ void GLViewer::centerPeriodic()
 {
 	Scene* scene = Omega::instance().getScene().get();
 	assert(scene->isPeriodic);
-	Vector3r center   = .5 * scene->cell->getSize();
+	Vector3r center = .5 * scene->cell->getSize();
 	Vector3r halfSize = .5 * scene->cell->getSize();
-	Real     radius   = math::max(halfSize[0], math::max(halfSize[1], halfSize[2]));
+	Real     radius = math::max(halfSize[0], math::max(halfSize[1], halfSize[2]));
 	LOG_DEBUG("Periodic scene center=" << center << ", halfSize=" << halfSize << ", radius=" << radius);
 	setSceneCenter(qglviewer::Vec((static_cast<double>(center[0])), (static_cast<double>(center[1])), (static_cast<double>(center[2]))));
 	setSceneRadius(static_cast<double>(radius * 1.5));
@@ -495,7 +495,7 @@ void GLViewer::centerMedianQuartile()
 	Vector3r median, interQuart;
 	for (int i = 0; i < 3; i++) {
 		sort(coords[i].begin(), coords[i].end());
-		median[i]     = *(coords[i].begin() + nBodies / 2);
+		median[i] = *(coords[i].begin() + nBodies / 2);
 		interQuart[i] = *(coords[i].begin() + 3 * nBodies / 4) - *(coords[i].begin() + nBodies / 4);
 	}
 	LOG_DEBUG("Median position is" << median << ", inter-quartile distance is " << interQuart);
@@ -516,20 +516,20 @@ void GLViewer::centerScene(const Real& suggestedRadius, const Vector3r& setGridO
 	Vector3r min, max;
 	if (not(rb->bound)) { rb->updateBound(); }
 
-	min         = rb->bound->min;
-	max         = rb->bound->max;
+	min = rb->bound->min;
+	max = rb->bound->max;
 	bool hasNan = (math::isnan(min[0]) || math::isnan(min[1]) || math::isnan(min[2]) || math::isnan(max[0]) || math::isnan(max[1]) || math::isnan(max[2]));
 	Real minDim = math::min(max[0] - min[0], math::min(max[1] - min[1], max[2] - min[2]));
 	if (minDim <= 0 || hasNan) {
 		// Aabb is not yet calculated...
 		LOG_DEBUG("scene's bound not yet calculated or has zero or nan dimension(s), attempt get that from bodies' positions.");
 		Real inf = std::numeric_limits<Real>::infinity();
-		min      = Vector3r(inf, inf, inf);
-		max      = Vector3r(-inf, -inf, -inf);
+		min = Vector3r(inf, inf, inf);
+		max = Vector3r(-inf, -inf, -inf);
 		for (const auto& b : *rb->bodies) {
 			if (!b) continue;
-			max         = max.cwiseMax(b->state->pos);
-			min         = min.cwiseMin(b->state->pos);
+			max = max.cwiseMax(b->state->pos);
+			min = min.cwiseMin(b->state->pos);
 			Bound* aabb = dynamic_cast<Bound*>(b->bound.get());
 			if (aabb) {
 				max = max.cwiseMax(b->state->pos + aabb->max);
@@ -546,9 +546,9 @@ void GLViewer::centerScene(const Real& suggestedRadius, const Vector3r& setGridO
 	}
 
 	LOG_DEBUG("Got scene box min=" << min << " and max=" << max);
-	Vector3r center   = (max + min) * 0.5;
+	Vector3r center = (max + min) * 0.5;
 	Vector3r halfSize = (max - min) * 0.5;
-	Real     radius   = math::max(halfSize[0], math::max(halfSize[1], halfSize[2]));
+	Real     radius = math::max(halfSize[0], math::max(halfSize[1], halfSize[2]));
 	LOG_DEBUG("Scene center=" << center << ", halfSize=" << halfSize << ", radius=" << radius << ", suggestedRadius=" << suggestedRadius);
 	// set scene center after all these calculations. This is not grid origin. Grid origin is for drawing only.
 	if (suggestedCenter != Vector3r(0, 0, 0)) {
@@ -565,7 +565,7 @@ void GLViewer::centerScene(const Real& suggestedRadius, const Vector3r& setGridO
 		setSceneRadius(static_cast<double>(radius * 1.5));
 	}
 	gridDecimalPlaces = math::max(1, math::min(setGridDecimalPlaces, std::numeric_limits<Real>::digits10));
-	gridOrigin        = setGridOrigin;
+	gridOrigin = setGridOrigin;
 	showEntireScene();
 }
 
@@ -586,13 +586,13 @@ void GLViewer::postSelection(const QPoint& /*point*/)
 	if (selection < 0) {
 		if (last >= 0) {
 			Body::byId(Body::id_t(last))->state->blockedDOFs = initBlocked;
-			last                                             = -1;
-			Omega::instance().getScene()->selectedBody       = -1;
+			last = -1;
+			Omega::instance().getScene()->selectedBody = -1;
 		}
 		if (isMoving) {
 			displayMessage("Moving finished");
 			mouseMovesCamera();
-			isMoving                                   = false;
+			isMoving = false;
 			Omega::instance().getScene()->selectedBody = -1;
 		}
 		return;
@@ -601,7 +601,7 @@ void GLViewer::postSelection(const QPoint& /*point*/)
 		resetManipulation();
 		if (last >= 0) {
 			Body::byId(Body::id_t(last))->state->blockedDOFs = initBlocked;
-			last                                             = -1;
+			last = -1;
 		}
 		if (Body::byId(Body::id_t(selection))->isClumpMember()) { // select clump (invisible) instead of its member
 			LOG_DEBUG("Clump member #" << selection << " selected, selecting clump instead.");
@@ -613,8 +613,8 @@ void GLViewer::postSelection(const QPoint& /*point*/)
 		displayMessage("Selected body #" + boost::lexical_cast<string>(selection) + (Body::byId(selection)->isClump() ? " (clump)" : ""));
 		Omega::instance().getScene()->selectedBody = selection;
 		PyGILState_STATE gstate;
-		gstate                       = PyGILState_Ensure();
-		boost::python::object main   = boost::python::import("__main__");
+		gstate = PyGILState_Ensure();
+		boost::python::object main = boost::python::import("__main__");
 		boost::python::object global = main.attr("__dict__");
 		// the try/catch block must be properly nested inside PyGILState_Ensure and PyGILState_Release
 		try {
@@ -676,7 +676,7 @@ void GLViewer::initFromDOMElement(const QDomElement& element)
 	while (!child.isNull()) {
 		if (child.tagName() == "gridXYZ" && child.hasAttribute("normals")) {
 			string val = child.attribute("normals").toLower().toStdString();
-			drawGrid   = 0;
+			drawGrid = 0;
 			if (val.find("x") != string::npos) drawGrid += 1;
 			if (val.find("y") != string::npos) drawGrid += 2;
 			if (val.find("z") != string::npos) drawGrid += 4;

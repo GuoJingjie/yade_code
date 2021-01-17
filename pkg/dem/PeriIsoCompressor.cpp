@@ -32,7 +32,7 @@ void PeriIsoCompressor::action()
 			throw;
 		}
 		const Vector3r sz = bv->max - bv->min;
-		charLen           = (sz[0] + sz[1] + sz[2]) / 3.;
+		charLen = (sz[0] + sz[1] + sz[2]) / 3.;
 		LOG_INFO("No charLen defined, taking avg bbox size of body #0 = " << charLen);
 	}
 	if (maxSpan <= 0) {
@@ -43,14 +43,14 @@ void PeriIsoCompressor::action()
 		}
 	}
 	if (maxDisplPerStep < 0) maxDisplPerStep = 1e-2 * charLen; // this should be tuned somehow…
-	const long& step     = scene->iter;
+	const long& step = scene->iter;
 	Vector3r    cellSize = scene->cell->getSize(); //unused: Real cellVolume=cellSize[0]*cellSize[1]*cellSize[2];
 	Vector3r    cellArea = Vector3r(cellSize[1] * cellSize[2], cellSize[0] * cellSize[2], cellSize[0] * cellSize[1]);
 	Real        minSize = min(cellSize[0], min(cellSize[1], cellSize[2])), maxSize = max(cellSize[0], max(cellSize[1], cellSize[2]));
 	if (minSize < 2.1 * maxSpan) { throw runtime_error("Minimum cell size is smaller than 2.1*span_of_the_biggest_body! (periodic collider requirement)"); }
 	if (((step % globalUpdateInt) == 0) || avgStiffness < 0 || sigma[0] < 0 || sigma[1] < 0 || sigma[2] < 0) {
 		Vector3r sumForces = Shop::totalForceInVolume(avgStiffness, scene);
-		sigma              = -Vector3r(sumForces[0] / cellArea[0], sumForces[1] / cellArea[1], sumForces[2] / cellArea[2]);
+		sigma = -Vector3r(sumForces[0] / cellArea[0], sumForces[1] / cellArea[1], sumForces[2] / cellArea[2]);
 		LOG_TRACE("Updated sigma=" << sigma << ", avgStiffness=" << avgStiffness);
 	}
 	Real sigmaGoal = stresses[state];
@@ -61,8 +61,8 @@ void PeriIsoCompressor::action()
 	bool allStressesOK = true;
 	if (keepProportions) { // the same algo as below, but operating on quantitites averaged over all dimensions
 		Real sigAvg = (sigma[0] + sigma[1] + sigma[2]) / 3., avgArea = (cellArea[0] + cellArea[1] + cellArea[2]) / 3.,
-		     avgSize  = (cellSize[0] + cellSize[1] + cellSize[2]) / 3.;
-		Real avgGrow  = 1e-4 * (sigmaGoal - sigAvg) * avgArea / (avgStiffness > 0 ? avgStiffness : 1);
+		     avgSize = (cellSize[0] + cellSize[1] + cellSize[2]) / 3.;
+		Real avgGrow = 1e-4 * (sigmaGoal - sigAvg) * avgArea / (avgStiffness > 0 ? avgStiffness : 1);
 		Real maxToAvg = maxSize / avgSize;
 		if (math::abs(maxToAvg * avgGrow) > maxDisplPerStep) avgGrow = math::sign(avgGrow) * maxDisplPerStep / maxToAvg;
 		Real okGrow = -(minSize - 2.1 * maxSpan) / maxToAvg;
@@ -140,7 +140,7 @@ void PeriTriaxController::strainStressStiffUpdate()
 		NormShearPhys*         nsi = YADE_CAST<NormShearPhys*>(I->phys.get());
 		GenericSpheresContact* gsc = YADE_CAST<GenericSpheresContact*>(I->geom.get());
 		//Contact force
-		Vector3r f      = (-1.) * (nsi->normalForce + nsi->shearForce);
+		Vector3r f = (-1.) * (nsi->normalForce + nsi->shearForce);
 		Vector3r branch = Body::byId(I->getId2(), scene)->state->pos + scene->cell->hSize * I->cellDist.cast<Real>()
 		        - Body::byId(I->getId1(), scene)->state->pos;
 		stressTensor += f * branch.transpose();
@@ -304,18 +304,18 @@ void Peri3dController::action()
 	*/
 	bool stressBasedSimulation = false; // true when all stresses are prescribed or if all prescribed strains equal zero
 	if (progress == 0) {
-		lenPs      = 0;
-		lenPe      = 0;
-		ps         = Vector6i::Zero();
-		pe         = Vector6i::Zero();
+		lenPs = 0;
+		lenPe = 0;
+		ps = Vector6i::Zero();
+		pe = Vector6i::Zero();
 		stressGoal = Vector6r::Zero();
 		strainGoal = Vector6r::Zero();
 		for (int i = 0; i < 6; i++) {
 			if (stressMask & (1 << i)) { // if stress is prescribed at direction i, add this direction to ps and increase lenPs by one
-				ps(lenPs++)   = i;
+				ps(lenPs++) = i;
 				stressGoal(i) = goal(i);
 			} else { // if strain is prescribed at direction i, add this direction to pe and increase lenPe by one
-				pe(lenPe++)   = i;
+				pe(lenPe++) = i;
 				strainGoal(i) = goal(i);
 			}
 		}
@@ -379,12 +379,12 @@ void Peri3dController::action()
 	   The strain indices where stress is prescribed will be overwritten by predictor */
 	for (int i = 0; i < lenPe; i++) {
 		int j = pe(i);
-		if (pathSizes[j] == 1) {                                            // path has only one part (only final values are prescribed)
-			strainRate(j) = strainGoal(j) / (nSteps * dt);              // ideal strain rate in respect of dSteps and dValue
-		} else if (pathsCounter[j] == 0) {                                  // path has more parts, but we are still at the first one
-			const Real& dProgress = PATH_OP_OP(j, 0, 0);                // progress difference of respective part of the path
-			const Real& dValue    = PATH_OP_OP(j, 0, 1);                // strain difference at the respective part of the path
-			strainRate(j)         = dValue / (dProgress * nSteps * dt); // ideal strain rate in respect of dSteps and dValue
+		if (pathSizes[j] == 1) {                                    // path has only one part (only final values are prescribed)
+			strainRate(j) = strainGoal(j) / (nSteps * dt);      // ideal strain rate in respect of dSteps and dValue
+		} else if (pathsCounter[j] == 0) {                          // path has more parts, but we are still at the first one
+			const Real& dProgress = PATH_OP_OP(j, 0, 0);        // progress difference of respective part of the path
+			const Real& dValue = PATH_OP_OP(j, 0, 1);           // strain difference at the respective part of the path
+			strainRate(j) = dValue / (dProgress * nSteps * dt); // ideal strain rate in respect of dSteps and dValue
 		} else if (progress < 1.) {
 			const Real dProgress = PATH_OP_OP(j, pathsCounter[j], 0)
 			        - PATH_OP_OP(j, pathsCounter[j] - 1, 0); // progress difference of respective part of the path
@@ -397,12 +397,12 @@ void Peri3dController::action()
 	}
 	for (int i = 0; i < lenPs; i++) {
 		int j = ps(i);
-		if (pathSizes[j] == 1) {                                            // path has only one part (only final values are prescribed)
-			stressRate(j) = stressGoal(j) / (nSteps * dt);              // ideal stress rate in respect of dSteps and dValue
-		} else if (pathsCounter[j] == 0) {                                  // path has more parts, but we are still at the first one
-			const Real& dProgress = PATH_OP_OP(j, 0, 0);                // progress difference of respective part of the path
-			const Real& dValue    = PATH_OP_OP(j, 0, 1);                // stress difference at the respective part of the path
-			stressRate(j)         = dValue / (dProgress * nSteps * dt); // ideal stress rate in respect of dSteps and dValue
+		if (pathSizes[j] == 1) {                                    // path has only one part (only final values are prescribed)
+			stressRate(j) = stressGoal(j) / (nSteps * dt);      // ideal stress rate in respect of dSteps and dValue
+		} else if (pathsCounter[j] == 0) {                          // path has more parts, but we are still at the first one
+			const Real& dProgress = PATH_OP_OP(j, 0, 0);        // progress difference of respective part of the path
+			const Real& dValue = PATH_OP_OP(j, 0, 1);           // stress difference at the respective part of the path
+			stressRate(j) = dValue / (dProgress * nSteps * dt); // ideal stress rate in respect of dSteps and dValue
 		} else if (progress < 1.) {
 			const Real dProgress = PATH_OP_OP(j, pathsCounter[j], 0)
 			        - PATH_OP_OP(j, pathsCounter[j] - 1, 0); //  progress difference of respective part of the path
@@ -417,7 +417,7 @@ void Peri3dController::action()
 	// Update - update values from previous step to current step
 	stressOld = stress; // stresssOld = stress at previous step
 	//sigma = Shop::stressTensorOfPeriodicCell(/*smallStrains=*/true); // current stress tensor
-	sigma  = Shop::getStress();                            // current stress tensor
+	sigma = Shop::getStress();                             // current stress tensor
 	stress = tensor_toVoigt(sigma);                        // current stress vector
 	stressIdeal += stressRate * dt;                        // stress that would be obtained if the predictor would be perfect
 	strain += strainRate * dt;                             // current strain vector

@@ -39,7 +39,7 @@ void Ip2_ViscElMat_ViscElMat_ViscElPhys::go(const shared_ptr<Material>& b1, cons
 #ifdef YADE_DEFORM
 	const ViscElMat* mat1 = static_cast<ViscElMat*>(b1.get());
 	const ViscElMat* mat2 = static_cast<ViscElMat*>(b2.get());
-	phys->DeformEnabled   = mat1->DeformEnabled && mat2->DeformEnabled;
+	phys->DeformEnabled = mat1->DeformEnabled && mat2->DeformEnabled;
 #endif
 	interaction->phys = phys;
 }
@@ -47,7 +47,7 @@ void Ip2_ViscElMat_ViscElMat_ViscElPhys::go(const shared_ptr<Material>& b1, cons
 /* Law2_ScGeom_ViscElPhys_Basic */
 bool Law2_ScGeom_ViscElPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I)
 {
-	Vector3r force   = Vector3r::Zero();
+	Vector3r force = Vector3r::Zero();
 	Vector3r torque1 = Vector3r::Zero();
 	Vector3r torque2 = Vector3r::Zero();
 	if (computeForceTorqueViscEl(_geom, _phys, I, force, torque1, torque2) and (I->isActive)) {
@@ -65,8 +65,8 @@ bool Law2_ScGeom_ViscElPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys
 
 bool computeForceTorqueViscEl(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I, Vector3r& force, Vector3r& torque1, Vector3r& torque2)
 {
-	ViscElPhys&   phys  = *static_cast<ViscElPhys*>(_phys.get());
-	const ScGeom& geom  = *static_cast<ScGeom*>(_geom.get());
+	ViscElPhys&   phys = *static_cast<ViscElPhys*>(_phys.get());
+	const ScGeom& geom = *static_cast<ScGeom*>(_geom.get());
 	Scene*        scene = Omega::instance().getScene().get();
 
 #ifdef YADE_SPH
@@ -87,9 +87,9 @@ bool computeForceTorqueViscEl(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys
 	Real addDR = 0.;
 #ifdef YADE_DEFORM
 	const BodyContainer& bodies = *scene->bodies;
-	const State&         de1    = *static_cast<State*>(bodies[id1]->state.get());
-	const State&         de2    = *static_cast<State*>(bodies[id2]->state.get());
-	addDR                       = de1.dR + de2.dR;
+	const State&         de1 = *static_cast<State*>(bodies[id1]->state.get());
+	const State&         de2 = *static_cast<State*>(bodies[id2]->state.get());
+	addDR = de1.dR + de2.dR;
 #endif
 
 	if ((geom.penetrationDepth + addDR) < 0) {
@@ -100,24 +100,24 @@ bool computeForceTorqueViscEl(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys
 		// runtime performance, if YADE_DEFORM is disabled and no
 		// contact detected
 		const BodyContainer& bodies = *scene->bodies;
-		const State&         de1    = *static_cast<State*>(bodies[id1]->state.get());
-		const State&         de2    = *static_cast<State*>(bodies[id2]->state.get());
+		const State&         de1 = *static_cast<State*>(bodies[id1]->state.get());
+		const State&         de2 = *static_cast<State*>(bodies[id2]->state.get());
 #endif
 		Vector3r& shearForce = phys.shearForce;
 		if (I->isFresh(scene)) shearForce = Vector3r(0, 0, 0);
 		const Real& dt = scene->dt;
-		shearForce     = geom.rotate(shearForce);
+		shearForce = geom.rotate(shearForce);
 
 		// Handle periodicity.
-		const Vector3r shift2   = scene->isPeriodic ? scene->cell->intrShiftPos(I->cellDist) : Vector3r::Zero();
+		const Vector3r shift2 = scene->isPeriodic ? scene->cell->intrShiftPos(I->cellDist) : Vector3r::Zero();
 		const Vector3r shiftVel = scene->isPeriodic ? scene->cell->intrShiftVel(I->cellDist) : Vector3r::Zero();
 
 		const Vector3r c1x = (geom.contactPoint - de1.pos);
 		const Vector3r c2x = (geom.contactPoint - de2.pos - shift2);
 
 		const Vector3r relativeVelocity = (de1.vel + de1.angVel.cross(c1x)) - (de2.vel + de2.angVel.cross(c2x)) + shiftVel;
-		const Real     normalVelocity   = geom.normal.dot(relativeVelocity);
-		const Vector3r shearVelocity    = relativeVelocity - normalVelocity * geom.normal;
+		const Real     normalVelocity = geom.normal.dot(relativeVelocity);
+		const Vector3r shearVelocity = relativeVelocity - normalVelocity * geom.normal;
 
 		// As Chiara Modenese suggest, we store the elastic part
 		// and then add the viscous part if we pass the Mohr-Coulomb criterion.
@@ -129,8 +129,8 @@ bool computeForceTorqueViscEl(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys
 		// Prevent appearing of attraction forces due to a viscous component
 		// [Radjai2011], page 3, equation [1.7]
 		// [Schwager2007]
-		phys.Fn                  = phys.kn * (geom.penetrationDepth + addDR);
-		phys.Fv                  = phys.cn * normalVelocity;
+		phys.Fn = phys.kn * (geom.penetrationDepth + addDR);
+		phys.Fv = phys.cn * normalVelocity;
 		const Real normForceReal = phys.Fn + phys.Fv;
 		if (normForceReal < 0) {
 			phys.normalForce = Vector3r::Zero();
@@ -162,7 +162,7 @@ bool computeForceTorqueViscEl(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys
 			// Then no slip occurs we consider friction damping + viscous damping.
 			shearForceVisc = phys.cs * shearVelocity;
 		}
-		force   = phys.normalForce + shearForce + shearForceVisc;
+		force = phys.normalForce + shearForce + shearForceVisc;
 		torque1 = -c1x.cross(force) + momentResistance;
 		torque2 = c2x.cross(force) - momentResistance;
 		return true;
@@ -172,8 +172,8 @@ bool computeForceTorqueViscEl(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys
 void Ip2_ViscElMat_ViscElMat_ViscElPhys::Calculate_ViscElMat_ViscElMat_ViscElPhys(
         const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction, shared_ptr<ViscElPhys> phys)
 {
-	ViscElMat* mat1  = static_cast<ViscElMat*>(b1.get());
-	ViscElMat* mat2  = static_cast<ViscElMat*>(b2.get());
+	ViscElMat* mat1 = static_cast<ViscElMat*>(b1.get());
+	ViscElMat* mat2 = static_cast<ViscElMat*>(b2.get());
 	Real       mass1 = 1.0;
 	Real       mass2 = 1.0;
 
@@ -199,8 +199,8 @@ void Ip2_ViscElMat_ViscElMat_ViscElPhys::Calculate_ViscElMat_ViscElMat_ViscElPhy
 	const Real massR = mass1 * mass2 / (mass1 + mass2);
 
 	GenericSpheresContact* sphCont = YADE_CAST<GenericSpheresContact*>(interaction->geom.get());
-	Real                   R1      = sphCont->refR1 > 0 ? sphCont->refR1 : sphCont->refR2;
-	Real                   R2      = sphCont->refR2 > 0 ? sphCont->refR2 : sphCont->refR1;
+	Real                   R1 = sphCont->refR1 > 0 ? sphCont->refR1 : sphCont->refR2;
+	Real                   R2 = sphCont->refR2 > 0 ? sphCont->refR2 : sphCont->refR1;
 
 	Real kn1 = 0.0;
 	Real kn2 = 0.0;
@@ -264,8 +264,8 @@ void Ip2_ViscElMat_ViscElMat_ViscElPhys::Calculate_ViscElMat_ViscElMat_ViscElPhy
 		}
 	}
 
-	const Real mR1     = mat1->mR;
-	const Real mR2     = mat2->mR;
+	const Real mR1 = mat1->mR;
+	const Real mR2 = mat2->mR;
 	const int  mRtype1 = mat1->mRtype;
 	const int  mRtype2 = mat2->mRtype;
 
@@ -296,12 +296,12 @@ void Ip2_ViscElMat_ViscElMat_ViscElPhys::Calculate_ViscElMat_ViscElMat_ViscElPhy
 #ifdef YADE_SPH
 	if (mat1->SPHmode and mat2->SPHmode) {
 		phys->SPHmode = true;
-		phys->mu      = (mat1->mu + mat2->mu);
-		phys->h       = (mat1->h + mat2->h) / 2.0;
+		phys->mu = (mat1->mu + mat2->mu);
+		phys->h = (mat1->h + mat2->h) / 2.0;
 	}
 
 	phys->kernelFunctionCurrentPressure = returnKernelFunction(mat1->KernFunctionPressure, mat2->KernFunctionPressure, Grad);
-	phys->kernelFunctionCurrentVisco    = returnKernelFunction(mat1->KernFunctionVisco, mat2->KernFunctionVisco, Lapl);
+	phys->kernelFunctionCurrentVisco = returnKernelFunction(mat1->KernFunctionVisco, mat2->KernFunctionVisco, Lapl);
 #endif
 }
 
@@ -317,14 +317,14 @@ Real contactParameterCalculation(const Real& l1, const Real& l2)
 
 Real find_cn_from_en(const Real& en, const Real& m, const Real& kn, const shared_ptr<Interaction>& interaction)
 {
-	Real eps     = Ip2_ViscElMat_ViscElMat_ViscElPhys::epsilon;
-	Real cn      = eps; //initial small value
+	Real eps = Ip2_ViscElMat_ViscElMat_ViscElPhys::epsilon;
+	Real cn = eps; //initial small value
 	Real en_temp = get_en_from_cn(cn, m, kn);
-	int  i       = 0;
-	Real error   = 1.0 / eps;
+	int  i = 0;
+	Real error = 1.0 / eps;
 	while (error > 1.0e-2 or error != error) {
 		if (i > 15) {
-			cn      = 0.;
+			cn = 0.;
 			en_temp = 1.;
 			cerr << "Warning in ViscoelasticPM.cpp : Newton-Raphson algorithm did not converged within 15 iterations for contact between "
 			     << interaction->id1 << " and " << interaction->id2 << ". Continue with values : cn=" << cn << " en=" << en_temp << endl;
@@ -332,10 +332,10 @@ Real find_cn_from_en(const Real& en, const Real& m, const Real& kn, const shared
 		}
 		i++;
 		Real deriv = (get_en_from_cn(cn - eps, m, kn) - get_en_from_cn(cn + eps, m, kn)) / (-2. * eps);
-		deriv      = fabs(deriv) > 1e-15 ? deriv : 1e-15;
-		cn         = cn - (en_temp - en) / deriv;
-		en_temp    = get_en_from_cn(cn, m, kn);
-		error      = fabs(en_temp - en) / en;
+		deriv = fabs(deriv) > 1e-15 ? deriv : 1e-15;
+		cn = cn - (en_temp - en) / deriv;
+		en_temp = get_en_from_cn(cn, m, kn);
+		error = fabs(en_temp - en) / en;
 	}
 	// 	cout<<"i="<<i<<" error="<<error<<endl;
 	return cn;
@@ -343,10 +343,10 @@ Real find_cn_from_en(const Real& en, const Real& m, const Real& kn, const shared
 
 Real get_en_from_cn(const Real& cn, const Real& m, const Real& kn)
 {
-	Real beta   = 0.5 * cn / m;
+	Real beta = 0.5 * cn / m;
 	Real omega0 = sqrt(kn / m);
-	Real omega  = sqrt(omega0 * omega0 - beta * beta);
-	Real Omega  = sqrt(beta * beta - omega0 * omega0);
+	Real omega = sqrt(omega0 * omega0 - beta * beta);
+	Real Omega = sqrt(beta * beta - omega0 * omega0);
 	if (beta < omega0 / sqrt(2.)) return exp(-beta / omega * (Mathr::PI - atan(2. * beta * omega / (omega * omega - beta * beta))));
 	else if (beta > omega0 / sqrt(2.) and beta < omega0)
 		return exp(-beta / omega * atan(-2. * beta * omega / (omega * omega - beta * beta)));
@@ -373,8 +373,8 @@ template <class T> struct fkt_functor {
 	pair<T, T> operator()(T const& Rs)
 	{
 		// solve for radius of deformed sphere Rs
-		T funktion  = -R * R * R + Rs * Rs * Rs; // Raji1999 Eq. 2.52 - Part outside of the sum
-		T dfunktion = 3 * Rs * Rs;               // Derivation of Raji1999 Eq. 2.52 - Part outside of the sum
+		T funktion = -R * R * R + Rs * Rs * Rs; // Raji1999 Eq. 2.52 - Part outside of the sum
+		T dfunktion = 3 * Rs * Rs;              // Derivation of Raji1999 Eq. 2.52 - Part outside of the sum
 
 		// Summation over every contact distance dsi (C++11)
 		for (auto const& dsi : coef) {
@@ -394,9 +394,9 @@ private:
 // function for easy calling of Newton-Raphson method
 template <class T> T fkt(T R, T dR, vector<T> z)
 {
-	double guess  = R + dR;       // start guess
-	double min    = guess * 0.99; // minimum
-	double max    = guess * 1.05; // maximum
+	double guess = R + dR;     // start guess
+	double min = guess * 0.99; // minimum
+	double max = guess * 1.05; // maximum
 	int    digits = std::numeric_limits<T>::digits;
 
 	// use Newton-Raphson method for numerical solution
@@ -408,14 +408,14 @@ YADE_PLUGIN((DeformControl));
 void DeformControl::action()
 {
 	Scene*               scene = Omega::instance().getScene().get();
-	const BodyContainer& b     = *scene->bodies;
+	const BodyContainer& b = *scene->bodies;
 
 	for (size_t i = 0; i < b.size(); ++i) {
 		vector<double> dsi;
 		if (Sphere* s1 = dynamic_cast<Sphere*>(b[i]->shape.get())) {
-			double s1Rad    = s1->radius;
+			double s1Rad = s1->radius;
 			State* s1_state = static_cast<State*>(b[i]->state.get());
-			double s1dR     = s1_state->dR;
+			double s1dR = s1_state->dR;
 
 			for (Body::MapId2IntrT::iterator it = b[i]->intrs.begin(), end = b[i]->intrs.end(); it != end; ++it) {
 				if (!it->second->isReal()) continue;
@@ -429,15 +429,15 @@ void DeformControl::action()
 
 				// Sphere - Sphere contact
 				if (Sphere* s2 = dynamic_cast<Sphere*>(b[partnerID]->shape.get())) {
-					double s2Rad    = s2->radius;
+					double s2Rad = s2->radius;
 					State* s2_state = static_cast<State*>(b[partnerID]->state.get());
-					double s2dR     = s2_state->dR;
+					double s2dR = s2_state->dR;
 
 					if (ScGeom* scg = dynamic_cast<ScGeom*>(it->second->geom.get())) {
-						double L     = s1Rad + s2Rad - scg->penetrationDepth;
+						double L = s1Rad + s2Rad - scg->penetrationDepth;
 						double s1RdR = s1Rad + s1dR;
 						double s2RdR = s2Rad + s2dR;
-						double ds    = (L * L + s1RdR * s1RdR - s2RdR * s2RdR) / (2.0 * L);
+						double ds = (L * L + s1RdR * s1RdR - s2RdR * s2RdR) / (2.0 * L);
 						dsi.push_back(ds);
 					}
 				} else // Sphere - Facet / Wall contact

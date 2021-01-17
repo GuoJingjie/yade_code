@@ -193,7 +193,7 @@ struct Ig2_Facet_Sphere_L3Geom : public Ig2_Sphere_Sphere_L3Geom {
 		using math::max;
 		using math::min;
 		Vector3r BA = B - A;
-		Real     u  = (P.dot(BA) - A.dot(BA)) / (BA.squaredNorm());
+		Real     u = (P.dot(BA) - A.dot(BA)) / (BA.squaredNorm());
 		return A + min((Real)1., max((Real)0., u)) * BA;
 	}
 	virtual bool

@@ -78,10 +78,10 @@ bool LBMnode::checkIsNewObstacle()
 	if (isObstacle) {
 		if (!wasObstacle) {
 			isNewObstacle = true;
-			wasObstacle   = true;
+			wasObstacle = true;
 		} else {
 			isNewObstacle = false;
-			wasObstacle   = true;
+			wasObstacle = true;
 		}
 		return (isNewObstacle);
 	} else
@@ -92,10 +92,10 @@ bool LBMnode::checkIsNewFluid()
 {
 	if (!isObstacle) {
 		if (wasObstacle) {
-			isNewFluid  = true;
+			isNewFluid = true;
 			wasObstacle = false;
 		} else {
-			isNewFluid  = false;
+			isNewFluid = false;
 			wasObstacle = false;
 		}
 		return (isNewFluid);
@@ -105,46 +105,46 @@ bool LBMnode::checkIsNewFluid()
 
 void LBMnode::DispatchBoundaryConditions(int SizeNx, int SizeNy, int /*SizeNz*/)
 {
-	applyBC     = false;
-	applyXmBC   = false;
+	applyBC = false;
+	applyXmBC = false;
 	applyYmXmBC = false;
 	applyYpXmBC = false;
-	applyXpBC   = false;
+	applyXpBC = false;
 	applyYmXpBC = false;
 	applyYpXpBC = false;
-	applyYpBC   = false;
-	applyYmBC   = false;
+	applyYpBC = false;
+	applyYmBC = false;
 	if ((i == 0) && (j > 0) && (j < SizeNy - 1)) {
 		applyXmBC = true;
-		applyBC   = true;
+		applyBC = true;
 	}
 	if ((i == 0) && (j == 0)) {
 		applyYmXmBC = true;
-		applyBC     = true;
+		applyBC = true;
 	}
 	if ((i == 0) && (j == SizeNy - 1)) {
 		applyYpXmBC = true;
-		applyBC     = true;
+		applyBC = true;
 	}
 	if ((i == SizeNx - 1) && (j > 0) && (j < SizeNy - 1)) {
 		applyXpBC = true;
-		applyBC   = true;
+		applyBC = true;
 	}
 	if ((i == SizeNx - 1) && (j == 0)) {
 		applyYmXpBC = true;
-		applyBC     = true;
+		applyBC = true;
 	}
 	if ((i == SizeNx - 1) && (j == SizeNy - 1)) {
 		applyYpXpBC = true;
-		applyBC     = true;
+		applyBC = true;
 	}
 	if ((i > 0) && (i < SizeNx - 1) && (j == 0)) {
 		applyYmBC = true;
-		applyBC   = true;
+		applyBC = true;
 	}
 	if ((i > 0) && (i < SizeNx - 1) && (j == SizeNy - 1)) {
 		applyYpBC = true;
-		applyBC   = true;
+		applyBC = true;
 	}
 	return;
 }
@@ -152,9 +152,9 @@ void LBMnode::DispatchBoundaryConditions(int SizeNx, int SizeNy, int /*SizeNz*/)
 
 void LBMnode::SetCellIndexesAndPosition(int indI, int indJ, int indK)
 {
-	i    = indI;
-	j    = indJ;
-	k    = indK;
+	i = indI;
+	j = indJ;
+	k = indK;
 	posb = Vector3r((Real)indI, (Real)indJ, (Real)indK);
 	return;
 }

@@ -43,7 +43,7 @@ void CentralGravityEngine::action()
 	for (const auto& b : *scene->bodies) {
 		if (b->isClump() || b->getId() == centralBody) continue; // skip clumps and central body
 		if (mask != 0 && !b->maskCompatible(mask)) continue;
-		Real     F        = accel * b->state->mass;
+		Real     F = accel * b->state->mass;
 		Vector3r toCenter = centralPos - b->state->pos;
 		toCenter.normalize();
 		scene->forces.addForce(b->getId(), F * toCenter);
@@ -58,11 +58,11 @@ void AxialGravityEngine::action()
 		if (!b || b->isClump()) continue;
 		if (mask != 0 && !b->maskCompatible(mask)) continue;
 		/* http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html */
-		const Vector3r& x0               = b->state->pos;
-		const Vector3r& x1               = axisPoint;
-		const Vector3r  x2               = axisPoint + axisDirection;
+		const Vector3r& x0 = b->state->pos;
+		const Vector3r& x1 = axisPoint;
+		const Vector3r  x2 = axisPoint + axisDirection;
 		Vector3r        closestAxisPoint = x1 + (x2 - x1) * /* t */ (-(x1 - x0).dot(x2 - x1)) / ((x2 - x1).squaredNorm());
-		Vector3r        toAxis           = closestAxisPoint - x0;
+		Vector3r        toAxis = closestAxisPoint - x0;
 		toAxis.normalize();
 		if (toAxis.squaredNorm() == 0) continue;
 		scene->forces.addForce(b->getId(), acceleration * b->state->mass * toAxis);
@@ -87,12 +87,12 @@ Vector2i HdapsGravityEngine::readSysfsFile(const string& name)
 void HdapsGravityEngine::action()
 {
 	if (!calibrated) {
-		calibrate  = readSysfsFile(hdapsDir + "/calibrate");
+		calibrate = readSysfsFile(hdapsDir + "/calibrate");
 		calibrated = true;
 	}
 	Real now = PeriodicEngine::getClock();
 	if (now - lastReading > 1e-3 * msecUpdate) {
-		Vector2i a  = readSysfsFile(hdapsDir + "/position");
+		Vector2i a = readSysfsFile(hdapsDir + "/position");
 		lastReading = now;
 		a -= calibrate;
 		if (std::abs(a[0] - accel[0]) > updateThreshold) accel[0] = a[0];

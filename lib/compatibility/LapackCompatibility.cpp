@@ -79,9 +79,9 @@ void dgesv_(const int* N, const int* nrhs, ::yade::Real* Hessian_Real, const int
 	// DGESV computes the solution to system of linear equations A * X = B for GE matrices
 	const int leading_dimension_of_the_array_A = *lda;
 	const int leading_dimension_of_the_array_B = *ldb;
-	int       total_sq_size                    = leading_dimension_of_the_array_A * leading_dimension_of_the_array_A;
+	int       total_sq_size = leading_dimension_of_the_array_A * leading_dimension_of_the_array_A;
 
-	std::vector<double> Hessian_double  = toDoubleVec(Hessian_Real, total_sq_size);
+	std::vector<double> Hessian_double = toDoubleVec(Hessian_Real, total_sq_size);
 	std::vector<double> gradient_double = toDoubleVec(gradient_Real, leading_dimension_of_the_array_B);
 
 	dgesv_(N, nrhs, Hessian_double.data(), lda, ipiv, gradient_double.data(), ldb, info);
@@ -94,11 +94,11 @@ void dpbsv_(
         const char* uplo, const int* n, const int* kd, const int* nrhs, ::yade::Real* AB_Real, const int* ldab, ::yade::Real* B_Real, const int* ldb, int* info)
 {
 	// DPBSV computes the solution to system of linear equations A * X = B for OTHER matrices
-	const int side       = *ldab;
+	const int side = *ldab;
 	int       total_size = side * side;
 
 	std::vector<double> AB_double = toDoubleVec(AB_Real, total_size);
-	std::vector<double> B_double  = toDoubleVec(B_Real, side);
+	std::vector<double> B_double = toDoubleVec(B_Real, side);
 	dpbsv_(uplo, n, kd, nrhs, AB_double.data(), ldab, B_double.data(), ldb, info);
 	toRealArrPtr(AB_double, AB_Real, total_size);
 	toRealArrPtr(B_double, B_Real, side);
@@ -122,10 +122,10 @@ void dgemm_(
 	// DGEMM  performs one of the matrix-matrix operations - FIXME use Eigen instead.
 	//extern void dgemm_(const char *transA, const char *transB, const int *m, const int *n, const int *k, const double *alpha, double *A, const int *lda, double *B, const int *ldb, const double *beta, double *C, const int *ldc);
 	const double        alpha_double = static_cast<double>(*alpha_Real);
-	const double        beta_double  = static_cast<double>(*beta_Real);
-	std::vector<double> A_double     = toDoubleVec(A_Real, (*m) * (*k));
-	std::vector<double> B_double     = toDoubleVec(B_Real, (*k) * (*n));
-	std::vector<double> C_double     = toDoubleVec(C_Real, (*n) * (*m));
+	const double        beta_double = static_cast<double>(*beta_Real);
+	std::vector<double> A_double = toDoubleVec(A_Real, (*m) * (*k));
+	std::vector<double> B_double = toDoubleVec(B_Real, (*k) * (*n));
+	std::vector<double> C_double = toDoubleVec(C_Real, (*n) * (*m));
 	dgemm_(transA, transB, m, n, k, &alpha_double, A_double.data(), lda, B_double.data(), ldb, &beta_double, C_double.data(), ldc);
 	toRealArrPtr(A_double, A_Real, A_double.size());
 	toRealArrPtr(B_double, B_Real, B_double.size());
@@ -149,8 +149,8 @@ void dgemv_(
 	if (*incx != 1) throw std::runtime_error("dgemv_ wrapper: incx should be 1");
 	if (*incy != 1) throw std::runtime_error("dgemv_ wrapper: incy should be 1");
 	const double alpha_double = static_cast<double>(*alpha_Real);
-	const double beta_double  = static_cast<double>(*beta_Real);
-	bool         blasN        = false;
+	const double beta_double = static_cast<double>(*beta_Real);
+	bool         blasN = false;
 	if (((*trans) == 'n') or ((*trans) == 'N')) { blasN = true; }
 	std::vector<double> A_double = toDoubleVec(A_Real, (*m) * (*n));
 	std::vector<double> x_double = toDoubleVec(x_Real, blasN ? (*n) : (*m));
@@ -226,8 +226,8 @@ void dsyev_(
         int*          info)
 {
 	// DSYEV computes the eigenvalues and, optionally, the left and/or right eigenvectors for SY matrices
-	std::vector<double> A_double    = toDoubleVec(A_Real, (*lda) * (*N));
-	std::vector<double> W_double    = toDoubleVec(W_Real, *N);
+	std::vector<double> A_double = toDoubleVec(A_Real, (*lda) * (*N));
+	std::vector<double> W_double = toDoubleVec(W_Real, *N);
 	std::vector<double> work_double = toDoubleVec(work_Real, *lwork);
 	dsyev_(jobz, uplo, N, A_double.data(), lda, W_double.data(), work_double.data(), lwork, info);
 	toRealArrPtr(A_double, A_Real, A_double.size());

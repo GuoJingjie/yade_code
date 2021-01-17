@@ -21,7 +21,7 @@ YADE_PLUGIN((KinemSimpleShearBox))
 void KinemSimpleShearBox::computeAlpha()
 {
 	Quaternionr orientationLeftBox, orientationRightBox;
-	orientationLeftBox  = leftbox->state->ori;
+	orientationLeftBox = leftbox->state->ori;
 	orientationRightBox = rightbox->state->ori;
 	if (orientationLeftBox.matrix() != orientationRightBox.matrix()) {
 		cout << "WARNING !!! your lateral boxes have not the same orientation, you're not in the case of a box imagined for creating these engines"
@@ -42,7 +42,7 @@ void KinemSimpleShearBox::computeScontact()
 	Real Xright = rightbox->state->pos.x() - (YADE_CAST<Box*>(rightbox->shape.get()))->extents.x();
 
 	Real Zfront = frontbox->state->pos.z() - YADE_CAST<Box*>(frontbox->shape.get())->extents.z();
-	Real Zback  = backbox->state->pos.z() + (YADE_CAST<Box*>(backbox->shape.get()))->extents.z();
+	Real Zback = backbox->state->pos.z() + (YADE_CAST<Box*>(backbox->shape.get()))->extents.z();
 
 	Scontact = (Xright - Xleft) * (Zfront - Zback); // that's so the value of section at the middle of the height of the box
 }
@@ -57,8 +57,8 @@ void KinemSimpleShearBox::letMove(Real dX, Real dY)
 	Real Ylat = leftbox->state->pos.y();
 
 	// 	Changes in vertical and horizontal velocities :
-	topbox->state->vel   = Vector3r(dX / dt, dY / dt, 0);
-	leftbox->state->vel  = Vector3r(dX / (2.0 * dt), dY / (2.0 * dt), 0);
+	topbox->state->vel = Vector3r(dX / dt, dY / dt, 0);
+	leftbox->state->vel = Vector3r(dX / (2.0 * dt), dY / (2.0 * dt), 0);
 	rightbox->state->vel = Vector3r(dX / (2.0 * dt), dY / (2.0 * dt), 0);
 
 	if (LOG) cout << "dY that will be applied by NewtonIntegrator :" << dY << endl;
@@ -79,7 +79,7 @@ void KinemSimpleShearBox::letMove(Real dX, Real dY)
 	Quaternionr qcorr(AngleAxisr(dalpha, Vector3r::UnitZ()));
 
 	//	Rotation is applied through velocities (and NewtonIntegrator)
-	leftbox->state->angVel  = Vector3r(0, 0, 1) * dalpha / dt;
+	leftbox->state->angVel = Vector3r(0, 0, 1) * dalpha / dt;
 	rightbox->state->angVel = Vector3r(0, 0, 1) * dalpha / dt;
 }
 
@@ -89,20 +89,20 @@ void KinemSimpleShearBox::stopMovement()
 	topbox->state->vel = Vector3r(0, 0, 0);
 
 	// same for left box
-	leftbox->state->vel    = Vector3r(0, 0, 0);
+	leftbox->state->vel = Vector3r(0, 0, 0);
 	leftbox->state->angVel = Vector3r(0, 0, 0);
 
 	// and for rightbox
-	rightbox->state->vel    = Vector3r(0, 0, 0);
+	rightbox->state->vel = Vector3r(0, 0, 0);
 	rightbox->state->angVel = Vector3r(0, 0, 0);
 }
 
 
 void KinemSimpleShearBox::computeStiffness()
 {
-	int nbre_contacts                    = 0;
-	stiffness                            = 0.0;
-	InteractionContainer::iterator ii    = scene->interactions->begin();
+	int nbre_contacts = 0;
+	stiffness = 0.0;
+	InteractionContainer::iterator ii = scene->interactions->begin();
 	InteractionContainer::iterator iiEnd = scene->interactions->end();
 	for (; ii != iiEnd; ++ii) {
 		if ((*ii)->isReal()) {
@@ -126,13 +126,13 @@ void KinemSimpleShearBox::computeStiffness()
 
 void KinemSimpleShearBox::getBoxes_Dt()
 {
-	leftbox  = Body::byId(id_boxleft);
+	leftbox = Body::byId(id_boxleft);
 	rightbox = Body::byId(id_boxright);
 	frontbox = Body::byId(id_boxfront);
-	backbox  = Body::byId(id_boxback);
-	topbox   = Body::byId(id_topbox);
-	boxbas   = Body::byId(id_boxbas);
-	dt       = scene->dt;
+	backbox = Body::byId(id_boxback);
+	topbox = Body::byId(id_topbox);
+	boxbas = Body::byId(id_boxbas);
+	dt = scene->dt;
 }
 
 
@@ -144,8 +144,8 @@ void KinemSimpleShearBox::computeDY(Real KnC)
 	if (firstRun) {
 		alpha = Mathr::PI / 2.0;
 		;
-		y0       = topbox->state->pos.y();
-		f0       = fSup.y();
+		y0 = topbox->state->pos.y();
+		f0 = fSup.y();
 		firstRun = false;
 	}
 

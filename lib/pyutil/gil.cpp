@@ -7,7 +7,7 @@ void pyRunString(const std::string& cmd, bool ignoreErrors, bool updateGlobals)
 {
 	namespace py = ::boost::python;
 	gilLock    lock;
-	py::object main    = py::import("__main__");
+	py::object main = py::import("__main__");
 	py::object globals = main.attr("__dict__");
 	py::scope  setScope(main);
 	try {                                                         // https://docs.python.org/3/c-api/reflection.html#c.PyEval_GetFrame
@@ -24,9 +24,9 @@ void pyRunString(const std::string& cmd, bool ignoreErrors, bool updateGlobals)
 		// prepare values of sys.last_type, sys.last_value, sys.last_traceback, see https://docs.python.org/3/c-api/exceptions.html#c.PyErr_PrintEx
 		PyErr_Print();
 		py::exec("import traceback, sys", globals);
-		auto        err   = py::eval("str(sys.last_value)", globals);
+		auto        err = py::eval("str(sys.last_value)", globals);
 		auto        trace = py::eval(R"""('\n'.join(traceback.format_exception(sys.last_type, sys.last_value, sys.last_traceback)))""", globals);
-		std::string msg   = "PyRunner error.\n\nCOMMAND: '" + cmd;
+		std::string msg = "PyRunner error.\n\nCOMMAND: '" + cmd;
 		msg += "'\n\nERROR:\n" + py::extract<std::string>(err)() + "\n\nSTACK TRACE:\n" + py::extract<std::string>(trace)();
 		if (ignoreErrors) {
 			LOG_WARN(msg << "\nbut has ignoreErrors == true; not throwing exception.");

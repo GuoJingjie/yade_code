@@ -130,7 +130,7 @@ Vector3r Shop::totalForceInVolume(Real& avgIsoStiffness, Scene* _rb)
 	Scene*   rb = _rb ? _rb : Omega::instance().getScene().get();
 	Vector3r force(Vector3r::Zero());
 	Real     stiff = 0;
-	long     n     = 0;
+	long     n = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *rb->interactions)
 	{
 		if (!I->isReal()) continue;
@@ -180,7 +180,7 @@ Real Shop::unbalancedForce(bool useMaxForce, Scene* _rb)
 	Real meanF = sumF / nb;
 	// get mean force on interactions
 	sumF = 0;
-	nb   = 0;
+	nb = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *rb->interactions)
 	{
 		if (!I->isReal()) continue;
@@ -196,8 +196,8 @@ Real Shop::unbalancedForce(bool useMaxForce, Scene* _rb)
 Real Shop::kineticEnergy(Scene* _scene, Body::id_t* maxId)
 {
 	Scene* scene = _scene ? _scene : Omega::instance().getScene().get();
-	Real   ret   = 0.;
-	Real   maxE  = 0;
+	Real   ret = 0.;
+	Real   maxE = 0;
 	if (maxId) *maxId = Body::ID_NONE;
 	Vector3r spin = scene->cell->getSpin();
 	for (const auto& b : *scene->bodies) {
@@ -227,7 +227,7 @@ Real Shop::kineticEnergy(Scene* _scene, Body::id_t* maxId)
 		}
 		if (maxId && E > maxE) {
 			*maxId = b->getId();
-			maxE   = E;
+			maxE = E;
 		}
 		ret += E;
 	}
@@ -236,7 +236,7 @@ Real Shop::kineticEnergy(Scene* _scene, Body::id_t* maxId)
 
 Vector3r Shop::momentum()
 {
-	Vector3r ret   = Vector3r::Zero();
+	Vector3r ret = Vector3r::Zero();
 	Scene*   scene = Omega::instance().getScene().get();
 	FOREACH(const shared_ptr<Body> b, *scene->bodies) { ret += b->state->mass * b->state->vel; }
 	return ret;
@@ -244,7 +244,7 @@ Vector3r Shop::momentum()
 
 Vector3r Shop::angularMomentum(Vector3r origin)
 {
-	Vector3r ret   = Vector3r::Zero();
+	Vector3r ret = Vector3r::Zero();
 	Scene*   scene = Omega::instance().getScene().get();
 	Matrix3r T, Iloc;
 	FOREACH(const shared_ptr<Body> b, *scene->bodies)
@@ -259,9 +259,9 @@ Vector3r Shop::angularMomentum(Vector3r origin)
 shared_ptr<FrictMat> Shop::defaultGranularMat()
 {
 	shared_ptr<FrictMat> mat(new FrictMat);
-	mat->density       = 2e3;
-	mat->young         = 30e9;
-	mat->poisson       = .3;
+	mat->density = 2e3;
+	mat->young = 30e9;
+	mat->poisson = .3;
 	mat->frictionAngle = .5236; //30˚
 	return mat;
 }
@@ -270,9 +270,9 @@ shared_ptr<FrictMat> Shop::defaultGranularMat()
 shared_ptr<Body> Shop::sphere(Vector3r center, Real radius, shared_ptr<Material> mat)
 {
 	shared_ptr<Body> body(new Body);
-	body->material       = mat ? mat : boost::static_pointer_cast<Material>(defaultGranularMat());
-	body->state->pos     = center;
-	body->state->mass    = 4.0 / 3.0 * Mathr::PI * radius * radius * radius * body->material->density;
+	body->material = mat ? mat : boost::static_pointer_cast<Material>(defaultGranularMat());
+	body->state->pos = center;
+	body->state->mass = 4.0 / 3.0 * Mathr::PI * radius * radius * radius * body->material->density;
 	body->state->inertia = Vector3r(
 	        2.0 / 5.0 * body->state->mass * radius * radius,
 	        2.0 / 5.0 * body->state->mass * radius * radius,
@@ -286,10 +286,10 @@ shared_ptr<Body> Shop::sphere(Vector3r center, Real radius, shared_ptr<Material>
 shared_ptr<Body> Shop::box(Vector3r center, Vector3r extents, shared_ptr<Material> mat)
 {
 	shared_ptr<Body> body(new Body);
-	body->material       = mat ? mat : boost::static_pointer_cast<Material>(defaultGranularMat());
-	body->state->pos     = center;
-	Real mass            = 8.0 * extents[0] * extents[1] * extents[2] * body->material->density;
-	body->state->mass    = mass;
+	body->material = mat ? mat : boost::static_pointer_cast<Material>(defaultGranularMat());
+	body->state->pos = center;
+	Real mass = 8.0 * extents[0] * extents[1] * extents[2] * body->material->density;
+	body->state->mass = mass;
 	body->state->inertia = Vector3r(
 	        mass * (4 * extents[1] * extents[1] + 4 * extents[2] * extents[2]) / 12.,
 	        mass * (4 * extents[0] * extents[0] + 4 * extents[2] * extents[2]) / 12.,
@@ -303,12 +303,12 @@ shared_ptr<Body> Shop::box(Vector3r center, Vector3r extents, shared_ptr<Materia
 shared_ptr<Body> Shop::tetra(Vector3r v_global[4], shared_ptr<Material> mat)
 {
 	shared_ptr<Body> body(new Body);
-	body->material    = mat ? mat : boost::static_pointer_cast<Material>(defaultGranularMat());
+	body->material = mat ? mat : boost::static_pointer_cast<Material>(defaultGranularMat());
 	Vector3r centroid = (v_global[0] + v_global[1] + v_global[2] + v_global[3]) * .25;
 	Vector3r v[4];
 	for (int i = 0; i < 4; i++)
 		v[i] = v_global[i] - centroid;
-	body->state->pos  = centroid;
+	body->state->pos = centroid;
 	body->state->mass = body->material->density * TetrahedronVolume(v);
 	// inertia will be calculated below, by TetrahedronWithLocalAxesPrincipal
 	body->bound = shared_ptr<Aabb>(new Aabb);
@@ -339,7 +339,7 @@ void Shop::saveSpheresToFile(string fname)
 Real Shop::getSpheresVolume(const shared_ptr<Scene>& _scene, int mask)
 {
 	const shared_ptr<Scene> scene = (_scene ? _scene : Omega::instance().getScene());
-	Real                    vol   = 0;
+	Real                    vol = 0;
 	FOREACH(shared_ptr<Body> b, *scene->bodies)
 	{
 		if (!b) continue;
@@ -353,7 +353,7 @@ Real Shop::getSpheresVolume(const shared_ptr<Scene>& _scene, int mask)
 Real Shop::getSpheresMass(const shared_ptr<Scene>& _scene, int mask)
 {
 	const shared_ptr<Scene> scene = (_scene ? _scene : Omega::instance().getScene());
-	Real                    mass  = 0;
+	Real                    mass = 0;
 	FOREACH(shared_ptr<Body> b, *scene->bodies)
 	{
 		if (!b) continue;
@@ -396,7 +396,7 @@ Real Shop::getPorosityAlt()
 	//Vector3r dim=maximum-minimum; // Note by Janek: warning: variable ‘dim’ set but not used [-Wunused-but-set-variable]
 	// Vector3r sup = Vector3r(minimum+.5*cutoff*dim);
 	//Vector3r inf = Vector3r(maximum-.5*cutoff*dim);
-	V       = (maximum[0] - minimum[0]) * (maximum[1] - minimum[1]) * (maximum[2] - minimum[2]);
+	V = (maximum[0] - minimum[0]) * (maximum[1] - minimum[1]) * (maximum[2] - minimum[2]);
 	Real Vs = Shop::getSpheresVolume();
 	return (V - Vs) / V;
 }
@@ -427,9 +427,9 @@ Real Shop::getVoxelPorosity(const shared_ptr<Scene>& _scene, int _resolution, Ve
 		const shared_ptr<Body>& b = bi;
 		if (b->isDynamic() || b->isClumpMember()) {
 			const shared_ptr<Sphere>& sphere = YADE_PTR_CAST<Sphere>(b->shape);
-			Real                      r      = sphere->radius;
-			Real                      rr     = r * r;
-			Vector3r                  pos    = b->state->se3.position;
+			Real                      r = sphere->radius;
+			Real                      rr = r * r;
+			Vector3r                  pos = b->state->se3.position;
 			// we got sphere with radius r, at position pos.
 			// and a box of size S, scaled to 'size'
 			// mark cells that are iniside a sphere
@@ -449,7 +449,7 @@ Real Shop::getVoxelPorosity(const shared_ptr<Scene>& _scene, int _resolution, Ve
 						Vector3r b(a[0] * size[0], a[1] * size[1], a[2] * size[2]);
 						b = b + start;
 						Vector3r c(0, 0, 0);
-						c      = pos - b;
+						c = pos - b;
 						Real x = c[0];
 						Real y = c[1];
 						Real z = c[2];
@@ -479,7 +479,7 @@ vector<boost::tuple<Vector3r, Real, int>> Shop::loadSpheresFromFile(const string
 	std::ifstream                             sphereFile(fname.c_str());
 	if (!sphereFile.good()) throw std::runtime_error("File with spheres `" + fname + "' couldn't be opened.");
 	Vector3r C;
-	Real     r       = 0;
+	Real     r = 0;
 	int      clumpId = -1;
 	string   line;
 	size_t   lineNo = 0;
@@ -523,10 +523,10 @@ Real Shop::PWaveTimeStep(const shared_ptr<Scene> _rb)
 	for (const auto& b : *rb->bodies) {
 		if (!b || !b->material || !b->shape) continue;
 		shared_ptr<ElastMat> ebp = YADE_PTR_DYN_CAST<ElastMat>(b->material);
-		shared_ptr<Sphere>   s   = YADE_PTR_DYN_CAST<Sphere>(b->shape);
+		shared_ptr<Sphere>   s = YADE_PTR_DYN_CAST<Sphere>(b->shape);
 		if (!ebp || !s) continue;
 		Real density = b->state->mass / ((4 / 3.) * Mathr::PI * pow(s->radius, 3));
-		dt           = min(dt, s->radius / sqrt(ebp->young / density));
+		dt = min(dt, s->radius / sqrt(ebp->young / density));
 	}
 	if (dt == std::numeric_limits<Real>::infinity()) {
 		dt = 1.0;

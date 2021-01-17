@@ -50,8 +50,8 @@ void ScGeom::precompute(
 {
 	if (!isNew) {
 		orthonormal_axis = normal.cross(currentNormal);
-		Real angle       = scene->dt * 0.5 * normal.dot(rbp1.angVel + rbp2.angVel);
-		twist_axis       = angle * normal;
+		Real angle = scene->dt * 0.5 * normal.dot(rbp1.angVel + rbp2.angVel);
+		twist_axis = angle * normal;
 	} else
 		twist_axis = orthonormal_axis = Vector3r::Zero();
 	//Update contact normal
@@ -61,7 +61,7 @@ void ScGeom::precompute(
 	        &rbp1, &rbp2, scene->dt, shift2, scene->isPeriodic ? scene->cell->intrShiftVel(c->cellDist) : Vector3r::Zero(), avoidGranularRatcheting);
 	//keep the shear part only
 	relativeVelocity = relativeVelocity - normal.dot(relativeVelocity) * normal;
-	shearInc         = relativeVelocity * scene->dt;
+	shearInc = relativeVelocity * scene->dt;
 }
 
 
@@ -82,14 +82,14 @@ ScGeom::getIncidentVel(const State* rbp1, const State* rbp2, Real /*dt*/, const 
 		They analyzed the ratcheting problem in detail - even though they comment on the basis of a cycle that differs from the one shown above. One will find interesting discussions in e.g. DOI 10.1103/PhysRevE.77.031304, even though solution it suggests is not fully applied here (equations of motion are not incorporating alpha, in contradiction with what is suggested by McNamara et al.).
 		 */
 		// For sphere-facet contact this will give an erroneous value of relative velocity...
-		Real     alpha            = (radius1 + radius2) / (radius1 + radius2 - penetrationDepth);
+		Real     alpha = (radius1 + radius2) / (radius1 + radius2 - penetrationDepth);
 		Vector3r relativeVelocity = (rbp2->vel - rbp1->vel) * alpha + rbp2->angVel.cross(-radius2 * normal) - rbp1->angVel.cross(radius1 * normal);
 		relativeVelocity += alpha * shiftVel;
 		return relativeVelocity;
 	} else {
 		// It is correct for sphere-sphere and sphere-facet contact
-		Vector3r c1x              = (contactPoint - rbp1->pos);
-		Vector3r c2x              = (contactPoint - (rbp2->pos + shift2));
+		Vector3r c1x = (contactPoint - rbp1->pos);
+		Vector3r c2x = (contactPoint - (rbp2->pos + shift2));
 		Vector3r relativeVelocity = (rbp2->vel + rbp2->angVel.cross(c2x)) - (rbp1->vel + rbp1->angVel.cross(c1x));
 		relativeVelocity += shiftVel;
 		return relativeVelocity;
@@ -158,7 +158,7 @@ void ScGeom6D::precomputeRotations(const State& rbp1, const State& rbp2, bool is
 		if (math::isnan(aa.angle())) aa.angle() = 0;
 #endif
 		if (aa.angle() > Mathr::PI) aa.angle() -= Mathr::TWO_PI; // angle is between 0 and 2*pi, but should be between -pi and pi
-		twist   = (aa.angle() * aa.axis().dot(normal));
+		twist = (aa.angle() * aa.axis().dot(normal));
 		bending = Vector3r(aa.angle() * aa.axis() - twist * normal);
 	}
 }
@@ -167,9 +167,9 @@ void ScGeom6D::initRotations(const State& state1, const State& state2)
 {
 	initialOrientation1 = state1.ori;
 	initialOrientation2 = state2.ori;
-	twist               = 0;
-	bending             = Vector3r::Zero();
-	twistCreep          = Quaternionr(1.0, 0.0, 0.0, 0.0);
+	twist = 0;
+	bending = Vector3r::Zero();
+	twistCreep = Quaternionr(1.0, 0.0, 0.0, 0.0);
 }
 
 } // namespace yade

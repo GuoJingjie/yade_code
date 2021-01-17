@@ -19,7 +19,7 @@ bool FileGenerator::generate(std::string& /*msg*/) { throw invalid_argument("Cal
 bool FileGenerator::generateAndSave(const string& outputFileName, string& message)
 {
 	bool status;
-	message                      = "";
+	message = "";
 	boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
 	try {
 		status = generate(message); // will modify message
@@ -33,7 +33,7 @@ bool FileGenerator::generateAndSave(const string& outputFileName, string& messag
 	if (status == false) return false;
 
 	else {
-		boost::posix_time::ptime         now2           = boost::posix_time::second_clock::local_time();
+		boost::posix_time::ptime         now2 = boost::posix_time::second_clock::local_time();
 		boost::posix_time::time_duration generationTime = now2 - now; // generation time, without save time
 		try {
 			yade::ObjectIO::save(outputFileName, "scene", scene);
@@ -41,12 +41,12 @@ bool FileGenerator::generateAndSave(const string& outputFileName, string& messag
 			message += std::string("File " + outputFileName + " cannot be saved: " + e.what());
 			return false;
 		}
-		boost::posix_time::ptime         now3     = boost::posix_time::second_clock::local_time();
+		boost::posix_time::ptime         now3 = boost::posix_time::second_clock::local_time();
 		boost::posix_time::time_duration saveTime = now3 - now2; // save time
-		message                                   = std::string(
-                                  "File " + outputFileName + " generated successfully."
-                                  + "\ngeneration time: " + boost::posix_time::to_simple_string(generationTime)
-                                  + "\nsave time: " + boost::posix_time::to_simple_string(saveTime) + "\n\n")
+		message = std::string(
+		                  "File " + outputFileName + " generated successfully."
+		                  + "\ngeneration time: " + boost::posix_time::to_simple_string(generationTime)
+		                  + "\nsave time: " + boost::posix_time::to_simple_string(saveTime) + "\n\n")
 		        + message;
 		return true;
 	}

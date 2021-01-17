@@ -24,7 +24,7 @@ CREATE_LOGGER(BoundDispatcher);
 void BoundDispatcher::action()
 {
 	updateScenePtr();
-	shared_ptr<BodyContainer>& bodies   = scene->bodies;
+	shared_ptr<BodyContainer>& bodies = scene->bodies;
 	const bool                 redirect = bodies->useRedirection;
 	if (redirect) bodies->updateShortLists();
 	const long numBodies = redirect ? (long)bodies->realBodies.size() : (long)bodies->size();
@@ -71,8 +71,8 @@ void BoundDispatcher::processBody(const shared_ptr<Body>& b)
 		Real     dist = max(math::abs(disp[0]), max(math::abs(disp[1]), math::abs(disp[2])));
 		if (dist) {
 			Real newLength = dist * targetInterv / (scene->iter - b->bound->lastUpdateIter);
-			newLength      = max(0.9 * sweepLength, newLength); //don't decrease size too fast to prevent time consuming oscillations
-			sweepLength    = max(minSweepDistFactor * sweepDist, min(newLength, sweepDist));
+			newLength = max(0.9 * sweepLength, newLength); //don't decrease size too fast to prevent time consuming oscillations
+			sweepLength = max(minSweepDistFactor * sweepDist, min(newLength, sweepDist));
 		} else
 			sweepLength = 0;
 	} else
@@ -82,7 +82,7 @@ void BoundDispatcher::processBody(const shared_ptr<Body>& b)
 	// skip fluid mesh bounding box from being extended
 	if (b->getIsFluidDomainBbox()) sweepLength = 0;
 #endif
-	b->bound->refPos         = b->state->pos;
+	b->bound->refPos = b->state->pos;
 	b->bound->lastUpdateIter = scene->iter;
 	if (sweepLength > 0) {
 		Aabb* aabb = YADE_CAST<Aabb*>(b->bound.get());
@@ -100,7 +100,7 @@ CREATE_LOGGER(IGeomDispatcher);
 
 shared_ptr<Interaction> IGeomDispatcher::explicitAction(const shared_ptr<Body>& b1, const shared_ptr<Body>& b2, bool force)
 {
-	scene             = Omega::instance().getScene().get(); // to make sure if called from outside of the loop
+	scene = Omega::instance().getScene().get(); // to make sure if called from outside of the loop
 	Vector3i cellDist = Vector3i::Zero();
 	if (scene->isPeriodic) {
 		for (int i = 0; i < 3; i++)
@@ -113,7 +113,7 @@ shared_ptr<Interaction> IGeomDispatcher::explicitAction(const shared_ptr<Body>& 
 	shared_ptr<Interaction> I(new Interaction(b1->getId(), b2->getId()));
 	I->cellDist = cellDist;
 	// FIXME: this code is more or less duplicated from InteractionLoop :-(
-	bool swap            = false;
+	bool swap = false;
 	I->functorCache.geom = getFunctor2D(b1->shape, b2->shape, swap);
 	if (!I->functorCache.geom)
 		throw invalid_argument(
@@ -122,7 +122,7 @@ shared_ptr<Interaction> IGeomDispatcher::explicitAction(const shared_ptr<Body>& 
 	if (swap) { I->swapOrder(); }
 	const shared_ptr<Body>& b1Swp = Body::byId(I->getId1(), scene);
 	const shared_ptr<Body>& b2Swp = Body::byId(I->getId2(), scene);
-	bool                    succ  = I->functorCache.geom->go(b1Swp->shape, b2Swp->shape, *b1Swp->state, *b2Swp->state, shift2, /*force*/ true, I);
+	bool                    succ = I->functorCache.geom->go(b1Swp->shape, b2Swp->shape, *b1Swp->state, *b2Swp->state, shift2, /*force*/ true, I);
 	if (!succ and force)
 		throw logic_error(
 		        "Functor " + I->functorCache.geom->getClassName() + "::go returned false, even if asked to force IGeom creation. Please report bug.");
@@ -172,7 +172,7 @@ void IGeomDispatcher::action()
 			geomCreated = I->functorCache.geom->go(b1->shape, b2->shape, *b1->state, *b2->state, Vector3r::Zero(), /*force*/ false, I);
 		} else {
 			Vector3r shift2 = cellHsize * I->cellDist.cast<Real>();
-			geomCreated     = I->functorCache.geom->go(b1->shape, b2->shape, *b1->state, *b2->state, shift2, /*force*/ false, I);
+			geomCreated = I->functorCache.geom->go(b1->shape, b2->shape, *b1->state, *b2->state, shift2, /*force*/ false, I);
 		}
 		// reset && erase interaction that existed but now has no geometry anymore
 		if (wasReal && !geomCreated) { scene->interactions->requestErase(I); }
@@ -213,8 +213,8 @@ void IPhysDispatcher::action()
 	{
 #endif
 		if (interaction->geom) {
-			shared_ptr<Body>& b1      = (*bodies)[interaction->getId1()];
-			shared_ptr<Body>& b2      = (*bodies)[interaction->getId2()];
+			shared_ptr<Body>& b1 = (*bodies)[interaction->getId1()];
+			shared_ptr<Body>& b2 = (*bodies)[interaction->getId2()];
 			bool              hadPhys = (interaction->phys.get() != 0);
 			                  operator()(b1->material, b2->material, interaction);
 			assert(interaction->phys);

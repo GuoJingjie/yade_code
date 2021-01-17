@@ -31,7 +31,7 @@ void TriaxialStateRecorder::action()
 
 	if (!triaxialStressController) {
 		vector<shared_ptr<Engine>>::iterator itFirst = scene->engines.begin();
-		vector<shared_ptr<Engine>>::iterator itLast  = scene->engines.end();
+		vector<shared_ptr<Engine>>::iterator itLast = scene->engines.end();
 		for (; itFirst != itLast; ++itFirst) {
 			if ((*itFirst)->getClassName() == "TriaxialCompressionEngine" || (*itFirst)->getClassName() == "ThreeDTriaxialEngine"
 			    || (*itFirst)->getClassName() == "TriaxialStressController") {
@@ -46,7 +46,7 @@ void TriaxialStateRecorder::action()
 
 	/// Compute porosity :
 	Real Vs = 0;
-	Real V  = (triaxialStressController->height) * (triaxialStressController->width) * (triaxialStressController->depth);
+	Real V = (triaxialStressController->height) * (triaxialStressController->width) * (triaxialStressController->depth);
 
 	for (const auto& b : *scene->bodies) {
 		if (!(b) || b->isClump()) continue;

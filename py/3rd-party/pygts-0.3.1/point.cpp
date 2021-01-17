@@ -983,8 +983,8 @@ PygtsPoint* pygts_point_new(GtsPoint* p)
 	}
 
 	/* Build a new Point */
-	args  = Py_BuildValue("ddd", 0, 0, 0);
-	kwds  = Py_BuildValue("{s:O}", "alloc_gtsobj", Py_False);
+	args = Py_BuildValue("ddd", 0, 0, 0);
+	kwds = Py_BuildValue("{s:O}", "alloc_gtsobj", Py_False);
 	point = PYGTS_POINT(PygtsPointType.tp_new(&PygtsPointType, args, kwds));
 	Py_DECREF(args);
 	Py_DECREF(kwds);

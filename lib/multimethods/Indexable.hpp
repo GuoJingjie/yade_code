@@ -135,7 +135,7 @@ public:                                                                         
 	virtual const int& getMaxCurrentlyUsedClassIndex() const                                                                                               \
 	{                                                                                                                                                      \
 		SomeClass* Indexable##SomeClass = 0;                                                                                                           \
-		Indexable##SomeClass            = dynamic_cast<SomeClass*>(const_cast<SomeClass*>(this));                                                      \
+		Indexable##SomeClass = dynamic_cast<SomeClass*>(const_cast<SomeClass*>(this));                                                                 \
 		if (Indexable##SomeClass) { assert(Indexable##SomeClass); }                                                                                    \
 		return getMaxCurrentlyUsedIndexStatic();                                                                                                       \
 	}                                                                                                                                                      \
@@ -144,7 +144,7 @@ public:                                                                         
 	virtual void incrementMaxCurrentlyUsedClassIndex()                                                                                                     \
 	{                                                                                                                                                      \
 		SomeClass* Indexable##SomeClass = 0;                                                                                                           \
-		Indexable##SomeClass            = dynamic_cast<SomeClass*>(this);                                                                              \
+		Indexable##SomeClass = dynamic_cast<SomeClass*>(this);                                                                                         \
 		if (Indexable##SomeClass) { assert(Indexable##SomeClass); }                                                                                    \
 		int& max = getMaxCurrentlyUsedIndexStatic();                                                                                                   \
 		max++;                                                                                                                                         \

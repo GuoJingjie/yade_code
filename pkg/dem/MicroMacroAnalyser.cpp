@@ -46,7 +46,7 @@ void MicroMacroAnalyser::action()
 	//cerr << "MicroMacroAnalyser::action() (interval="<< interval <<", iteration="<< scene->iter<<")" << endl;
 	if (!triaxialCompressionEngine) {
 		vector<shared_ptr<Engine>>::iterator itFirst = scene->engines.begin();
-		vector<shared_ptr<Engine>>::iterator itLast  = scene->engines.end();
+		vector<shared_ptr<Engine>>::iterator itLast = scene->engines.end();
 		for (; itFirst != itLast; ++itFirst) {
 			if ((*itFirst)->getClassName() == "TriaxialCompressionEngine") {
 				LOG_DEBUG("stress controller engine found");
@@ -104,9 +104,9 @@ void MicroMacroAnalyser::setState(unsigned int state, bool save_states, bool com
 //Copy simulation data in the triaxialState structure
 CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char* filename)
 {
-	Scene*                     scene  = Omega::instance().getScene().get();
+	Scene*                     scene = Omega::instance().getScene().get();
 	shared_ptr<BodyContainer>& bodies = scene->bodies;
-	CGT::TriaxialState*        ts     = 0;
+	CGT::TriaxialState*        ts = 0;
 	if (state == 1) ts = analyser->TS0;
 	else if (state == 2)
 		ts = analyser->TS1;
@@ -115,14 +115,14 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 	CGT::TriaxialState& TS = *ts;
 
 	TS.reset();
-	long Ng        = bodies->size();
+	long Ng = bodies->size();
 	TS.mean_radius = 0;
 	TS.grains.resize(Ng);
 	Ng = 0;
 	vector<Body::id_t> fictiousVtx;
 	for (const auto& bi : *bodies) {
 		const Body::id_t Idg = bi->getId();
-		TS.grains[Idg].id    = Idg;
+		TS.grains[Idg].id = Idg;
 		if (!bi->isDynamic()) {
 			if (!nonSphereAsFictious) continue;
 			TS.grains[Idg].isSphere = false;
@@ -137,7 +137,7 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 			TS.grains[Idg].sphere = CGT::Sphere(CGT::Point(pos[0], pos[1], pos[2]), rad);
 			//    TS.grains[Idg].translation = trans;
 			AngleAxisr aa(bi->state->ori);
-			Vector3r   rotVec       = aa.axis() * aa.angle();
+			Vector3r   rotVec = aa.axis() * aa.angle();
 			TS.grains[Idg].rotation = CGT::CVector(rotVec[0], rotVec[1], rotVec[2]);
 			TS.box.base = CGT::Point(min(TS.box.base.x(), pos.x() - rad), min(TS.box.base.y(), pos.y() - rad), min(TS.box.base.z(), pos.z() - rad));
 			TS.box.sommet = CGT::Point(
@@ -152,13 +152,13 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 		TS.grains.resize(Ng + 6);
 		for (int fv = Ng; fv < Ng + 6; fv++) {
 			fictiousVtx.push_back(fv);
-			TS.grains[fv].id       = fv;
+			TS.grains[fv].id = fv;
 			TS.grains[fv].isSphere = false;
 		}
 	}
 	if (fictiousVtx.size() == 6) {
-		CGT::Point& Pmin                 = TS.box.base;
-		CGT::Point& Pmax                 = TS.box.sommet;
+		CGT::Point& Pmin = TS.box.base;
+		CGT::Point& Pmax = TS.box.sommet;
 		TS.grains[fictiousVtx[0]].sphere = CGT::Sphere(
 		        CGT::Point(0.5 * (Pmin.x() + Pmax.x()), Pmin.y() - FAR * (Pmax.x() - Pmin.x()), 0.5 * (Pmax.z() + Pmin.z())),
 		        FAR * (Pmax.x() - Pmin.x()));
@@ -180,15 +180,15 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 	} else
 		LOG_INFO(" the number of fictious vertices should be 0 or 6 usually");
 
-	InteractionContainer::iterator ii    = scene->interactions->begin();
+	InteractionContainer::iterator ii = scene->interactions->begin();
 	InteractionContainer::iterator iiEnd = scene->interactions->end();
 	for (; ii != iiEnd; ++ii) {
 		if ((*ii)->isReal()) {
 			CGT::TriaxialState::Contact* c = new CGT::TriaxialState::Contact;
 			TS.contacts.push_back(c);
 			CGT::TriaxialState::VectorGrain& grains = TS.grains;
-			Body::id_t                       id1    = (*ii)->getId1();
-			Body::id_t                       id2    = (*ii)->getId2();
+			Body::id_t                       id1 = (*ii)->getId1();
+			Body::id_t                       id2 = (*ii)->getId2();
 
 			c->grain1 = &(TS.grains[id1]);
 			c->grain2 = &(TS.grains[id2]);
@@ -208,18 +208,18 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 			//          ( grains[id1].sphere.weight() *c->normal ) +
 			//          ( grains[id2].sphere.point()-CGAL::ORIGIN ) -
 			//          ( grains[id2].sphere.weight() *c->normal ) );
-			c->fn              = YADE_CAST<FrictPhys*>(((*ii)->phys.get()))->normalForce.dot((YADE_CAST<ScGeom*>((*ii)->geom.get()))->normal);
-			Vector3r fs        = YADE_CAST<FrictPhys*>((*ii)->phys.get())->shearForce;
-			c->fs              = CGT::CVector(fs.x(), fs.y(), fs.z());
-			c->old_fn          = c->fn;
-			c->old_fs          = c->fs;
+			c->fn = YADE_CAST<FrictPhys*>(((*ii)->phys.get()))->normalForce.dot((YADE_CAST<ScGeom*>((*ii)->geom.get()))->normal);
+			Vector3r fs = YADE_CAST<FrictPhys*>((*ii)->phys.get())->shearForce;
+			c->fs = CGT::CVector(fs.x(), fs.y(), fs.z());
+			c->old_fn = c->fn;
+			c->old_fs = c->fs;
 			c->frictional_work = 0;
 		}
 	}
 	//Save various parameters if triaxialCompressionEngine is defined
 	if (!triaxialCompressionEngine) {
 		vector<shared_ptr<Engine>>::iterator itFirst = scene->engines.begin();
-		vector<shared_ptr<Engine>>::iterator itLast  = scene->engines.end();
+		vector<shared_ptr<Engine>>::iterator itLast = scene->engines.end();
 		for (; itFirst != itLast; ++itFirst) {
 			if ((*itFirst)->getClassName() == "TriaxialCompressionEngine") {
 				LOG_DEBUG("stress controller engine found");
@@ -230,16 +230,16 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 	}
 
 	if (triaxialCompressionEngine) {
-		TS.wszzh   = triaxialCompressionEngine->stress[triaxialCompressionEngine->wall_top][1];
-		TS.wsxxd   = triaxialCompressionEngine->stress[triaxialCompressionEngine->wall_right][0];
-		TS.wsyyfa  = triaxialCompressionEngine->stress[triaxialCompressionEngine->wall_front][2];
-		TS.eps3    = triaxialCompressionEngine->strain[2];                     //find_parameter("eps3=", Statefile);
-		TS.eps1    = triaxialCompressionEngine->strain[0];                     //find_parameter("eps1=", Statefile);
-		TS.eps2    = triaxialCompressionEngine->strain[1];                     //find_parameter("eps2=", Statefile);
-		TS.haut    = triaxialCompressionEngine->height;                        //find_parameter("haut=", Statefile);
-		TS.larg    = triaxialCompressionEngine->width;                         //find_parameter("larg=", Statefile);
-		TS.prof    = triaxialCompressionEngine->depth;                         //find_parameter("prof=", Statefile);
-		TS.porom   = 0 /*analyser->computeMacroPorosity() crasher?*/;          //find_parameter("porom=", Statefile);
+		TS.wszzh = triaxialCompressionEngine->stress[triaxialCompressionEngine->wall_top][1];
+		TS.wsxxd = triaxialCompressionEngine->stress[triaxialCompressionEngine->wall_right][0];
+		TS.wsyyfa = triaxialCompressionEngine->stress[triaxialCompressionEngine->wall_front][2];
+		TS.eps3 = triaxialCompressionEngine->strain[2];                        //find_parameter("eps3=", Statefile);
+		TS.eps1 = triaxialCompressionEngine->strain[0];                        //find_parameter("eps1=", Statefile);
+		TS.eps2 = triaxialCompressionEngine->strain[1];                        //find_parameter("eps2=", Statefile);
+		TS.haut = triaxialCompressionEngine->height;                           //find_parameter("haut=", Statefile);
+		TS.larg = triaxialCompressionEngine->width;                            //find_parameter("larg=", Statefile);
+		TS.prof = triaxialCompressionEngine->depth;                            //find_parameter("prof=", Statefile);
+		TS.porom = 0 /*analyser->computeMacroPorosity() crasher?*/;            //find_parameter("porom=", Statefile);
 		TS.ratio_f = triaxialCompressionEngine->ComputeUnbalancedForce(scene); //find_parameter("ratio_f=", Statefile);
 	} else
 		TS.wszzh = TS.wsxxd = TS.wsyyfa = TS.eps3 = TS.eps1 = TS.eps2 = TS.haut = TS.larg = TS.prof = TS.porom = TS.ratio_f = 0;

@@ -78,8 +78,8 @@ private:
 		FactorableCreators() {};
 		FactorableCreators(CreateFactorableFnPtr c, CreateSharedFactorableFnPtr cs, CreatePureCustomFnPtr cpc)
 		{
-			create           = c;
-			createShared     = cs;
+			create = c;
+			createShared = cs;
 			createPureCustom = cpc;
 		};
 	};

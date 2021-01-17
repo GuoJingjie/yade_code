@@ -24,8 +24,8 @@ Real             Gl1_Node::quality;
 bool             Gl1_Node::localSpecView;
 vector<Vector3r> Gl1_Node::vertices, Gl1_Node::faces;
 int              Gl1_Node::glStripedSphereList = -1;
-int              Gl1_Node::glGlutSphereList    = -1;
-Real             Gl1_Node::prevQuality         = 0;
+int              Gl1_Node::glGlutSphereList = -1;
+Real             Gl1_Node::prevQuality = 0;
 
 void Gl1_Node::go(const shared_ptr<Shape>& cm, const shared_ptr<State>&, bool wire2, const GLViewInfo&)
 {

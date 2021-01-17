@@ -513,8 +513,8 @@ PygtsSegment* pygts_segment_new(GtsSegment* s)
 	}
 
 	/* Build a new Segment */
-	args    = Py_BuildValue("OO", Py_None, Py_None);
-	kwds    = Py_BuildValue("{s:O}", "alloc_gtsobj", Py_False);
+	args = Py_BuildValue("OO", Py_None, Py_None);
+	kwds = Py_BuildValue("{s:O}", "alloc_gtsobj", Py_False);
 	segment = PYGTS_SEGMENT(PygtsSegmentType.tp_new(&PygtsSegmentType, args, kwds));
 	Py_DECREF(args);
 	Py_DECREF(kwds);

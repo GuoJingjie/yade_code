@@ -315,9 +315,9 @@ Real ImpFuncPB::FunctionValue(Real x[3])
 	if (clump == false) {
 		Vector3r xori(x[0], x[1], x[2]);
 		Vector3r xlocal = rotationMatrix * xori;
-		xlocal[0]       = rotationMatrix(0, 0) * x[0] + rotationMatrix(0, 1) * x[1] + rotationMatrix(0, 2) * x[2];
-		xlocal[1]       = rotationMatrix(1, 0) * x[0] + rotationMatrix(1, 1) * x[1] + rotationMatrix(1, 2) * x[2];
-		xlocal[2]       = rotationMatrix(2, 0) * x[0] + rotationMatrix(2, 1) * x[1] + rotationMatrix(2, 2) * x[2];
+		xlocal[0] = rotationMatrix(0, 0) * x[0] + rotationMatrix(0, 1) * x[1] + rotationMatrix(0, 2) * x[2];
+		xlocal[1] = rotationMatrix(1, 0) * x[0] + rotationMatrix(1, 1) * x[1] + rotationMatrix(1, 2) * x[2];
+		xlocal[2] = rotationMatrix(2, 0) * x[0] + rotationMatrix(2, 1) * x[1] + rotationMatrix(2, 2) * x[2];
 		//std::cout<<"rotationMatrix: "<<endl<<rotationMatrix<<endl;
 		//x[0]=xlocal[0]; x[1]=xlocal[1]; x[2]=xlocal[2];
 
@@ -360,16 +360,16 @@ Real ImpFuncPB::FunctionValue(Real x[3])
 void PotentialBlockVTKRecorder::action()
 {
 	if (fileName.size() == 0) return;
-	auto pbPos          = vtkSmartPointer<vtkPointsReal>::New();
-	auto appendFilter   = vtkSmartPointer<vtkAppendPolyData>::New();
+	auto pbPos = vtkSmartPointer<vtkPointsReal>::New();
+	auto appendFilter = vtkSmartPointer<vtkAppendPolyData>::New();
 	auto appendFilterID = vtkSmartPointer<vtkAppendPolyData>::New();
 	//auto transformFilter = vtkSmartPointer<vtkTransformPolyDataFilter>::New();
 	//auto transform = vtkSmartPointer<vtkTransform>::New();
 
 	// interactions ###############################################
 	auto intrBodyPos = vtkSmartPointer<vtkPoints>::New();
-	auto intrCells   = vtkSmartPointer<vtkCellArray>::New();
-	auto intrForceN  = vtkSmartPointer<vtkFloatArray>::New();
+	auto intrCells = vtkSmartPointer<vtkCellArray>::New();
+	auto intrForceN = vtkSmartPointer<vtkFloatArray>::New();
 	intrForceN->SetNumberOfComponents(3);
 	intrForceN->SetName("forceN");
 	auto intrAbsForceT = vtkSmartPointer<vtkFloatArray>::New();
@@ -380,7 +380,7 @@ void PotentialBlockVTKRecorder::action()
 	// interaction contact point ###############################################
 	auto pbContactPoint = vtkSmartPointer<vtkPointsReal>::New();
 	auto pbCellsContact = vtkSmartPointer<vtkCellArray>::New();
-	auto pbNormalForce  = vtkSmartPointer<vtkFloatArray>::New();
+	auto pbNormalForce = vtkSmartPointer<vtkFloatArray>::New();
 	pbNormalForce->SetNumberOfComponents(3);
 	pbNormalForce->SetName("normalForce"); //Linear velocity in Vector3 form
 	auto pbShearForce = vtkSmartPointer<vtkFloatArray>::New();
@@ -399,7 +399,7 @@ void PotentialBlockVTKRecorder::action()
 
 
 	// velocity ###################################################
-	auto pbCells     = vtkSmartPointer<vtkCellArray>::New();
+	auto pbCells = vtkSmartPointer<vtkCellArray>::New();
 	auto pbLinVelVec = vtkSmartPointer<vtkFloatArray>::New();
 	pbLinVelVec->SetNumberOfComponents(3);
 	pbLinVelVec->SetName("linVelVec"); //Linear velocity in Vector3 form
@@ -425,9 +425,9 @@ void PotentialBlockVTKRecorder::action()
 
 	// bodyId ##############################################################
 	//#if 0
-	auto pbPosID   = vtkSmartPointer<vtkPointsReal>::New();
+	auto pbPosID = vtkSmartPointer<vtkPointsReal>::New();
 	auto pbIdCells = vtkSmartPointer<vtkCellArray>::New();
-	auto blockId   = vtkSmartPointer<vtkIntArray>::New();
+	auto blockId = vtkSmartPointer<vtkIntArray>::New();
 	blockId->SetNumberOfComponents(1);
 	blockId->SetName("id");
 	// bodyId ##############################################################
@@ -499,15 +499,15 @@ void PotentialBlockVTKRecorder::action()
 			countID++;
 		}
 		//vtkSmartPointer<ImpFuncPB> function = ImpFuncPB::New();
-		vtkSmartPointer<vtkImplicitBoolean> boolFunction   = vtkSmartPointer<vtkImplicitBoolean>::New();
-		vtkSmartPointer<ImpFuncPB>*         functionBool   = nullptr;
+		vtkSmartPointer<vtkImplicitBoolean> boolFunction = vtkSmartPointer<vtkImplicitBoolean>::New();
+		vtkSmartPointer<ImpFuncPB>*         functionBool = nullptr;
 		int                                 ImplicitBoolNo = 0;
-		Real                                xmin           = 0.0;
-		Real                                xmax           = 0.0;
-		Real                                ymin           = 0.0;
-		Real                                ymax           = 0.0;
-		Real                                zmin           = 0.0;
-		Real                                zmax           = 0.0;
+		Real                                xmin = 0.0;
+		Real                                xmax = 0.0;
+		Real                                ymin = 0.0;
+		Real                                ymax = 0.0;
+		Real                                zmin = 0.0;
+		Real                                zmax = 0.0;
 		Vector3r                            particleColour(0, 0, 0);
 		if (b->isClump() == false && b->isClumpMember() == false) {
 			const PotentialBlock* pb = dynamic_cast<PotentialBlock*>(b->shape.get());
@@ -521,8 +521,8 @@ void PotentialBlockVTKRecorder::action()
 			function->k = pb->k;
 			//Matrix3r directionCos = b->state->ori.conjugate().toRotationMatrix();  //FIXME
 			Matrix3r rotation = b->state->ori.conjugate().toRotationMatrix(); //*pb->oriAabb.conjugate();
-			int      count    = 0;
-			function->clump   = false;
+			int      count = 0;
+			function->clump = false;
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
 					//function->rotationMatrix[count] = directionCos(j,i);
@@ -540,12 +540,12 @@ void PotentialBlockVTKRecorder::action()
 				zmax = pb->maxAabb.z();
 			} else {
 				const Aabb* aabb = static_cast<Aabb*>(b->bound.get());
-				xmin             = aabb->min.x() - b->state->pos.x();
-				xmax             = aabb->max.x() - b->state->pos.x();
-				ymin             = aabb->min.y() - b->state->pos.y();
-				ymax             = aabb->max.y() - b->state->pos.y();
-				zmin             = aabb->min.z() - b->state->pos.z();
-				zmax             = aabb->max.z() - b->state->pos.z();
+				xmin = aabb->min.x() - b->state->pos.x();
+				xmax = aabb->max.x() - b->state->pos.x();
+				ymin = aabb->min.y() - b->state->pos.y();
+				ymax = aabb->max.y() - b->state->pos.y();
+				zmin = aabb->min.z() - b->state->pos.z();
+				zmax = aabb->max.z() - b->state->pos.z();
 
 				xmin *= 1.2;
 				xmax *= 1.2;
@@ -561,17 +561,17 @@ void PotentialBlockVTKRecorder::action()
 			const shared_ptr<Clump> clump(YADE_PTR_CAST<Clump>(b->shape));
 
 			//vtkSmartPointer<ImpFunc> functionBool [clump->ids.size()];
-			functionBool   = new vtkSmartPointer<ImpFuncPB>[clump->ids.size()];
+			functionBool = new vtkSmartPointer<ImpFuncPB>[clump->ids.size()];
 			ImplicitBoolNo = clump->ids.size();
 
 			for (unsigned int i = 0; i < clump->ids.size(); i++) {
-				const shared_ptr<Body> clumpMember  = Body::byId(clump->ids[i], scene);
-				const PotentialBlock*  pbShape      = dynamic_cast<PotentialBlock*>(clumpMember->shape.get());
-				functionBool[i]                     = vtkSmartPointer<ImpFuncPB>::New();
-				functionBool[i]->R                  = pbShape->R;
-				functionBool[i]->r                  = pbShape->r;
-				functionBool[i]->k                  = pbShape->k;
-				functionBool[i]->clump              = true;
+				const shared_ptr<Body> clumpMember = Body::byId(clump->ids[i], scene);
+				const PotentialBlock*  pbShape = dynamic_cast<PotentialBlock*>(clumpMember->shape.get());
+				functionBool[i] = vtkSmartPointer<ImpFuncPB>::New();
+				functionBool[i]->R = pbShape->R;
+				functionBool[i]->r = pbShape->r;
+				functionBool[i]->k = pbShape->k;
+				functionBool[i]->clump = true;
 				functionBool[i]->clumpMemberCentreX = clumpMember->state->pos.x() - b->state->pos.x();
 				functionBool[i]->clumpMemberCentreY = clumpMember->state->pos.y() - b->state->pos.y();
 				functionBool[i]->clumpMemberCentreZ = clumpMember->state->pos.z() - b->state->pos.z();
@@ -580,7 +580,7 @@ void PotentialBlockVTKRecorder::action()
 				Matrix3r rotation = clumpMember->state->ori.toRotationMatrix(); //*pbShape->oriAabb.conjugate();
 				for (unsigned int j = 0; j < pbShape->a.size(); j++) {
 					Vector3r plane = rotation * Vector3r(pbShape->a[j], pbShape->b[j], pbShape->c[j]);
-					Real     d     = pbShape->d[j];
+					Real     d = pbShape->d[j];
 					//Real     d     = -1.0*(plane.x()*(b->state->pos.x()-clumpMember->state->pos.x() ) + plane.y()*(b->state->pos.y()-clumpMember->state->pos.y() ) + plane.z()*(b->state->pos.z()-clumpMember->state->pos.z() ) - pbShape->d[j]);
 					functionBool[i]->a.push_back(plane.x());
 					functionBool[i]->b.push_back(plane.y());
@@ -813,8 +813,8 @@ void PotentialBlockVTKRecorder::action()
 			pbCellsContact->InsertNextCell(1, pid);
 			//intrBodyPos->InsertNextPoint(geom->contactPoint[0],geom->contactPoint[1],geom->contactPoint[2]);
 			// gives _signed_ scalar of normal force, following the convention used in the respective constitutive law
-			float fn[3]         = { (float)phys->normalForce[0], (float)phys->normalForce[1], (float)phys->normalForce[2] };
-			float fs[3]         = { (float)phys->shearForce[0], (float)phys->shearForce[1], (float)phys->shearForce[2] };
+			float fn[3] = { (float)phys->normalForce[0], (float)phys->normalForce[1], (float)phys->normalForce[2] };
+			float fs[3] = { (float)phys->shearForce[0], (float)phys->shearForce[1], (float)phys->shearForce[2] };
 			float totalForce[3] = { fn[0] + fs[0], fn[1] + fs[1], fn[2] + fs[2] };
 			float totalStress[3]
 			        = { 0.0, 0.0, 0.0 }; //{totalForce[0]/phys->contactArea, totalForce[1]/phys->contactArea, totalForce[2]/phys->contactArea};

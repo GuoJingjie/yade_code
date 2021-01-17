@@ -138,8 +138,8 @@ void FacetTopologyAnalyzer::action()
 			assert((invNormals && (ti->vertices[ei] == tj->vertices[ej]) && (ti->vertices[(ei + 1) % 3] == tj->vertices[(ej + 1) % 3]))
 			       || (!invNormals && (ti->vertices[(ei + 1) % 3] == tj->vertices[ej]) && (ti->vertices[ei] == tj->vertices[(ej + 1) % 3])));
 			// angle between normals
-			const shared_ptr<Body>& b1  = Body::byId(ti->id, scene);
-			const shared_ptr<Body>& b2  = Body::byId(tj->id, scene);
+			const shared_ptr<Body>& b1 = Body::byId(ti->id, scene);
+			const shared_ptr<Body>& b2 = Body::byId(tj->id, scene);
 			Vector3r                n1g = b1->state->ori * f1->normal, n2g = b2->state->ori * f2->normal;
 			//TRVAR2(n1g,n2g);
 			Vector3r contEdge1g

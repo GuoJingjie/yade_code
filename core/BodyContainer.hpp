@@ -19,7 +19,7 @@ class InteractionContainer;
 #define YADE_PARALLEL_FOREACH_BODY_BEGIN(b_, bodies)                                                                                                           \
 	bodies->updateShortLists();                                                                                                                            \
 	const vector<Body::id_t>& realBodies = bodies->realBodies;                                                                                             \
-	const bool                redirect   = bodies->useRedirection;                                                                                         \
+	const bool                redirect = bodies->useRedirection;                                                                                           \
 	const Body::id_t          _sz(redirect ? realBodies.size() : bodies->size());                                                                          \
 	_Pragma("omp parallel for") for (int k = 0; k < _sz; k++)                                                                                              \
 	{                                                                                                                                                      \
@@ -29,7 +29,7 @@ class InteractionContainer;
 #define YADE_PARALLEL_FOREACH_BODY_BEGIN(b_, bodies)                                                                                                           \
 	bodies->updateShortLists();                                                                                                                            \
 	const vector<Body::id_t>& realBodies = bodies->realBodies;                                                                                             \
-	const bool                redirect   = bodies->useRedirection;                                                                                         \
+	const bool                redirect = bodies->useRedirection;                                                                                           \
 	const Body::id_t          _sz(redirect ? realBodies.size() : bodies->size());                                                                          \
 	for (int k = 0; k < _sz; k++) {                                                                                                                        \
 		if (not redirect and not(*bodies)[k]) continue;                                                                                                \

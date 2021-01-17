@@ -29,7 +29,7 @@ namespace math {
 	template <typename Scalar, int Level = levelOfRealHP<Scalar>> inline Scalar fastInvCos0(const Scalar& fValue)
 	// note: this function is verbatim moved from Math.hpp
 	{
-		Scalar fRoot   = sqrt(((Scalar)1.0) - fValue);
+		Scalar fRoot = sqrt(((Scalar)1.0) - fValue);
 		Scalar fResult = -(Scalar)0.0187293;
 		fResult *= fValue;
 		fResult += (Scalar)0.0742610;

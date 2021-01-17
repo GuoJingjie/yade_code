@@ -82,7 +82,7 @@ static PyObject* is_unattached(PygtsFace* self, PyObject* args)
 static PyObject* neighbor_number(PygtsFace* self, PyObject* args)
 {
 	PyObject*     s_ = NULL;
-	PygtsSurface* s  = NULL;
+	PygtsSurface* s = NULL;
 
 	SELF_CHECK
 
@@ -104,7 +104,7 @@ static PyObject* neighbor_number(PygtsFace* self, PyObject* args)
 static PyObject* neighbors(PygtsFace* self, PyObject* args)
 {
 	PyObject*     s_ = NULL;
-	PygtsSurface* s  = NULL;
+	PygtsSurface* s = NULL;
 	guint         i, N;
 	PyObject*     tuple;
 	GSList *      faces, *f;
@@ -132,7 +132,7 @@ static PyObject* neighbors(PygtsFace* self, PyObject* args)
 
 	/* Get the neighbors */
 	faces = gts_face_neighbors(PYGTS_FACE_AS_GTS_FACE(self), PYGTS_SURFACE_AS_GTS_SURFACE(s));
-	f     = faces;
+	f = faces;
 
 	for (i = 0; i < N; i++) {
 		if ((face = pygts_face_new(GTS_FACE(f->data))) == NULL) {
@@ -150,9 +150,9 @@ static PyObject* neighbors(PygtsFace* self, PyObject* args)
 static PyObject* is_compatible(PygtsFace* self, PyObject* args)
 {
 	PyObject*      o1_ = NULL;
-	GtsEdge*       e   = NULL;
-	PygtsTriangle* t   = NULL;
-	PygtsSurface*  s   = NULL;
+	GtsEdge*       e = NULL;
+	PygtsTriangle* t = NULL;
+	PygtsSurface*  s = NULL;
 
 	SELF_CHECK
 
@@ -194,7 +194,7 @@ static PyObject* is_compatible(PygtsFace* self, PyObject* args)
 static PyObject* is_on(PygtsFace* self, PyObject* args)
 {
 	PyObject*     s_ = NULL;
-	PygtsSurface* s  = NULL;
+	PygtsSurface* s = NULL;
 
 	SELF_CHECK
 
@@ -316,7 +316,7 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 			e1 = PYGTS_EDGE_AS_GTS_EDGE(o1_);
 		} else {
 			if (pygts_vertex_check(o1_)) {
-				v1   = PYGTS_VERTEX_AS_GTS_VERTEX(o1_);
+				v1 = PYGTS_VERTEX_AS_GTS_VERTEX(o1_);
 				flag = TRUE;
 			}
 		}
@@ -325,7 +325,7 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 			e2 = PYGTS_EDGE_AS_GTS_EDGE(o2_);
 		} else {
 			if (pygts_vertex_check(o2_)) {
-				v2   = PYGTS_VERTEX_AS_GTS_VERTEX(o2_);
+				v2 = PYGTS_VERTEX_AS_GTS_VERTEX(o2_);
 				flag = TRUE;
 			}
 		}
@@ -334,7 +334,7 @@ static PyObject* new_(PyTypeObject* type, PyObject* args, PyObject* kwds)
 			e3 = PYGTS_EDGE_AS_GTS_EDGE(o3_);
 		} else {
 			if (pygts_vertex_check(o3_)) {
-				v3   = PYGTS_VERTEX_AS_GTS_VERTEX(o3_);
+				v3 = PYGTS_VERTEX_AS_GTS_VERTEX(o3_);
 				flag = TRUE;
 			}
 		}

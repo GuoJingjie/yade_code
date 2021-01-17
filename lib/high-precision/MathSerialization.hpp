@@ -111,7 +111,7 @@ namespace serialization {
 
 	template <class Archive> void serialize(Archive& ar, yade::Se3r& g, const unsigned int /*version*/)
 	{
-		yade::Vector3r&    position    = g.position;
+		yade::Vector3r&    position = g.position;
 		yade::Quaternionr& orientation = g.orientation;
 		ar&                BOOST_SERIALIZATION_NVP(position) & BOOST_SERIALIZATION_NVP(orientation);
 	}

@@ -259,9 +259,9 @@ void centerViews(const Real& suggestedRadius, const Vector3r& gridOrigin, const 
 py::dict centerValues()
 {
 	py::dict ret;
-	ret["suggestedRadius"]   = OpenGLManager::self->getSuggestedRadius();
-	ret["gridOrigin"]        = OpenGLManager::self->getGridOrigin();
-	ret["suggestedCenter"]   = OpenGLManager::self->getSuggestedCenter();
+	ret["suggestedRadius"] = OpenGLManager::self->getSuggestedRadius();
+	ret["gridOrigin"] = OpenGLManager::self->getGridOrigin();
+	ret["suggestedCenter"] = OpenGLManager::self->getSuggestedCenter();
 	ret["gridDecimalPlaces"] = OpenGLManager::self->getGridDecimalPlaces();
 	return ret;
 }
@@ -273,7 +273,7 @@ shared_ptr<OpenGLRenderer> getRenderer() { return OpenGLManager::self->renderer;
 // BOOST_PYTHON_MODULE cannot be inside yade namespace, it has 'extern "C"' keyword, which strips it out of any namespaces.
 BOOST_PYTHON_MODULE(_GLViewer)
 try {
-	namespace y  = ::yade;
+	namespace y = ::yade;
 	namespace py = ::boost::python;
 
 	YADE_SET_DOCSTRING_OPTS;
@@ -288,9 +288,9 @@ try {
 	        "type ``yade.qt.center?`` for details. Returns zeros if view is closed.");
 	py::def("center",
 	        y::centerViews,
-	        (py::arg("suggestedRadius")   = -1.0,
-	         py::arg("gridOrigin")        = y::Vector3r(0, 0, 0),
-	         py::arg("suggestedCenter")   = y::Vector3r(0, 0, 0),
+	        (py::arg("suggestedRadius") = -1.0,
+	         py::arg("gridOrigin") = y::Vector3r(0, 0, 0),
+	         py::arg("suggestedCenter") = y::Vector3r(0, 0, 0),
 	         py::arg("gridDecimalPlaces") = 4),
 	        R"""(
 Center all views.

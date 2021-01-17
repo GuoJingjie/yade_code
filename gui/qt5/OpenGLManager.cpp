@@ -10,7 +10,7 @@ OpenGLManager::OpenGLManager(QObject* parent)
         : QObject(parent)
 {
 	if (self) throw runtime_error("OpenGLManager instance already exists, uses OpenGLManager::self to retrieve it.");
-	self     = this;
+	self = this;
 	renderer = shared_ptr<OpenGLRenderer>(new OpenGLRenderer);
 	renderer->init();
 	connect(this, SIGNAL(createView()), this, SLOT(createViewSlot()));

@@ -84,52 +84,52 @@ public:
 
 	TwoPhaseCellInfo(void)
 	{
-		saturation2  = 0.0;
+		saturation2 = 0.0;
 		isFictiousId = 0;
-		isWRes       = true;
-		isNWRes      = false;
-		isTrapW      = false;
-		isTrapNW     = false;
-		saturation   = 1.0;
+		isWRes = true;
+		isNWRes = false;
+		isTrapW = false;
+		isTrapNW = false;
+		saturation = 1.0;
 		hasInterface = false;
-		trapCapP     = 0;
+		trapCapP = 0;
 		poreThroatRadius.resize(4, 0);
 		kNorm2.resize(4, 0);
 		poreBodyRadius = 0;
 		poreBodyVolume = 0;
-		windowsID      = 0;
+		windowsID = 0;
 		for (int k = 0; k < 4; k++)
 			for (int l = 0; l < 4; l++)
 				solidLine[k][l] = 0;
 
 		//dynamic TwoPhaseFlow
-		airBC               = false;
-		waterBC             = false;
-		numberFacets        = 4;
-		mergedVolume        = 0;
-		mergednr            = 0;
-		mergedID            = 0;
+		airBC = false;
+		waterBC = false;
+		numberFacets = 4;
+		mergedVolume = 0;
+		mergednr = 0;
+		mergedID = 0;
 		apparentSolidVolume = 0.0;
-		dvSwelling          = 0.0;
+		dvSwelling = 0.0;
 		entryPressure.resize(4, 0);
 		entrySaturation.resize(4, 0);
 		poreIdConnectivity.resize(4, -1);
 		particleSurfaceArea.resize(4, 0);
 		thresholdSaturation = 0.0;
-		flux                = 0.0; //NOTE can potentially be removed, currently not used but might be handy in future work
-		accumulativeDV      = 0.0;
-		thresholdPressure   = 0.0;
-		airWaterArea        = 0.0;
-		accumulativeDV      = 0.0;
-		minSaturation       = 0.0;
-		poreId              = -1;
-		isWResInternal      = false;
-		dvTPF               = 0.0; //FIXME dvTPF is currently only used to impose pressure as dv() cannot be imposed from FlowEngine currently
-		isNWResDef          = false;
-		conductivityWRes    = 0.0;
-		invadedFrom         = 0;
-		label               = -1;
-		porosity            = 0.;
+		flux = 0.0; //NOTE can potentially be removed, currently not used but might be handy in future work
+		accumulativeDV = 0.0;
+		thresholdPressure = 0.0;
+		airWaterArea = 0.0;
+		accumulativeDV = 0.0;
+		minSaturation = 0.0;
+		poreId = -1;
+		isWResInternal = false;
+		dvTPF = 0.0; //FIXME dvTPF is currently only used to impose pressure as dv() cannot be imposed from FlowEngine currently
+		isNWResDef = false;
+		conductivityWRes = 0.0;
+		invadedFrom = 0;
+		label = -1;
+		porosity = 0.;
 	}
 };
 
@@ -169,8 +169,8 @@ public:
 	        : PhaseCluster()
 	{
 		tes = &t;
-		LC  = NULL;
-		ex  = NULL;
+		LC = NULL;
+		ex = NULL;
 		if (not tes) LOG_WARN("invalid initialization");
 	}
 	// 		PhaseCluster () {tes=NULL; LOG_WARN("avoid default constructor, 'tes' not initialized");}
@@ -494,7 +494,7 @@ public:
 
 	int getCell2(Real posX, Real posY, Real posZ)
 	{ //Should be fixed properly
-		RTriangulation& tri  = solver->T[solver->currentTes].Triangulation();
+		RTriangulation& tri = solver->T[solver->currentTes].Triangulation();
 		CellHandle      cell = tri.locate(CGT::Sphere(posX, posY, posZ));
 		return cell->info().id;
 	}

@@ -371,7 +371,7 @@ template <typename Type> inline void glOneWire(Type& t, unsigned int a, unsigned
 template <typename Type> inline void glOneFace(Type& t, unsigned int a, unsigned int b, unsigned int c)
 {
 	const yade::Vector3r center = (t->v[0] + t->v[1] + t->v[2] + t->v[3]) * .25;
-	yade::Vector3r       n      = (t->v[b] - t->v[a]).cross(t->v[c] - t->v[a]);
+	yade::Vector3r       n = (t->v[b] - t->v[a]).cross(t->v[c] - t->v[a]);
 	n.normalize();
 	const yade::Vector3r faceCenter = (t->v[a] + t->v[b] + t->v[c]) / 3.;
 	if ((faceCenter - center).dot(n) < 0) n = -n;

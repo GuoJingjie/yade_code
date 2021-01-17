@@ -74,7 +74,7 @@ void build_triangulation_with_ids(const shared_ptr<BodyContainer>& bodies, Tesse
 	if (reset) TW.clear();
 	typedef SimpleTesselation::RTriangulation              RTriangulation;
 	SimpleTesselation&                                     Tes = *(TW.Tes);
-	RTriangulation&                                        T   = Tes.Triangulation();
+	RTriangulation&                                        T = Tes.Triangulation();
 	std::vector<CGT::Sphere>                               spheres;
 	std::vector<std::pair<const CGT::Sphere*, Body::id_t>> pointsPtrs;
 	spheres.reserve(bodies->size());
@@ -82,13 +82,13 @@ void build_triangulation_with_ids(const shared_ptr<BodyContainer>& bodies, Tesse
 	Tes.vertexHandles.clear();
 	Tes.vertexHandles.resize(bodies->size() + 6, NULL); //+6 extra slots in case boundaries will be added latter as additional vertices
 
-	Body::id_t  Ng                = 0;
-	Body::id_t& MaxId             = Tes.maxId;
-	TW.mean_radius                = 0;
+	Body::id_t  Ng = 0;
+	Body::id_t& MaxId = Tes.maxId;
+	TW.mean_radius = 0;
 	int                nonSpheres = 0;
 	shared_ptr<Sphere> sph(new Sphere);
 	int                Sph_Index = sph->getClassIndexStatic();
-	Scene*             scene     = Omega::instance().getScene().get();
+	Scene*             scene = Omega::instance().getScene().get();
 	for (const auto& bi : *bodies) {
 		if (bi->shape->getClassIndex() == Sph_Index) {
 			const Sphere* s = YADE_CAST<Sphere*>(bi->shape.get());
@@ -120,15 +120,15 @@ void build_triangulation_with_ids(const shared_ptr<BodyContainer>& bodies, Tesse
 		RTriangulation::Locate_type lt;
 		RTriangulation::Cell_handle c;
 		int                         li, lj;
-		c                               = T.locate(*(p->first), lt, li, lj, hint);
+		c = T.locate(*(p->first), lt, li, lj, hint);
 		RTriangulation::Vertex_handle v = T.insert(*(p->first), lt, c, li, lj);
 		if (v == RTriangulation::Vertex_handle()) hint = c;
 		else {
 			v->info().setId((unsigned int)p->second);
 			//Vh->info().isFictious = false;//false is the default
-			Tes.maxId                    = math::max(Tes.maxId, (int)p->second);
+			Tes.maxId = math::max(Tes.maxId, (int)p->second);
 			Tes.vertexHandles[p->second] = v;
-			hint                         = v->cell();
+			hint = v->cell();
 			++TW.n_spheres;
 		}
 	}
@@ -145,12 +145,12 @@ TesselationWrapper::~TesselationWrapper()
 void TesselationWrapper::clear(void)
 {
 	Tes->Clear();
-	Pmin        = CGT::Point(inf, inf, inf);
-	Pmax        = CGT::Point(-inf, -inf, -inf);
+	Pmin = CGT::Point(inf, inf, inf);
+	Pmax = CGT::Point(-inf, -inf, -inf);
 	mean_radius = 0;
-	n_spheres   = 0;
+	n_spheres = 0;
 	rad_divided = false;
-	bounded     = false;
+	bounded = false;
 	Tes->vertexHandles.clear();
 	facet_it = Tes->Triangulation().finite_edges_end();
 }
@@ -238,14 +238,14 @@ unsigned int TesselationWrapper::NumberOfFacets(bool initIters)
 void TesselationWrapper::InitIter(void)
 {
 	facet_begin = Tes->Triangulation().finite_edges_begin();
-	facet_end   = Tes->Triangulation().finite_edges_end();
-	facet_it    = facet_begin;
+	facet_end = Tes->Triangulation().finite_edges_end();
+	facet_it = facet_begin;
 }
 
 bool TesselationWrapper::nextFacet(std::pair<unsigned int, unsigned int>& facet)
 {
 	if (facet_end == facet_it) return false;
-	facet.first  = facet_it->first->vertex(facet_it->second)->info().id();
+	facet.first = facet_it->first->vertex(facet_it->second)->info().id();
 	facet.second = facet_it->first->vertex((facet_it)->third)->info().id();
 	++facet_it;
 	return true;
@@ -308,13 +308,13 @@ void TesselationWrapper::defToVtkFromStates(string inputFile1, string inputFile2
 
 void createSphere(shared_ptr<Body>& body, Vector3r position, Real radius, bool /*big*/, bool /*dynamic*/)
 {
-	body            = shared_ptr<Body>(new Body);
+	body = shared_ptr<Body>(new Body);
 	body->groupMask = 2;
 	shared_ptr<Sphere> iSphere(new Sphere);
 	body->state->blockedDOFs = State::DOF_NONE;
-	body->state->pos         = position;
-	iSphere->radius          = radius;
-	body->shape              = iSphere;
+	body->state->pos = position;
+	iSphere->radius = radius;
+	body->shape = iSphere;
 }
 
 void TesselationWrapper::defToVtkFromPositions(string inputFile1, string inputFile2, string outputFile, bool /*bz2*/)
@@ -353,14 +353,14 @@ boost::python::dict TesselationWrapper::getVolPoroDef(bool deformation)
 	if (deformation) { //use the final state to compute volumes
 		/*const vector<CGT::Tenseur3>& def =*/mma.analyser->computeParticlesDeformation();
 		Tes = &mma.analyser->TS1->tesselation();
-		ts  = mma.analyser->TS1;
+		ts = mma.analyser->TS1;
 	} else {
 		Tes = &mma.analyser->TS0->tesselation(); //no reason to use the final state if we don't want to compute deformations, keep using the initial
-		ts  = mma.analyser->TS0;
+		ts = mma.analyser->TS0;
 	}
 	RTriangulation& Tri = Tes->Triangulation();
-	Pmin                = ts->box.base;
-	Pmax                = ts->box.sommet;
+	Pmin = ts->box.base;
+	Pmax = ts->box.sommet;
 	//if (!scene->isPeriodic) addBoundingPlanes();
 	computeVolumes();
 	int bodiesDim = Tes->Max_id() + 1; //=scene->bodies->size();
@@ -376,15 +376,15 @@ boost::python::dict TesselationWrapper::getVolPoroDef(bool deformation)
 	for (RTriangulation::Finite_vertices_iterator V_it = Tri.finite_vertices_begin(); V_it != Tri.finite_vertices_end(); V_it++) {
 		//id[]=V_it->info().id()
 		//if(!b) continue;
-		const Body::id_t id        = V_it->info().id();
+		const Body::id_t id = V_it->info().id();
 		Real             sphereVol = 4.188790 * math::pow((V_it->point().weight()), 1.5); // 4/3*PI*R³ = 4.188...*R³
-		vol[id]                    = V_it->info().v();
-		poro[id]                   = (V_it->info().v() - sphereVol) / V_it->info().v();
+		vol[id] = V_it->info().v();
+		poro[id] = (V_it->info().v() - sphereVol) / V_it->info().v();
 		if (deformation) MATRIX3R_TO_NUMPY(mma.analyser->ParticleDeformation[id], def[id]);
 		//cerr << V_it->info().v()<<" "<<ParticleDeformation[id]<<endl;
 	}
 	boost::python::dict ret;
-	ret["vol"]  = vol;
+	ret["vol"] = vol;
 	ret["poro"] = poro;
 	if (deformation) ret["def"] = def;
 	return ret;

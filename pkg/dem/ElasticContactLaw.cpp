@@ -40,7 +40,7 @@ void ElasticContactLaw::action()
 {
 	if (!functor) functor = shared_ptr<Law2_ScGeom_FrictPhys_CundallStrack>(new Law2_ScGeom_FrictPhys_CundallStrack);
 	functor->neverErase = neverErase;
-	functor->scene      = scene;
+	functor->scene = scene;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
 		if (!I->isReal()) continue;
@@ -61,16 +61,16 @@ bool Law2_ScGeom_FrictPhys_CundallStrack::go(shared_ptr<IGeom>& ig, shared_ptr<I
 	FrictPhys* phys = static_cast<FrictPhys*>(ip.get());
 	if (geom->penetrationDepth < 0) {
 		if (neverErase) {
-			phys->shearForce  = Vector3r::Zero();
+			phys->shearForce = Vector3r::Zero();
 			phys->normalForce = Vector3r::Zero();
 		} else
 			return false;
 	}
-	Real& un          = geom->penetrationDepth;
+	Real& un = geom->penetrationDepth;
 	phys->normalForce = phys->kn * math::max(un, (Real)0) * geom->normal;
 
 	Vector3r&       shearForce = geom->rotate(phys->shearForce);
-	const Vector3r& shearDisp  = geom->shearIncrement();
+	const Vector3r& shearDisp = geom->shearIncrement();
 	shearForce -= phys->ks * shearDisp;
 	Real maxFs = phys->normalForce.squaredNorm() * math::pow(phys->tangensOfFrictionAngle, 2);
 
@@ -84,7 +84,7 @@ bool Law2_ScGeom_FrictPhys_CundallStrack::go(shared_ptr<IGeom>& ig, shared_ptr<I
 		//almost the same with additional Vector3r instatinated for energy tracing,
 		//duplicated block to make sure there is no cost for the instanciation of the vector when traceEnergy==false
 		if (shearForce.squaredNorm() > maxFs) {
-			Real     ratio      = sqrt(maxFs) / shearForce.norm();
+			Real     ratio = sqrt(maxFs) / shearForce.norm();
 			Vector3r trialForce = shearForce; //store prev force for definition of plastic slip
 			//define the plastic work input and increment the total plastic energy dissipated
 			shearForce *= ratio;

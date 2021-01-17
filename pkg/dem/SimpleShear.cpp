@@ -105,7 +105,7 @@ bool SimpleShear::generate(std::string& /*message*/)
 	// to use a text file :
 	// 	std::pair<string,bool> res=ImportCloud(sphere_list,filename);
 
-	vector<BasicSphere>::iterator it     = sphere_list.begin();
+	vector<BasicSphere>::iterator it = sphere_list.begin();
 	vector<BasicSphere>::iterator it_end = sphere_list.end();
 
 	shared_ptr<Body> body;
@@ -119,31 +119,31 @@ bool SimpleShear::generate(std::string& /*message*/)
 
 void SimpleShear::createSphere(shared_ptr<Body>& body, Vector3r position, Real radius)
 {
-	body            = shared_ptr<Body>(new Body);
+	body = shared_ptr<Body>(new Body);
 	body->groupMask = 1;
 	shared_ptr<FrictMat> mat(new FrictMat);
 	shared_ptr<Aabb>     aabb(new Aabb);
 	shared_ptr<Sphere>   iSphere(new Sphere);
 
-	body->state->pos    = position;
-	body->state->ori    = Quaternionr::Identity();
-	body->state->vel    = Vector3r(0, 0, 0);
+	body->state->pos = position;
+	body->state->ori = Quaternionr::Identity();
+	body->state->vel = Vector3r(0, 0, 0);
 	body->state->angVel = Vector3r(0, 0, 0);
 
-	Real masse           = 4.0 / 3.0 * Mathr::PI * radius * radius * radius * density;
-	body->state->mass    = masse;
+	Real masse = 4.0 / 3.0 * Mathr::PI * radius * radius * radius * density;
+	body->state->mass = masse;
 	body->state->inertia = Vector3r(2.0 / 5.0 * masse * radius * radius, 2.0 / 5.0 * masse * radius * radius, 2.0 / 5.0 * masse * radius * radius);
 
-	mat->young         = matYoungModulus;
-	mat->poisson       = matPoissonRatio;
+	mat->young = matYoungModulus;
+	mat->poisson = matPoissonRatio;
 	mat->frictionAngle = matFrictionDeg * Mathr::PI / 180.0;
-	body->material     = mat;
+	body->material = mat;
 
 	aabb->color = Vector3r(0, 1, 0);
 
 	iSphere->radius = radius;
-	iSphere->color  = ((int)(floor(8 * position.x() / length))) % 2 ? Vector3r(0.7, 0.7, 0.7)
-	                                                                : Vector3r(0.45, 0.45, 0.45); // so that we have eight different colour bands
+	iSphere->color = ((int)(floor(8 * position.x() / length))) % 2 ? Vector3r(0.7, 0.7, 0.7)
+	                                                               : Vector3r(0.45, 0.45, 0.45); // so that we have eight different colour bands
 
 	body->shape = iSphere;
 	body->bound = aabb;
@@ -152,7 +152,7 @@ void SimpleShear::createSphere(shared_ptr<Body>& body, Vector3r position, Real r
 
 void SimpleShear::createBox(shared_ptr<Body>& body, Vector3r position, Vector3r extents)
 {
-	body            = shared_ptr<Body>(new Body);
+	body = shared_ptr<Body>(new Body);
 	body->groupMask = 1;
 	shared_ptr<FrictMat> mat(new FrictMat);
 	shared_ptr<Aabb>     aabb(new Aabb);
@@ -163,15 +163,15 @@ void SimpleShear::createBox(shared_ptr<Body>& body, Vector3r position, Vector3r 
 	body->setDynamic(false);
 
 	body->state->angVel = Vector3r(0, 0, 0);
-	body->state->vel    = Vector3r(0, 0, 0);
+	body->state->vel = Vector3r(0, 0, 0);
 	// 	NB : mass and inertia not defined because not used, since Box are not dynamics
 	body->state->pos = position;
 	body->state->ori = Quaternionr::Identity();
 
-	mat->young         = matYoungModulus;
-	mat->poisson       = matPoissonRatio;
+	mat->young = matYoungModulus;
+	mat->poisson = matPoissonRatio;
 	mat->frictionAngle = 0.0; //default value, modified after for w2 and w4 to have good values of phi(sphere-walls)
-	body->material     = mat;
+	body->material = mat;
 
 	aabb->color = Vector3r(1, 0, 0);
 
@@ -181,7 +181,7 @@ void SimpleShear::createBox(shared_ptr<Body>& body, Vector3r position, Vector3r 
 	gBox->shadowCaster		= false;*/
 
 	iBox->extents = extents;
-	iBox->color   = Vector3r(1, 0, 0);
+	iBox->color = Vector3r(1, 0, 0);
 
 	body->bound = aabb;
 	body->shape = iBox;
@@ -209,17 +209,17 @@ void SimpleShear::createActors(shared_ptr<Scene>& scene)
 
 	shared_ptr<GlobalStiffnessTimeStepper> globalStiffnessTimeStepper(new GlobalStiffnessTimeStepper);
 	globalStiffnessTimeStepper->timeStepUpdateInterval = timeStepUpdateInterval;
-	globalStiffnessTimeStepper->defaultDt              = 3e-6;
+	globalStiffnessTimeStepper->defaultDt = 3e-6;
 
 	shared_ptr<KinemCTDEngine> kinemEngine(new KinemCTDEngine);
-	kinemEngine->compSpeed   = 10.0;
+	kinemEngine->compSpeed = 10.0;
 	kinemEngine->targetSigma = 2000.0;
 
 
 	shared_ptr<InteractionLoop> ids(new InteractionLoop);
 	ids->geomDispatcher = interactionGeometryDispatcher;
 	ids->physDispatcher = interactionPhysicsDispatcher;
-	ids->lawDispatcher  = shared_ptr<LawDispatcher>(new LawDispatcher);
+	ids->lawDispatcher = shared_ptr<LawDispatcher>(new LawDispatcher);
 	shared_ptr<Law2_ScGeom_FrictPhys_CundallStrack> ldc(new Law2_ScGeom_FrictPhys_CundallStrack);
 	ids->lawDispatcher->add(ldc);
 
@@ -238,8 +238,8 @@ void SimpleShear::createActors(shared_ptr<Scene>& scene)
 string SimpleShear::GenerateCloud(vector<BasicSphere>& sphere_list, Vector3r lowerCorner, Vector3r upperCorner, long number, Real rad_std_dev, Real porosity)
 {
 	sphere_list.clear();
-	long     tries       = 1000; //nb max of tries for positionning the next sphere
-	Vector3r dimensions  = upperCorner - lowerCorner;
+	long     tries = 1000; //nb max of tries for positionning the next sphere
+	Vector3r dimensions = upperCorner - lowerCorner;
 	Real     mean_radius = pow(dimensions.x() * dimensions.y() * dimensions.z() * (1 - porosity) / (4.0 / 3.0 * Mathr::PI * number), 1.0 / 3.0);
 	cerr << " mean radius " << mean_radius << endl;
 	;
@@ -250,10 +250,10 @@ string SimpleShear::GenerateCloud(vector<BasicSphere>& sphere_list, Vector3r low
 	for (i = 0; i < number; ++i) {
 		BasicSphere s;
 		for (t = 0; t < tries; ++t) {
-			s.second     = (math::unitRandom() - 0.5) * rad_std_dev * mean_radius + mean_radius;
-			s.first.x()  = lowerCorner.x() + s.second + (dimensions.x() - 2 * s.second) * math::unitRandom();
-			s.first.y()  = lowerCorner.y() + s.second + (dimensions.y() - 2 * s.second) * math::unitRandom();
-			s.first.z()  = lowerCorner.z() + s.second + (dimensions.z() - 2 * s.second) * math::unitRandom();
+			s.second = (math::unitRandom() - 0.5) * rad_std_dev * mean_radius + mean_radius;
+			s.first.x() = lowerCorner.x() + s.second + (dimensions.x() - 2 * s.second) * math::unitRandom();
+			s.first.y() = lowerCorner.y() + s.second + (dimensions.y() - 2 * s.second) * math::unitRandom();
+			s.first.z() = lowerCorner.z() + s.second + (dimensions.z() - 2 * s.second) * math::unitRandom();
 			bool overlap = false;
 			for (long j = 0; (j < i && !overlap); j++)
 				if (pow(sphere_list[j].second + s.second, 2) > (sphere_list[j].first - s.first).squaredNorm()) overlap = true;

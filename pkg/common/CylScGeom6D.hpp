@@ -37,9 +37,9 @@ public:
 	{
 		initialOrientation1 = rbp1.ori;
 		initialOrientation2 = rbp2.ori;
-		twist               = 0;
-		bending             = Vector3r::Zero();
-		twistCreep          = Quaternionr(1.0, 0.0, 0.0, 0.0);
+		twist = 0;
+		bending = Vector3r::Zero();
+		twistCreep = Quaternionr(1.0, 0.0, 0.0, 0.0);
 	}
 	State fictiousState;
 	// clang-format off

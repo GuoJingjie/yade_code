@@ -44,14 +44,14 @@ void Clump::add(const shared_ptr<Body>& clumpBody, const shared_ptr<Body>& subBo
 			Scene*                  scene(Omega::instance().getScene().get()); // get scene
 			const shared_ptr<Body>& member = Body::byId(memberId, scene);
 			assert(member->isClumpMember());
-			member->clumpId          = clumpBody->id;
+			member->clumpId = clumpBody->id;
 			clump->members[memberId] = Se3r(); // meaningful values will be put in by Clump::updateProperties
 			                                   //LOG_DEBUG("Added body #"<<memberId->id<<" to clump #"<<clumpBody->id);
 		}
 		//LOG_DEBUG("Clump #"<<subClump->id<<" will be erased.");// see addToClump() in yadeWrapper.cpp
 	} else {                                // subBody must be a standalone!
 		clump->members[subId] = Se3r(); // meaningful values will be put in by Clump::updateProperties
-		subBody->clumpId      = clumpBody->id;
+		subBody->clumpId = clumpBody->id;
 	}
 	clumpBody->clumpId = clumpBody->id; // just to make sure
 	clumpBody->setBounded(false);       // disallow collisions with the clump itself
@@ -74,11 +74,11 @@ void Clump::addForceTorqueFromMembers(const State* clumpState, Scene* scene, Vec
 {
 	for (const auto& mm : members) {
 		const Body::id_t&       memberId = mm.first;
-		const shared_ptr<Body>& member   = Body::byId(memberId, scene);
+		const shared_ptr<Body>& member = Body::byId(memberId, scene);
 		assert(member->isClumpMember());
 		State*          memberState = member->state.get();
-		const Vector3r& f           = scene->forces.getForce(memberId);
-		const Vector3r& t           = scene->forces.getTorque(memberId);
+		const Vector3r& f = scene->forces.getForce(memberId);
+		const Vector3r& t = scene->forces.getTorque(memberId);
 		F += f;
 		T += t + (memberState->pos - clumpState->pos).cross(f);
 	}
@@ -114,7 +114,7 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 	// trivial case
 	if (clump->members.size() == 1) {
 		LOG_DEBUG("Clump of size one will be treated specially.")
-		MemberMap::iterator I       = clump->members.begin();
+		MemberMap::iterator I = clump->members.begin();
 		shared_ptr<Body>    subBody = Body::byId(I->first);
 		//const shared_ptr<RigidBodyParameters>& subRBP(YADE_PTR_CAST<RigidBodyParameters>(subBody->physicalParameters));
 		State* subState = subBody->state.get();
@@ -122,12 +122,12 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 		state->pos = subState->pos;
 		state->ori = subState->ori;
 		// relative member's se3 is identity
-		I->second.position    = Vector3r::Zero();
+		I->second.position = Vector3r::Zero();
 		I->second.orientation = Quaternionr::Identity();
-		state->inertia        = subState->inertia;
-		state->mass           = subState->mass;
-		state->vel            = Vector3r::Zero();
-		state->angVel         = Vector3r::Zero();
+		state->inertia = subState->inertia;
+		state->mass = subState->mass;
+		state->vel = Vector3r::Zero();
+		state->angVel = Vector3r::Zero();
 		return;
 	}
 	//check for intersections:
@@ -141,10 +141,10 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 				const shared_ptr<Body> subBody2 = Body::byId(mmm.first);
 				if ((subBody1->shape->getClassIndex() == Sph_Index) && (subBody2->shape->getClassIndex() == Sph_Index)
 				    && (subBody1 != subBody2)) { //clump members should be spheres
-					Vector3r      dist    = subBody1->state->pos - subBody2->state->pos;
+					Vector3r      dist = subBody1->state->pos - subBody2->state->pos;
 					const Sphere* sphere1 = YADE_CAST<Sphere*>(subBody1->shape.get());
 					const Sphere* sphere2 = YADE_CAST<Sphere*>(subBody2->shape.get());
-					Real          un      = (sphere1->radius + sphere2->radius) - dist.norm();
+					Real          un = (sphere1->radius + sphere2->radius) - dist.norm();
 					if (un > 0.001 * min(sphere1->radius, sphere2->radius)) {
 						intersecting = true;
 						break;
@@ -159,7 +159,7 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 		s: local subBody's coordinates
 		c: local clump coordinates
 	*/
-	Real     M    = 0;                                   // mass
+	Real     M = 0;                                      // mass
 	Real     dens = 0;                                   //density
 	Vector3r Sg(0, 0, 0);                                // static moment, for getting clump's centroid
 	Matrix3r Ig(Matrix3r::Zero()), Ic(Matrix3r::Zero()); // tensors of inertia; is upper triangular, zeros instead of symmetric elements
@@ -182,8 +182,8 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 		Real rMin = min(aabb.diagonal()[0], min(aabb.diagonal()[1], aabb.diagonal()[2]));
 
 		//get volume and inertia tensor using regular cubic cell array inside bounding box of the clump:
-		Real dx     = rMin / discretization; //edge length of cell
-		Real dv     = pow(dx, 3);            //volume of cell
+		Real dx = rMin / discretization; //edge length of cell
+		Real dv = pow(dx, 3);            //volume of cell
 		long nCells = long(math::round((aabb.sizes() / dx).prod()));
 		if (nCells > 1e7) LOG_WARN("Clump::updateProperties: Cell array has " << nCells << " cells. Integrate inertia may take a while ...");
 		Vector3r x; //position vector (center) of cell
@@ -193,7 +193,7 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 					for (const auto& mm : clump->members) {
 						const shared_ptr<Body> subBody = Body::byId(mm.first);
 						if (subBody->shape->getClassIndex() == Sph_Index) { //clump member should be a sphere
-							dens                 = subBody->material->density;
+							dens = subBody->material->density;
 							const Sphere* sphere = YADE_CAST<Sphere*>(subBody->shape.get());
 							if ((x - subBody->state->pos).squaredNorm() < pow(sphere->radius, 2)) {
 								Real m = dens * dv;
@@ -217,22 +217,22 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 		for (const auto& mm : clump->members) {
 			// mm.first is Body::id_t, mm.second is Se3r of that body
 			const shared_ptr<Body> subBody = Body::byId(mm.first);
-			dens                           = subBody->material->density;
+			dens = subBody->material->density;
 			if (subBody->shape->getClassIndex() == Sph_Index) { //clump member should be a sphere
 				State*        subState = subBody->state.get();
-				const Sphere* sphere   = YADE_CAST<Sphere*>(subBody->shape.get());
-				Real          vol      = (4. / 3.) * Mathr::PI * pow(sphere->radius, 3.);
-				Real          m        = dens * vol;
+				const Sphere* sphere = YADE_CAST<Sphere*>(subBody->shape.get());
+				Real          vol = (4. / 3.) * Mathr::PI * pow(sphere->radius, 3.);
+				Real          m = dens * vol;
 				M += m;
 				Sg += m * subState->pos;
 				Ig += Clump::inertiaTensorTranslate(
 				        Vector3r::Constant((2 / 5.) * m * pow(sphere->radius, 2)).asDiagonal(), m, -1. * subState->pos);
 			} else { // non-spherical bodies
 				State*             subState = subBody->state.get();
-				const Real&        m        = subState->mass;
-				const Vector3r&    inertia  = subState->inertia;
-				const Vector3r&    pos      = subState->pos;
-				const Quaternionr& ori      = subState->ori;
+				const Real&        m = subState->mass;
+				const Vector3r&    inertia = subState->inertia;
+				const Vector3r&    pos = subState->pos;
+				const Quaternionr& ori = subState->ori;
 				M += m;
 				Sg += m * pos;
 				Ig += inertiaTensorTranslate(inertiaTensorRotate(inertia.asDiagonal(), ori), m, -pos);
@@ -258,7 +258,7 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 	state->ori = Quaternionr(R_g2c);
 	state->ori.normalize();
 	state->inertia = decomposed.eigenvalues();
-	state->mass    = M;
+	state->mass = M;
 
 	// TODO: these might be calculated from members... but complicated... - someone needs that?!
 	state->vel = state->angVel = Vector3r::Zero();
@@ -266,10 +266,10 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 
 	// update subBodySe3s; subtract clump orientation (=apply its inverse first) to subBody's orientation
 	for (auto& I : clump->members) {
-		shared_ptr<Body> subBody  = Body::byId(I.first);
+		shared_ptr<Body> subBody = Body::byId(I.first);
 		State*           subState = subBody->state.get();
-		I.second.orientation      = state->ori.conjugate() * subState->ori;
-		I.second.position         = state->ori.conjugate() * (subState->pos - state->pos);
+		I.second.orientation = state->ori.conjugate() * subState->ori;
+		I.second.position = state->ori.conjugate() * (subState->pos - state->pos);
 	}
 }
 
@@ -285,7 +285,7 @@ void Clump::updatePropertiesNonSpherical(const shared_ptr<Body>& clumpBody, bool
 	// trivial case
 	if (clump->members.size() == 1) {
 		LOG_DEBUG("Clump of size one will be treated specially.")
-		MemberMap::iterator I       = clump->members.begin();
+		MemberMap::iterator I = clump->members.begin();
 		shared_ptr<Body>    subBody = Body::byId(I->first, rb);
 		//const shared_ptr<RigidBodyParameters>& subRBP(YADE_PTR_CAST<RigidBodyParameters>(subBody->physicalParameters));
 		State* subState = subBody->state.get();
@@ -293,12 +293,12 @@ void Clump::updatePropertiesNonSpherical(const shared_ptr<Body>& clumpBody, bool
 		state->pos = subState->pos;
 		state->ori = subState->ori;
 		// relative member's se3 is identity
-		I->second.position    = Vector3r::Zero();
+		I->second.position = Vector3r::Zero();
 		I->second.orientation = Quaternionr::Identity();
-		state->inertia        = subState->inertia;
-		state->mass           = subState->mass;
-		state->vel            = Vector3r::Zero();
-		state->angVel         = Vector3r::Zero();
+		state->inertia = subState->inertia;
+		state->mass = subState->mass;
+		state->vel = Vector3r::Zero();
+		state->angVel = Vector3r::Zero();
 		return;
 	}
 
@@ -320,14 +320,14 @@ void Clump::updatePropertiesNonSpherical(const shared_ptr<Body>& clumpBody, bool
 	if (!intersecting) {
 		for (const auto& I : clump->members) {
 			// I.first is Body::id_t, I.second is Se3r of that body
-			shared_ptr<Body> subBody  = Body::byId(I.first, rb);
+			shared_ptr<Body> subBody = Body::byId(I.first, rb);
 			State*           subState = subBody->state.get();
 			M += subState->mass;
 			Sg += subState->mass * subState->pos;
 			// transform from local to global coords
 			Quaternionr subState_ori_conjugate = subState->ori.conjugate();
-			Matrix3r    Imatrix                = Matrix3r::Zero();
-			Imatrix.diagonal()                 = subState->inertia;
+			Matrix3r    Imatrix = Matrix3r::Zero();
+			Imatrix.diagonal() = subState->inertia;
 			// TRWM3MAT(Imatrix); TRWM3QUAT(subRBP_orientation_conjugate);
 			Ig += Clump::inertiaTensorTranslate(Clump::inertiaTensorRotate(Imatrix, subState_ori_conjugate), subState->mass, -1. * subState->pos);
 			//TRWM3MAT(Clump::inertiaTensorRotate(Matrix3r(subRBP->inertia),subRBP_orientation_conjugate));
@@ -358,7 +358,7 @@ void Clump::updatePropertiesNonSpherical(const shared_ptr<Body>& clumpBody, bool
 	state->ori.normalize();
 	// now Ic is diagonal
 	state->inertia = Ic.diagonal();
-	state->mass    = M;
+	state->mass = M;
 
 
 	// this block will be removed once EigenDecomposition works for diagonal matrices
@@ -379,9 +379,9 @@ void Clump::updatePropertiesNonSpherical(const shared_ptr<Body>& clumpBody, bool
 		// now, I->first is Body::id_t, I->second is Se3r of that body
 		shared_ptr<Body> subBody = Body::byId(I.first, rb);
 		//const shared_ptr<RigidBodyParameters>& subRBP(YADE_PTR_CAST<RigidBodyParameters>(subBody->physicalParameters));
-		State* subState      = subBody->state.get();
+		State* subState = subBody->state.get();
 		I.second.orientation = state->ori.conjugate() * subState->ori;
-		I.second.position    = state->ori.conjugate() * (subState->pos - state->pos);
+		I.second.position = state->ori.conjugate() * (subState->pos - state->pos);
 	}
 }
 
@@ -395,7 +395,7 @@ void Clump::updatePropertiesNonSpherical(const shared_ptr<Body>& clumpBody, bool
 	// trivial case
 	if (clump->members.size() == 1) {
 		LOG_DEBUG("Clump of size one will be treated specially.")
-		MemberMap::iterator I       = clump->members.begin();
+		MemberMap::iterator I = clump->members.begin();
 		shared_ptr<Body>    subBody = Body::byId(I->first);
 		//const shared_ptr<RigidBodyParameters>& subRBP(YADE_PTR_CAST<RigidBodyParameters>(subBody->physicalParameters));
 		State* subState = subBody->state.get();
@@ -403,12 +403,12 @@ void Clump::updatePropertiesNonSpherical(const shared_ptr<Body>& clumpBody, bool
 		state->pos = subState->pos;
 		state->ori = subState->ori;
 		// relative member's se3 is identity
-		I->second.position    = Vector3r::Zero();
+		I->second.position = Vector3r::Zero();
 		I->second.orientation = Quaternionr::Identity();
-		state->inertia        = subState->inertia;
-		state->mass           = subState->mass;
-		state->vel            = Vector3r::Zero();
-		state->angVel         = Vector3r::Zero();
+		state->inertia = subState->inertia;
+		state->mass = subState->mass;
+		state->vel = Vector3r::Zero();
+		state->angVel = Vector3r::Zero();
 		return;
 	}
 
@@ -430,14 +430,14 @@ void Clump::updatePropertiesNonSpherical(const shared_ptr<Body>& clumpBody, bool
 	if (!intersecting) {
 		for (const auto& I : clump->members) {
 			// I.first is Body::id_t, I.second is Se3r of that body
-			shared_ptr<Body> subBody  = Body::byId(I.first);
+			shared_ptr<Body> subBody = Body::byId(I.first);
 			State*           subState = subBody->state.get();
 			M += subState->mass;
 			Sg += subState->mass * subState->pos;
 			// transform from local to global coords
 			Quaternionr subState_ori_conjugate = subState->ori.conjugate();
-			Matrix3r    Imatrix                = Matrix3r::Zero();
-			Imatrix.diagonal()                 = subState->inertia;
+			Matrix3r    Imatrix = Matrix3r::Zero();
+			Imatrix.diagonal() = subState->inertia;
 			// TRWM3MAT(Imatrix); TRWM3QUAT(subRBP_orientation_conjugate);
 			Ig += Clump::inertiaTensorTranslate(Clump::inertiaTensorRotate(Imatrix, subState_ori_conjugate), subState->mass, -1. * subState->pos);
 			//TRWM3MAT(Clump::inertiaTensorRotate(Matrix3r(subRBP->inertia),subRBP_orientation_conjugate));
@@ -468,7 +468,7 @@ void Clump::updatePropertiesNonSpherical(const shared_ptr<Body>& clumpBody, bool
 	state->ori.normalize();
 	// now Ic is diagonal
 	state->inertia = Ic.diagonal();
-	state->mass    = M;
+	state->mass = M;
 
 
 	// this block will be removed once EigenDecomposition works for diagonal matrices
@@ -489,9 +489,9 @@ void Clump::updatePropertiesNonSpherical(const shared_ptr<Body>& clumpBody, bool
 		// now, I->first is Body::id_t, I->second is Se3r of that body
 		shared_ptr<Body> subBody = Body::byId(I.first);
 		//const shared_ptr<RigidBodyParameters>& subRBP(YADE_PTR_CAST<RigidBodyParameters>(subBody->physicalParameters));
-		State* subState      = subBody->state.get();
+		State* subState = subBody->state.get();
 		I.second.orientation = state->ori.conjugate() * subState->ori;
-		I.second.position    = state->ori.conjugate() * (subState->pos - state->pos);
+		I.second.position = state->ori.conjugate() * (subState->pos - state->pos);
 	}
 }
 
@@ -508,10 +508,10 @@ void Clump::addNonSpherical(const shared_ptr<Body>& clumpBody, const shared_ptr<
 		                .c_str());
 
 	clump->members[subId] = Se3r(); // meaningful values will be put in by Clump::updateProperties
-	subBody->clumpId      = clumpBody->id;
-	clumpBody->clumpId    = clumpBody->id; // just to make sure
-	clumpBody->setBounded(false);          // disallow collisions with the clump itself
-	                                       //LOG_DEBUG("Added body #"<<subId<<" to clump #"<<getId());
+	subBody->clumpId = clumpBody->id;
+	clumpBody->clumpId = clumpBody->id; // just to make sure
+	clumpBody->setBounded(false);       // disallow collisions with the clump itself
+	                                    //LOG_DEBUG("Added body #"<<subId<<" to clump #"<<getId());
 }
 /*! @brief Recalculates inertia tensor of a body after translation away from (default) or towards its centroid.
  *

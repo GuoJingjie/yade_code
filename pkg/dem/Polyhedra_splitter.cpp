@@ -37,7 +37,7 @@ void getStressForEachBody(vector<Matrix3r>& bStresses)
 		if (!geom || !phys) continue;
 		Vector3r f = phys->normalForce + phys->shearForce;
 		//Sum f_i*l_j for each contact of each particle
-		const auto cP    = geom->contactPoint;
+		const auto cP = geom->contactPoint;
 		const auto posB1 = Body::byId(I->getId1(), scene)->state->pos;
 		const auto posB2 = Body::byId(I->getId2(), scene)->state->pos;
 		bStresses[I->getId1()] -= f * ((cP - posB1).transpose());
@@ -73,9 +73,9 @@ void PolyhedraSplitter::Symmetrize(Matrix3r& bStress)
 //split polyhedra
 void SplitPolyhedraDouble(const PSplitTwo& split)
 {
-	const auto&    b   = (get<0>(split));
-	const auto&    d1  = (get<1>(split));
-	const auto&    d2  = (get<2>(split));
+	const auto&    b = (get<0>(split));
+	const auto&    d1 = (get<1>(split));
+	const auto&    d2 = (get<2>(split));
 	const Se3r&    se3 = b->state->se3;
 	const Vector3r pnt = se3.position;
 
@@ -97,7 +97,7 @@ void PolyhedraSplitter::action()
 	}
 
 	const shared_ptr<Scene> _rb = shared_ptr<Scene>();
-	shared_ptr<Scene>       rb  = (_rb ? _rb : Omega::instance().getScene());
+	shared_ptr<Scene>       rb = (_rb ? _rb : Omega::instance().getScene());
 
 	vector<PSplitTwo> splitsV;
 	vector<Matrix3r>  bStresses(scene->bodies->size(), Matrix3r::Zero());
@@ -205,7 +205,7 @@ void SplitPolyTauMax::action()
 		}
 	}
 	for (auto s : splitsV) {
-		const auto b   = get<0>(s);
+		const auto b = get<0>(s);
 		const auto vec = get<1>(s);
 		//		Polyhedra* A = static_cast<Polyhedra*>(b->shape.get());  // commented out to remove warning about unused variable - Janek
 		//PrintPolyhedron(A->GetPolyhedron());
@@ -265,9 +265,9 @@ void SplitPolyMohrCoulomb::action()
 			const Vector3r eVals = es.eigenvalues() / p->GetVolume();
 
 			const auto V0 = m->GetWeiV0();
-			const auto V  = p->GetVolume();
-			const auto M  = m->GetWeiM();
-			const auto P  = m->GetP();
+			const auto V = p->GetVolume();
+			const auto M = m->GetWeiM();
+			const auto P = m->GetP();
 
 			unsigned int           S1_i = 0, S2_i = 0, S3_i = 0;
 			Real                   S1 = 0., S2 = 0., S3 = 0.;
@@ -278,14 +278,14 @@ void SplitPolyMohrCoulomb::action()
 			S3 = eVals.minCoeff(&S3_i);
 			inds.erase(S3_i);
 			S2_i = *inds.begin();
-			S2   = eVals[S2_i];
+			S2 = eVals[S2_i];
 
 			if ((m->GetStrengthSigmaCZ() > 0) && (m->GetStrengthSigmaCD() > 0)) {
 				//Split direction, tangential
-				const Real SigmaCZ    = m->GetStrengthSigmaCZ();
-				const Real SigmaCD    = m->GetStrengthSigmaCD();
+				const Real SigmaCZ = m->GetStrengthSigmaCZ();
+				const Real SigmaCD = m->GetStrengthSigmaCD();
 				bool       BodyBroken = false;
-				Real       SigmaV     = 0.;
+				Real       SigmaV = 0.;
 
 				//==================================
 				if (S1 <= 0 and S3 <= 0) {
@@ -331,9 +331,9 @@ void SplitPolyMohrCoulomb::action()
 	fileS.close();
 
 	for (auto s : splitsV) {
-		const auto       b   = get<0>(s);
+		const auto       b = get<0>(s);
 		const auto       vec = get<1>(s);
-		shared_ptr<Body> B2  = SplitPolyhedra(b, vec, b->state->pos);
+		shared_ptr<Body> B2 = SplitPolyhedra(b, vec, b->state->pos);
 	}
 }
 

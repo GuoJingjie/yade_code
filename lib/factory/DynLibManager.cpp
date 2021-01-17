@@ -44,7 +44,7 @@ bool DynLibManager::unload(const string& libName)
 
 bool DynLibManager::unloadAll()
 {
-	std::map<const string, void*>::iterator ith    = handles.begin();
+	std::map<const string, void*>::iterator ith = handles.begin();
 	std::map<const string, void*>::iterator ithEnd = handles.end();
 	for (; ith != ithEnd; ++ith)
 		if ((*ith).first.length() != 0) unload((*ith).first);

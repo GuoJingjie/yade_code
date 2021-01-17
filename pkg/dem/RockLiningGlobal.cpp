@@ -59,8 +59,8 @@ void RockLiningGlobal::action()
 		Real angleInterval = 2.0 * PI / static_cast<Real>(totalNodes);
 		for (int n = 0; n < totalNodes; n++) {
 			Real     currentAngle = 0.0 + n * angleInterval; /* from 0 degrees east */
-			Real     unitX        = cos(currentAngle);
-			Real     unitY        = sin(currentAngle);
+			Real     unitX = cos(currentAngle);
+			Real     unitY = sin(currentAngle);
 			Vector3r searchDir(unitX, 0, unitY);
 
 			vector<Real> distanceFrOpening;
@@ -82,12 +82,12 @@ void RockLiningGlobal::action()
 			}
 
 			/* find closest block */
-			int  totalBlocks     = IDs.size();
+			int  totalBlocks = IDs.size();
 			Real closestDistance = 100000.0;
-			int  closestID       = 0;
+			int  closestID = 0;
 			for (int i = 0; i < totalBlocks; i++) {
 				if (distanceFrOpening[i] < closestDistance) {
-					closestID       = IDs[i];
+					closestID = IDs[i];
 					closestDistance = distanceFrOpening[i];
 				}
 			}
@@ -98,9 +98,9 @@ void RockLiningGlobal::action()
 
 			/* find intersection with edges of polygon */
 			Vector3r        jointIntersection(0, 0, 0);
-			State*          state1      = Body::byId(closestID, scene)->state.get();
-			Shape*          shape1      = Body::byId(closestID, scene)->shape.get();
-			PotentialBlock* pb          = static_cast<PotentialBlock*>(shape1);
+			State*          state1 = Body::byId(closestID, scene)->state.get();
+			Shape*          shape1 = Body::byId(closestID, scene)->shape.get();
+			PotentialBlock* pb = static_cast<PotentialBlock*>(shape1);
 			int             totalPlanes = pb->a.size();
 			//int intersectNo = 0;
 			Vector3r nodeLocalPos(0, 0, 0);
@@ -108,14 +108,14 @@ void RockLiningGlobal::action()
 			//std::cout<<"totalPlanes: "<<totalPlanes<<endl;
 			Real closestPlaneDist = 1000000;
 			for (int i = 0; i < totalPlanes; i++) {
-				Vector3r plane  = state1->ori * Vector3r(pb->a[i], pb->b[i], pb->c[i]);
+				Vector3r plane = state1->ori * Vector3r(pb->a[i], pb->b[i], pb->c[i]);
 				Real     planeD = plane.dot(state1->pos) + pb->d[i] + pb->r;
 				if (intersectPlane(pb, state1, startingPoint, searchDir, outerRadius, jointIntersection, plane, planeD)) {
 					Real distance = jointIntersection.norm();
 					if (distance < closestPlaneDist) {
 						closestPlaneDist = distance;
-						nodeLocalPos     = state1->ori.conjugate() * (jointIntersection - state1->pos);
-						nodeGlobalPos    = jointIntersection;
+						nodeLocalPos = state1->ori.conjugate() * (jointIntersection - state1->pos);
+						nodeGlobalPos = jointIntersection;
 					}
 				}
 			}
@@ -151,7 +151,7 @@ void RockLiningGlobal::action()
 			Vector3r localDir = refPos[nextID] - refPos[n];
 			localDir.normalize();
 			refDir.push_back(localDir);
-			Real     angle     = acos(localDir.dot(Vector3r(1, 0, 0)));
+			Real     angle = acos(localDir.dot(Vector3r(1, 0, 0)));
 			Vector3r signAngle = Vector3r(1, 0.0, 0).cross(localDir);
 
 			if (signAngle.dot(Vector3r(0, -1.0, 0)) < 0.0) { angle = 2.0 * PI - angle; }
@@ -171,7 +171,7 @@ void RockLiningGlobal::action()
 		for (int j = 0; j < blockNo; j++) {
 			axialForces[j] = 0.0;
 			shearForces[j] = 0.0;
-			moment[j]      = 0.0;
+			moment[j] = 0.0;
 		}
 
 		for (int j = 0; j < blockNo; j++) {
@@ -179,10 +179,10 @@ void RockLiningGlobal::action()
 			if (nextNode == blockNo) { nextNode = 0; }
 			State*      state1 = Body::byId(blockIDs[j], scene)->state.get();
 			State*      state2 = Body::byId(blockIDs[nextNode], scene)->state.get();
-			Quaternionr qA     = (state1->ori);
+			Quaternionr qA = (state1->ori);
 			Real        thetaA = 2.0 * acos(qA.w());
 			if (qA.y() < 0.0) { thetaA = -thetaA; }
-			Quaternionr qB     = (state2->ori);
+			Quaternionr qB = (state2->ori);
 			Real        thetaB = 2.0 * acos(qB.w());
 			if (qB.y() < 0.0) { thetaB = -thetaB; }
 
@@ -192,36 +192,36 @@ void RockLiningGlobal::action()
 			//Vector3r tempForceGlobal = Vector3r(temperatureForce*cos(refAngle[j] ) , 0.0,-temperatureForce*sin(refAngle[j] ) ) ; //Ttranspose
 
 			Vector3r globalDispA = state1->pos - refPos[j];
-			Real     localXa     = globalDispA.x() * cos(deformedAngle) + globalDispA.z() * sin(deformedAngle);
-			Real     localYa     = -globalDispA.x() * sin(deformedAngle) + globalDispA.z() * cos(deformedAngle);
+			Real     localXa = globalDispA.x() * cos(deformedAngle) + globalDispA.z() * sin(deformedAngle);
+			Real     localYa = -globalDispA.x() * sin(deformedAngle) + globalDispA.z() * cos(deformedAngle);
 			Vector3r globalDispB = state2->pos - refPos[nextNode];
-			Real     localXb     = globalDispB.x() * cos(deformedAngle) + globalDispB.z() * sin(deformedAngle);
-			Real     localYb     = -globalDispB.x() * sin(deformedAngle) + globalDispB.z() * cos(deformedAngle);
+			Real     localXb = globalDispB.x() * cos(deformedAngle) + globalDispB.z() * sin(deformedAngle);
+			Real     localYb = -globalDispB.x() * sin(deformedAngle) + globalDispB.z() * cos(deformedAngle);
 
 			axialForces[j] = EA / lengthNode[j] * (localXa - localXb);
 			shearForces[j] = 12.0 * EI / (pow(lengthNode[j], 3)) * (localYa - localYb) - 6.0 * EI / (pow(lengthNode[j], 2)) * (thetaA + thetaB);
-			moment[j]      = -6.0 * EI / (pow(lengthNode[j], 2)) * (localYa - localYb) + 2.0 * EI / lengthNode[j] * (2.0 * thetaA + thetaB);
+			moment[j] = -6.0 * EI / (pow(lengthNode[j], 2)) * (localYa - localYb) + 2.0 * EI / lengthNode[j] * (2.0 * thetaA + thetaB);
 
 			Real globalForceX = axialForces[j] * cos(deformedAngle) - shearForces[j] * sin(deformedAngle);
 			Real globalForceZ = axialForces[j] * sin(deformedAngle) + shearForces[j] * cos(deformedAngle);
 
 			Vector3r totalForceA = Vector3r(globalForceX, 0.0, globalForceZ);
-			Vector3r torqueA     = moment[j] * Vector3r(0, 1, 0);
+			Vector3r torqueA = moment[j] * Vector3r(0, 1, 0);
 
 			Real axialForcesB = EA / lengthNode[j] * (localXb - localXa);
 			Real shearForcesB = -12.0 * EI / (pow(lengthNode[j], 3)) * (localYa - localYb) + 6.0 * EI / (pow(lengthNode[j], 2)) * (thetaA + thetaB);
-			Real momentB      = -6.0 * EI / (pow(lengthNode[j], 2)) * (localYa - localYb) + 2.0 * EI / lengthNode[j] * (thetaA + 2.0 * thetaB);
-			Real globalForceXb   = axialForcesB * cos(deformedAngle) - shearForcesB * sin(deformedAngle);
-			Real globalForceZb   = axialForcesB * sin(deformedAngle) + shearForcesB * cos(deformedAngle);
+			Real momentB = -6.0 * EI / (pow(lengthNode[j], 2)) * (localYa - localYb) + 2.0 * EI / lengthNode[j] * (thetaA + 2.0 * thetaB);
+			Real globalForceXb = axialForcesB * cos(deformedAngle) - shearForcesB * sin(deformedAngle);
+			Real globalForceZb = axialForcesB * sin(deformedAngle) + shearForcesB * cos(deformedAngle);
 			Vector3r totalForceB = Vector3r(globalForceXb, 0.0, globalForceZb);
-			Vector3r torqueB     = momentB * Vector3r(0, 1, 0);
+			Vector3r torqueB = momentB * Vector3r(0, 1, 0);
 
-			Real area             = liningThickness * 1.0;
-			sigmaMax[j]           = axialForces[j] / area + fabs(moment[j]) * (2.0 * liningThickness) / Inertia;
-			sigmaMin[j]           = axialForces[j] / area - fabs(moment[j]) * (2.0 * liningThickness) / Inertia;
+			Real area = liningThickness * 1.0;
+			sigmaMax[j] = axialForces[j] / area + fabs(moment[j]) * (2.0 * liningThickness) / Inertia;
+			sigmaMin[j] = axialForces[j] / area - fabs(moment[j]) * (2.0 * liningThickness) / Inertia;
 			Real displacementSign = (state1->pos - refPos[j]).dot(refPos[j]);
-			displacement[j]       = math::sign(displacementSign) * (state1->pos - refPos[j]).norm();
-			Vector3r dir          = refPos[j];
+			displacement[j] = math::sign(displacementSign) * (state1->pos - refPos[j]).norm();
+			Vector3r dir = refPos[j];
 			dir.normalize();
 			radialDisplacement[j] = (state1->pos - refPos[j]).dot(dir);
 
@@ -330,13 +330,13 @@ void RockLiningGlobal::action()
 
 	//#if 0
 	if ((scene->iter - vtkRefTimeStep) % vtkIteratorInterval == 0 && installed == true && blockIDs.size() >= 2) {
-		vtkRefTimeStep                                  = scene->iter;
+		vtkRefTimeStep = scene->iter;
 		vtkSmartPointer<vtkAppendPolyData> appendFilter = vtkSmartPointer<vtkAppendPolyData>::New();
-		int                                blockNo      = blockIDs.size();
+		int                                blockNo = blockIDs.size();
 
 		/// lining FORCE //
-		vtkSmartPointer<vtkPointsReal> liningNode        = vtkSmartPointer<vtkPointsReal>::New();
-		vtkSmartPointer<vtkCellArray>  liningNodeCells   = vtkSmartPointer<vtkCellArray>::New();
+		vtkSmartPointer<vtkPointsReal> liningNode = vtkSmartPointer<vtkPointsReal>::New();
+		vtkSmartPointer<vtkCellArray>  liningNodeCells = vtkSmartPointer<vtkCellArray>::New();
 		vtkSmartPointer<vtkFloatArray> liningNodalMoment = vtkSmartPointer<vtkFloatArray>::New();
 		liningNodalMoment->SetNumberOfComponents(3);
 		liningNodalMoment->SetName("lining Moment"); //Linear velocity in Vector3 form
@@ -361,13 +361,13 @@ void RockLiningGlobal::action()
 			if (nextID == blockNo) { nextID = 0; }
 			State*          state1 = Body::byId(blockIDs[i], scene)->state.get();
 			State*          state2 = Body::byId(blockIDs[nextID], scene)->state.get();
-			PotentialBlock* pb     = static_cast<PotentialBlock*>(Body::byId(blockIDs[i], scene)->shape.get());
+			PotentialBlock* pb = static_cast<PotentialBlock*>(Body::byId(blockIDs[i], scene)->shape.get());
 
 			Vector3r                       globalPoint1 = state1->pos;
 			Vector3r                       globalPoint2 = state2->pos;
-			vtkSmartPointer<vtkLineSource> lineSource   = vtkSmartPointer<vtkLineSource>::New();
-			Real                           p0[3]        = { globalPoint1[0], globalPoint1[1], globalPoint1[2] };
-			Real                           p1[3]        = { globalPoint2[0], globalPoint2[1], globalPoint2[2] };
+			vtkSmartPointer<vtkLineSource> lineSource = vtkSmartPointer<vtkLineSource>::New();
+			Real                           p0[3] = { globalPoint1[0], globalPoint1[1], globalPoint1[2] };
+			Real                           p1[3] = { globalPoint2[0], globalPoint2[1], globalPoint2[2] };
 			lineSource->SetPoint1(p0);
 			lineSource->SetPoint2(p1);
 			appendFilter->AddInputConnection(lineSource->GetOutputPort());
@@ -375,30 +375,30 @@ void RockLiningGlobal::action()
 			/* try to draw forces */
 			vtkIdType pid[1];
 			Vector3r  midPoint = globalPoint1; //  0.5*(globalPoint1+globalPoint2);
-			pid[0]             = liningNode->InsertNextPoint(midPoint);
+			pid[0] = liningNode->InsertNextPoint(midPoint);
 			liningNodeCells->InsertNextCell(1, pid);
 			Vector3r plotDirection = midPoint;
 			plotDirection.normalize();
 			Vector3r nodalMoment = moment[i] * plotDirection;
-			float    m[3]        = { (float)nodalMoment[0], (float)nodalMoment[1], (float)nodalMoment[2] };
+			float    m[3] = { (float)nodalMoment[0], (float)nodalMoment[1], (float)nodalMoment[2] };
 			liningNodalMoment->INSERT_NEXT_TUPLE(m);
 
 			Vector3r axialForce = -axialForces[i] * plotDirection;
-			float    fa[3]      = { (float)axialForce[0], (float)axialForce[1], (float)axialForce[2] };
+			float    fa[3] = { (float)axialForce[0], (float)axialForce[1], (float)axialForce[2] };
 			liningAxialForce->INSERT_NEXT_TUPLE(fa);
 
 			Vector3r shearForce = shearForces[i] * plotDirection;
-			float    fs[3]      = { (float)shearForce[0], (float)shearForce[1], (float)shearForce[2] };
+			float    fs[3] = { (float)shearForce[0], (float)shearForce[1], (float)shearForce[2] };
 			liningShearForce->INSERT_NEXT_TUPLE(fs);
 
 			Vector3r normalP = pb->liningNormalPressure;
-			Vector3r totalP  = pb->liningTotalPressure;
-			float    pN[3]   = { (float)normalP[0], (float)normalP[1], (float)normalP[2] };
-			float    pT[3]   = { (float)totalP[0], (float)totalP[1], (float)totalP[2] };
+			Vector3r totalP = pb->liningTotalPressure;
+			float    pN[3] = { (float)normalP[0], (float)normalP[1], (float)normalP[2] };
+			float    pT[3] = { (float)totalP[0], (float)totalP[1], (float)totalP[2] };
 			liningNormalPressure->INSERT_NEXT_TUPLE(pN);
 			liningTotalPressure->INSERT_NEXT_TUPLE(pT);
 			Vector3r normalPideal = -1.0 * (normalP.norm()) * plotDirection;
-			float    pNi[3]       = { (float)normalPideal[0], (float)normalPideal[1], (float)normalPideal[2] };
+			float    pNi[3] = { (float)normalPideal[0], (float)normalPideal[1], (float)normalPideal[2] };
 			liningNormalPressureIdeal->INSERT_NEXT_TUPLE(pNi);
 			//#endif
 
@@ -448,18 +448,18 @@ int RockLiningGlobal::insertNode(Vector3r pos, Real mass, Real intervalLength)
 	shared_ptr<FrictMat>       mat(new FrictMat);
 	pBlock->isLining = true;
 	/* Shape object, variables not added: node, gridVol,vertices */
-	pBlock->AabbMinMax      = false;
-	pBlock->R               = 1.0;
-	pBlock->liningLength    = intervalLength;
+	pBlock->AabbMinMax = false;
+	pBlock->R = 1.0;
+	pBlock->liningLength = intervalLength;
 	pBlock->liningStiffness = interfaceStiffness;
-	pBlock->liningFriction  = interfaceFriction;
+	pBlock->liningFriction = interfaceFriction;
 	pBlock->cohesion.push_back(interfaceCohesion);
 	pBlock->tension.push_back(interfaceTension);
 	pBlock->liningTensionGap = interfaceTension / interfaceStiffness;
-	const int body_size      = bodies->size();
-	int       newID          = body_size;
-	pBlock->id               = newID;
-	aabb->color              = Vector3r(0, 1, 0);
+	const int body_size = bodies->size();
+	int       newID = body_size;
+	pBlock->id = newID;
+	aabb->color = Vector3r(0, 1, 0);
 
 
 	body->state->ori = Quaternionr::Identity();
@@ -467,13 +467,13 @@ int RockLiningGlobal::insertNode(Vector3r pos, Real mass, Real intervalLength)
 
 	mat->frictionAngle = interfaceFriction / 180.0 * 3.14159;
 	body->setDynamic(true);
-	body->state->mass    = mass;
+	body->state->mass = mass;
 	body->state->inertia = 1.0 / 12.0 * body->state->mass * (liningThickness * liningThickness + intervalLength * intervalLength) * Vector3r(1, 1, 1);
 	//std::cout<<"mass: "<<mass<<endl;
 	//std::cout<<"inertia: "<<body->state->inertia<<endl;
 
-	body->shape    = pBlock;
-	body->bound    = aabb;
+	body->shape = pBlock;
+	body->bound = aabb;
 	body->material = mat;
 
 	//	std::cout<<"pos: "<<pos<<endl;
@@ -504,12 +504,12 @@ Real RockLiningGlobal::evaluateFNoSphereVol(const PotentialBlock* s1, const Stat
 	/* Direction cosines */
 	//state1.ori.normalize();
 	Vector3r localP1 = state1->ori.conjugate() * tempP1;
-	Real     x       = localP1.x();
-	Real     y       = localP1.y();
-	Real     z       = localP1.z();
+	Real     x = localP1.x();
+	Real     y = localP1.y();
+	Real     z = localP1.z();
 	int      planeNo = s1->a.size();
 
-	Real r           = s1->r;
+	Real r = s1->r;
 	int  insideCount = 0;
 	for (int i = 0; i < planeNo; i++) {
 		Real plane = s1->a[i] * x + s1->b[i] * y + s1->c[i] * z - s1->d[i] - 1.0002 * r; //-pow(10,-10);
@@ -543,7 +543,7 @@ bool RockLiningGlobal::installLining(
 	/* Variables to keep things neat */
 	int  NUMCON = 3 /* equality */ + planeNoA /*block inequality */;
 	int  NUMVAR = 3 /*3D */ + 1 /*t */ + 1 /* s */;
-	Real s      = 0.0;
+	Real s = 0.0;
 	//bool converge = true;
 
 	Matrix3r Q1 = (state1->ori.conjugate()).toRotationMatrix();
@@ -555,16 +555,16 @@ bool RockLiningGlobal::installLining(
 	}
 	MatrixXr AQ1 = A1 * Q1;
 	MatrixXr pos1(3, 1);
-	pos1(0, 0)      = state1->pos.x();
-	pos1(1, 0)      = state1->pos.y();
-	pos1(2, 0)      = state1->pos.z();
+	pos1(0, 0) = state1->pos.x();
+	pos1(1, 0) = state1->pos.y();
+	pos1(2, 0) = state1->pos.z();
 	MatrixXr Q1pos1 = AQ1 * pos1;
 
 
 	ClpSimplex model2;
 	model2.setOptimizationDirection(1);
 	// Create space for 3 columns and 10000 rows
-	int numberRows    = NUMCON;
+	int numberRows = NUMCON;
 	int numberColumns = NUMVAR;
 	// This is fully dense - but would not normally be so
 
@@ -628,9 +628,9 @@ bool RockLiningGlobal::installLining(
 	Real* columnPrimal = model2.primalColumnSolution();
 
 
-	Vector3r temp  = Vector3r(columnPrimal[0], columnPrimal[1], columnPrimal[2]);
+	Vector3r temp = Vector3r(columnPrimal[0], columnPrimal[1], columnPrimal[2]);
 	intersectionPt = temp; //state1->ori.conjugate()*(temp-state1->pos);
-	s              = columnPrimal[4];
+	s = columnPrimal[4];
 
 	int convergeSuccess = model2.status();
 	if (s > -pow(10, -8) || convergeSuccess != 0) {
@@ -660,7 +660,7 @@ bool RockLiningGlobal::intersectPlane(
 	/* Variables to keep things neat */
 	int  NUMCON = 3 /* equality */ + 1 /*planeEquality */;
 	int  NUMVAR = 3 /*3D */ + 1 /*t */;
-	Real t      = 0.0;
+	Real t = 0.0;
 	//bool converge = true;
 
 	/* line equality */
@@ -675,7 +675,7 @@ bool RockLiningGlobal::intersectPlane(
 	ClpSimplex model2;
 	model2.setOptimizationDirection(1);
 	// Create space for 3 columns and 10000 rows
-	int numberRows    = NUMCON;
+	int numberRows = NUMCON;
 	int numberColumns = NUMVAR;
 	// This is fully dense - but would not normally be so
 
@@ -726,12 +726,12 @@ bool RockLiningGlobal::intersectPlane(
 	Real* columnPrimal = model2.primalColumnSolution();
 
 
-	Vector3r temp  = Vector3r(columnPrimal[0], columnPrimal[1], columnPrimal[2]);
+	Vector3r temp = Vector3r(columnPrimal[0], columnPrimal[1], columnPrimal[2]);
 	intersectionPt = temp; //state1->ori.conjugate()*(temp-state1->pos);
-	t              = columnPrimal[3];
+	t = columnPrimal[3];
 
 	int  convergeSuccess = model2.status();
-	Real f               = evaluateFNoSphereVol(s1, state1, intersectionPt);
+	Real f = evaluateFNoSphereVol(s1, state1, intersectionPt);
 	//std::cout<<"t: "<<t<<", f: "<<f<<", status: "<<status<<endl;
 	if (t > 1.001 * length || t < 0.0 || f > 0.0 || convergeSuccess != 0) {
 		return false;

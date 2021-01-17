@@ -113,8 +113,8 @@ void UniaxialStrainer::init()
 			if (std::find(posIds.begin(), posIds.end(), b->id) != posIds.end() || std::find(negIds.begin(), negIds.end(), b->id) != negIds.end()) {
 				continue;
 			}
-			Real p              = axisCoord(b->id);
-			Real pNormalized    = (p - p0) / (p1 - p0);
+			Real p = axisCoord(b->id);
+			Real pNormalized = (p - p0) / (p1 - p0);
 			b->state->vel[axis] = pNormalized * (v1 - v0) + v0;
 		}
 	}
@@ -139,12 +139,12 @@ void UniaxialStrainer::action()
 	Real dAX = currentStrainRate * originalLength * scene->dt;
 	if (!math::isnan(stopStrain)) {
 		Real axialLength = axisCoord(posIds[0]) - axisCoord(negIds[0]);
-		Real newStrain   = (axialLength + dAX) / originalLength - 1;
+		Real newStrain = (axialLength + dAX) / originalLength - 1;
 		if ((newStrain * stopStrain > 0)
 		    && math::abs(newStrain) >= stopStrain) { // same sign of newStrain and stopStrain && over the limit from below in abs values
 			dAX = originalLength * (stopStrain + 1) - axialLength;
 			LOG_INFO("Reached stopStrain " << stopStrain << ", deactivating self and stopping in " << idleIterations + 1 << " iterations.");
-			this->active      = false;
+			this->active = false;
 			scene->stopAtIter = scene->iter + 1 + idleIterations;
 		}
 	}
@@ -165,7 +165,7 @@ void UniaxialStrainer::action()
 	}
 
 	Real axialLength = axisCoord(posIds[0]) - axisCoord(negIds[0]);
-	strain           = axialLength / originalLength - 1;
+	strain = axialLength / originalLength - 1;
 
 	// reverse if we're over the limit strain
 	if (notYetReversed && limitStrain != 0 && ((currentStrainRate > 0 && strain > limitStrain) || (currentStrainRate < 0 && strain < limitStrain))) {

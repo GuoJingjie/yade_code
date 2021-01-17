@@ -15,7 +15,7 @@ public:
 			const shared_ptr<Body>& b = Body::byId(id, scene);
 			if (setVelocities) {
 				const Real& dt = scene->dt;
-				b->state->vel  = mov / dt;
+				b->state->vel = mov / dt;
 				AngleAxisr aa(rot);
 				aa.axis().normalize();
 				b->state->angVel = aa.axis() * aa.angle() / dt;

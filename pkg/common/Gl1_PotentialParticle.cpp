@@ -102,7 +102,7 @@ bool                                   Gl1_PotentialParticle::wire;
 
 void Gl1_PotentialParticle::go(const shared_ptr<Shape>& cm, const shared_ptr<State>& /*state*/, bool wire2, const GLViewInfo&)
 {
-	PotentialParticle* pp      = static_cast<PotentialParticle*>(cm.get());
+	PotentialParticle* pp = static_cast<PotentialParticle*>(cm.get());
 	int                shapeId = pp->id;
 
 	if (store == false) {
@@ -123,8 +123,8 @@ void Gl1_PotentialParticle::go(const shared_ptr<Shape>& cm, const shared_ptr<Sta
 			SF.push_back(scalarF());
 			generateScalarField(*cmbody);
 			mc.computeTriangulation(scalarField, 0.0);
-			SF[b->id].triangles   = mc.getTriangles();
-			SF[b->id].normals     = mc.getNormals();
+			SF[b->id].triangles = mc.getTriangles();
+			SF[b->id].normals = mc.getNormals();
 			SF[b->id].nbTriangles = mc.getNbTriangles();
 			for (unsigned int i = 0; i < scalarField.size(); i++) {
 				for (unsigned int j = 0; j < scalarField[i].size(); j++)
@@ -136,9 +136,9 @@ void Gl1_PotentialParticle::go(const shared_ptr<Shape>& cm, const shared_ptr<Sta
 		initialized = true;
 	}
 
-	const vector<Vector3r>& triangles   = SF[shapeId].triangles;   //mc.getTriangles();
+	const vector<Vector3r>& triangles = SF[shapeId].triangles;     //mc.getTriangles();
 	int                     nbTriangles = SF[shapeId].nbTriangles; // //mc.getNbTriangles();
-	const vector<Vector3r>& normals     = SF[shapeId].normals;     //mc.getNormals();
+	const vector<Vector3r>& normals = SF[shapeId].normals;         //mc.getNormals();
 
 	glColor3v(cm->color); //glColor3v is used when lighting is not enabled
 
@@ -220,7 +220,7 @@ Real Gl1_PotentialParticle::evaluateF(const PotentialParticle& pp, Real x, Real 
 	}
 
 	Real sphere = (pow(x, 2) + pow(y, 2) + pow(z, 2));
-	Real f      = (1.0 - k) * (pSum3 / pow(r, 2) - 1.0) + k * (sphere / pow(R, 2) - 1.0);
+	Real f = (1.0 - k) * (pSum3 / pow(r, 2) - 1.0) + k * (sphere / pow(R, 2) - 1.0);
 
 	return f;
 }
@@ -258,9 +258,9 @@ Real ImpFunc::FunctionValue(Real x[3])
 	if (!clump) {
 		Vector3r xori(x[0], x[1], x[2]);
 		Vector3r xlocal = rotationMatrix * xori;
-		xlocal[0]       = rotationMatrix(0, 0) * x[0] + rotationMatrix(0, 1) * x[1] + rotationMatrix(0, 2) * x[2];
-		xlocal[1]       = rotationMatrix(1, 0) * x[0] + rotationMatrix(1, 1) * x[1] + rotationMatrix(1, 2) * x[2];
-		xlocal[2]       = rotationMatrix(2, 0) * x[0] + rotationMatrix(2, 1) * x[1] + rotationMatrix(2, 2) * x[2];
+		xlocal[0] = rotationMatrix(0, 0) * x[0] + rotationMatrix(0, 1) * x[1] + rotationMatrix(0, 2) * x[2];
+		xlocal[1] = rotationMatrix(1, 0) * x[0] + rotationMatrix(1, 1) * x[1] + rotationMatrix(1, 2) * x[2];
+		xlocal[2] = rotationMatrix(2, 0) * x[0] + rotationMatrix(2, 1) * x[1] + rotationMatrix(2, 2) * x[2];
 		//std::cout<<"rotationMatrix: "<<endl<<rotationMatrix<<endl;
 		//x[0]=xlocal[0]; x[1]=xlocal[1]; x[2]=xlocal[2];
 
@@ -271,7 +271,7 @@ Real ImpFunc::FunctionValue(Real x[3])
 			pSum2 += pow(p[i], 2);
 		}
 		Real sphere = (pow(xlocal[0], 2) + pow(xlocal[1], 2) + pow(xlocal[2], 2));
-		Real f      = (1.0 - k) * (pSum2 / pow(r, 2) - 1.0) + k * (sphere / pow(R, 2) - 1.0);
+		Real f = (1.0 - k) * (pSum2 / pow(r, 2) - 1.0) + k * (sphere / pow(R, 2) - 1.0);
 		return f;
 	} else {
 		Vector3r xori(x[0], x[1], x[2]);
@@ -290,7 +290,7 @@ Real ImpFunc::FunctionValue(Real x[3])
 			pSum2 += pow(p[i], 2);
 		}
 		Real sphere = (pow(xlocal[0], 2) + pow(xlocal[1], 2) + pow(xlocal[2], 2));
-		Real f      = (1.0 - k) * (pSum2 / pow(r, 2) - 1.0) + k * (sphere / pow(R, 2) - 1.0);
+		Real f = (1.0 - k) * (pSum2 / pow(r, 2) - 1.0) + k * (sphere / pow(R, 2) - 1.0);
 		return f;
 		// return 0;
 	}
@@ -301,16 +301,16 @@ Real ImpFunc::FunctionValue(Real x[3])
 void PotentialParticleVTKRecorder::action()
 {
 	if (fileName.size() == 0) return;
-	auto pbPos          = vtkSmartPointer<vtkPointsReal>::New();
-	auto appendFilter   = vtkSmartPointer<vtkAppendPolyData>::New();
+	auto pbPos = vtkSmartPointer<vtkPointsReal>::New();
+	auto appendFilter = vtkSmartPointer<vtkAppendPolyData>::New();
 	auto appendFilterID = vtkSmartPointer<vtkAppendPolyData>::New();
 	//auto transformFilter = vtkSmartPointer<vtkTransformPolyDataFilter>::New();
 	//auto transform = vtkSmartPointer<vtkTransform>::New();
 
 	// interactions ###############################################
 	auto intrBodyPos = vtkSmartPointer<vtkPoints>::New();
-	auto intrCells   = vtkSmartPointer<vtkCellArray>::New();
-	auto intrForceN  = vtkSmartPointer<vtkFloatArray>::New();
+	auto intrCells = vtkSmartPointer<vtkCellArray>::New();
+	auto intrForceN = vtkSmartPointer<vtkFloatArray>::New();
 	intrForceN->SetNumberOfComponents(3);
 	intrForceN->SetName("forceN");
 	auto intrAbsForceT = vtkSmartPointer<vtkFloatArray>::New();
@@ -321,7 +321,7 @@ void PotentialParticleVTKRecorder::action()
 	// interaction contact point ###############################################
 	auto pbContactPoint = vtkSmartPointer<vtkPointsReal>::New();
 	auto pbCellsContact = vtkSmartPointer<vtkCellArray>::New();
-	auto pbNormalForce  = vtkSmartPointer<vtkFloatArray>::New();
+	auto pbNormalForce = vtkSmartPointer<vtkFloatArray>::New();
 	pbNormalForce->SetNumberOfComponents(3);
 	pbNormalForce->SetName("normalForce"); //Linear velocity in Vector3 form
 	auto pbShearForce = vtkSmartPointer<vtkFloatArray>::New();
@@ -331,7 +331,7 @@ void PotentialParticleVTKRecorder::action()
 
 
 	// velocity ###################################################
-	auto pbCells     = vtkSmartPointer<vtkCellArray>::New();
+	auto pbCells = vtkSmartPointer<vtkCellArray>::New();
 	auto pbLinVelVec = vtkSmartPointer<vtkFloatArray>::New();
 	pbLinVelVec->SetNumberOfComponents(3);
 	pbLinVelVec->SetName("linVelVec"); //Linear velocity in Vector3 form
@@ -350,9 +350,9 @@ void PotentialParticleVTKRecorder::action()
 	// velocity ####################################################
 
 	// bodyId ##############################################################
-	auto pbPosID   = vtkSmartPointer<vtkPointsReal>::New();
+	auto pbPosID = vtkSmartPointer<vtkPointsReal>::New();
 	auto pbIdCells = vtkSmartPointer<vtkCellArray>::New();
-	auto blockId   = vtkSmartPointer<vtkIntArray>::New();
+	auto blockId = vtkSmartPointer<vtkIntArray>::New();
 	blockId->SetNumberOfComponents(1);
 	blockId->SetName("id");
 	// bodyId ##############################################################
@@ -379,15 +379,15 @@ void PotentialParticleVTKRecorder::action()
 			countID++;
 		}
 		//vtkSmartPointer<ImpFunc> function = ImpFunc::New();
-		function->a           = pb->a;
-		function->b           = pb->b;
-		function->c           = pb->c;
-		function->d           = pb->d;
-		function->R           = pb->R;
-		function->r           = pb->r;
-		function->k           = pb->k;
+		function->a = pb->a;
+		function->b = pb->b;
+		function->c = pb->c;
+		function->d = pb->d;
+		function->R = pb->R;
+		function->r = pb->r;
+		function->k = pb->k;
 		Matrix3r directionCos = b->state->ori.conjugate().toRotationMatrix();
-		int      count        = 0;
+		int      count = 0;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				//function->rotationMatrix[count] = directionCos(j,i);
@@ -453,9 +453,9 @@ void PotentialParticleVTKRecorder::action()
 		Vector3r color = pb->color; //Vector3r(0,100,0);
 		if (b->isDynamic() == false) { color = Vector3r(157, 157, 157); }
 		unsigned char c[3]; //c = {color[0],color[1],color[2]};
-		c[0]        = (unsigned char)(color[0]);
-		c[1]        = (unsigned char)(color[1]);
-		c[2]        = (unsigned char)(color[2]);
+		c[0] = (unsigned char)(color[0]);
+		c[1] = (unsigned char)(color[1]);
+		c[2] = (unsigned char)(color[2]);
 		int nbCells = polydata->GetNumberOfPoints();
 		for (int i = 0; i < nbCells; i++) {
 			pbColors->INSERT_NEXT_TYPED_TUPLE(c);

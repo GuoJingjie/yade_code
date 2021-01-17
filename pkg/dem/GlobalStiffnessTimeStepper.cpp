@@ -35,8 +35,8 @@ GlobalStiffnessTimeStepper::~GlobalStiffnessTimeStepper() { }
 
 void GlobalStiffnessTimeStepper::findTimeStepFromBody(const shared_ptr<Body>& body, Scene* /*ncb*/)
 {
-	State*    sdec       = body->state.get();
-	Vector3r& stiffness  = stiffnesses[body->getId()];
+	State*    sdec = body->state.get();
+	Vector3r& stiffness = stiffnesses[body->getId()];
 	Vector3r& Rstiffness = Rstiffnesses[body->getId()];
 	if (body->isClump()) { // if clump, we sum stifnesses of all members
 		const shared_ptr<Clump>& clump = YADE_PTR_CAST<Clump>(body->shape);
@@ -57,10 +57,10 @@ void GlobalStiffnessTimeStepper::findTimeStepFromBody(const shared_ptr<Body>& bo
 		if (densityScaling) {
 			if (body->material and body->shape) {
 				shared_ptr<ElastMat> ebp = YADE_PTR_DYN_CAST<ElastMat>(body->material);
-				shared_ptr<Sphere>   s   = YADE_PTR_DYN_CAST<Sphere>(body->shape);
+				shared_ptr<Sphere>   s = YADE_PTR_DYN_CAST<Sphere>(body->shape);
 				if (!ebp || !s) dt = defaultDt;
 				Real density = body->state->mass / ((4 / 3.) * Mathr::PI * pow(s->radius, 3));
-				dt           = s->radius / sqrt(ebp->young / density);
+				dt = s->radius / sqrt(ebp->young / density);
 				// 				dt=defaultDt;
 			} else {
 				dt = defaultDt;
@@ -75,40 +75,40 @@ void GlobalStiffnessTimeStepper::findTimeStepFromBody(const shared_ptr<Body>& bo
 		Real dtx, dty, dtz;
 		dt = max(max(stiffness.x(), stiffness.y()), stiffness.z());
 		if (dt != 0) {
-			dt                = sdec->mass / dt;
+			dt = sdec->mass / dt;
 			computedSomething = true;
 		} //dt = squared eigenperiod of translational motion
 		else
 			dt = Mathr::MAX_REAL;
 		if (Rstiffness.x() != 0) {
-			dtx               = sdec->inertia.x() / Rstiffness.x();
+			dtx = sdec->inertia.x() / Rstiffness.x();
 			computedSomething = true;
 		} //dtx = squared eigenperiod of rotational motion around x
 		else
 			dtx = Mathr::MAX_REAL;
 		if (Rstiffness.y() != 0) {
-			dty               = sdec->inertia.y() / Rstiffness.y();
+			dty = sdec->inertia.y() / Rstiffness.y();
 			computedSomething = true;
 		} else
 			dty = Mathr::MAX_REAL;
 		if (Rstiffness.z() != 0) {
-			dtz               = sdec->inertia.z() / Rstiffness.z();
+			dtz = sdec->inertia.z() / Rstiffness.z();
 			computedSomething = true;
 		} else
 			dtz = Mathr::MAX_REAL;
 
-		Real Rdt = math::min(math::min(dtx, dty), dtz); //Rdt = smallest squared eigenperiod for elastic rotational motions
-		dt       = 1.41044 * timestepSafetyCoefficient * math::sqrt(math::min(dt, Rdt)); //1.41044 = sqrt(2)
+		Real Rdt = math::min(math::min(dtx, dty), dtz);                            //Rdt = smallest squared eigenperiod for elastic rotational motions
+		dt = 1.41044 * timestepSafetyCoefficient * math::sqrt(math::min(dt, Rdt)); //1.41044 = sqrt(2)
 	}
 
 	//Viscous
 	if (viscEl == true) {
-		Vector3r& viscosity  = viscosities[body->getId()];
+		Vector3r& viscosity = viscosities[body->getId()];
 		Vector3r& Rviscosity = Rviscosities[body->getId()];
 		Real      dtx_visc, dty_visc, dtz_visc;
 		Real      dt_visc = max(max(viscosity.x(), viscosity.y()), viscosity.z());
 		if (dt_visc != 0) {
-			dt_visc           = sdec->mass / dt_visc;
+			dt_visc = sdec->mass / dt_visc;
 			computedSomething = true;
 		} //dt = eigenperiod of the viscous translational motion
 		else {
@@ -116,24 +116,24 @@ void GlobalStiffnessTimeStepper::findTimeStepFromBody(const shared_ptr<Body>& bo
 		}
 
 		if (Rviscosity.x() != 0) {
-			dtx_visc          = sdec->inertia.x() / Rviscosity.x();
+			dtx_visc = sdec->inertia.x() / Rviscosity.x();
 			computedSomething = true;
 		} //dtx = eigenperiod of viscous rotational motion around x
 		else
 			dtx_visc = Mathr::MAX_REAL;
 		if (Rviscosity.y() != 0) {
-			dty_visc          = sdec->inertia.y() / Rviscosity.y();
+			dty_visc = sdec->inertia.y() / Rviscosity.y();
 			computedSomething = true;
 		} else
 			dty_visc = Mathr::MAX_REAL;
 		if (Rviscosity.z() != 0) {
-			dtz_visc          = sdec->inertia.z() / Rviscosity.z();
+			dtz_visc = sdec->inertia.z() / Rviscosity.z();
 			computedSomething = true;
 		} else
 			dtz_visc = Mathr::MAX_REAL;
 
 		Real Rdt_visc = math::min(math::min(dtx_visc, dty_visc), dtz_visc); //Rdt = smallest squared eigenperiod for viscous rotational motions
-		dt_visc       = 2 * timestepSafetyCoefficient * math::min(dt_visc, Rdt_visc);
+		dt_visc = 2 * timestepSafetyCoefficient * math::min(dt_visc, Rdt_visc);
 
 		//Take the minimum between the elastic and viscous minimum eigenperiod.
 		dt = math::min(dt, dt_visc);
@@ -166,8 +166,8 @@ void GlobalStiffnessTimeStepper::computeTimeStep(Scene* ncb)
 	computeStiffnesses(ncb);
 
 	shared_ptr<BodyContainer>& bodies = ncb->bodies;
-	newDt                             = Mathr::MAX_REAL;
-	computedSomething                 = false;
+	newDt = Mathr::MAX_REAL;
+	computedSomething = false;
 	for (const auto& b : *bodies) {
 		if (!b) { continue; }
 		if (b->isDynamic() && !b->isClumpMember()) findTimeStepFromBody(b, ncb);
@@ -177,7 +177,7 @@ void GlobalStiffnessTimeStepper::computeTimeStep(Scene* ncb)
 		previousDt = min(
 		        min(newDt, maxDt),
 		        1.05 * previousDt); // at maximum, dt will be multiplied by 1.05 in one iterration, this is to prevent brutal switches from 0.000... to 1 in some computations
-		scene->dt    = previousDt;
+		scene->dt = previousDt;
 		computedOnce = true;
 	} else if (!computedOnce)
 		scene->dt = defaultDt;
@@ -244,12 +244,12 @@ void GlobalStiffnessTimeStepper::computeStiffnesses(Scene* rb)
 		assert(phys);
 
 		// all we need for getting stiffness
-		Vector3r& normal  = geom->normal;
-		Real&     kn      = phys->kn;
-		Real&     ks      = phys->ks;
+		Vector3r& normal = geom->normal;
+		Real&     kn = phys->kn;
+		Real&     ks = phys->ks;
 		Real&     radius1 = geom->refR1;
 		Real&     radius2 = geom->refR2;
-		Real      fn      = (static_cast<NormShearPhys*>(contact->phys.get()))->normalForce.squaredNorm();
+		Real      fn = (static_cast<NormShearPhys*>(contact->phys.get()))->normalForce.squaredNorm();
 		if (fn == 0) continue; //Is it a problem with some laws? I still don't see why.
 
 		//Diagonal terms of the translational stiffness matrix

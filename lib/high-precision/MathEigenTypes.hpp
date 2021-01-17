@@ -62,11 +62,11 @@ template <int N> using Vector3rHP = Vector3<RealHP<N>>;
 template <int N> using Vector3rHP = Vector3<RealHP<N>>;
 #endif
 
-template <int N> using Vector2rHP  = Vector2<RealHP<N>>;
+template <int N> using Vector2rHP = Vector2<RealHP<N>>;
 template <int N> using Vector3raHP = Eigen::AlignedVector3<RealHP<N>>;
-template <int N> using Vector4rHP  = Vector4<RealHP<N>>;
-template <int N> using Vector6rHP  = Vector6<RealHP<N>>;
-template <int N> using VectorXrHP  = Eigen::Matrix<RealHP<N>, Eigen::Dynamic, 1>;
+template <int N> using Vector4rHP = Vector4<RealHP<N>>;
+template <int N> using Vector6rHP = Vector6<RealHP<N>>;
+template <int N> using VectorXrHP = Eigen::Matrix<RealHP<N>, Eigen::Dynamic, 1>;
 
 template <int N> using Matrix2rHP = Matrix2<RealHP<N>>;
 template <int N> using Matrix3rHP = Matrix3<RealHP<N>>;
@@ -74,8 +74,8 @@ template <int N> using Matrix4rHP = Matrix4<RealHP<N>>;
 template <int N> using Matrix6rHP = Matrix6<RealHP<N>>;
 template <int N> using MatrixXrHP = Eigen::Matrix<RealHP<N>, Eigen::Dynamic, Eigen::Dynamic>;
 
-template <int N> using QuaternionrHP  = Eigen::Quaternion<RealHP<N>>;
-template <int N> using AngleAxisrHP   = Eigen::AngleAxis<RealHP<N>>;
+template <int N> using QuaternionrHP = Eigen::Quaternion<RealHP<N>>;
+template <int N> using AngleAxisrHP = Eigen::AngleAxis<RealHP<N>>;
 template <int N> using AlignedBox3rHP = Eigen::AlignedBox<RealHP<N>, 3>;
 template <int N> using AlignedBox2rHP = Eigen::AlignedBox<RealHP<N>, 2>;
 
@@ -83,11 +83,11 @@ template <int N> using AlignedBox2rHP = Eigen::AlignedBox<RealHP<N>, 2>;
 
 using Vector3r = Vector3rHP<1>;
 
-using Vector2r  = Vector2rHP<1>;
+using Vector2r = Vector2rHP<1>;
 using Vector3ra = Vector3raHP<1>;
-using Vector4r  = Vector4rHP<1>;
-using Vector6r  = Vector6rHP<1>;
-using VectorXr  = VectorXrHP<1>;
+using Vector4r = Vector4rHP<1>;
+using Vector6r = Vector6rHP<1>;
+using VectorXr = VectorXrHP<1>;
 
 using Matrix2r = Matrix2rHP<1>;
 using Matrix3r = Matrix3rHP<1>;
@@ -95,8 +95,8 @@ using Matrix4r = Matrix4rHP<1>;
 using Matrix6r = Matrix6rHP<1>;
 using MatrixXr = MatrixXrHP<1>;
 
-using Quaternionr  = QuaternionrHP<1>;
-using AngleAxisr   = AngleAxisrHP<1>;
+using Quaternionr = QuaternionrHP<1>;
+using AngleAxisr = AngleAxisrHP<1>;
 using AlignedBox3r = AlignedBox3rHP<1>;
 using AlignedBox2r = AlignedBox2rHP<1>;
 
@@ -139,12 +139,12 @@ public:
 	Se3() {};
 	Se3(Vector3<Scalar> rkP, Eigen::Quaternion<Scalar> qR)
 	{
-		position    = rkP;
+		position = rkP;
 		orientation = qR;
 	}
 	Se3(Se3<Scalar>& a, Se3<Scalar>& b)
 	{
-		position    = b.orientation.inverse() * (a.position - b.position);
+		position = b.orientation.inverse() * (a.position - b.position);
 		orientation = b.orientation.inverse() * a.orientation;
 	}
 	Se3<Scalar> inverse() { return Se3(-(orientation.inverse() * position), orientation.inverse()); }
@@ -161,7 +161,7 @@ public:
 };
 
 template <int N> using Se3rHP = Se3<RealHP<N>>;
-using Se3r                    = Se3rHP<1>;
+using Se3r = Se3rHP<1>;
 
 /*************************************************************************/
 /*************************   for external use   **************************/

@@ -29,8 +29,8 @@ void SnapshotEngine::action()
 	glv->nextFrameSnapshotFilename = fss.str();
 	// wait for the renderer to save the frame (will happen at next postDraw)
 	timespec t1, t2;
-	t1.tv_sec    = 0;
-	t1.tv_nsec   = 10000000; /* 10 ms */
+	t1.tv_sec = 0;
+	t1.tv_nsec = 10000000; /* 10 ms */
 	long waiting = 0;
 	while (!glv->nextFrameSnapshotFilename.empty()) {
 		nanosleep(&t1, &t2);

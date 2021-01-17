@@ -89,7 +89,7 @@ void NewtonIntegrator::saveMaximaVelocity(const Body::id_t& /*id*/, State* state
 {
 #ifdef YADE_OPENMP
 	Real& thrMaxVSq = threadMaxVelocitySq[omp_get_thread_num()];
-	thrMaxVSq       = max(thrMaxVSq, state->vel.squaredNorm());
+	thrMaxVSq = max(thrMaxVSq, state->vel.squaredNorm());
 #else
 	maxVelocitySq = max(maxVelocitySq, state->vel.squaredNorm());
 #endif
@@ -99,7 +99,7 @@ void NewtonIntegrator::saveMaximaVelocity(const Body::id_t& /*id*/, State* state
 void NewtonIntegrator::saveMaximaDisplacement(const shared_ptr<Body>& b)
 {
 	if (!b->bound) return; //clumps for instance, have no bounds, hence not saved
-	Vector3r disp    = b->state->pos - b->bound->refPos;
+	Vector3r disp = b->state->pos - b->bound->refPos;
 	Real     maxDisp = max(math::abs(disp[0]), max(math::abs(disp[1]), math::abs(disp[2])));
 	if (!maxDisp
 	    || maxDisp < b->bound->sweepLength) { /*b->bound->isBounding = (updatingDispFactor>0 && (updatingDispFactor*maxDisp)<b->bound->sweepLength);*/
@@ -109,7 +109,7 @@ void NewtonIntegrator::saveMaximaDisplacement(const shared_ptr<Body>& b)
 	}
 #ifdef YADE_OPENMP
 	Real& thrMaxVSq = threadMaxVelocitySq[omp_get_thread_num()];
-	thrMaxVSq       = max(thrMaxVSq, maxDisp);
+	thrMaxVSq = max(thrMaxVSq, maxDisp);
 #else
 	maxVelocitySq = max(maxVelocitySq, maxDisp);
 #endif
@@ -128,24 +128,24 @@ void NewtonIntegrator::action()
 	const Real& dt = scene->dt;
 	//Take care of user's request to change velGrad. Safe to change it here after the interaction loop.
 	if (scene->cell->velGradChanged || scene->cell->nextVelGrad != Matrix3r::Zero()) {
-		scene->cell->velGrad        = scene->cell->nextVelGrad;
+		scene->cell->velGrad = scene->cell->nextVelGrad;
 		scene->cell->velGradChanged = 0;
-		scene->cell->nextVelGrad    = Matrix3r::Zero();
+		scene->cell->nextVelGrad = Matrix3r::Zero();
 	}
 	homoDeform = scene->cell->homoDeform;
-	dVelGrad   = scene->cell->velGrad - prevVelGrad;
+	dVelGrad = scene->cell->velGrad - prevVelGrad;
 	Matrix3r R = .5 * (dVelGrad - dVelGrad.transpose());
-	dSpin      = Vector3r(-R(1, 2), R(0, 2), -R(0, 1));
+	dSpin = Vector3r(-R(1, 2), R(0, 2), -R(0, 1));
 	// account for motion of the periodic boundary, if we remember its last position
 	// its velocity will count as max velocity of bodies
 	// otherwise the collider might not run if only the cell were changing without any particle motion
 	// FIXME: will not work for pure shear transformation, which does not change Cell::getSize()
 	if (scene->isPeriodic && ((prevCellSize != scene->cell->getSize())) && /* initial value */ !math::isnan(prevCellSize[0])) {
-		cellChanged   = true;
+		cellChanged = true;
 		maxVelocitySq = (prevCellSize - scene->cell->getSize()).squaredNorm() / pow(dt, 2);
 	} else {
 		maxVelocitySq = 0;
-		cellChanged   = false;
+		cellChanged = false;
 	}
 
 #ifdef YADE_BODY_CALLBACK
@@ -177,9 +177,9 @@ void NewtonIntegrator::action()
 			continue; //this thread will not move bodies from other subdomains
 #endif
 		State*            state = b->state.get();
-		const Body::id_t& id    = b->getId();
-		Vector3r          f     = Vector3r::Zero();
-		Vector3r          m     = Vector3r::Zero();
+		const Body::id_t& id = b->getId();
+		Vector3r          f = Vector3r::Zero();
+		Vector3r          m = Vector3r::Zero();
 		// clumps forces
 		if (b->isClump()) {
 			b->shape->cast<Clump>().addForceTorqueFromMembers(state, scene, f, m);
@@ -307,20 +307,20 @@ void NewtonIntegrator::leapfrogAsphericalRotate(State* state, const Real& dt, co
 {
 	//FIXME: where to increment angular velocity like this? Only done for spherical rotations at the moment
 	//if(scene->isPeriodic && homoDeform) {state->angVel+=dSpin;}
-	Matrix3r       A          = state->ori.conjugate().toRotationMatrix(); // rotation matrix from global to local r.f.
-	const Vector3r l_n        = state->angMom + dt / 2. * M;               // global angular momentum at time n
-	const Vector3r l_b_n      = A * l_n;                                   // local angular momentum at time n
-	Vector3r       angVel_b_n = l_b_n.cwiseQuotient(state->inertia);       // local angular velocity at time n
+	Matrix3r       A = state->ori.conjugate().toRotationMatrix();    // rotation matrix from global to local r.f.
+	const Vector3r l_n = state->angMom + dt / 2. * M;                // global angular momentum at time n
+	const Vector3r l_b_n = A * l_n;                                  // local angular momentum at time n
+	Vector3r       angVel_b_n = l_b_n.cwiseQuotient(state->inertia); // local angular velocity at time n
 	if (densityScaling) angVel_b_n *= state->densityScaling;
 	const Quaternionr dotQ_n = DotQ(angVel_b_n, state->ori);                                 // dQ/dt at time n
 	const Quaternionr Q_half = Quaternionr(state->ori.coeffs() + dt / 2. * dotQ_n.coeffs()); // Q at time n+1/2
 	state->angMom += dt * M;                                                                 // global angular momentum at time n+1/2
-	const Vector3r l_b_half      = A * state->angMom;                                        // local angular momentum at time n+1/2
+	const Vector3r l_b_half = A * state->angMom;                                             // local angular momentum at time n+1/2
 	Vector3r       angVel_b_half = l_b_half.cwiseQuotient(state->inertia);                   // local angular velocity at time n+1/2
 	if (densityScaling) angVel_b_half *= state->densityScaling;
-	const Quaternionr dotQ_half = DotQ(angVel_b_half, Q_half);                                // dQ/dt at time n+1/2
-	state->ori                  = Quaternionr(state->ori.coeffs() + dt * dotQ_half.coeffs()); // Q at time n+1
-	state->angVel               = state->ori * angVel_b_half;                                 // global angular velocity at time n+1/2
+	const Quaternionr dotQ_half = DotQ(angVel_b_half, Q_half);               // dQ/dt at time n+1/2
+	state->ori = Quaternionr(state->ori.coeffs() + dt * dotQ_half.coeffs()); // Q at time n+1
+	state->angVel = state->ori * angVel_b_half;                              // global angular velocity at time n+1/2
 	state->ori.normalize();
 }
 
@@ -346,7 +346,7 @@ void NewtonIntegrator::set_densityScaling(bool dsc)
 		GlobalStiffnessTimeStepper* ts = dynamic_cast<GlobalStiffnessTimeStepper*>(e.get());
 		if (ts) {
 			ts->densityScaling = dsc;
-			densityScaling     = dsc;
+			densityScaling = dsc;
 			LOG_WARN("GlobalStiffnessTimeStepper found in O.engines and adjusted to match this setting. Revert in the timestepper if you don't "
 			         "want the scaling adjusted automatically.");
 			return;

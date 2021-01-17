@@ -27,20 +27,20 @@ void If2_2xLin4NodeTetra_LinCohesiveStiffPropDampElastMat::go(
         const shared_ptr<Shape>& element, const shared_ptr<Material>& material, const shared_ptr<Body>& /*bdy*/)
 {
 	shared_ptr<Lin4NodeTetra_Lin4NodeTetra_InteractionElement> interactionelement = YADE_PTR_CAST<Lin4NodeTetra_Lin4NodeTetra_InteractionElement>(element);
-	shared_ptr<LinCohesiveStiffPropDampElastMat>               mat                = YADE_PTR_CAST<LinCohesiveStiffPropDampElastMat>(material);
+	shared_ptr<LinCohesiveStiffPropDampElastMat>               mat = YADE_PTR_CAST<LinCohesiveStiffPropDampElastMat>(material);
 
 
 	NodePairsMap::iterator i1(interactionelement->nodepairs.begin());
-	shared_ptr<Body>       node11   = i1->first.node1;
-	shared_ptr<Body>       node12   = i1->first.node2;
+	shared_ptr<Body>       node11 = i1->first.node1;
+	shared_ptr<Body>       node12 = i1->first.node2;
 	Vector3r               initial1 = i1->second.position;
 	std::advance(i1, 1);
-	shared_ptr<Body> node21   = i1->first.node1;
-	shared_ptr<Body> node22   = i1->first.node2;
+	shared_ptr<Body> node21 = i1->first.node1;
+	shared_ptr<Body> node22 = i1->first.node2;
 	Vector3r         initial2 = i1->second.position;
 	std::advance(i1, 1);
-	shared_ptr<Body> node31   = i1->first.node1;
-	shared_ptr<Body> node32   = i1->first.node2;
+	shared_ptr<Body> node31 = i1->first.node1;
+	shared_ptr<Body> node32 = i1->first.node2;
 	Vector3r         initial3 = i1->second.position;
 
 	Vector3r disp1 = (node11->state->pos - node12->state->pos) - initial1;

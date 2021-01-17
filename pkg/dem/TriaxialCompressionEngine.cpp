@@ -33,19 +33,19 @@ TriaxialCompressionEngine::~TriaxialCompressionEngine() { }
 void TriaxialCompressionEngine::doStateTransition(stateNum nextState)
 {
 	if (/* currentState==STATE_UNINITIALIZED && */ nextState == STATE_ISO_COMPACTION) {
-		sigma_iso        = sigmaIsoCompaction;
+		sigma_iso = sigmaIsoCompaction;
 		previousSigmaIso = sigma_iso;
 	} else if (nextState == STATE_TRIAX_LOADING) {
-		sigma_iso          = sigmaLateralConfinement;
-		previousSigmaIso   = sigma_iso;
+		sigma_iso = sigmaLateralConfinement;
+		previousSigmaIso = sigma_iso;
 		internalCompaction = false;
 		if (frictionAngleDegree > 0) setContactProperties(frictionAngleDegree);
 		height0 = height;
-		depth0  = depth;
-		width0  = width;
+		depth0 = depth;
+		width0 = width;
 		//compressionActivated = true;
 		wall_bottom_activated = false;
-		wall_top_activated    = false;
+		wall_top_activated = false;
 		if (currentState == STATE_ISO_UNLOADING && !noFiles) {
 			LOG_INFO("Speres -> /tmp/unloaded.spheres");
 			Shop::saveSpheresToFile("/tmp/unloaded.spheres");
@@ -53,9 +53,9 @@ void TriaxialCompressionEngine::doStateTransition(stateNum nextState)
 		if (!firstRun && !noFiles) saveSimulation = true; // saving snapshot .xml will actually be done in ::action
 		Phase1End = "Unloaded";
 	} else if (currentState == STATE_ISO_COMPACTION && nextState == STATE_ISO_UNLOADING) {
-		sigma_iso          = sigmaLateralConfinement;
+		sigma_iso = sigmaLateralConfinement;
 		sigmaIsoCompaction = sigmaLateralConfinement;
-		previousSigmaIso   = sigma_iso;
+		previousSigmaIso = sigma_iso;
 		internalCompaction = false; // unloading will not change grain sizes
 		if (frictionAngleDegree > 0) setContactProperties(frictionAngleDegree);
 		if (!firstRun && !noFiles) saveSimulation = true;
@@ -65,8 +65,8 @@ void TriaxialCompressionEngine::doStateTransition(stateNum nextState)
 		internalCompaction = false;
 		if (frictionAngleDegree > 0) setContactProperties(frictionAngleDegree);
 		height0 = height;
-		depth0  = depth;
-		width0  = width;
+		depth0 = depth;
+		width0 = width;
 		if (!noFiles) saveSimulation = true; // saving snapshot .xml will actually be done in ::action
 		// stop simulation here, since nothing will happen from now on
 		Phase1End = (currentState == STATE_ISO_COMPACTION ? "compacted" : "unloaded");
@@ -74,20 +74,20 @@ void TriaxialCompressionEngine::doStateTransition(stateNum nextState)
 		// Please keep this saving process intact, I'm tired of running 3 days simulations and getting nothing at the end!
 		if (!firstRun && !noFiles) saveSimulation = true; // saving snapshot .xml will actually be done in ::action
 	} else if (nextState == STATE_FIXED_POROSITY_COMPACTION) {
-		internalCompaction    = false;
+		internalCompaction = false;
 		wall_bottom_activated = false;
-		wall_top_activated    = false;
-		wall_front_activated  = false;
-		wall_back_activated   = false;
-		wall_right_activated  = false;
-		wall_left_activated   = false;
+		wall_top_activated = false;
+		wall_front_activated = false;
+		wall_back_activated = false;
+		wall_right_activated = false;
+		wall_left_activated = false;
 	} else {
 		LOG_ERROR("Undefined transition from " << stateName(currentState) << " to " << stateName(nextState) << "! (ignored)");
 		return;
 	}
 
 	LOG_INFO("State transition from " << stateName(currentState) << " to " << stateName(nextState) << " done.");
-	currentState  = nextState;
+	currentState = nextState;
 	previousState = currentState; // should be always kept in sync, used to track manual changes to the .xml
 }
 
@@ -126,9 +126,9 @@ void TriaxialCompressionEngine::action()
 			doStateTransition(STATE_ISO_COMPACTION);
 		if (previousState != STATE_TRIAX_LOADING && currentState == STATE_TRIAX_LOADING) doStateTransition(STATE_TRIAX_LOADING);
 		if (fixedPorosity < 1 && currentState == STATE_UNINITIALIZED && fixedPoroCompaction) doStateTransition(STATE_FIXED_POROSITY_COMPACTION);
-		previousState    = currentState;
+		previousState = currentState;
 		previousSigmaIso = sigma_iso;
-		firstRun         = false; // change this only _after_ state transitions
+		firstRun = false; // change this only _after_ state transitions
 	}
 	if (scene->iter % testEquilibriumInterval == 0) {
 		updateParameters();
@@ -177,13 +177,13 @@ void TriaxialCompressionEngine::action()
 	}
 	if (currentState == STATE_FIXED_POROSITY_COMPACTION) {
 		if (scene->iter % 100 == 0) LOG_INFO("Compression started");
-		const Real& dt       = scene->dt;
+		const Real& dt = scene->dt;
 		State*      p_bottom = Body::byId(wall_bottom_id, scene)->state.get();
-		State*      p_top    = Body::byId(wall_top_id, scene)->state.get();
-		State*      p_left   = Body::byId(wall_left_id, scene)->state.get();
-		State*      p_right  = Body::byId(wall_right_id, scene)->state.get();
-		State*      p_front  = Body::byId(wall_front_id, scene)->state.get();
-		State*      p_back   = Body::byId(wall_back_id, scene)->state.get();
+		State*      p_top = Body::byId(wall_top_id, scene)->state.get();
+		State*      p_left = Body::byId(wall_left_id, scene)->state.get();
+		State*      p_right = Body::byId(wall_right_id, scene)->state.get();
+		State*      p_front = Body::byId(wall_front_id, scene)->state.get();
+		State*      p_back = Body::byId(wall_back_id, scene)->state.get();
 
 		/* Move top and bottom wall according to strain rate */
 		p_bottom->pos += 0.5 * strainRate * height * translationAxis * dt;

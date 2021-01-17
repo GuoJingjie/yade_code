@@ -26,17 +26,17 @@ bool Interaction::isFresh(Scene* rb) { return iterMadeReal == rb->iter; }
 
 void Interaction::init()
 {
-	iterMadeReal            = -1;
+	iterMadeReal = -1;
 	functorCache.geomExists = true;
-	isActive                = true;
+	isActive = true;
 }
 
 void Interaction::reset()
 {
-	geom                  = shared_ptr<IGeom>();
-	phys                  = shared_ptr<IPhys>();
-	functorCache.geom     = nullptr;
-	functorCache.phys     = nullptr;
+	geom = shared_ptr<IGeom>();
+	phys = shared_ptr<IPhys>();
+	functorCache.geom = nullptr;
+	functorCache.phys = nullptr;
 	functorCache.constLaw = nullptr;
 	init();
 }

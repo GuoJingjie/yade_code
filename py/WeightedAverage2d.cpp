@@ -13,7 +13,7 @@ bool pyGaussAverage::pointInsidePolygon(const Vector2r& pt, const vector<Vector2
 {
 	int         i /*current node*/, j /*previous node*/;
 	bool        inside = false;
-	int         rows   = (int)vertices.size();
+	int         rows = (int)vertices.size();
 	const Real &testx = pt[0], testy = pt[1];
 	for (i = 0, j = rows - 1; i < rows; j = i++) {
 		const Real &vx_i = vertices[i][0], vy_i = vertices[i][1], vx_j = vertices[j][0], vy_j = vertices[j][1];

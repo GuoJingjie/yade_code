@@ -32,7 +32,7 @@ void L3Geom::applyLocalForceTorque(const Vector3r& localF, const Vector3r& local
 	Vector3r x1c(normal * (refR1 + .5 * u[0])), x2c(-normal * (refR2 + .5 * u[0]));
 	if (nsp) {
 		nsp->normalForce = normal * globF.dot(normal);
-		nsp->shearForce  = globF - nsp->normalForce;
+		nsp->shearForce = globF - nsp->normalForce;
 	}
 	Vector3r globT = Vector3r::Zero();
 	if (localT != Vector3r::Zero()) { globT = trsf.transpose() * localT; }
@@ -91,16 +91,16 @@ bool Ig2_Sphere_Sphere_L3Geom::genericGo(
 	// temporary hack only, to not have elastic potential energy in rigid packings with overlapping spheres
 	//if(state1.blockedDOFs==State::DOF_ALL && state2.blockedDOFs==State::DOF_ALL) return false;
 
-	const Real& r1       = s1->cast<Sphere>().radius;
-	const Real& r2       = s2->cast<Sphere>().radius;
-	Vector3r    relPos   = state2.pos + shift2 - state1.pos;
+	const Real& r1 = s1->cast<Sphere>().radius;
+	const Real& r2 = s2->cast<Sphere>().radius;
+	Vector3r    relPos = state2.pos + shift2 - state1.pos;
 	Real        unDistSq = relPos.squaredNorm() - pow(math::abs(distFactor) * (r1 + r2), 2);
 	if (unDistSq > 0 && !I->isReal() && !force) return false;
 
 	// contact exists, go ahead
 
-	Real     dist   = relPos.norm();
-	Real     uN     = dist - (r1 + r2);
+	Real     dist = relPos.norm();
+	Real     uN = dist - (r1 + r2);
 	Vector3r normal = relPos / dist;
 	Vector3r contPt = state1.pos + (r1 + 0.5 * uN) * normal;
 
@@ -131,9 +131,9 @@ void Ig2_Sphere_Sphere_L3Geom::handleSpheresLikeContact(
 			I->geom = shared_ptr<L3Geom>(new L3Geom);
 		L3Geom& g(I->geom->cast<L3Geom>());
 		g.contactPoint = contPt;
-		g.refR1        = r1;
-		g.refR2        = r2;
-		g.normal       = normal;
+		g.refR1 = r1;
+		g.refR2 = r2;
+		g.normal = normal;
 		// g.trsf.setFromTwoVectors(Vector3r::UnitX(),g.normal); // quaternion just from the X-axis; does not seem to work for some reason?!
 		const Vector3r& locX(g.normal);
 		// initial local y-axis orientation, in the xz or xy plane, depending on which component is larger to avoid singularities
@@ -144,7 +144,7 @@ void Ig2_Sphere_Sphere_L3Geom::handleSpheresLikeContact(
 		g.trsf.row(0) = locX;
 		g.trsf.row(1) = locY;
 		g.trsf.row(2) = locZ;
-		g.u           = Vector3r(uN, 0, 0); // zero shear displacement
+		g.u = Vector3r(uN, 0, 0); // zero shear displacement
 		if (distFactor < 0) g.u0[0] = uN;
 		// L6Geom::phi is initialized to Vector3r::Zero() automatically
 		//cerr<<"Init trsf=\n"<<g.trsf<<endl<<"locX="<<locX<<", locY="<<locY<<", locZ="<<locZ<<endl;
@@ -237,9 +237,9 @@ void Ig2_Sphere_Sphere_L3Geom::handleSpheresLikeContact(
 	g.trsf = currTrsf;
 
 	// GenericSpheresContact
-	g.refR1        = r1;
-	g.refR2        = r2;
-	g.normal       = currNormal;
+	g.refR1 = r1;
+	g.refR2 = r2;
+	g.normal = currNormal;
 	g.contactPoint = contPt;
 
 	if (is6Dof) {
@@ -267,7 +267,7 @@ bool Ig2_Wall_Sphere_L3Geom::go(
 	if (!I->isReal() && math::abs(dist) > radius && !force) { return false; } // wall and sphere too far from each other
 	// contact point is sphere center projected onto the wall
 	Vector3r contPt = state2.pos + shift2;
-	contPt[ax]      = state1.pos[ax];
+	contPt[ax] = state1.pos[ax];
 	Vector3r normal = Vector3r::Zero();
 	// wall interacting from both sides: normal depends on sphere's position
 	assert(sense == -1 || sense == 0 || sense == 1);
@@ -299,8 +299,8 @@ bool Ig2_Facet_Sphere_L3Geom::go(
 	const Facet& facet(s1->cast<Facet>());
 	Real         radius = s2->cast<Sphere>().radius;
 	// begin facet-local coordinates
-	Vector3r cogLine   = state1.ori.conjugate() * (state2.pos + shift2 - state1.pos); // connect centers of gravity
-	Vector3r normal    = facet.normal;                                                // trial contact normal
+	Vector3r cogLine = state1.ori.conjugate() * (state2.pos + shift2 - state1.pos); // connect centers of gravity
+	Vector3r normal = facet.normal;                                                 // trial contact normal
 	Real     planeDist = normal.dot(cogLine);
 	if (math::abs(planeDist) > radius && !I->isReal() && !force) return false; // sphere too far
 	if (planeDist < 0) {
@@ -355,7 +355,7 @@ bool Law2_L3Geom_FrictPhys_ElPerfPl::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>
 		Eigen::Map<Vector2r> Fs(&localF[1]);
 		//cerr<<"u="<<geom->relU()<<", maxFs="<<maxFs<<", Fn="<<localF[0]<<", |Fs|="<<Fs.norm()<<", Fs="<<Fs<<endl;
 		if (Fs.squaredNorm() > maxFs * maxFs) {
-			Real     ratio  = sqrt(maxFs * maxFs / Fs.squaredNorm());
+			Real     ratio = sqrt(maxFs * maxFs / Fs.squaredNorm());
 			Vector3r u0slip = (1 - ratio) * Vector3r(/*no slip in the normal sense*/ 0, geom->relU()[1], geom->relU()[2]);
 			geom->u0 += u0slip; // increment plastic displacement
 			Fs *= ratio;        // decrement shear force value;
@@ -414,10 +414,10 @@ void Gl1_L3Geom::draw(const shared_ptr<IGeom>& ig, bool isL6Geom, const Real& ph
 	if (axesWd > 0) {
 		glLineWidth(axesWd);
 		for (int i = 0; i < 3; i++) {
-			Vector3r pt    = Vector3r::Zero();
-			pt[i]          = .5 * rMin * axesScale;
+			Vector3r pt = Vector3r::Zero();
+			pt[i] = .5 * rMin * axesScale;
 			Vector3r color = .3 * Vector3r::Ones();
-			color[i]       = 1;
+			color[i] = 1;
 			GLUtils::GLDrawLine(Vector3r::Zero(), pt, color);
 			if (axesLabels) GLUtils::GLDrawText(string(i == 0 ? "x" : (i == 1 ? "y" : "z")), pt, color);
 		}

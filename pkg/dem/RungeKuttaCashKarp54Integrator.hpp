@@ -25,7 +25,7 @@ public:
 	void init()
 	{
 		rungekuttaerrorcontroller = error_checker_type(abs_err, rel_err, a_x, a_dxdt);
-		rungekuttastepper         = controlled_stepper_type(rungekuttaerrorcontroller);
+		rungekuttastepper = controlled_stepper_type(rungekuttaerrorcontroller);
 	}
 
 

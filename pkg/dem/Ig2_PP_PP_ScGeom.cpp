@@ -81,20 +81,20 @@ bool Ig2_PP_PP_ScGeom::go(
 
 	if (c->geom) {
 		hasGeom = true;
-		scm     = YADE_PTR_CAST<ScGeom>(c->geom);
+		scm = YADE_PTR_CAST<ScGeom>(c->geom);
 		if (scm->penetrationDepth > stepBisection) { stepBisection = 0.5 * scm->penetrationDepth; }
 		if (stepBisection < pow(10, -6)) { /*std::cout<<"stepBisection: "<<stepBisection<<", penetrationDepth: "<<scm->penetrationDepth<<endl;*/
 		}
 		contactPt = scm->contactPoint;
 	} else {
-		scm       = shared_ptr<ScGeom>(new ScGeom());
-		c->geom   = scm;
+		scm = shared_ptr<ScGeom>(new ScGeom());
+		c->geom = scm;
 		contactPt = 0.5 * (state1.pos + state2.pos + shift2);
 	}
 
 	bool hasPhys = false;
 	if (c->phys) {
-		phys    = YADE_PTR_CAST<KnKsPhys>(c->phys);
+		phys = YADE_PTR_CAST<KnKsPhys>(c->phys);
 		hasPhys = true; //shearDir = phys->shearDir; //normalization should take place in the Contact Law
 	}
 
@@ -121,7 +121,7 @@ bool Ig2_PP_PP_ScGeom::go(
 	if (fA < 0.0 && fB < 0.0 && converge == true) {
 		contact = true;
 	} else {
-		contact   = false;
+		contact = false;
 		contactPt = 0.5 * (state1.pos + state2.pos);
 	}
 	//////////////////////////////////////////////////////////* PASS VARIABLES TO ScGeom Functor */////////////////////////////////////////////////////////////
@@ -152,11 +152,11 @@ bool Ig2_PP_PP_ScGeom::go(
 
 			if (hasPhys) {
 				//				phys->normal= avgNormal;
-				phys->ptOnP1                                                      = ptOnP1;
-				phys->ptOnP2                                                      = ptOnP2;
+				phys->ptOnP1 = ptOnP1;
+				phys->ptOnP2 = ptOnP2;
 				/*bool calJointLength = phys->calJointLength; */ Real jointLength = phys->jointLength;
-				int                                                   smallerID   = 1;
-				shearDir                                                          = phys->shearDir;
+				int                                                   smallerID = 1;
+				shearDir = phys->shearDir;
 				shearDir.normalize();
 
 				if (calContactArea) { //calculate jointLength for 2-D contacts and contactArea for 2-D and 3-D contacts
@@ -195,7 +195,7 @@ bool Ig2_PP_PP_ScGeom::go(
 			        !(hasGeom),
 			        shift2,
 			        false /* avoidGranularRatcheting */); //Assign contact point and normal after precompute!!!!
-			scm->contactPoint     = contactPt;
+			scm->contactPoint = contactPt;
 			scm->penetrationDepth = penetrationDepth;
 			if (math::isnan(avgNormal.norm())) { /* std::cout<<"avgNormal: "<<avgNormal<<endl; */
 			}
@@ -212,14 +212,14 @@ bool Ig2_PP_PP_ScGeom::go(
 			        !(hasGeom),
 			        shift2,
 			        false /* avoidGranularRatcheting */); //Assign contact point and normal after precompute!!!!
-			scm->contactPoint     = contactPt;
+			scm->contactPoint = contactPt;
 			scm->penetrationDepth = -1.0; //scm->normal = Vector3r(0,0,0);
 		}
 		return true;
 	} else {
-		scm->contactPoint     = contactPt;
+		scm->contactPoint = contactPt;
 		scm->penetrationDepth = -1.0;
-		scm->normal           = Vector3r(0, 0, 0);
+		scm->normal = Vector3r(0, 0, 0);
 		return false;
 	}
 	return false;
@@ -264,7 +264,7 @@ Real Ig2_PP_PP_ScGeom::getAreaPolygon2(
 
 	if (!twoD) { //3D contact - search counter-clockwise
 		int      count = 0, countParticleA = 0, countParticleB = 0;
-		Vector3r ptOnBoundary  = contactPoint;
+		Vector3r ptOnBoundary = contactPoint;
 		Vector3r orthogonalDir = Vector3r(contactNormal.y(), -contactNormal.x(), 0.0); //Vector along the shear direction
 
 		if (orthogonalDir.norm() < pow(10, -5)) {
@@ -293,17 +293,17 @@ Real Ig2_PP_PP_ScGeom::getAreaPolygon2(
 		Vector3r newPt(0, 0, 0), secondPoint(0, 0, 0), newSearchDir, ptOnP1a, ptOnP2a, p1, p2, v;
 		Real     theta;
 
-		for (int i = 0; i <= 360; i += areaStep) {   //Here we iterate every "areaStep" degrees, to find the contact area
-			theta        = i * Mathr::PI / 180.; //theta is "i" in radians
-			v            = orthogonalDir;
+		for (int i = 0; i <= 360; i += areaStep) { //Here we iterate every "areaStep" degrees, to find the contact area
+			theta = i * Mathr::PI / 180.;      //theta is "i" in radians
+			v = orthogonalDir;
 			newSearchDir = v * math::cos(theta) + contactNormal.cross(v) * math::sin(theta)
 			        + contactNormal * (contactNormal.dot(v)) * (1 - math::cos(theta));
 			newSearchDir.normalize(); //FIXME lose accuracy
 			                          //			std::cout<< count << " | " << theta << " | " << newSearchDir	<<endl; //Debug message
 
 			prevPoint = ptOnBoundary;
-			ptOnP1a   = Vector3r(0, 0, 0);
-			ptOnP2a   = Vector3r(0, 0, 0);
+			ptOnP1a = Vector3r(0, 0, 0);
+			ptOnP2a = Vector3r(0, 0, 0);
 
 			getPtOnParticle2(cm1, state1, Vector3r(0, 0, 0), contactPoint, newSearchDir, ptOnP1a);
 			getPtOnParticle2(cm2, state2, shift2, contactPoint, newSearchDir, ptOnP2a);
@@ -388,7 +388,7 @@ Real Ig2_PP_PP_ScGeom::getAreaPolygon2(
 		}
 
 		jointLength = (ptOnBoundary1 - ptOnBoundary2).norm(); //Contact length of 2-D contact
-		areaTri     = unitWidth2D * jointLength;              //Contact area of 2-D contact
+		areaTri = unitWidth2D * jointLength;                  //Contact area of 2-D contact
 	}
 	return areaTri;
 }
@@ -411,8 +411,8 @@ void Ig2_PP_PP_ScGeom::BrentZeroSurf(
 	Real     e = 0.0;
 	Real     h;
 	Vector3r bracketRange = bracketB - bracketA;
-	Real     fa           = evaluatePP(cm1, state1, shift2, bracketA); //evaluateFNoSphere(cm1,state1, bracketA); //
-	Real     fb           = evaluatePP(cm1, state1, shift2, bracketB); //evaluateFNoSphere(cm1,state1, bracketB); //
+	Real     fa = evaluatePP(cm1, state1, shift2, bracketA); //evaluateFNoSphere(cm1,state1, bracketA); //
+	Real     fb = evaluatePP(cm1, state1, shift2, bracketB); //evaluateFNoSphere(cm1,state1, bracketB); //
 
 	if (fa * fb > 0.00001) { //FIXME: Check whether I need to output a warning here, or else comment this statement
 		                 //std::cout<<"fa: "<<fa<<", fb: "<<fb<<endl;
@@ -420,40 +420,40 @@ void Ig2_PP_PP_ScGeom::BrentZeroSurf(
 	//if(fabs(fa)<fabs(fb)){bracketRange *= -1.0; Vector3r temp = bracketA; bracketA= bracketB; bracketB = temp;}
 	Real fc = 0.0;
 
-	Real tol     = 2.0 * DBL_EPSILON * fabs(b) + t;
+	Real tol = 2.0 * DBL_EPSILON * fabs(b) + t;
 	int  counter = 0;
 	do {
 		if (counter == 0) {
-			c  = a;
+			c = a;
 			fc = fa;
-			d  = b - a;
-			e  = d;
+			d = b - a;
+			e = d;
 			if (fabs(fc) < fabs(fb)) {
-				a  = b;
-				b  = c;
-				c  = a;
+				a = b;
+				b = c;
+				c = a;
 				fa = fb;
 				fb = fc;
 				fc = fa;
 			}
 		} else {
 			if (fb * fc > 0.0) {
-				c  = a;
+				c = a;
 				fc = fa;
-				d  = b - a;
-				e  = d;
+				d = b - a;
+				e = d;
 			}
 			if (fabs(fc) < fabs(fb)) {
-				a  = b;
-				b  = c;
-				c  = a;
+				a = b;
+				b = c;
+				c = a;
 				fa = fb;
 				fb = fc;
 				fc = fa;
 			}
 		}
 		tol = 2.0 * DBL_EPSILON * fabs(b) + t;
-		m   = 0.5 * (c - b);
+		m = 0.5 * (c - b);
 		if (fabs(m) > tol && fabs(fb) > pow(10, -13)) {
 			if (fabs(e) < tol || fabs(fa) <= fabs(fb)) {
 				d = m;
@@ -487,9 +487,9 @@ void Ig2_PP_PP_ScGeom::BrentZeroSurf(
 				}
 			}
 
-			a  = b;
+			a = b;
 			fa = fb;
-			h  = 0.0;
+			h = 0.0;
 			if (fabs(d) > tol) {
 				h = d;
 			} else if (m > 0.0) {
@@ -500,7 +500,7 @@ void Ig2_PP_PP_ScGeom::BrentZeroSurf(
 			b = b + h; // h*m_unitVec;
 
 			zero = bracketA + b * bracketRange;
-			fb   = evaluatePP(cm1, state1, shift2, zero); //evaluateFNoSphere(cm1,state1, zero); //
+			fb = evaluatePP(cm1, state1, shift2, zero); //evaluateFNoSphere(cm1,state1, zero); //
 
 
 		} else {
@@ -528,11 +528,11 @@ Real Ig2_PP_PP_ScGeom::evaluatePP(const shared_ptr<Shape>& cm1, const State& sta
 	/* Direction cosines */
 	//state1.ori.normalize();
 	Vector3r localP1 = state1.ori.conjugate() * tempP1;
-	Real     x       = localP1.x();
-	Real     y       = localP1.y();
-	Real     z       = localP1.z();
+	Real     x = localP1.x();
+	Real     y = localP1.y();
+	Real     z = localP1.z();
 	int      planeNo = s1->a.size();
-	Real     pSum2   = 0.0, plane;
+	Real     pSum2 = 0.0, plane;
 	for (int i = 0; i < planeNo; i++) {
 		plane = s1->a[i] * x + s1->b[i] * y + s1->c[i] * z - s1->d[i];
 		if (plane < pow(10, -15)) { plane = 0.0; }
@@ -559,9 +559,9 @@ Vector3r Ig2_PP_PP_ScGeom::getNormal(const shared_ptr<Shape>& cm1, const State& 
 	/* Direction cosines */
 	Vector3r localP1(0, 0, 0);
 	localP1 = state1.ori.conjugate() * tempP1; //the body has been rotated by state.ori.  So I will need to rotate the frame by state.ori too
-	Real x  = localP1[0];
-	Real y  = localP1[1];
-	Real z  = localP1[2];
+	Real x = localP1[0];
+	Real y = localP1[1];
+	Real z = localP1[2];
 
 	////////////////////////////// assembling potential planes particle 1//////////////////////////////
 	int          planeNo = s1->a.size();
@@ -602,10 +602,10 @@ Vector3r Ig2_PP_PP_ScGeom::getNormal(const shared_ptr<Shape>& cm1, const State& 
 	//if(state1.ori==Quaternionr(1,0,0,0)){
 	//	Q1.setIdentity();
 	//}else{
-	Real q0  = state1.ori.w();
-	Real q1  = state1.ori.x();
-	Real q2  = state1.ori.y();
-	Real q3  = state1.ori.z();
+	Real q0 = state1.ori.w();
+	Real q1 = state1.ori.x();
+	Real q2 = state1.ori.y();
+	Real q3 = state1.ori.z();
 	Q1(0, 0) = 2.0 * pow(q0, 2.0) - 1.0 + 2.0 * pow(q1, 2.0);
 	Q1(0, 1) = 2.0 * q1 * q2 + 2.0 * q0 * q3;
 	Q1(0, 2) = 2.0 * q1 * q3 - 2.0 * q0 * q2;
@@ -639,10 +639,10 @@ void Ig2_PP_PP_ScGeom::getPtOnParticle2(
         const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r midPoint, Vector3r searchDir, Vector3r& ptOnParticle)
 {
 	//PotentialParticle *s1=static_cast<PotentialParticle*>(cm1.get());
-	ptOnParticle   = midPoint;
-	Real f         = evaluatePP(cm1, state1, shift2, ptOnParticle); //evaluateFNoSphere(cm1,state1, ptOnParticle); //
+	ptOnParticle = midPoint;
+	Real f = evaluatePP(cm1, state1, shift2, ptOnParticle); //evaluateFNoSphere(cm1,state1, ptOnParticle); //
 	Real fprevious = f;
-	int  counter   = 0;
+	int  counter = 0;
 	//normal.normalize();
 	Vector3r step = searchDir * math::sign(f) * -1.0;
 	Vector3r bracketA(0, 0, 0), bracketB(0, 0, 0);
@@ -650,7 +650,7 @@ void Ig2_PP_PP_ScGeom::getPtOnParticle2(
 	do {
 		ptOnParticle += step;
 		fprevious = f;
-		f         = evaluatePP(cm1, state1, shift2, ptOnParticle); //evaluateFNoSphere(cm1,state1, ptOnParticle); //
+		f = evaluatePP(cm1, state1, shift2, ptOnParticle); //evaluateFNoSphere(cm1,state1, ptOnParticle); //
 		counter++;
 		if (counter == 50000) {
 			//LOG_WARN("Initial point searching exceeded 500 iterations!");
@@ -680,21 +680,21 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	PotentialParticle* s1 = static_cast<PotentialParticle*>(cm1.get());
 	PotentialParticle* s2 = static_cast<PotentialParticle*>(cm2.get());
 	Vector3r           xGlobal(0.0, 0.0, 0.0);
-	int                iter      = 0;
+	int                iter = 0;
 	int                totalIter = 0;
 
 	/* Parameters for particles A and B */
-	Real rA        = s1->r;
-	Real kA        = s1->k;
-	Real RA        = s1->R;
-	Real rB        = s2->r;
-	Real kB        = s2->k;
-	Real RB        = s2->R;
-	int  planeNoA  = s1->a.size();
-	int  planeNoB  = s2->a.size();
-	int  varNo     = 3 + 1 + planeNoA + planeNoB;
+	Real rA = s1->r;
+	Real kA = s1->k;
+	Real RA = s1->R;
+	Real rB = s2->r;
+	Real kB = s2->k;
+	Real RB = s2->R;
+	int  planeNoA = s1->a.size();
+	int  planeNoB = s2->a.size();
+	int  varNo = 3 + 1 + planeNoA + planeNoB;
 	int  planeNoAB = planeNoA + planeNoB;
-	int  varNo2    = varNo * varNo;
+	int  varNo2 = varNo * varNo;
 	int  planeNoA3 = 3 + planeNoA;
 	int  planeNoB3 = 3 + planeNoB;
 	//int planeNoA2 =planeNoA*planeNoA;
@@ -702,15 +702,15 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	Matrix3r QA = state1.ori.conjugate().toRotationMatrix(); /*direction cosine */
 	Matrix3r QB = state2.ori.conjugate().toRotationMatrix(); /*direction cosine */
 
-	int  blas3          = 3;
-	char blasNT         = 'N';
-	char blasT          = 'T';
-	int  blas1planeNoA  = math::max(1, planeNoA);
-	int  blas1planeNoB  = math::max(1, planeNoB);
+	int  blas3 = 3;
+	char blasNT = 'N';
+	char blasT = 'T';
+	int  blas1planeNoA = math::max(1, planeNoA);
+	int  blas1planeNoB = math::max(1, planeNoB);
 	int  blas1planeNoAB = math::max(1, planeNoAB);
-	Real blas0          = 0.0;
-	Real blas1          = 1.0;
-	Real blasNeg1       = -1.0;
+	Real blas0 = 0.0;
+	Real blas1 = 1.0;
+	Real blasNeg1 = -1.0;
 
 	Real blasQA[9];
 	Real blasQB[9];
@@ -721,7 +721,7 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	for (int i = 0; i < varNo; i++) {
 		blasC[i] = 0.0;
 	}
-	blasC[3]      = 1.0;
+	blasC[3] = 1.0;
 	int blasCount = 0;
 
 	contactPt += shift2;
@@ -732,8 +732,8 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 			blasQB[blasCount] = QB(j, i);
 			blasCount++;
 		}
-		blasPosA[i]      = state1.pos[i];
-		blasPosB[i]      = state2.pos[i] + shift2[i];
+		blasPosA[i] = state1.pos[i];
+		blasPosB[i] = state2.pos[i] + shift2[i];
 		blasContactPt[i] = contactPt[i];
 	}
 	//std::cout<<"QA: "<<QA<<endl;std::cout<<"blasQA: "<<endl;
@@ -749,22 +749,22 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	Real kBp = sqrt(1.0 - kB) / rB;
 
 	/* penalty */
-	Real t         = 1.0;
-	Real mu        = 10.0;
+	Real t = 1.0;
+	Real mu = 10.0;
 	Real planePert = 0.1 * rA;
-	Real sPert     = 1.0; //+ 10.0*planePert*(planeNoA+planeNoB)/(rA*rA);
+	Real sPert = 1.0; //+ 10.0*planePert*(planeNoA+planeNoB)/(rA*rA);
 	if (warmstart == true) {
-		t         = 0.01;
-		mu        = 50.0;
+		t = 0.01;
+		mu = 50.0;
 		planePert = 0.01;
-		sPert     = 0.01; ///* pow(10,-1)+ */ sqrt(planePert*planePert*(planeNoA+planeNoB)/(rA*rA));
+		sPert = 0.01; ///* pow(10,-1)+ */ sqrt(planePert*planePert*(planeNoA+planeNoB)/(rA*rA));
 	}
 	/* s */
-	Real s     = 0.0;
-	Real m     = 2.0;
+	Real s = 0.0;
+	Real m = 2.0;
 	Real NTTOL = pow(10, -8);
-	Real tol   = accuracyTol /*pow(10,-4)* RA*pow(10,-6)*/;
-	Real gap   = 0.0;
+	Real tol = accuracyTol /*pow(10,-4)* RA*pow(10,-6)*/;
+	Real gap = 0.0;
 	/* x */
 	Real blasX[varNo];
 	Real blasNewX[varNo];
@@ -785,9 +785,9 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	//int  blasN = 3;
 	int blasK = 3;
 	//int blasLDA = 3;
-	int  blasLDB   = 3;
+	int  blasLDB = 3;
 	Real blasAlpha = 1.0;
-	Real blasBeta  = 0.0;
+	Real blasBeta = 0.0;
 	//int blasLDC = 3;
 	int incx = 1;
 	int incy = 1;
@@ -807,16 +807,16 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	for (int i = 0; i < planeNoA; i++) {
 		Real plane = s1->a[i] * blasLocalP1[0] + s1->b[i] * blasLocalP1[1] + s1->c[i] * blasLocalP1[2] - s1->d[i];
 		if (plane < pow(10, -15)) {
-			plane        = 0.0;
+			plane = 0.0;
 			blasX[4 + i] = plane + planePert;
 		} else {
 			blasX[4 + i] = plane + planePert;
 		}
 		pertSumA2 += pow((plane + planePert), 2);
-		blasP1[i]                = s1->a[i];
-		blasP1[i + planeNoA]     = s1->b[i];
+		blasP1[i] = s1->a[i];
+		blasP1[i + planeNoA] = s1->b[i];
 		blasP1[i + 2 * planeNoA] = s1->c[i];
-		blasD1[i]                = s1->d[i];
+		blasD1[i] = s1->d[i];
 	}
 	//MatrixXr P1Q = P1*QA;
 	//transA = 'N'; transB = 'N'; blasM = planeNoA;  blasN = 3; blasK = 3;
@@ -825,7 +825,7 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	dgemm_(&blasNT, &blasNT, &planeNoA, &blas3, &blas3, &blas1, &blasP1[0], &blas1planeNoA, &blasQA[0], &blasLDB, &blas0, &blasP1Q[0], &blas1planeNoA);
 
 	Real sphereA = (pow(blasLocalP1[0], 2) + pow(blasLocalP1[1], 2) + pow(blasLocalP1[2], 2)) / pow(RA, 2);
-	Real sA      = (1.0 - kA) * (pertSumA2 / pow(rA, 2) - 1.0) + kA * (sphereA - 1.0);
+	Real sA = (1.0 - kA) * (pertSumA2 / pow(rA, 2) - 1.0) + kA * (sphereA - 1.0);
 
 	/* fB */
 	Real blasTempP2[3];
@@ -848,16 +848,16 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	for (int i = 0; i < planeNoB; i++) {
 		Real plane = s2->a[i] * blasLocalP2[0] + s2->b[i] * blasLocalP2[1] + s2->c[i] * blasLocalP2[2] - s2->d[i];
 		if (plane < pow(10, -15)) {
-			plane                   = 0.0;
+			plane = 0.0;
 			blasX[4 + planeNoA + i] = plane + planePert;
 		} else {
 			blasX[4 + planeNoA + i] = plane + planePert;
 		}
 		pertSumB2 += pow((plane + planePert), 2);
-		blasP2[i]                = s2->a[i];
-		blasP2[i + planeNoB]     = s2->b[i];
+		blasP2[i] = s2->a[i];
+		blasP2[i + planeNoB] = s2->b[i];
 		blasP2[i + 2 * planeNoB] = s2->c[i];
-		blasD2[i]                = s2->d[i];
+		blasD2[i] = s2->d[i];
 	}
 	//MatrixXr P2Q = P2*QB;
 	//transA = 'N'; transB = 'N'; blasM = planeNoB;    blasN = 3; blasK = 3;
@@ -865,7 +865,7 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	// dgemm_(&transA, &transB, &blasM, &blasN, &blasK, &blasAlpha, &blasP2[0], &blasLDA, &blasQB[0], &blasLDB, &blasBeta, &blasP2Q[0], &blasLDC);
 	dgemm_(&blasNT, &blasNT, &planeNoB, &blas3, &blas3, &blasAlpha, &blasP2[0], &blas1planeNoB, &blasQB[0], &blas3, &blasBeta, &blasP2Q[0], &blas1planeNoB);
 	Real sphereB = (pow(blasLocalP2[0], 2) + pow(blasLocalP2[1], 2) + pow(blasLocalP2[2], 2)) / pow(RB, 2);
-	Real sB      = (1.0 - kB) * (pertSumB2 / pow(rB, 2) - 1.0) + kB * (sphereB - 1.0);
+	Real sB = (1.0 - kB) * (pertSumB2 / pow(rB, 2) - 1.0) + kB * (sphereB - 1.0);
 	//sPert = fabs(fA-fB);
 
 	s = math::max(sqrt(fabs(sA + 1.0)), sqrt(fabs(sB + 1.0))) + sPert; //sqrt(fA+fB+2.0)+sPert; //sqrt(math::max(fabs(fA+1.0), fabs(fB+1.0))) + sPert; //
@@ -889,7 +889,7 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	//MatrixXr A1(3+planeNoA,varNo);
 	//Matrix3r QAs=kAs*QA; //cwise()
 	Real blasQAs[9];
-	int  noElements  = 9;
+	int  noElements = 9;
 	Real scaleFactor = kAs;
 	dcopy_(&noElements, &blasQA[0], &incx, &blasQAs[0], &incx);
 	dscal_(&noElements, &scaleFactor, &blasQAs[0], &incx);
@@ -905,8 +905,8 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	//std::fill(blasA1.begin() , blasA1.end() , 0);
 
 	for (int i = 0; i < 3; i++) {
-		blasA1[i]                 = blasQAs[i];
-		blasA1[i + planeNoA3]     = blasQAs[i + 3];
+		blasA1[i] = blasQAs[i];
+		blasA1[i + planeNoA3] = blasQAs[i + 3];
 		blasA1[i + 2 * planeNoA3] = blasQAs[i + 6];
 	}
 	for (int i = 0; i < planeNoA; i++) {
@@ -918,7 +918,7 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	//MatrixXr A2(3+planeNoB,varNo);
 	//Matrix3r QBs=kBs*QB; //cwise();
 	Real blasQBs[9];
-	noElements  = 9;
+	noElements = 9;
 	scaleFactor = kBs;
 	dcopy_(&noElements, &blasQB[0], &incx, &blasQBs[0], &incx);
 	dscal_(&noElements, &scaleFactor, &blasQBs[0], &incx);
@@ -929,8 +929,8 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	memset(blasA2, 0.0, sizeof(blasA2));
 #endif
 	for (int i = 0; i < 3; i++) {
-		blasA2[i]                   = blasQBs[i];
-		blasA2[i + planeNoB3]       = blasQBs[i + 3];
+		blasA2[i] = blasQBs[i];
+		blasA2[i + planeNoB3] = blasQBs[i + 3];
 		blasA2[i + 2 * (planeNoB3)] = blasQBs[i + 6];
 	}
 
@@ -999,15 +999,15 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	//std::fill(blasAL.begin() , blasAL.end() , 0);
 #endif
 	for (int i = 0; i < planeNoA; i++) {
-		blasAL[i]                       = blasP1Q[i];
-		blasAL[i + planeNoAB]           = blasP1Q[i + planeNoA];
-		blasAL[i + 2 * planeNoAB]       = blasP1Q[i + 2 * planeNoA];
+		blasAL[i] = blasP1Q[i];
+		blasAL[i + planeNoAB] = blasP1Q[i + planeNoA];
+		blasAL[i + 2 * planeNoAB] = blasP1Q[i + 2 * planeNoA];
 		blasAL[i + (4 + i) * planeNoAB] = -1.0;
 	}
 	for (int i = 0; i < planeNoB; i++) {
-		blasAL[planeNoA + i]                                  = blasP2Q[i];
-		blasAL[planeNoA + i + planeNoAB]                      = blasP2Q[i + planeNoB];
-		blasAL[planeNoA + i + 2 * planeNoAB]                  = blasP2Q[i + 2 * planeNoB];
+		blasAL[planeNoA + i] = blasP2Q[i];
+		blasAL[planeNoA + i + planeNoAB] = blasP2Q[i + planeNoB];
+		blasAL[planeNoA + i + 2 * planeNoAB] = blasP2Q[i + 2 * planeNoB];
 		blasAL[planeNoA + i + (4 + planeNoA + i) * planeNoAB] = -1.0;
 	}
 
@@ -1068,8 +1068,8 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 #endif
 	/* ca1Transpose */
 	noElements = varNo2;
-	incx       = 1;
-	incy       = 1;
+	incx = 1;
+	incy = 1;
 	dcopy_(&noElements, &blasCCtranspose[0], &incx, &blasCa1[0], &incy);
 
 	//transA = 'T';   transB = 'N';   blasM = varNo;   blasN = varNo;   blasK = 3+planeNoA;
@@ -1103,16 +1103,16 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 
 
 	Real wLlogsum = 0.0;
-	Real val      = 0.0;
-	Real newval   = 0.0;
+	Real val = 0.0;
+	Real newval = 0.0;
 	/*Linesearch */
 	Real backtrack = 1.0;
-	Real penalty   = 1.0 / t;
+	Real penalty = 1.0 / t;
 
 	/* LAPACK */
 	int  info;
 	char UPLO = 'L';
-	int  KD   = varNo - 1;
+	int  KD = varNo - 1;
 	int  nrhs = 1;
 	Real HessianChol[varNo][varNo];
 
@@ -1130,7 +1130,7 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 	Real blasHB[varNo * varNo];
 	Real blasHL[varNo * varNo];
 	Real blasADAtemp[varNo * planeNoAB];
-	noElements     = varNo;
+	noElements = varNo;
 	Real blasW1dot = 0.0;
 	Real blasW2dot = 0.0;
 	Real blasGrad[varNo];
@@ -1200,8 +1200,8 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 		blasW1dot = ddot_(&planeNoA3, &blasW1[0], &incx, &blasW1[0], &incy);
 		//noElements = 3+planeNoB;
 		blasW2dot = ddot_(&planeNoB3, &blasW2[0], &incx, &blasW2[0], &incy);
-		u1        = s * s - blasW1dot;
-		u2        = s * s - blasW2dot;
+		u1 = s * s - blasW1dot;
+		u2 = s * s - blasW2dot;
 
 		/* wL = bL - AL*x; */
 		noElements = planeNoAB;
@@ -1212,7 +1212,7 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 		dgemv_(&blasNT, &planeNoAB, &varNo, &blasNeg1, &blasAL[0], &blas1planeNoAB, &blasX[0], &incx, &blas1, &blasWL[0], &incy);
 
 		for (int i = 0; i < planeNoAB; i++) {
-			blasVL[i]                 = 1.0 / blasWL[i];
+			blasVL[i] = 1.0 / blasWL[i];
 			blasDL[i * planeNoAB + i] = blasVL[i] * blasVL[i];
 		}
 
@@ -1228,7 +1228,7 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 		dcopy_(&varNo, &blasC[0], &incx, &blasGA[0], &incy);
 		//transA = 'T';      blasM = 3+planeNoA;   blasLDA = 3+planeNoA;
 		blasAlpha = -1.0 * -2.0 / u1;
-		blasBeta  = 1.0 * -2.0 / u1 * s;
+		blasBeta = 1.0 * -2.0 / u1 * s;
 		//dgemv_(&transA, &blasM, &blasN, &blasAlpha, &blasA1[0], &blasLDA, &blasW1[0], &incx, &blasBeta, &blasGA[0], &incy);
 		dgemv_(&blasT, &planeNoA3, &varNo, &blasAlpha, &blasA1[0], &planeNoA3, &blasW1[0], &incx, &blasBeta, &blasGA[0], &incy);
 
@@ -1236,7 +1236,7 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 		dcopy_(&varNo, &blasC[0], &incx, &blasGB[0], &incy);
 		//transA = 'T';  blasM = 3+planeNoB;   blasLDA = 3+planeNoB;
 		blasAlpha = -1.0 * -2.0 / u2;
-		blasBeta  = 1.0 * -2.0 / u2 * s;
+		blasBeta = 1.0 * -2.0 / u2 * s;
 		//dgemv_(&transA, &blasM, &blasN, &blasAlpha, &blasA2[0], &blasLDA, &blasW2[0], &incx, &blasBeta, &blasGB[0], &incy);
 		dgemv_(&blasT, &planeNoB3, &varNo, &blasAlpha, &blasA2[0], &planeNoB3, &blasW2[0], &incx, &blasBeta, &blasGB[0], &incy);
 
@@ -1257,7 +1257,7 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 		dcopy_(&varNo2, &blasCa1[0], &incx, &blasHA[0], &incy);
 		//transA = 'N';   transB = 'T';   blasM = varNo;   blasN = varNo;   blasK = 1;blasLDA = blasM;   blasLDB = blasN;     blasAlpha = 1.0;  blasLDC = blasM;
 		blasBeta = -2.0 / (u1);
-		blasK    = 1;
+		blasK = 1;
 		//dgemm_(&transA, &transB, &blasM, &blasN, &blasK, &blasAlpha, &blasGA[0], &blasLDA, &blasGA[0], &blasLDB, &blasBeta, &blasHA[0], &blasLDC);
 		dgemm_(&blasNT, &blasT, &varNo, &varNo, &blasK, &blas1, &blasGA[0], &varNo, &blasGA[0], &varNo, &blasBeta, &blasHA[0], &varNo);
 
@@ -1450,7 +1450,7 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 
 
 		newval = /*c.tranpose()*/ blasNewX[3] - penalty * (log(u1) + log(u2) + wLlogsum);
-		count  = 0;
+		count = 0;
 		while (newval > val + backtrack * 0.01 * blasFprime) {
 			backtrack = 0.5 * backtrack;
 			//for (int i = 0; i<varNo; i++){
@@ -1543,8 +1543,8 @@ bool Ig2_PP_PP_ScGeom::customSolve(
 				//timingDeltas->checkpoint("newton");
 				return true;
 			}
-			t         = math::min(t * mu, (2.0 * m + 1.0) / tol);
-			iter      = 0;
+			t = math::min(t * mu, (2.0 * m + 1.0) / tol);
+			iter = 0;
 			totalIter = totalIter + 1;
 		}
 		if (totalIter > 100) {

@@ -121,12 +121,12 @@ namespace CGT {
 					center = center + 0.25 * (Tes.vertex(newCell->vertex(k)->info().id())->point().point() - CGAL::ORIGIN);
 			else {
 				Real boundPos = 0;
-				int  coord    = 0;
+				int  coord = 0;
 				for (int k = 0; k < 4; k++) {
 					if (!newCell->vertex(k)->info().isFictious)
 						center = center + 0.3333333333 * (Tes.vertex(newCell->vertex(k)->info().id())->point().point() - CGAL::ORIGIN);
 					else {
-						coord    = boundary(newCell->vertex(k)->info().id()).coordinate;
+						coord = boundary(newCell->vertex(k)->info().id()).coordinate;
 						boundPos = boundary(newCell->vertex(k)->info().id()).p[coord];
 					}
 				}
@@ -150,10 +150,10 @@ namespace CGT {
 		for (FiniteVerticesIterator v = Tri.finite_vertices_begin(); v != Tri.finite_vertices_end(); ++v) {
 			if (noCache) {
 				oldForces[v->info().id()] = nullVect;
-				v->info().forces          = nullVect;
+				v->info().forces = nullVect;
 			} else {
 				oldForces[v->info().id()] = v->info().forces;
-				v->info().forces          = nullVect;
+				v->info().forces = nullVect;
 			}
 		}
 		CellHandle   neighbourCell;
@@ -171,12 +171,12 @@ namespace CGT {
 						// 				#ifdef EIGENSPARSE_LIB
 						// 				if (!cell->info().Pcondition) ++nPCells;
 						// 				#endif
-						neighbourCell        = cell->neighbor(j);
+						neighbourCell = cell->neighbor(j);
 						const CVector& Surfk = cell->info().facetSurfaces[j];
 						//FIXME : later compute that fluidSurf only once in hydraulicRadius, for now keep full surface not modified in cell->info for comparison with other forces schemes
 						//The ratio void surface / facet surface
-						Real                        area          = sqrt(Surfk.squared_length());
-						CVector                     facetNormal   = Surfk / area;
+						Real                        area = sqrt(Surfk.squared_length());
+						CVector                     facetNormal = Surfk / area;
 						const std::vector<CVector>& crossSections = cell->info().facetSphereCrossSections;
 						CVector fluidSurfk = cell->info().facetSurfaces[j] * cell->info().facetFluidSurfacesRatio[j];
 						/// handle fictious vertex since we can get the projected surface easily here
@@ -184,7 +184,7 @@ namespace CGT {
 							using math::
 							        abs; // It has to be added because on ubuntu xenial 16.04 g++ 5.3.1 Argument Depended Lookup does not work in cases when function from one namespace is used inside another namespace to be found by ADL
 							Real projSurf = abs(Surfk[boundary(cell->vertex(j)->info().id()).coordinate]);
-							tempVect      = -projSurf * boundary(cell->vertex(j)->info().id()).normal;
+							tempVect = -projSurf * boundary(cell->vertex(j)->info().id()).normal;
 							//define the cached value for later use with cache*p
 							cell->info().unitForceVectors[j] = cell->info().unitForceVectors[j] + tempVect;
 						}
@@ -218,7 +218,7 @@ namespace CGT {
 		for (VCellIterator cellIt = T[currentTes].cellHandles.begin(); cellIt != T[currentTes].cellHandles.end(); cellIt++) {
 			const CellHandle& cell = *cellIt;
 			for (int yy = 0; yy < 4; yy++) {
-				VertexInfo& vhi        = cell->vertex(yy)->info();
+				VertexInfo& vhi = cell->vertex(yy)->info();
 				Real        unshiftedP = cell->info().p();
 				//the pressure translated to a ghost cell adjacent to the non-ghost vertex
 				unshiftedP -= pDeltas[0] * vhi.period[0] + pDeltas[1] * vhi.period[1] + pDeltas[2] * vhi.period[2];
@@ -250,12 +250,12 @@ namespace CGT {
 		int         surfneg = 0;
 		int         NEG = 0, POS = 0, pass = 0;
 		Real        meanK = 0, STDEV = 0, meanRadius = 0, meanDistance = 0;
-		Real        infiniteK       = 1e3;
+		Real        infiniteK = 1e3;
 		Real        volume_sub_pore = 0.f;
-		VectorCell& cellHandles     = T[currentTes].cellHandles;
+		VectorCell& cellHandles = T[currentTes].cellHandles;
 		for (VCellIterator cellIt = T[currentTes].cellHandles.begin(); cellIt != T[currentTes].cellHandles.end(); cellIt++) {
 			CellHandle& cell = *cellIt;
-			Point&      p1   = cell->info();
+			Point&      p1 = cell->info();
 			if (cell->info().blocked) { this->setBlocked(cell); }
 			if (cell->info().isGhost) {
 				cerr << "skipping a ghost" << endl;
@@ -263,7 +263,7 @@ namespace CGT {
 			}
 			for (int j = 0; j < 4; j++) {
 				neighbourCell = cell->neighbor(j);
-				Point& p2     = neighbourCell->info();
+				Point& p2 = neighbourCell->info();
 				if (!Tri.is_infinite(neighbourCell) /*&& (neighbour_cell->info().isvisited==ref || computeAllCells)*/) {
 					//compute and store the area of sphere-facet intersections for later use
 					VertexHandle W[3];
@@ -308,7 +308,7 @@ namespace CGT {
 
 					pass += 1;
 					CVector l = p1 - p2;
-					distance  = sqrt(l.squared_length());
+					distance = sqrt(l.squared_length());
 					if (!rAverage) radius = 2 * this->computeHydraulicRadius(cell, j);
 					else
 						radius = (this->computeEffectiveRadius(cell, j) + this->computeEquivalentRadius(cell, j)) * 0.5;
@@ -317,14 +317,14 @@ namespace CGT {
 						POS++;
 					if (radius == 0) { cout << "INS-INS PROBLEM!!!!!!!" << endl; }
 					Real fluidArea = 0;
-					int  test      = 0;
+					int  test = 0;
 					if (distance != 0) {
 						if (minPermLength > 0 && distanceCorrection) distance = math::max(minPermLength * radius, distance);
-						const CVector& Surfk         = cell->info().facetSurfaces[j];
-						Real           area          = sqrt(Surfk.squared_length());
+						const CVector& Surfk = cell->info().facetSurfaces[j];
+						Real           area = sqrt(Surfk.squared_length());
 						const CVector& crossSections = cell->info().facetSphereCrossSections[j];
-						Real           S0            = 0;
-						S0                           = checkSphereFacetOverlap(v0, v1, v2);
+						Real           S0 = 0;
+						S0 = checkSphereFacetOverlap(v0, v1, v2);
 						if (S0 == 0) S0 = checkSphereFacetOverlap(v1, v2, v0);
 						if (S0 == 0) S0 = checkSphereFacetOverlap(v2, v0, v1);
 						//take absolute value, since in rare cases the surface can be negative (overlaping spheres)
@@ -364,7 +364,7 @@ namespace CGT {
 					// 							}
 					// 					}
 					if (permeabilityMap) {
-						CellHandle c   = cell;
+						CellHandle c = cell;
 						cell->info().s = cell->info().s + k * distance / fluidArea * this->volumePoreVoronoiFraction(c, j);
 						volume_sub_pore += this->volumePoreVoronoiFraction(c, j);
 					}
@@ -372,7 +372,7 @@ namespace CGT {
 			}
 			// 			cell->info().isvisited = !ref;
 			if (permeabilityMap) {
-				cell->info().s  = cell->info().s / volume_sub_pore;
+				cell->info().s = cell->info().s / volume_sub_pore;
 				volume_sub_pore = 0.f;
 			}
 			// 		}
@@ -425,7 +425,7 @@ namespace CGT {
 		// A loop to compute the standard deviation of the local K distribution, and use it to include/exclude K values higher then (meanK +/- K_opt_factor*STDEV)
 		if (meanKStat) {
 			std::ofstream k_opt_file("k_stdev.txt", std::ios::out);
-			pass                        = 0;
+			pass = 0;
 			FiniteCellsIterator cellEnd = Tri.finite_cells_end();
 			for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
 				for (int j = 0; j < 4; j++) {
@@ -449,7 +449,7 @@ namespace CGT {
 					if (!Tri.is_infinite(neighbourCell) /*&& neighbour_cell->info().isvisited==ref*/) {
 						pass += 1;
 						if ((cell->info().kNorm())[j] > k_max) {
-							(cell->info().kNorm())[j]                                  = k_max;
+							(cell->info().kNorm())[j] = k_max;
 							(neighbourCell->info().kNorm())[Tri.mirror_index(cell, j)] = (cell->info().kNorm())[j];
 						}
 						k_opt_file << KOptFactor << " " << (cell->info().kNorm())[j] << endl;
@@ -460,8 +460,8 @@ namespace CGT {
 		}
 		if (debugOut) {
 			FiniteVerticesIterator verticesEnd = Tri.finite_vertices_end();
-			Real                   Vgrains     = 0;
-			int                    grains      = 0;
+			Real                   Vgrains = 0;
+			int                    grains = 0;
 
 			for (FiniteVerticesIterator vIt = Tri.finite_vertices_begin(); vIt != verticesEnd; vIt++) {
 				if (!vIt->info().isFictious && !vIt->info().isGhost) {
@@ -486,12 +486,12 @@ namespace CGT {
 	template <class _Tesselation> void PeriodicFlow<_Tesselation>::gaussSeidel(Real dt)
 	{
 		RTriangulation& Tri = T[currentTes].Triangulation();
-		int             j   = 0;
+		int             j = 0;
 		Real            m, n, dp_max, p_max, sum_p, dp, sum_dp;
 		Real            compFlowFactor = 0;
 		vector<Real>    previousP;
 		previousP.resize(Tri.number_of_finite_cells());
-		const int num_threads  = 1;
+		const int num_threads = 1;
 		bool      compressible = fluidBulkModulus > 0;
 
 		vector<Real> t_sum_p, t_dp_max, t_sum_dp, t_p_max;
@@ -502,11 +502,11 @@ namespace CGT {
 		FiniteCellsIterator cellEnd = Tri.finite_cells_end();
 		do {
 			int cell2 = 0;
-			dp_max    = 0;
-			p_max     = 0;
-			sum_p     = 0;
-			sum_dp    = 0;
-			int bb    = -1;
+			dp_max = 0;
+			p_max = 0;
+			sum_p = 0;
+			sum_dp = 0;
+			int bb = -1;
 			for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
 				bb++;
 				if (!cell->info().Pcondition && !cell->info().isGhost) {
@@ -552,7 +552,7 @@ namespace CGT {
 					}
 					dp -= cell->info().p();
 					dp_max = math::max(dp_max, math::abs(dp));
-					p_max  = math::max(p_max, math::abs(cell->info().shiftedP()));
+					p_max = math::max(p_max, math::abs(cell->info().shiftedP()));
 					sum_p += cell->info().shiftedP();
 					sum_dp += math::abs(dp);
 				}
@@ -574,7 +574,7 @@ namespace CGT {
 
 	template <class _Tesselation> void PeriodicFlow<_Tesselation>::displayStatistics()
 	{
-		RTriangulation&     Tri  = T[currentTes].Triangulation();
+		RTriangulation&     Tri = T[currentTes].Triangulation();
 		int                 Zero = 0, Inside = 0, Fictious = 0, ghostC = 0, realC = 0, ghostV = 0, realV = 0;
 		FiniteCellsIterator cellEnd = Tri.finite_cells_end();
 		for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
@@ -596,8 +596,8 @@ namespace CGT {
 				real += 1;
 		}
 		long Vertices = Tri.number_of_vertices();
-		long Cells    = Tri.number_of_finite_cells();
-		long Facets   = Tri.number_of_finite_facets();
+		long Cells = Tri.number_of_finite_cells();
+		long Facets = Tri.number_of_finite_facets();
 		if (debugOut) {
 			cout << "zeros = " << Zero << endl;
 			cout << "There are " << Vertices << " vertices, dont " << fict << " fictious et " << real << " reeeeeel" << std::endl;
@@ -609,8 +609,8 @@ namespace CGT {
 			cout << "There are " << Fictious << " cells FICTIOUS." << endl;
 		}
 		vtkInfiniteVertices = fict;
-		vtkInfiniteCells    = Fictious;
-		num_particles       = real;
+		vtkInfiniteCells = Fictious;
+		num_particles = real;
 	}
 
 } //END NAMESPACE CGT

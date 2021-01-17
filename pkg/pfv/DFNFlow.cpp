@@ -59,7 +59,7 @@ class DFNBoundingSphere : public CGT::FlowBoundingSphere<DFNTesselation>
 public:
 	void saveVtk(const char* folder, bool withBoundaries) //FIXME: withBoundaries does nothing in DFNFlow right now. Needed for consistent templating.
 	{
-		RTriangulation&     Tri    = T[noCache ? (!currentTes) : currentTes].Triangulation();
+		RTriangulation&     Tri = T[noCache ? (!currentTes) : currentTes].Triangulation();
 		static unsigned int number = 0;
 		char                filename[250];
 		mkdir(folder, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
@@ -68,7 +68,7 @@ public:
 
 		/// count fictious vertices and cells
 		vtkInfiniteVertices = vtkInfiniteCells = 0;
-		FiniteCellsIterator cellEnd            = Tri.finite_cells_end();
+		FiniteCellsIterator cellEnd = Tri.finite_cells_end();
 		for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
 			bool isDrawable = cell->info().isReal() && cell->vertex(0)->info().isReal() && cell->vertex(1)->info().isReal()
 			        && cell->vertex(2)->info().isReal() && cell->vertex(3)->info().isReal();
@@ -227,8 +227,8 @@ YADE_PLUGIN((DFNFlowEngine));
 /// function allows us to interpolate information about fractured/non fractured cells so we can identify newly fractured cells, monitor half width, and identify fracture tip. We also use the loop to compute leakoff rate
 void DFNFlowEngine::interpolateCrack(Tesselation& Tes, Tesselation& NewTes)
 {
-	RTriangulation&     Tri     = Tes.Triangulation();
-	RTriangulation&     newTri  = NewTes.Triangulation();
+	RTriangulation&     Tri = Tes.Triangulation();
+	RTriangulation&     newTri = NewTes.Triangulation();
 	FiniteCellsIterator cellEnd = newTri.finite_cells_end();
 #ifdef YADE_OPENMP
 	const long size = NewTes.cellHandles.size();
@@ -244,7 +244,7 @@ void DFNFlowEngine::interpolateCrack(Tesselation& Tes, Tesselation& NewTes)
 			for (int k = 0; k < 4; k++)
 				center = center + 0.25 * (Tes.vertex(newCell->vertex(k)->info().id())->point().point() - CGAL::ORIGIN);
 
-		CellHandle oldCell    = Tri.locate(CGT::Sphere(center[0], center[1], center[2]));
+		CellHandle oldCell = Tri.locate(CGT::Sphere(center[0], center[1], center[2]));
 		newCell->info().crack = oldCell->info().crack;
 		//		For later commit newCell->info().fractureTip = oldCell->info().fractureTip;
 		//		For later commit newCell->info().cellHalfWidth = oldCell->info().cellHalfWidth;
@@ -267,7 +267,7 @@ void DFNFlowEngine::trickPermeability(RTriangulation::Facet_circulator& facet, R
 {
 	const RTriangulation::Facet& currentFacet
 	        = *facet; /// seems verbose but facet->first was declaring a junk cell and crashing program (old site, fixed bug https://bugs.launchpad.net/yade/+bug/1666339)
-	const RTriangulation& Tri   = solver->T[solver->currentTes].Triangulation();
+	const RTriangulation& Tri = solver->T[solver->currentTes].Triangulation();
 	const CellHandle&     cell1 = currentFacet.first;
 	const CellHandle&     cell2 = currentFacet.first->neighbor(facet->second);
 	if (Tri.is_infinite(cell1) || Tri.is_infinite(cell2)) cerr << "Infinite cell found in trickPermeability, should be handled somehow, maybe" << endl;
@@ -284,22 +284,22 @@ void DFNFlowEngine::trickPermeability(RTriangulation::Facet_circulator& facet, R
 	cell1->info().kNorm()[currentFacet.second] = cell2->info().kNorm()[Tri.mirror_index(cell1, currentFacet.second)]
 	        = apertureFactor * pow((aperture), 3) / (12 * viscosity);
 	/// For vtk recorder:
-	cell1->info().crack   = 1;
-	cell2->info().crack   = 1;
+	cell1->info().crack = 1;
+	cell2->info().crack = 1;
 	cell2->info().blocked = cell1->info().blocked = cell2->info().Pcondition = cell1->info().Pcondition
 	        = false;                                                                /// those ones will be included in the flow problem
-	Point&  CellCentre1             = cell1->info();                                /// Trying to get fracture's surface
-	Point&  CellCentre2             = cell2->info();                                /// Trying to get fracture's surface
-	CVector networkFractureLength   = CellCentre1 - CellCentre2;                    /// Trying to get fracture's surface
+	Point&  CellCentre1 = cell1->info();                                            /// Trying to get fracture's surface
+	Point&  CellCentre2 = cell2->info();                                            /// Trying to get fracture's surface
+	CVector networkFractureLength = CellCentre1 - CellCentre2;                      /// Trying to get fracture's surface
 	double  networkFractureDistance = sqrt(networkFractureLength.squared_length()); /// Trying to get fracture's surface
-	Real    networkFractureArea     = pow(networkFractureDistance, 2);              /// Trying to get fracture's surface
+	Real    networkFractureArea = pow(networkFractureDistance, 2);                  /// Trying to get fracture's surface
 	totalFractureArea += networkFractureArea;                                       /// Trying to get fracture's surface
 	// 	cout <<" ------------------ The total surface area up to here is --------------------" << totalFractureArea << endl;
 	// 	printFractureTotalArea = totalFractureArea; /// Trying to get fracture's surface
 	if (calcCrackArea) {
-		CVector edge  = ed_it->first->vertex(ed_it->second)->point().point() - ed_it->first->vertex(ed_it->third)->point().point();
+		CVector edge = ed_it->first->vertex(ed_it->second)->point().point() - ed_it->first->vertex(ed_it->third)->point().point();
 		CVector unitV = edge * (1. / sqrt(edge.squared_length()));
-		Point   p3    = ed_it->first->vertex(ed_it->third)->point().point()
+		Point   p3 = ed_it->first->vertex(ed_it->third)->point().point()
 		        + unitV * (cell1->info() - ed_it->first->vertex(ed_it->third)->point().point()) * unitV;
 		Real halfCrackArea = 0.25 * sqrt(std::abs(cross_product(CellCentre1 - p3, CellCentre2 - p3).squared_length())); //
 		cell1->info().crackArea += halfCrackArea;
@@ -310,7 +310,7 @@ void DFNFlowEngine::trickPermeability(RTriangulation::Facet_circulator& facet, R
 
 void DFNFlowEngine::trickPermeability(RTriangulation::Finite_edges_iterator& edge, Real aperture)
 {
-	const RTriangulation&            Tri    = solver->T[solver->currentTes].Triangulation();
+	const RTriangulation&            Tri = solver->T[solver->currentTes].Triangulation();
 	RTriangulation::Facet_circulator facet1 = Tri.incident_facets(*edge);
 	RTriangulation::Facet_circulator facet0 = facet1++;
 	trickPermeability(facet0, aperture, edge);
@@ -324,23 +324,23 @@ void DFNFlowEngine::trickPermeability(RTriangulation::Finite_edges_iterator& edg
 
 void DFNFlowEngine::trickPermeability(Solver* flow)
 {
-	leakOffRate               = 0;
+	leakOffRate = 0;
 	const RTriangulation& Tri = flow->T[solver->currentTes].Triangulation();
 	if (!first) interpolateCrack(solver->T[solver->currentTes], flow->T[flow->currentTes]);
 	const JCFpmPhys*                       jcfpmphys;
-	const shared_ptr<InteractionContainer> interactions                         = scene->interactions;
+	const shared_ptr<InteractionContainer> interactions = scene->interactions;
 	int                                    numberOfCrackedOrJointedInteractions = 0;
-	Real                                   SumOfApertures                       = 0.;
-	averageAperture                                                             = 0;
-	maxAperture                                                                 = 0;
-	crackArea                                                                   = 0;
+	Real                                   SumOfApertures = 0.;
+	averageAperture = 0;
+	maxAperture = 0;
+	crackArea = 0;
 	//Real totalFractureArea=0; /// Trying to get fracture's surface
 	// 	const shared_ptr<IGeom>& ig;
 	// 	const ScGeom* geom; // = static_cast<ScGeom*>(ig.get());
 	FiniteEdgesIterator edge = Tri.finite_edges_begin();
 	for (; edge != Tri.finite_edges_end(); ++edge) {
-		const VertexInfo&              vi1         = (edge->first)->vertex(edge->second)->info();
-		const VertexInfo&              vi2         = (edge->first)->vertex(edge->third)->info();
+		const VertexInfo&              vi1 = (edge->first)->vertex(edge->second)->info();
+		const VertexInfo&              vi2 = (edge->first)->vertex(edge->third)->info();
 		const shared_ptr<Interaction>& interaction = interactions->find(vi1.id(), vi2.id());
 
 		if (interaction && interaction->isReal()) {

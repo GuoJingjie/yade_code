@@ -66,11 +66,11 @@ public:
 	// done as template to avoid cross-dependency between clump and newton (not necessary if all plugins are linked together)
 	template <class IntegratorT> static void moveMembers(const shared_ptr<Body>& clumpBody, Scene* scene, IntegratorT* integrator = NULL)
 	{
-		const shared_ptr<Clump>& clump      = YADE_PTR_CAST<Clump>(clumpBody->shape);
+		const shared_ptr<Clump>& clump = YADE_PTR_CAST<Clump>(clumpBody->shape);
 		const shared_ptr<State>& clumpState = clumpBody->state;
 		for (const auto& B : clump->members) {
 			// B.first is Body::id_t, B.second is local Se3r of that body in the clump
-			const shared_ptr<Body>&  b        = Body::byId(B.first, scene);
+			const shared_ptr<Body>&  b = Body::byId(B.first, scene);
 			const shared_ptr<State>& subState = b->state;
 			const Vector3r&          subPos(B.second.position);
 			const Quaternionr&       subOri(B.second.orientation);
@@ -78,7 +78,7 @@ public:
 			subState->pos = clumpState->pos + clumpState->ori * subPos;
 			subState->ori = clumpState->ori * subOri;
 			// velocity update
-			subState->vel    = clumpState->vel + clumpState->angVel.cross(subState->pos - clumpState->pos);
+			subState->vel = clumpState->vel + clumpState->angVel.cross(subState->pos - clumpState->pos);
 			subState->angVel = clumpState->angVel;
 			if (integrator) integrator->saveMaximaDisplacement(b);
 		}

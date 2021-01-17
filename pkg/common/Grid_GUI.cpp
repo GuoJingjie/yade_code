@@ -28,11 +28,11 @@ void Gl1_GridConnection::out(Quaternionr q)
 
 void Gl1_GridConnection::go(const shared_ptr<Shape>& cm, const shared_ptr<State>& st, bool wire2, const GLViewInfo&)
 {
-	GridConnection*               GC     = static_cast<GridConnection*>(cm.get());
-	Real                          r      = GC->radius;
+	GridConnection*               GC = static_cast<GridConnection*>(cm.get());
+	Real                          r = GC->radius;
 	Real                          length = GC->getLength();
-	const shared_ptr<Interaction> intr   = scene->interactions->find((int)GC->node1->getId(), (int)GC->node2->getId());
-	Vector3r                      segt   = GC->node2->state->pos - GC->node1->state->pos;
+	const shared_ptr<Interaction> intr = scene->interactions->find((int)GC->node1->getId(), (int)GC->node2->getId());
+	Vector3r                      segt = GC->node2->state->pos - GC->node1->state->pos;
 	if (scene->isPeriodic && intr) segt += scene->cell->intrShiftPos(intr->cellDist);
 	//glMaterialv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, Vector3f(cm->color[0],cm->color[1],cm->color[2]));
 

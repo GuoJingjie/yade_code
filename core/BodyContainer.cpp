@@ -16,14 +16,14 @@ CREATE_LOGGER(BodyContainer);
 Body::id_t BodyContainer::insert(shared_ptr<Body> b)
 {
 	const shared_ptr<Scene>& scene = Omega::instance().getScene();
-	b->iterBorn                    = scene->iter;
-	b->timeBorn                    = scene->time;
-	b->id                          = body.size();
-	scene->doSort                  = true;
+	b->iterBorn = scene->iter;
+	b->timeBorn = scene->time;
+	b->id = body.size();
+	scene->doSort = true;
 
 	if (enableRedirection) {
 		insertedBodies.push_back(b->id);
-		dirty             = true;
+		dirty = true;
 		checkedByCollider = false;
 	}
 	body.push_back(b);
@@ -37,9 +37,9 @@ Body::id_t BodyContainer::insertAtId(shared_ptr<Body> b, Body::id_t candidate)
 	if (not b) LOG_ERROR("Inserting null body");
 	const shared_ptr<Scene>& scene = Omega::instance().getScene();
 	if (enableRedirection) {
-		dirty             = true;
+		dirty = true;
 		checkedByCollider = false;
-		useRedirection    = true;
+		useRedirection = true;
 		insertedBodies.push_back(candidate); /*realBodies.push_back(candidate); */
 	}                                            // if that special insertion is used, switch to algorithm optimized for non-full body container
 	if (unsigned(candidate) >= size()) {
@@ -50,10 +50,10 @@ Body::id_t BodyContainer::insertAtId(shared_ptr<Body> b, Body::id_t candidate)
 		return -1;
 	}
 
-	b->iterBorn   = scene->iter;
-	b->timeBorn   = scene->time;
-	b->id         = candidate;
-	body[b->id]   = b;
+	b->iterBorn = scene->iter;
+	b->timeBorn = scene->time;
+	b->id = candidate;
+	body[b->id] = b;
 	scene->doSort = true;
 	return b->id;
 }
@@ -61,7 +61,7 @@ Body::id_t BodyContainer::insertAtId(shared_ptr<Body> b, Body::id_t candidate)
 void BodyContainer::clear()
 {
 	body.clear();
-	dirty             = true;
+	dirty = true;
 	checkedByCollider = false;
 }
 
@@ -81,22 +81,22 @@ bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
 	if (!body[id]) return false;
 	const shared_ptr<Scene>& scene = Omega::instance().getScene();
 	if (enableRedirection) {
-		useRedirection    = true;
-		dirty             = true;
+		useRedirection = true;
+		dirty = true;
 		checkedByCollider = false;
 		erasedBodies.push_back(id);
 	} // as soon as a body is erased we switch to algorithm optimized for non-full body container
 	const shared_ptr<Body>& b = Body::byId(id);
 	if ((b) and (b->isClumpMember())) {
 		const shared_ptr<Body>  clumpBody = Body::byId(b->clumpId);
-		const shared_ptr<Clump> clump     = YADE_PTR_CAST<Clump>(clumpBody->shape);
+		const shared_ptr<Clump> clump = YADE_PTR_CAST<Clump>(clumpBody->shape);
 		Clump::del(clumpBody, b);
 		if (clump->members.size() == 0) this->erase(clumpBody->id, false); //Clump has no members any more. Remove it
 	}
 
 	if ((b) and (b->isClump())) {
 		//erase all members if eraseClumpMembers is true:
-		const shared_ptr<Clump>&    clump   = YADE_PTR_CAST<Clump>(b->shape);
+		const shared_ptr<Clump>&    clump = YADE_PTR_CAST<Clump>(b->shape);
 		std::map<Body::id_t, Se3r>& members = clump->members;
 		std::vector<Body::id_t>     idsToRemove;
 		for (const auto mm : members)

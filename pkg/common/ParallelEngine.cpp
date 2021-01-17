@@ -19,7 +19,7 @@ shared_ptr<ParallelEngine> ParallelEngine_ctor_list(const boost::python::list& s
 void ParallelEngine::action()
 {
 	// openMP warns if the iteration variable is unsigned...
-	const int  size               = (int)slaves.size();
+	const int  size = (int)slaves.size();
 	const bool TimingInfo_enabled = TimingInfo::enabled;
 #ifdef YADE_OPENMP
 	//nested parallel regions are disabled by default on some platforms, we enable them since some of the subengine may be also parallel

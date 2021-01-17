@@ -29,14 +29,14 @@ public:
 	virtual ~ScGeom();
 	inline ScGeom& operator=(const ScGeom& source)
 	{
-		normal           = source.normal;
-		contactPoint     = source.contactPoint;
-		twist_axis       = source.twist_axis;
+		normal = source.normal;
+		contactPoint = source.contactPoint;
+		twist_axis = source.twist_axis;
 		orthonormal_axis = source.orthonormal_axis;
-		radius1          = source.radius1;
-		radius2          = source.radius2;
+		radius1 = source.radius1;
+		radius2 = source.radius2;
 		penetrationDepth = source.penetrationDepth;
-		shearInc         = source.shearInc;
+		shearInc = source.shearInc;
 		return *this;
 	}
 

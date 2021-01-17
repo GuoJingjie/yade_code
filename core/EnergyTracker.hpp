@@ -21,7 +21,7 @@ public:
 				id = energies.size() - 1;
 				resetStep.resize(id + 1);
 				resetStep[id] = reset;
-				names[name]   = id;
+				names[name] = id;
 				assert(id < (int)energies.size());
 				assert(id >= 0);
 			}
@@ -71,7 +71,7 @@ public:
 	Real total() const
 	{
 		Real   ret = 0;
-		size_t sz  = energies.size();
+		size_t sz = energies.size();
 		for (size_t id = 0; id < sz; id++)
 			ret += energies.get(id);
 		return ret;

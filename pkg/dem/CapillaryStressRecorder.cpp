@@ -30,7 +30,7 @@ void CapillaryStressRecorder::action()
 	if (out.tellp() == 0) { out << "iteration Scap11 Scap22 Scap33 Scap12 Scap13 Scap23 Uc Sr w" << endl; }
 	if (!triaxialCompressionEngine) {
 		vector<shared_ptr<Engine>>::iterator itFirst = scene->engines.begin();
-		vector<shared_ptr<Engine>>::iterator itLast  = scene->engines.end();
+		vector<shared_ptr<Engine>>::iterator itLast = scene->engines.end();
 		for (; itFirst != itLast; ++itFirst) {
 			if ((*itFirst)->getClassName() == "TriaxialCompressionEngine") {
 				LOG_DEBUG("stress controller engine found");
@@ -47,7 +47,7 @@ void CapillaryStressRecorder::action()
 	Real sig11_cap = 0, sig22_cap = 0, sig33_cap = 0, sig12_cap = 0, sig13_cap = 0, sig23_cap = 0, Vwater = 0, capillaryPressure = 0;
 	int  j = 0;
 
-	InteractionContainer::iterator ii    = scene->interactions->begin();
+	InteractionContainer::iterator ii = scene->interactions->begin();
 	InteractionContainer::iterator iiEnd = scene->interactions->end();
 	for (; ii != iiEnd; ++ii) {
 		if ((*ii)->isReal()) {

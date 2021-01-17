@@ -84,19 +84,19 @@ void VTKRecorder::action()
 	FOREACH(string & rec, recorders)
 	{
 		if (rec == "all") {
-			recActive[REC_SPHERES]     = true;
-			recActive[REC_VELOCITY]    = true;
-			recActive[REC_FACETS]      = true;
-			recActive[REC_BOXES]       = true;
-			recActive[REC_COLORS]      = true;
-			recActive[REC_MASS]        = true;
-			recActive[REC_INTR]        = true;
-			recActive[REC_ID]          = true;
-			recActive[REC_MASK]        = true;
-			recActive[REC_CLUMPID]     = true;
-			recActive[REC_MATERIALID]  = true;
-			recActive[REC_STRESS]      = true;
-			recActive[REC_FORCE]       = true;
+			recActive[REC_SPHERES] = true;
+			recActive[REC_VELOCITY] = true;
+			recActive[REC_FACETS] = true;
+			recActive[REC_BOXES] = true;
+			recActive[REC_COLORS] = true;
+			recActive[REC_MASS] = true;
+			recActive[REC_INTR] = true;
+			recActive[REC_ID] = true;
+			recActive[REC_MASK] = true;
+			recActive[REC_CLUMPID] = true;
+			recActive[REC_MATERIALID] = true;
+			recActive[REC_STRESS] = true;
+			recActive[REC_FORCE] = true;
 			recActive[REC_COORDNUMBER] = true;
 			if (scene->isPeriodic) { recActive[REC_PERICELL] = true; }
 			recActive[REC_BSTRESS] = true;
@@ -179,7 +179,7 @@ void VTKRecorder::action()
 	if (recActive[REC_LIQ]) recActive[REC_INTR] = true;
 
 	// spheres
-	vtkSmartPointer<vtkPointsReal> spheresPos   = vtkSmartPointer<vtkPointsReal>::New();
+	vtkSmartPointer<vtkPointsReal> spheresPos = vtkSmartPointer<vtkPointsReal>::New();
 	vtkSmartPointer<vtkCellArray>  spheresCells = vtkSmartPointer<vtkCellArray>::New();
 
 	vtkSmartPointer<vtkDoubleArrayFromReal> radii = vtkSmartPointer<vtkDoubleArrayFromReal>::New();
@@ -341,8 +341,8 @@ void VTKRecorder::action()
 	spheresTorqueLen->SetName("torqueLen");
 
 	// facets
-	vtkSmartPointer<vtkPointsReal>          facetsPos    = vtkSmartPointer<vtkPointsReal>::New();
-	vtkSmartPointer<vtkCellArray>           facetsCells  = vtkSmartPointer<vtkCellArray>::New();
+	vtkSmartPointer<vtkPointsReal>          facetsPos = vtkSmartPointer<vtkPointsReal>::New();
+	vtkSmartPointer<vtkCellArray>           facetsCells = vtkSmartPointer<vtkCellArray>::New();
 	vtkSmartPointer<vtkDoubleArrayFromReal> facetsColors = vtkSmartPointer<vtkDoubleArrayFromReal>::New();
 	facetsColors->SetNumberOfComponents(3);
 	facetsColors->SetName("color");
@@ -391,8 +391,8 @@ void VTKRecorder::action()
 
 
 	// boxes
-	vtkSmartPointer<vtkPointsReal>          boxesPos    = vtkSmartPointer<vtkPointsReal>::New();
-	vtkSmartPointer<vtkCellArray>           boxesCells  = vtkSmartPointer<vtkCellArray>::New();
+	vtkSmartPointer<vtkPointsReal>          boxesPos = vtkSmartPointer<vtkPointsReal>::New();
+	vtkSmartPointer<vtkCellArray>           boxesCells = vtkSmartPointer<vtkCellArray>::New();
 	vtkSmartPointer<vtkDoubleArrayFromReal> boxesColors = vtkSmartPointer<vtkDoubleArrayFromReal>::New();
 	boxesColors->SetNumberOfComponents(3);
 	boxesColors->SetName("color");
@@ -431,8 +431,8 @@ void VTKRecorder::action()
 
 	// interactions
 	vtkSmartPointer<vtkPointsReal>          intrBodyPos = vtkSmartPointer<vtkPointsReal>::New();
-	vtkSmartPointer<vtkCellArray>           intrCells   = vtkSmartPointer<vtkCellArray>::New();
-	vtkSmartPointer<vtkDoubleArrayFromReal> intrForceN  = vtkSmartPointer<vtkDoubleArrayFromReal>::New();
+	vtkSmartPointer<vtkCellArray>           intrCells = vtkSmartPointer<vtkCellArray>::New();
+	vtkSmartPointer<vtkDoubleArrayFromReal> intrForceN = vtkSmartPointer<vtkDoubleArrayFromReal>::New();
 	intrForceN->SetNumberOfComponents(1);
 	intrForceN->SetName("forceN");
 	vtkSmartPointer<vtkDoubleArrayFromReal> intrAbsForceT = vtkSmartPointer<vtkDoubleArrayFromReal>::New();
@@ -441,7 +441,7 @@ void VTKRecorder::action()
 
 	// pericell
 	vtkSmartPointer<vtkPointsReal> pericellPoints = vtkSmartPointer<vtkPointsReal>::New();
-	vtkSmartPointer<vtkCellArray>  pericellHexa   = vtkSmartPointer<vtkCellArray>::New();
+	vtkSmartPointer<vtkCellArray>  pericellHexa = vtkSmartPointer<vtkCellArray>::New();
 
 	// extras for CPM
 	if (recActive[REC_CPM]) {
@@ -473,9 +473,9 @@ void VTKRecorder::action()
 	eventNumber->SetName("eventNumber");
 
 	// extras for cracks
-	vtkSmartPointer<vtkPointsReal>          crackPos   = vtkSmartPointer<vtkPointsReal>::New();
+	vtkSmartPointer<vtkPointsReal>          crackPos = vtkSmartPointer<vtkPointsReal>::New();
 	vtkSmartPointer<vtkCellArray>           crackCells = vtkSmartPointer<vtkCellArray>::New();
-	vtkSmartPointer<vtkDoubleArrayFromReal> crackIter  = vtkSmartPointer<vtkDoubleArrayFromReal>::New();
+	vtkSmartPointer<vtkDoubleArrayFromReal> crackIter = vtkSmartPointer<vtkDoubleArrayFromReal>::New();
 	crackIter->SetNumberOfComponents(1);
 	crackIter->SetName("iter");
 	vtkSmartPointer<vtkDoubleArrayFromReal> crackTime = vtkSmartPointer<vtkDoubleArrayFromReal>::New();
@@ -498,9 +498,9 @@ void VTKRecorder::action()
 	crackOnJnt->SetName("onJnt");
 
 	// extras for moments
-	vtkSmartPointer<vtkPointsReal>          momentPos   = vtkSmartPointer<vtkPointsReal>::New();
+	vtkSmartPointer<vtkPointsReal>          momentPos = vtkSmartPointer<vtkPointsReal>::New();
 	vtkSmartPointer<vtkCellArray>           momentCells = vtkSmartPointer<vtkCellArray>::New();
-	vtkSmartPointer<vtkDoubleArrayFromReal> momentiter  = vtkSmartPointer<vtkDoubleArrayFromReal>::New();
+	vtkSmartPointer<vtkDoubleArrayFromReal> momentiter = vtkSmartPointer<vtkDoubleArrayFromReal>::New();
 	momentiter->SetNumberOfComponents(1);
 	momentiter->SetName("momentiter");
 	vtkSmartPointer<vtkDoubleArrayFromReal> momenttime = vtkSmartPointer<vtkDoubleArrayFromReal>::New();
@@ -699,7 +699,7 @@ void VTKRecorder::action()
 
 #ifdef YADE_MPI
 	const auto& subD = YADE_PTR_CAST<Subdomain>(scene->subD);
-	const auto& sz   = parallelMode ? subD->ids.size() : scene->bodies->size();
+	const auto& sz = parallelMode ? subD->ids.size() : scene->bodies->size();
 	for (unsigned bId = 0; bId != sz; ++bId) {
 		const auto& b = parallelMode ? (*scene->bodies)[subD->ids[bId]] : (*scene->bodies)[bId];
 #else
@@ -775,7 +775,7 @@ void VTKRecorder::action()
 				}
 				if (recActive[REC_STRESS]) {
 					const Vector3r& stress = bodyStates[b->getId()].normStress;
-					const Vector3r& shear  = bodyStates[b->getId()].shearStress;
+					const Vector3r& shear = bodyStates[b->getId()].shearStress;
 					spheresNormalStressVec->InsertNextTuple(stress);
 					spheresShearStressVec->InsertNextTuple(shear);
 					spheresNormalStressNorm->InsertNextValue(stress.norm());
@@ -795,8 +795,8 @@ void VTKRecorder::action()
 				}
 				if (recActive[REC_FORCE]) {
 					scene->forces.sync();
-					const Vector3r& f  = scene->forces.getForce(b->getId());
-					const Vector3r& t  = scene->forces.getTorque(b->getId());
+					const Vector3r& f = scene->forces.getForce(b->getId());
+					const Vector3r& t = scene->forces.getTorque(b->getId());
 					Real            fn = f.norm();
 					Real            tn = t.norm();
 					spheresForceLen->InsertNextValue(fn);
@@ -849,10 +849,10 @@ void VTKRecorder::action()
 			const Facet* facet = dynamic_cast<Facet*>(b->shape.get());
 			if (facet) {
 				Vector3r                     pos(scene->isPeriodic ? scene->cell->wrapShearedPt(b->state->pos) : b->state->pos);
-				const vector<Vector3r>&      localPos   = facet->vertices;
+				const vector<Vector3r>&      localPos = facet->vertices;
 				Matrix3r                     facetAxisT = b->state->ori.toRotationMatrix();
-				vtkSmartPointer<vtkTriangle> tri        = vtkSmartPointer<vtkTriangle>::New();
-				vtkIdType                    nbPoints   = facetsPos->GetNumberOfPoints();
+				vtkSmartPointer<vtkTriangle> tri = vtkSmartPointer<vtkTriangle>::New();
+				vtkIdType                    nbPoints = facetsPos->GetNumberOfPoints();
 				for (int i = 0; i < 3; ++i) {
 					Vector3r globalPos = pos + facetAxisT * localPos[i];
 					facetsPos->InsertNextPoint(globalPos);
@@ -870,8 +870,8 @@ void VTKRecorder::action()
 				}
 				if (recActive[REC_FORCE]) {
 					scene->forces.sync();
-					const Vector3r& f  = scene->forces.getForce(b->getId());
-					const Vector3r& t  = scene->forces.getTorque(b->getId());
+					const Vector3r& f = scene->forces.getForce(b->getId());
+					const Vector3r& t = scene->forces.getTorque(b->getId());
 					Real            fn = f.norm();
 					Real            tn = t.norm();
 					facetsForceLen->InsertNextValue(fn);
@@ -893,10 +893,10 @@ void VTKRecorder::action()
 				Quaternionr              ori(b->state->ori);
 				Vector3r                 ext(box->extents);
 				vtkSmartPointer<vtkQuad> boxes = vtkSmartPointer<vtkQuad>::New();
-				Vector3r                 A     = Vector3r(-ext[0], -ext[1], -ext[2]);
-				Vector3r                 B     = Vector3r(-ext[0], +ext[1], -ext[2]);
-				Vector3r                 C     = Vector3r(+ext[0], +ext[1], -ext[2]);
-				Vector3r                 D     = Vector3r(+ext[0], -ext[1], -ext[2]);
+				Vector3r                 A = Vector3r(-ext[0], -ext[1], -ext[2]);
+				Vector3r                 B = Vector3r(-ext[0], +ext[1], -ext[2]);
+				Vector3r                 C = Vector3r(+ext[0], +ext[1], -ext[2]);
+				Vector3r                 D = Vector3r(+ext[0], -ext[1], -ext[2]);
 
 				Vector3r E = Vector3r(-ext[0], -ext[1], +ext[2]);
 				Vector3r F = Vector3r(-ext[0], +ext[1], +ext[2]);
@@ -942,8 +942,8 @@ void VTKRecorder::action()
 					}
 					if (recActive[REC_FORCE]) {
 						scene->forces.sync();
-						const Vector3r& f  = scene->forces.getForce(b->getId());
-						const Vector3r& t  = scene->forces.getTorque(b->getId());
+						const Vector3r& f = scene->forces.getForce(b->getId());
+						const Vector3r& t = scene->forces.getTorque(b->getId());
 						Real            fn = f.norm();
 						Real            tn = t.norm();
 						boxesForceVec->InsertNextTuple(f);
@@ -965,14 +965,14 @@ void VTKRecorder::action()
 	if (recActive[REC_PERICELL]) {
 #endif
 		const Matrix3r& hSize = scene->cell->hSize;
-		Vector3r        v0    = hSize * Vector3r(0, 0, 1);
-		Vector3r        v1    = hSize * Vector3r(0, 1, 1);
-		Vector3r        v2    = hSize * Vector3r(1, 1, 1);
-		Vector3r        v3    = hSize * Vector3r(1, 0, 1);
-		Vector3r        v4    = hSize * Vector3r(0, 0, 0);
-		Vector3r        v5    = hSize * Vector3r(0, 1, 0);
-		Vector3r        v6    = hSize * Vector3r(1, 1, 0);
-		Vector3r        v7    = hSize * Vector3r(1, 0, 0);
+		Vector3r        v0 = hSize * Vector3r(0, 0, 1);
+		Vector3r        v1 = hSize * Vector3r(0, 1, 1);
+		Vector3r        v2 = hSize * Vector3r(1, 1, 1);
+		Vector3r        v3 = hSize * Vector3r(1, 0, 1);
+		Vector3r        v4 = hSize * Vector3r(0, 0, 0);
+		Vector3r        v5 = hSize * Vector3r(0, 1, 0);
+		Vector3r        v6 = hSize * Vector3r(1, 1, 0);
+		Vector3r        v7 = hSize * Vector3r(1, 0, 0);
 		pericellPoints->InsertNextPoint(v0);
 		pericellPoints->InsertNextPoint(v1);
 		pericellPoints->InsertNextPoint(v2);
@@ -1280,7 +1280,7 @@ void VTKRecorder::action()
 
 			if (rank == 0) {
 				vtkSmartPointer<vtkXMLPPolyDataWriter> pwriter = vtkSmartPointer<vtkXMLPPolyDataWriter>::New();
-				string                                 pfn     = fileName + "intrs_" + boost::lexical_cast<string>(scene->iter) + ".pvtp";
+				string                                 pfn = fileName + "intrs_" + boost::lexical_cast<string>(scene->iter) + ".pvtp";
 				pwriter->EncodeAppendedDataOff();
 				pwriter->SetFileName(pfn.c_str());
 				pwriter->SetNumberOfPieces(commSize);
@@ -1431,7 +1431,7 @@ void VTKRecorder::action()
 	if (multiblock) {
 		if (parallelMode) { LOG_WARN("Multiblock feature in MPI case untested."); }
 		vtkSmartPointer<vtkMultiBlockDataSet> multiblockDataset = vtkSmartPointer<vtkMultiBlockDataSet>::New();
-		int                                   i                 = 0;
+		int                                   i = 0;
 		if (recActive[REC_SPHERES]) multiblockDataset->SetBlock(i++, spheresUg);
 		if (recActive[REC_FACETS]) multiblockDataset->SetBlock(i++, facetsUg);
 		if (recActive[REC_INTR]) multiblockDataset->SetBlock(i++, intrPd);
@@ -1463,7 +1463,7 @@ void VTKRecorder::action()
 #else
 	if (multiblock) {
 		vtkSmartPointer<vtkMultiBlockDataSet> multiblockDataset = vtkSmartPointer<vtkMultiBlockDataSet>::New();
-		int                                   i                 = 0;
+		int                                   i = 0;
 		if (recActive[REC_SPHERES]) multiblockDataset->SetBlock(i++, spheresUg);
 		if (recActive[REC_FACETS]) multiblockDataset->SetBlock(i++, facetsUg);
 		if (recActive[REC_INTR]) multiblockDataset->SetBlock(i++, intrPd);

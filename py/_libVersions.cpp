@@ -344,23 +344,23 @@ py::dict getAllVersionsCpp()
 	py::dict ret;
 	// I found relevant names with commad:
 	// dpkg -L libName-dev |  xargs -I'{}' -P 1 cat {} | grep -i -E "defi.*versio.*"
-	ret["compiler"]    = compilerVer();
-	ret["boost"]       = boostVer();
-	ret["qt"]          = qtVer();
-	ret["gl"]          = glVer();
-	ret["qglviewer"]   = qglviewerVer();
-	ret["python"]      = pythonVer();
-	ret["eigen"]       = eigenVer();
-	ret["sqlite"]      = sqliteVer();
-	ret["vtk"]         = vtkVer();
-	ret["cgal"]        = cgalVer();
+	ret["compiler"] = compilerVer();
+	ret["boost"] = boostVer();
+	ret["qt"] = qtVer();
+	ret["gl"] = glVer();
+	ret["qglviewer"] = qglviewerVer();
+	ret["python"] = pythonVer();
+	ret["eigen"] = eigenVer();
+	ret["sqlite"] = sqliteVer();
+	ret["vtk"] = vtkVer();
+	ret["cgal"] = cgalVer();
 	ret["suitesparse"] = suitesparseVer();
-	ret["openblas"]    = openblasVer();
-	ret["metis"]       = metisVer();
-	ret["mpi"]         = mpiVer();
-	ret["clp"]         = clpVer();
-	ret["coinutils"]   = coinutilsVer();
-	ret["mpfr"]        = mpfrVer();
+	ret["openblas"] = openblasVer();
+	ret["metis"] = metisVer();
+	ret["mpi"] = mpiVer();
+	ret["clp"] = clpVer();
+	ret["coinutils"] = coinutilsVer();
+	ret["mpfr"] = mpfrVer();
 	return ret;
 }
 

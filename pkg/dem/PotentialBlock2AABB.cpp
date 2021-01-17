@@ -15,14 +15,14 @@ void PotentialBlock2AABB::go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv,
 
 	if (pp->AabbMinMax == false) {
 		Real     distFromCentre = 1.0 * pp->R;
-		Vector3r halfSize       = (aabbEnlargeFactor > 0 ? aabbEnlargeFactor : 1.) * Vector3r(distFromCentre, distFromCentre, distFromCentre);
-		aabb->min               = se3.position - halfSize;
-		aabb->max               = se3.position + halfSize;
+		Vector3r halfSize = (aabbEnlargeFactor > 0 ? aabbEnlargeFactor : 1.) * Vector3r(distFromCentre, distFromCentre, distFromCentre);
+		aabb->min = se3.position - halfSize;
+		aabb->max = se3.position + halfSize;
 		return;
 	} else {
 		Vector3r vertex, aabbMin(0, 0, 0), aabbMax(0, 0, 0);
 		for (unsigned int i = 0; i < pp->vertices.size(); i++) {
-			vertex  = se3.orientation * pp->vertices[i]; // vertices in global coordinates
+			vertex = se3.orientation * pp->vertices[i]; // vertices in global coordinates
 			aabbMin = aabbMin.cwiseMin(vertex);
 			aabbMax = aabbMax.cwiseMax(vertex);
 		}

@@ -84,17 +84,17 @@ bool Law2_ScGeom_WirePhys_WirePM::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& i
 
 	ScGeom*    geom = static_cast<ScGeom*>(ig.get());
 	WirePhys*  phys = static_cast<WirePhys*>(ip.get());
-	const int& id1  = contact->getId1();
-	const int& id2  = contact->getId2();
-	Body*      b1   = Body::byId(id1, scene).get();
-	Body*      b2   = Body::byId(id2, scene).get();
+	const int& id1 = contact->getId1();
+	const int& id2 = contact->getId2();
+	Body*      b1 = Body::byId(id1, scene).get();
+	Body*      b2 = Body::byId(id2, scene).get();
 
 	Real displN = geom->penetrationDepth; // NOTE: ScGeom -> penetrationDepth>0 when spheres interpenetrate, and therefore, for wire always negative
 
 	/* get reference to values since values are updated/changed in order to take unloading into account */
 	vector<Vector2r>& DFValues = phys->displForceValues;
-	vector<Real>&     kValues  = phys->stiffnessValues;
-	Real              kn       = phys->kn;
+	vector<Real>&     kValues = phys->stiffnessValues;
+	Real              kn = phys->kn;
 
 	Real D = displN - phys->initD; // interparticular distance is computed depending on the equilibrium distance
 
@@ -121,7 +121,7 @@ bool Law2_ScGeom_WirePhys_WirePM::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& i
 		LOG_TRACE("WirePM: Loading");
 		for (unsigned int i = 1; i < DFValues.size(); i++) {
 			if (D > DFValues[i](0)) {
-				Fn           = DFValues[i - 1](1) + (D - DFValues[i - 1](0)) * kValues[i - 1];
+				Fn = DFValues[i - 1](1) + (D - DFValues[i - 1](0)) * kValues[i - 1];
 				phys->plastD = D - Fn / kn;
 				// update values for unloading
 				DFValues[0](0) = D;
@@ -176,7 +176,7 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 
 	/* set equilibrium distance, e.g. initial distance between particle (stress free state) */
 	shared_ptr<WirePhys> contactPhysics(new WirePhys());
-	Real                 initD  = geom->penetrationDepth;
+	Real                 initD = geom->penetrationDepth;
 	contactPhysics->normalForce = Vector3r::Zero();
 
 	/* get values from material */
@@ -189,7 +189,7 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 	/* check properties of interaction */
 	if (mat1->id == mat2->id) { // interaction of two bodies of the same material
 		crossSection = mat1->as;
-		SSValues     = mat1->strainStressValues;
+		SSValues = mat1->strainStressValues;
 		if ((mat1->isDoubleTwist)
 		    && (std::abs(interaction->getId1() - interaction->getId2()) == 1)) { // bodies which id differs by 1 are double twisted
 			contactPhysics->isDoubleTwist = true;
@@ -204,10 +204,10 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 		contactPhysics->isDoubleTwist = false;
 		if (mat1->diameter <= mat2->diameter) {
 			crossSection = mat1->as;
-			SSValues     = mat1->strainStressValues;
+			SSValues = mat1->strainStressValues;
 		} else {
 			crossSection = mat2->as;
-			SSValues     = mat2->strainStressValues;
+			SSValues = mat2->strainStressValues;
 		}
 	}
 
@@ -219,7 +219,7 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 	/* compute displacement-force values */
 	vector<Vector2r> DFValues;
 	vector<Real>     kValues;
-	Real             dl        = 0.;
+	Real             dl = 0.;
 	bool             isShifted = false;
 
 	/* account for random distortion if type=2 */
@@ -233,7 +233,7 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 			        randGen, boost::triangle_distribution<Real>(0, 0.5, 1));
 			Real rndu = rnd();
 			TRVAR1(rndu);
-			dl        = l0 * mat1->lambdau * rndu;
+			dl = l0 * mat1->lambdau * rndu;
 			isShifted = true;
 		}
 	} else if (mat2->type == 2) {
@@ -249,7 +249,7 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 			dl = l0 * mat2->lambdau * rndu;
 		}
 	}
-	contactPhysics->dL        = dl;
+	contactPhysics->dL = dl;
 	contactPhysics->isShifted = isShifted;
 
 	// update geometry values
@@ -272,10 +272,10 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 	if (contactPhysics->isDoubleTwist && mat1->type == 0) {
 		// type=0 (force displacement values are computed by manipulating the values of the single wire by using the parameters lambdak and lambdaEps)
 		Real alpha = atan(l0 / (3. * Mathr::PI * mat1->diameter));
-		Real kh    = k * (l0 * mat1->diameter / crossSection) / (48. * cos(alpha) * (41. / 9. * (1. + mat1->poisson) + 17. / 4. * pow(tan(alpha), 2)));
-		k          = 2. * (mat1->lambdak * kh + (1 - mat1->lambdak) * k);
-		Real F     = k * DFValues[0](0);
-		Real mappingF  = F / DFValues[0](1);
+		Real kh = k * (l0 * mat1->diameter / crossSection) / (48. * cos(alpha) * (41. / 9. * (1. + mat1->poisson) + 17. / 4. * pow(tan(alpha), 2)));
+		k = 2. * (mat1->lambdak * kh + (1 - mat1->lambdak) * k);
+		Real F = k * DFValues[0](0);
+		Real mappingF = F / DFValues[0](1);
 		DFValues[0](1) = F;
 		for (unsigned int i = 1; i < DFValues.size(); i++) {
 			DFValues[i](0) *= mat1->lambdaEps;
@@ -293,15 +293,15 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 	/* consider an additional point for the initial shift if type==2 */
 	if (mat1->type == 2) {
 		Vector2r values = Vector2r::Zero();
-		values(0)       = -dl + mat1->lambdaF * (DFValues[0](0) + dl);
-		values(1)       = DFValues[0](1) * mat1->lambdaF;
-		k               = values(1) / values(0);
+		values(0) = -dl + mat1->lambdaF * (DFValues[0](0) + dl);
+		values(1) = DFValues[0](1) * mat1->lambdaF;
+		k = values(1) / values(0);
 		if (mat1->lambdaF < 1.) DFValues.insert(DFValues.begin(), values);
 	} else if (mat2->type == 2) {
 		Vector2r values = Vector2r::Zero();
-		values(0)       = -dl + mat2->lambdaF * (DFValues[0](0) + dl);
-		values(1)       = DFValues[0](1) * mat2->lambdaF;
-		k               = values(1) / values(0);
+		values(0) = -dl + mat2->lambdaF * (DFValues[0](0) + dl);
+		values(1) = DFValues[0](1) * mat2->lambdaF;
+		k = values(1) / values(0);
 		if (mat2->lambdaF < 1.) DFValues.insert(DFValues.begin(), values);
 	}
 
@@ -310,7 +310,7 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 	for (unsigned int i = 1; i < DFValues.size(); i++) {
 		Real deltau = -DFValues[i](0) + DFValues[i - 1](0);
 		Real deltaF = -DFValues[i](1) + DFValues[i - 1](1);
-		k           = deltaF / deltau;
+		k = deltaF / deltau;
 		kValues.push_back(k);
 	}
 
@@ -319,7 +319,7 @@ void Ip2_WireMat_WireMat_WirePhys::go(const shared_ptr<Material>& b1, const shar
 
 	/* store values in physics */
 	contactPhysics->displForceValues = DFValues;
-	contactPhysics->stiffnessValues  = kValues;
+	contactPhysics->stiffnessValues = kValues;
 
 	/* set particles as linked */
 	if ((scene->iter < linkThresholdIteration)) contactPhysics->isLinked = true;

@@ -76,7 +76,7 @@ template <class OutV, class OutE, class OutF, class OutN> bool STLReader::open(c
 {
 	FILE* fp;
 	bool  binary = false;
-	fp           = fopen(filename, "r");
+	fp = fopen(filename, "r");
 	if (fp == NULL) return false;
 
 	/* Find size of file */
@@ -85,7 +85,7 @@ template <class OutV, class OutE, class OutF, class OutN> bool STLReader::open(c
 	int facenum;
 	/* Check for binary or ASCII file */
 	fseek(fp, STL_LABEL_SIZE, SEEK_SET);
-	size_t res                = fread(&facenum, sizeof(int), 1, fp);
+	size_t res = fread(&facenum, sizeof(int), 1, fp);
 	int    expected_file_size = STL_LABEL_SIZE + 4 + (sizeof(short) + 4 * sizeof(float)) * facenum;
 	if (file_size == expected_file_size) binary = true;
 	unsigned char tmpbuf[128];
@@ -148,7 +148,7 @@ template <class OutV, class OutE, class OutF, class OutN> bool STLReader::open_a
 
 		int vid[3];
 		for (int i = 0; i < 3; ++i) {
-			(normals++)              = n[i];
+			(normals++) = n[i];
 			bool        is_different = true;
 			IsDifferent isd(tolerance);
 			int         j = 0;
@@ -206,7 +206,7 @@ bool STLReader::open_binary(const char* filename, OutV vertices, OutE edges, Out
 			//FIXME: Убрать дублирование кода с open_ascii
 			int vid[3];
 			for (int l = 0; l < 3; ++l) {
-				(normals++)              = n[l];
+				(normals++) = n[l];
 				bool        is_different = true;
 				IsDifferent isd(tolerance);
 				int         j = 0;

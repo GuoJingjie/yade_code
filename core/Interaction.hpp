@@ -40,8 +40,8 @@ public:
 		// Whether geometry dispatcher exists at all; this is different from !geom, since that can mean we haven't populated the cache yet.
 		// Therefore, geomExists must be initialized to true first (done in Interaction::reset() called from ctor).
 		bool                     geomExists;
-		shared_ptr<IGeomFunctor> geom     = nullptr;
-		shared_ptr<IPhysFunctor> phys     = nullptr;
+		shared_ptr<IGeomFunctor> geom = nullptr;
+		shared_ptr<IPhysFunctor> phys = nullptr;
 		shared_ptr<LawFunctor>   constLaw = nullptr;
 	} functorCache;
 

@@ -52,12 +52,12 @@ namespace math {
 
 	// constexpr whenever possible
 	template <int N> struct ConstexprConstantsHP {
-		static constexpr RealHP<N>    PI          = boost::math::constants::pi<RealHP<N>>();
-		static constexpr RealHP<N>    TWO_PI      = boost::math::constants::two_pi<RealHP<N>>();
-		static constexpr RealHP<N>    HALF_PI     = boost::math::constants::half_pi<RealHP<N>>();
+		static constexpr RealHP<N>    PI = boost::math::constants::pi<RealHP<N>>();
+		static constexpr RealHP<N>    TWO_PI = boost::math::constants::two_pi<RealHP<N>>();
+		static constexpr RealHP<N>    HALF_PI = boost::math::constants::half_pi<RealHP<N>>();
 		static constexpr RealHP<N>    SQRT_TWO_PI = boost::math::constants::root_two_pi<RealHP<N>>();
-		static constexpr RealHP<N>    E           = boost::math::constants::e<RealHP<N>>();
-		static constexpr ComplexHP<N> I           = ComplexHP<N>(0, 1);
+		static constexpr RealHP<N>    E = boost::math::constants::e<RealHP<N>>();
+		static constexpr ComplexHP<N> I = ComplexHP<N>(0, 1);
 		static const RealHP<N>        DEG_TO_RAD;
 		static const RealHP<N>        RAD_TO_DEG;
 		static const RealHP<N>        EPSILON;
@@ -72,8 +72,8 @@ namespace math {
 	template <int N> constexpr ComplexHP<N> ConstexprConstantsHP<N>::I;
 	template <int N> const RealHP<N>        ConstexprConstantsHP<N>::DEG_TO_RAD = ConstexprConstantsHP<N>::PI / RealHP<N>(180);
 	template <int N> const RealHP<N>        ConstexprConstantsHP<N>::RAD_TO_DEG = RealHP<N>(180) / ConstexprConstantsHP<N>::PI;
-	template <int N> const RealHP<N>        ConstexprConstantsHP<N>::EPSILON    = std::numeric_limits<RealHP<N>>::epsilon();
-	template <int N> const RealHP<N>        ConstexprConstantsHP<N>::MAX_REAL   = std::numeric_limits<RealHP<N>>::max();
+	template <int N> const RealHP<N>        ConstexprConstantsHP<N>::EPSILON = std::numeric_limits<RealHP<N>>::epsilon();
+	template <int N> const RealHP<N>        ConstexprConstantsHP<N>::MAX_REAL = std::numeric_limits<RealHP<N>>::max();
 	template <int N> constexpr RealHP<N>    ConstexprConstantsHP<N>::ZERO_TOLERANCE;
 
 	// const everywhere
@@ -90,16 +90,16 @@ namespace math {
 		static const RealHP<N>    MAX_REAL;
 		static const RealHP<N>    ZERO_TOLERANCE;
 	};
-	template <int N> const RealHP<N>    ConstConstantsHP<N>::PI             = boost::math::constants::pi<RealHP<N>>();
-	template <int N> const RealHP<N>    ConstConstantsHP<N>::TWO_PI         = boost::math::constants::two_pi<RealHP<N>>();
-	template <int N> const RealHP<N>    ConstConstantsHP<N>::HALF_PI        = boost::math::constants::half_pi<RealHP<N>>();
-	template <int N> const RealHP<N>    ConstConstantsHP<N>::SQRT_TWO_PI    = boost::math::constants::root_two_pi<RealHP<N>>();
-	template <int N> const RealHP<N>    ConstConstantsHP<N>::E              = boost::math::constants::e<RealHP<N>>();
-	template <int N> const ComplexHP<N> ConstConstantsHP<N>::I              = ComplexHP<N>(0, 1);
-	template <int N> const RealHP<N>    ConstConstantsHP<N>::DEG_TO_RAD     = ConstConstantsHP<N>::PI / RealHP<N>(180);
-	template <int N> const RealHP<N>    ConstConstantsHP<N>::RAD_TO_DEG     = RealHP<N>(180) / ConstConstantsHP<N>::PI;
-	template <int N> const RealHP<N>    ConstConstantsHP<N>::EPSILON        = std::numeric_limits<RealHP<N>>::epsilon();
-	template <int N> const RealHP<N>    ConstConstantsHP<N>::MAX_REAL       = std::numeric_limits<RealHP<N>>::max();
+	template <int N> const RealHP<N>    ConstConstantsHP<N>::PI = boost::math::constants::pi<RealHP<N>>();
+	template <int N> const RealHP<N>    ConstConstantsHP<N>::TWO_PI = boost::math::constants::two_pi<RealHP<N>>();
+	template <int N> const RealHP<N>    ConstConstantsHP<N>::HALF_PI = boost::math::constants::half_pi<RealHP<N>>();
+	template <int N> const RealHP<N>    ConstConstantsHP<N>::SQRT_TWO_PI = boost::math::constants::root_two_pi<RealHP<N>>();
+	template <int N> const RealHP<N>    ConstConstantsHP<N>::E = boost::math::constants::e<RealHP<N>>();
+	template <int N> const ComplexHP<N> ConstConstantsHP<N>::I = ComplexHP<N>(0, 1);
+	template <int N> const RealHP<N>    ConstConstantsHP<N>::DEG_TO_RAD = ConstConstantsHP<N>::PI / RealHP<N>(180);
+	template <int N> const RealHP<N>    ConstConstantsHP<N>::RAD_TO_DEG = RealHP<N>(180) / ConstConstantsHP<N>::PI;
+	template <int N> const RealHP<N>    ConstConstantsHP<N>::EPSILON = std::numeric_limits<RealHP<N>>::epsilon();
+	template <int N> const RealHP<N>    ConstConstantsHP<N>::MAX_REAL = std::numeric_limits<RealHP<N>>::max();
 	template <int N> const RealHP<N>    ConstConstantsHP<N>::ZERO_TOLERANCE = RealHP<N>(1e-20);
 
 	template <int N> using ConstantsHP = typename std::conditional<useConstexprConstants<RealHP<N>>, ConstexprConstantsHP<N>, ConstConstantsHP<N>>::type;

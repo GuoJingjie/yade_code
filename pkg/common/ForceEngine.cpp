@@ -39,7 +39,7 @@ void RadialForceEngine::action()
 	FOREACH(Body::id_t id, ids)
 	{
 		if (!(scene->bodies->exists(id))) continue;
-		const Vector3r& pos    = Body::byId(id, scene)->state->pos;
+		const Vector3r& pos = Body::byId(id, scene)->state->pos;
 		Vector3r        radial = (pos - (axisPt + axisDir * /* t */ ((pos - axisPt).dot(axisDir)))).normalized();
 		if (radial.squaredNorm() == 0) continue;
 		scene->forces.addForce(id, fNorm * radial);
@@ -55,9 +55,9 @@ void DragEngine::action()
 		if (!(scene->bodies->exists(id))) continue;
 		const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
 		if (sphere) {
-			Real     A          = sphere->radius * sphere->radius * Mathr::PI; //Crossection of the sphere
+			Real     A = sphere->radius * sphere->radius * Mathr::PI; //Crossection of the sphere
 			Vector3r velSphTemp = Vector3r::Zero();
-			Vector3r dragForce  = Vector3r::Zero();
+			Vector3r dragForce = Vector3r::Zero();
 
 			if (scene->isPeriodic) {
 				velSphTemp = scene->cell->bodyFluctuationVel(b->state->pos, b->state->vel, scene->cell->prevVelGrad);

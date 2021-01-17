@@ -113,14 +113,14 @@ void SpheresFactory::action()
 	while (totalMass < goalMass && (maxParticles < 0 || numParticles < maxParticles) && (maxMass < 0 || totalMass < maxMass)) {
 		Real r = 0.0;
 
-		Real maxdiff   = 0.0; //This and next variable are for PSD-distribution
+		Real maxdiff = 0.0; //This and next variable are for PSD-distribution
 		int  maxdiffID = 0;
 
 		if (PSDuse) {
 			//find in what "bin" we have maximal difference between required number of material and current:
 			for (unsigned int k = 0; k < PSDcum.size(); k++) {
 				if ((maxdiff < (PSDNeedProc[k] - PSDCurProc[k]))) {
-					maxdiff   = PSDNeedProc[k] - PSDCurProc[k];
+					maxdiff = PSDNeedProc[k] - PSDCurProc[k];
 					maxdiffID = k;
 				}
 			}
@@ -130,7 +130,7 @@ void SpheresFactory::action()
 			} else { //Choose the diameter from the range
 				Real rMinE = PSDsizes[maxdiffID] / 2.0;
 				Real rMaxE = PSDsizes[maxdiffID + 1] / 2.0;
-				r          = rMinE + randomUnit() * (rMaxE - rMinE);
+				r = rMinE + randomUnit() * (rMaxE - rMinE);
 			}
 		} else {
 			// pick random radius
@@ -173,7 +173,7 @@ void SpheresFactory::action()
 			}
 			if (stopIfFailed) {
 				massFlowRate = 0;
-				goalMass     = totalMass;
+				goalMass = totalMass;
 			}
 			return;
 		}
@@ -190,14 +190,14 @@ void SpheresFactory::action()
 		state->pos = state->refPos = c;
 		if (color[0] >= 0 and color[1] >= 0 and color[2] >= 0) { sphere->color = color; }
 
-		state->vel     = initVel;
-		Real vol       = (4 / 3.) * Mathr::PI * pow(r, 3);
-		state->mass    = vol * material->density;
+		state->vel = initVel;
+		Real vol = (4 / 3.) * Mathr::PI * pow(r, 3);
+		state->mass = vol * material->density;
 		state->inertia = (2. / 5.) * vol * r * r * material->density * Vector3r::Ones();
 		state->blockedDOFs_vec_set(blockedDOFs);
 
-		b->shape    = sphere;
-		b->state    = state;
+		b->shape = sphere;
+		b->state = state;
 		b->material = material;
 		if (mask > 0) { b->groupMask = mask; }
 		// insert particle in the simulation
@@ -214,10 +214,10 @@ void SpheresFactory::action()
 			Real summMaterial = 0.0;
 			if (PSDcalculateMass) {
 				PSDCurMean[maxdiffID] = PSDCurMean[maxdiffID] + state->mass;
-				summMaterial          = totalMass;
+				summMaterial = totalMass;
 			} else {
 				PSDCurMean[maxdiffID] = PSDCurMean[maxdiffID] + 1;
-				summMaterial          = numParticles;
+				summMaterial = numParticles;
 			}
 
 			for (unsigned int k = 0; k < PSDcum.size(); k++) { //Update  relationships in bins
@@ -233,7 +233,7 @@ void CircularFactory::pickRandomPosition(Vector3r& c, Real r)
 	const Quaternionr q(Quaternionr().setFromTwoVectors(Vector3r::UnitZ(), normal));
 	Real              angle = randomUnit() * 2 * Mathr::PI, rr = randomUnit() * (radius - r); // random polar coordinate inside the circle
 	Real              l = (randomUnit() - 0.5) * length;
-	c                   = center + q * Vector3r(cos(angle) * rr, sin(angle) * rr, 0) + normal * l;
+	c = center + q * Vector3r(cos(angle) * rr, sin(angle) * rr, 0) + normal * l;
 }
 
 void BoxFactory::pickRandomPosition(Vector3r& c, Real /*r*/)

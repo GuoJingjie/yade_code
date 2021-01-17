@@ -46,7 +46,7 @@ public:
 	void start()
 	{
 		if (!TimingInfo::enabled) return;
-		i    = 0;
+		i = 0;
 		last = TimingInfo::getNow();
 	}
 	void checkpoint(const string& label)

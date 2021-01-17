@@ -74,31 +74,31 @@ void RockBolt::action()
 		int totalBlocks = blockIDs.size();
 		for (int i = 0; i < totalBlocks; i++) {
 			Real distance = distanceFrOpening[i];
-			int  blockID  = blockIDs[i];
-			int  ihole    = i;
+			int  blockID = blockIDs[i];
+			int  ihole = i;
 			while (ihole > 0 && distanceFrOpening[ihole - 1] > distance) {
 				distanceFrOpening[ihole] = distanceFrOpening[ihole - 1];
-				blockIDs[ihole]          = blockIDs[ihole - 1];
-				ihole                    = ihole - 1;
+				blockIDs[ihole] = blockIDs[ihole - 1];
+				ihole = ihole - 1;
 			}
 			distanceFrOpening[ihole] = distance;
-			blockIDs[ihole]          = blockID;
+			blockIDs[ihole] = blockID;
 		}
 
 		Vector3r jointIntersection(0, 0, 0);
 		for (int j = 0; j < totalBlocks; j++) {
-			State*           state1      = Body::byId(blockIDs[j], scene)->state.get();
-			Shape*           shape1      = Body::byId(blockIDs[j], scene)->shape.get();
-			PotentialBlock*  pb          = static_cast<PotentialBlock*>(shape1);
+			State*           state1 = Body::byId(blockIDs[j], scene)->state.get();
+			Shape*           shape1 = Body::byId(blockIDs[j], scene)->shape.get();
+			PotentialBlock*  pb = static_cast<PotentialBlock*>(shape1);
 			int              totalPlanes = pb->a.size();
 			int              intersectNo = 0;
 			vector<Vector3r> tempCoord;
 			vector<Real>     distance;
 			for (int i = 0; i < totalPlanes; i++) {
-				Vector3r plane  = state1->ori * Vector3r(pb->a[i], pb->b[i], pb->c[i]);
+				Vector3r plane = state1->ori * Vector3r(pb->a[i], pb->b[i], pb->c[i]);
 				Real     planeD = plane.dot(state1->pos) + pb->d[i] + pb->r;
 				if (intersectPlane(pb, state1, startingPoint, boltDirection, boltLength, jointIntersection, plane, planeD)) {
-					Real sign         = plane.dot(boltDirection);
+					Real sign = plane.dot(boltDirection);
 					jointIntersection = jointIntersection - math::sign(sign) * halfActiveLength * boltDirection;
 					distance.push_back(jointIntersection.norm());
 					jointIntersection = state1->ori.conjugate() * (jointIntersection - state1->pos);
@@ -114,8 +114,8 @@ void RockBolt::action()
 				//localCoordinates.push_back(tempCoord[0]);
 				/*add last*/
 				Vector3r endPoint = startingPoint + boltLength * boltDirection;
-				State*   state1a  = Body::byId(blockIDs[blockIDs.size() - 1], scene)->state.get();
-				endPoint          = state1a->ori.conjugate() * (endPoint - state1a->pos);
+				State*   state1a = Body::byId(blockIDs[blockIDs.size() - 1], scene)->state.get();
+				endPoint = state1a->ori.conjugate() * (endPoint - state1a->pos);
 				if (useMidPoint == false) {
 					localCoordinates.push_back(tempCoord[0]);
 				} else {
@@ -177,15 +177,15 @@ void RockBolt::action()
 	}
 	if (installed == true && blockIDs.size() >= 2) {
 		averageForce = 0.0;
-		maxForce     = 0.0;
-		int blockNo  = blockIDs.size();
+		maxForce = 0.0;
+		int blockNo = blockIDs.size();
 		for (int j = 1; j < blockNo; j++) {
 			State*          state1 = Body::byId(blockIDs[j - 1], scene)->state.get();
 			State*          state2 = Body::byId(blockIDs[j], scene)->state.get();
 			Shape*          shape1 = Body::byId(blockIDs[j - 1], scene)->shape.get();
 			Shape*          shape2 = Body::byId(blockIDs[j], scene)->shape.get();
-			PotentialBlock* s1     = static_cast<PotentialBlock*>(shape1);
-			PotentialBlock* s2     = static_cast<PotentialBlock*>(shape2);
+			PotentialBlock* s1 = static_cast<PotentialBlock*>(shape1);
+			PotentialBlock* s2 = static_cast<PotentialBlock*>(shape2);
 			Vector3r        nodeDistance
 			        = getNodeDistance(s1, state1, s2, state2, localCoordinates[2 * j - 1], localCoordinates[2 * j]); /* 2 minus 1, from 1 to 2 */
 
@@ -202,11 +202,11 @@ void RockBolt::action()
 			} else {
 				if (resetLengthInit == true) {
 					initialLength[j - 1] = nodeDistance.norm() * math::sign(nodeDistance.dot(boltDirection));
-					resetLengthInit      = false;
+					resetLengthInit = false;
 				}
 				Vector3r direction = nodeDistance;
 				direction.normalize();
-				Real dirSign           = 1.0;
+				Real dirSign = 1.0;
 				nodeDistanceVec[j - 1] = nodeDistance;
 				//if (initialDirection[j-1].norm()>pow(10,-11) ){
 				//	dirSign = direction.dot(initialDirection[j-1]);
@@ -222,19 +222,19 @@ void RockBolt::action()
 				Vector3r shearForce = shearStiffness * (nodeDistance.dot(shearDir)) * shearDir;
 
 				if (axialForce.norm() > axialMax || shearForce.norm() > shearMax || ruptured[j - 1] == true) {
-					axialForce      = Vector3r(0, 0, 0);
-					shearForce      = Vector3r(0, 0, 0);
+					axialForce = Vector3r(0, 0, 0);
+					shearForce = Vector3r(0, 0, 0);
 					ruptured[j - 1] = true;
 				}
 				axialForces[j - 1] = axialForce.norm();
 				shearForces[j - 1] = shearForce.norm();
-				forces[j - 1]      = (axialForce + shearForce).norm(); //*math::sign(dirSign);
+				forces[j - 1] = (axialForce + shearForce).norm(); //*math::sign(dirSign);
 				averageForce += forces[j - 1];
 				maxForce = std::max(maxForce, forces[j - 1]);
 
-				Vector3r totalForce     = axialForce + shearForce;
-				Vector3r c1x            = state1->ori * localCoordinates[2 * j - 1] + 0.5 * nodeDistance;
-				nodePosition[j - 1]     = state1->pos + c1x;
+				Vector3r totalForce = axialForce + shearForce;
+				Vector3r c1x = state1->ori * localCoordinates[2 * j - 1] + 0.5 * nodeDistance;
+				nodePosition[j - 1] = state1->pos + c1x;
 				distanceFrCentre[j - 1] = nodePosition[j - 1].dot(boltDirection);
 				if (j == 1) { displacements = (state1->pos + state1->ori * localCoordinates[0]).dot(boltDirection); }
 				Vector3r c2x = state2->ori * localCoordinates[2 * j] - 0.5 * nodeDistance;
@@ -248,16 +248,16 @@ void RockBolt::action()
 		averageForce = averageForce / static_cast<Real>(blockNo - 1);
 	}
 	if ((scene->iter - vtkRefTimeStep) % vtkIteratorInterval == 0 && installed == true && blockIDs.size() >= 2) {
-		vtkRefTimeStep                                  = scene->iter;
+		vtkRefTimeStep = scene->iter;
 		vtkSmartPointer<vtkAppendPolyData> appendFilter = vtkSmartPointer<vtkAppendPolyData>::New();
-		int                                blockNo      = blockIDs.size();
+		int                                blockNo = blockIDs.size();
 
 		/// BOLT FORCE //
-		vtkSmartPointer<vtkPointsReal> boltNodalPoints      = vtkSmartPointer<vtkPointsReal>::New();
+		vtkSmartPointer<vtkPointsReal> boltNodalPoints = vtkSmartPointer<vtkPointsReal>::New();
 		vtkSmartPointer<vtkCellArray>  boltNodalPointsCells = vtkSmartPointer<vtkCellArray>::New();
-		vtkSmartPointer<vtkPointsReal> boltNode             = vtkSmartPointer<vtkPointsReal>::New();
-		vtkSmartPointer<vtkCellArray>  boltNodeCells        = vtkSmartPointer<vtkCellArray>::New();
-		vtkSmartPointer<vtkFloatArray> boltNodalForce       = vtkSmartPointer<vtkFloatArray>::New();
+		vtkSmartPointer<vtkPointsReal> boltNode = vtkSmartPointer<vtkPointsReal>::New();
+		vtkSmartPointer<vtkCellArray>  boltNodeCells = vtkSmartPointer<vtkCellArray>::New();
+		vtkSmartPointer<vtkFloatArray> boltNodalForce = vtkSmartPointer<vtkFloatArray>::New();
 		boltNodalForce->SetNumberOfComponents(3);
 		boltNodalForce->SetName("Bolt Force"); //Linear velocity in Vector3 form
 		vtkSmartPointer<vtkFloatArray> boltAxialForce = vtkSmartPointer<vtkFloatArray>::New();
@@ -268,12 +268,12 @@ void RockBolt::action()
 		boltShearForce->SetName("Shear Force"); //Linear velocity in Vector3 form
 		//#if 0;
 		for (int i = 0; i < blockNo; i++) {
-			State*                         state1       = Body::byId(blockIDs[i], scene)->state.get();
+			State*                         state1 = Body::byId(blockIDs[i], scene)->state.get();
 			Vector3r                       globalPoint1 = state1->ori * localCoordinates[2 * i] + state1->pos;
 			Vector3r                       globalPoint2 = state1->ori * localCoordinates[2 * i + 1] + state1->pos;
-			vtkSmartPointer<vtkLineSource> lineSource   = vtkSmartPointer<vtkLineSource>::New();
-			Real                           p0[3]        = { globalPoint1[0], globalPoint1[1], globalPoint1[2] };
-			Real                           p1[3]        = { globalPoint2[0], globalPoint2[1], globalPoint2[2] };
+			vtkSmartPointer<vtkLineSource> lineSource = vtkSmartPointer<vtkLineSource>::New();
+			Real                           p0[3] = { globalPoint1[0], globalPoint1[1], globalPoint1[2] };
+			Real                           p1[3] = { globalPoint2[0], globalPoint2[1], globalPoint2[2] };
 			lineSource->SetPoint1(p0);
 			lineSource->SetPoint2(p1);
 			appendFilter->AddInputConnection(lineSource->GetOutputPort());
@@ -286,11 +286,11 @@ void RockBolt::action()
 
 			if (i < blockNo - 1) {
 				/* draw a line between joints*/
-				State*                         state2          = Body::byId(blockIDs[i + 1], scene)->state.get();
-				Vector3r                       globalPoint3    = state2->ori * localCoordinates[2 * i + 2] + state2->pos;
+				State*                         state2 = Body::byId(blockIDs[i + 1], scene)->state.get();
+				Vector3r                       globalPoint3 = state2->ori * localCoordinates[2 * i + 2] + state2->pos;
 				vtkSmartPointer<vtkLineSource> lineSourceJoint = vtkSmartPointer<vtkLineSource>::New();
-				Real                           p2[3]           = { globalPoint2[0], globalPoint2[1], globalPoint2[2] };
-				Real                           p3[3]           = { globalPoint3[0], globalPoint3[1], globalPoint3[2] };
+				Real                           p2[3] = { globalPoint2[0], globalPoint2[1], globalPoint2[2] };
+				Real                           p3[3] = { globalPoint3[0], globalPoint3[1], globalPoint3[2] };
 				lineSourceJoint->SetPoint1(p2);
 				lineSourceJoint->SetPoint2(p3);
 				appendFilter->AddInputConnection(lineSourceJoint->GetOutputPort());
@@ -299,21 +299,21 @@ void RockBolt::action()
 				/* try to draw forces */
 				vtkIdType pid[1];
 				Vector3r  midPoint = 0.5 * (globalPoint2 + globalPoint3);
-				pid[0]             = boltNode->InsertNextPoint(midPoint);
+				pid[0] = boltNode->InsertNextPoint(midPoint);
 				boltNodeCells->InsertNextCell(1, pid);
 				Vector3r plotDirection = boltDirection.cross(Vector3r(0, 1, 0));
 				if (plotDirection.dot(Vector3r(1, 0, 0)) < 0.0) { plotDirection = -plotDirection; }
 				plotDirection.normalize();
 				Vector3r nodalForce = forces[i] * plotDirection;
-				float    f[3]       = { (float)nodalForce[0], (float)nodalForce[1], (float)nodalForce[2] };
+				float    f[3] = { (float)nodalForce[0], (float)nodalForce[1], (float)nodalForce[2] };
 				boltNodalForce->INSERT_NEXT_TUPLE(f);
 
 				Vector3r axialForce = axialForces[i] * plotDirection;
-				float    fa[3]      = { (float)axialForce[0], (float)axialForce[1], (float)axialForce[2] };
+				float    fa[3] = { (float)axialForce[0], (float)axialForce[1], (float)axialForce[2] };
 				boltAxialForce->INSERT_NEXT_TUPLE(fa);
 
 				Vector3r shearForce = shearForces[i] * plotDirection;
-				float    fs[3]      = { (float)shearForce[0], (float)shearForce[1], (float)shearForce[2] };
+				float    fs[3] = { (float)shearForce[0], (float)shearForce[1], (float)shearForce[2] };
 				boltShearForce->INSERT_NEXT_TUPLE(fs);
 			}
 
@@ -375,12 +375,12 @@ Real RockBolt::evaluateFNoSphereVol(const PotentialBlock* s1, const State* state
 	/* Direction cosines */
 	//state1.ori.normalize();
 	Vector3r localP1 = state1->ori.conjugate() * tempP1;
-	Real     x       = localP1.x();
-	Real     y       = localP1.y();
-	Real     z       = localP1.z();
+	Real     x = localP1.x();
+	Real     y = localP1.y();
+	Real     z = localP1.z();
 	int      planeNo = s1->a.size();
 
-	Real r           = s1->r;
+	Real r = s1->r;
 	int  insideCount = 0;
 	for (int i = 0; i < planeNo; i++) {
 		Real plane = s1->a[i] * x + s1->b[i] * y + s1->c[i] * z - s1->d[i] - 1.0002 * r; //-pow(10,-10);
@@ -413,7 +413,7 @@ bool RockBolt::installBolts(
 	/* Variables to keep things neat */
 	int  NUMCON = 3 /* equality */ + planeNoA /*block inequality */;
 	int  NUMVAR = 3 /*3D */ + 1 /*t */ + 1 /* s */;
-	Real s      = 0.0;
+	Real s = 0.0;
 	//bool converge = true;
 
 	Matrix3r Q1 = (state1->ori.conjugate()).toRotationMatrix();
@@ -425,9 +425,9 @@ bool RockBolt::installBolts(
 	}
 	MatrixXr AQ1 = A1 * Q1;
 	MatrixXr pos1(3, 1);
-	pos1(0, 0)      = state1->pos.x();
-	pos1(1, 0)      = state1->pos.y();
-	pos1(2, 0)      = state1->pos.z();
+	pos1(0, 0) = state1->pos.x();
+	pos1(1, 0) = state1->pos.y();
+	pos1(2, 0) = state1->pos.z();
 	MatrixXr Q1pos1 = AQ1 * pos1;
 
 
@@ -435,7 +435,7 @@ bool RockBolt::installBolts(
 
 	model2.setOptimizationDirection(1);
 	// Create space for 3 columns and 10000 rows
-	int numberRows    = NUMCON;
+	int numberRows = NUMCON;
 	int numberColumns = NUMVAR;
 	// This is fully dense - but would not normally be so
 
@@ -497,9 +497,9 @@ bool RockBolt::installBolts(
 	Real* columnPrimal = model2.primalColumnSolution();
 
 
-	Vector3r temp  = Vector3r(columnPrimal[0], columnPrimal[1], columnPrimal[2]);
+	Vector3r temp = Vector3r(columnPrimal[0], columnPrimal[1], columnPrimal[2]);
 	intersectionPt = temp; //state1->ori.conjugate()*(temp-state1->pos);
-	s              = columnPrimal[4];
+	s = columnPrimal[4];
 
 	int convergeSuccess = model2.status();
 	if (s > -pow(10, -8) || convergeSuccess != 0) {
@@ -529,7 +529,7 @@ bool RockBolt::intersectPlane(
 	/* Variables to keep things neat */
 	int  NUMCON = 3 /* equality */ + 1 /*planeEquality */;
 	int  NUMVAR = 3 /*3D */ + 1 /*t */;
-	Real t      = 0.0;
+	Real t = 0.0;
 	//bool converge = true;
 
 	/* line equality */
@@ -545,7 +545,7 @@ bool RockBolt::intersectPlane(
 
 	model2.setOptimizationDirection(1);
 	// Create space for 3 columns and 10000 rows
-	int numberRows    = NUMCON;
+	int numberRows = NUMCON;
 	int numberColumns = NUMVAR;
 	// This is fully dense - but would not normally be so
 
@@ -595,9 +595,9 @@ bool RockBolt::intersectPlane(
 	model2.primal();
 	Real* columnPrimal = model2.primalColumnSolution();
 
-	Vector3r temp  = Vector3r(columnPrimal[0], columnPrimal[1], columnPrimal[2]);
+	Vector3r temp = Vector3r(columnPrimal[0], columnPrimal[1], columnPrimal[2]);
 	intersectionPt = temp; //state1->ori.conjugate()*(temp-state1->pos);
-	t              = columnPrimal[3];
+	t = columnPrimal[3];
 
 	Real f = evaluateFNoSphereVol(s1, state1, intersectionPt);
 	//std::cout<<"t: "<<t<<", f: "<<f<<", status: "<<status<<endl;

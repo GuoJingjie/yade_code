@@ -48,8 +48,8 @@ void GeneralIntegratorInsertionSortCollider::action()
 	timingDeltas->start();
 #endif
 
-	const size_t          nBodies            = scene->bodies->size();
-	InteractionContainer* interactions       = scene->interactions.get();
+	const size_t          nBodies = scene->bodies->size();
+	InteractionContainer* interactions = scene->interactions.get();
 	scene->interactions->iterColliderLastRun = -1;
 
 	// periodicity changed, force reinit
@@ -63,7 +63,7 @@ void GeneralIntegratorInsertionSortCollider::action()
 	bool doInitSort = false;
 	if (doSort) {
 		doInitSort = true;
-		doSort     = false;
+		doSort = false;
 	}
 	if (BB[0].size() != 2 * nBodies) {
 		size_t BBsize = BB[0].size();
@@ -117,16 +117,16 @@ void GeneralIntegratorInsertionSortCollider::action()
 	}
 
 	// update bounds via boundDispatcher
-	boundDispatcher->scene              = scene;
-	boundDispatcher->sweepDist          = verletDist;
+	boundDispatcher->scene = scene;
+	boundDispatcher->sweepDist = verletDist;
 	boundDispatcher->minSweepDistFactor = minSweepDistFactor;
-	boundDispatcher->targetInterv       = targetInterv;
+	boundDispatcher->targetInterv = targetInterv;
 	boundDispatcher->updatingDispFactor = updatingDispFactor;
 	boundDispatcher->action();
 
 	// if interactions are dirty, force reinitialization
 	if (scene->interactions->dirty) {
-		doInitSort                 = true;
+		doInitSort = true;
 		scene->interactions->dirty = false;
 	}
 
@@ -164,8 +164,8 @@ void GeneralIntegratorInsertionSortCollider::action()
 	for (size_t i = 0; i < 2 * nBodies; i++) {
 		for (int j = 0; j < 3; j++) {
 			VecBounds&              BBj = BB[j];
-			const Body::id_t        id  = BBj[i].id;
-			const shared_ptr<Body>& b   = Body::byId(id, scene);
+			const Body::id_t        id = BBj[i].id;
+			const shared_ptr<Body>& b = Body::byId(id, scene);
 			if (b) {
 				const shared_ptr<Bound>& bv = b->bound;
 				// coordinate is min/max if has bounding volume, otherwise both are the position. Add periodic shift so that we are inside the cell
@@ -213,20 +213,20 @@ void GeneralIntegratorInsertionSortCollider::action()
 		if (b) {
 			const shared_ptr<Bound>& bv = b->bound;
 			if (bv) {
-				minima[3 * id]     = bv->min[0];
+				minima[3 * id] = bv->min[0];
 				minima[3 * id + 1] = bv->min[1];
 				minima[3 * id + 2] = bv->min[2];
-				maxima[3 * id]     = bv->max[0];
+				maxima[3 * id] = bv->max[0];
 				maxima[3 * id + 1] = bv->max[1];
 				maxima[3 * id + 2] = bv->max[2];
 			} else {
 				const Vector3r& pos = b->state->pos;
-				minima[3 * id]      = pos[0];
-				minima[3 * id + 1]  = pos[1];
-				minima[3 * id + 2]  = pos[2];
-				maxima[3 * id]      = pos[0];
-				maxima[3 * id + 1]  = pos[1];
-				maxima[3 * id + 2]  = pos[2];
+				minima[3 * id] = pos[0];
+				minima[3 * id + 1] = pos[1];
+				minima[3 * id + 2] = pos[2];
+				maxima[3 * id] = pos[0];
+				maxima[3 * id + 1] = pos[1];
+				maxima[3 * id + 2] = pos[2];
 			}
 		} else {
 			std::fill(minima.begin() + 3 * id, minima.begin() + 3 * id + 3, 0);

@@ -61,10 +61,10 @@ namespace math {
 		WrappedComplex val;
 
 		// detect types which are convertible to WrappedComplex
-		using NonComplex                                       = typename RealPart<WrappedComplex>::type;
-		template <typename OtherType> using ComplexConvert     = std::is_convertible<OtherType, WrappedComplex>;
-		template <typename OtherType> using NonComplexConvert  = std::is_convertible<OtherType, NonComplex>;
-		template <typename OtherType> using EnableIfIsComplex  = std::enable_if_t<boost::is_complex<OtherType>::value>;
+		using NonComplex = typename RealPart<WrappedComplex>::type;
+		template <typename OtherType> using ComplexConvert = std::is_convertible<OtherType, WrappedComplex>;
+		template <typename OtherType> using NonComplexConvert = std::is_convertible<OtherType, NonComplex>;
+		template <typename OtherType> using EnableIfIsComplex = std::enable_if_t<boost::is_complex<OtherType>::value>;
 		template <typename OtherType> using EnableIfNonComplex = std::enable_if_t<(not boost::is_complex<OtherType>::value)>;
 		template <typename OtherType>
 		using EnableIfConvertible = std::enable_if_t<(ComplexConvert<OtherType>::value) or (NonComplexConvert<OtherType>::value)>;
