@@ -2,6 +2,11 @@
 # bruno.chareyre@grenoble-inp.fr
 # This script checks collider correctness and performance in bouncing spheres with heavy erase/insert along with iterations
 
+
+if yade.math.getDigits10(1)>15:
+    print("this checkScript needs to be updated to use HP doube in the calculations (see function signature()), for the moment it fails")
+    exit
+
 import time
 
 newton.gravity=(0,-10,0) 
