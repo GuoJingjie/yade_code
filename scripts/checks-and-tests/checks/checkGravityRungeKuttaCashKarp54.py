@@ -39,8 +39,8 @@ tolerance = 10**(-yade.math.getDigits10(1)+3)
 print("checkGravityRungeKuttaCashKarp54.py : yade precision is ",yade.math.getDigits10(1)," decimal places. Will use error tolerance of: ", tolerance)
 
 print("Note: for high precision calculations use yade.math.toHP1(...) see this:")
-print("g = yade.math.toHP1(-9.81) ## produces: ", (        yade.math.toHP1('-9.81')).__repr__())
-print("g = -9.81                  ## produces: ", (-9.81 * yade.math.toHP1('1'    )).__repr__())
+print("g = yade.math.toHP1('-9.81') ## produces: ", (        yade.math.toHP1('-9.81')).__repr__())
+print("g = -9.81                    ## produces: ", (-9.81 * yade.math.toHP1('1'    )).__repr__())
 print("See https://yade-dem.org/doc/HighPrecisionReal.html#string-conversions for more info.")
 
 id_0    = o.bodies.append(sphere((0,0,0),0.2,material=sphereMat)) # The body has no initial vertical Velocity
