@@ -2,11 +2,6 @@
 # bruno.chareyre@grenoble-inp.fr
 # This script checks collider correctness and performance in bouncing spheres with heavy erase/insert along with iterations
 
-
-if yade.math.getDigits10(1)>15:
-    print("this checkScript needs to be updated to use HP doube in the calculations (see function signature()), for the moment it fails")
-    exit
-
 import time
 
 newton.gravity=(0,-10,0) 
@@ -108,7 +103,7 @@ def signature():
         # identify overlapping boxes disregarding verletDist, this is the minimal list that any AABB collider should find
         # it means result of the check will not depend on collider optimizations giving more or less virtual interactions
         d = O.bodies[i.id1].state.pos - O.bodies[i.id2].state.pos
-        sumRad=0
+        sumRad=yade.math.toHP1(0) # after https://gitlab.com/yade-dev/trunk/-/merge_requests/599 is merged it can be: yade.math.Real(0)
         if i.id1 > 0: sumRad+=O.bodies[i.id1].shape.radius
         if i.id2 > 0: sumRad+=O.bodies[i.id2].shape.radius
         away = abs(d[0])>sumRad or  abs(d[1])>sumRad or abs(d[2])>sumRad
