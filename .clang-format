@@ -1,7 +1,7 @@
 BasedOnStyle: WebKit
 AccessModifierOffset: -8
 AlignAfterOpenBracket: AlwaysBreak
-AlignConsecutiveAssignments: true
+AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: true
 AlignTrailingComments: true
 #wait till clang supports it
