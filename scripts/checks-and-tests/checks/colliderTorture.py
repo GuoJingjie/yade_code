@@ -4,6 +4,8 @@
 
 import time
 
+printAllVersions()
+
 newton.gravity=(0,-10,0) 
 newton.damping=0
 

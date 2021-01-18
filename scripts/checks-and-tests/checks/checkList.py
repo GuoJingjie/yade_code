@@ -21,7 +21,7 @@ slowScripts= ['checkClumpHopper.py','checkMPISilo.py','colliderTorture.py']
 
 #checkSpawn.py fails always for now, needs investigations
 skipScripts = ['checkList.py','checkMPISilo.py']
-onlyOneScript = [] # use this if you want to test only one script, it takes precedence over skipScripts.
+onlyOneScript = ['colliderTorture.py'] # use this if you want to test only one script, it takes precedence over skipScripts.
 
 
 mpiScripts= ['checkMPI.py','checkMPISilo.py','checkMPI4PYcomm.py','checkMPYcomm.py','checkSpawn.py']
