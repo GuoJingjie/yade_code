@@ -1,4 +1,3 @@
-
 # bruno.chareyre@grenoble-inp.fr
 # This script checks collider correctness and performance in bouncing spheres with heavy erase/insert along with iterations
 
@@ -110,7 +109,7 @@ def signature():
         if i.id2 > 0: sumRad+=O.bodies[i.id2].shape.radius
         away = abs(d[0])>sumRad or  abs(d[1])>sumRad or abs(d[2])>sumRad
         
-        if (not away) or i.isReal: #isReal is for sphere-box
+        if (not away): #isReal is for sphere-box
             sig+=i.id1+i.id2
             count+=1
     return count,sig
