@@ -32,11 +32,6 @@ for i in range(N):
     for j in range(N):
         O.bodies.append( sphere((i,2+cos(0.6*(i+j)),j),1))
         O.bodies.append( sphere((i+0.1,6+1.5*cos(2*(i+j)+1),j+0.3),1))
-
-# rotate everything by a small amount so we don't have coincident bounds
-spin=Vector3(1e-5,1e-5,1e-5)   
-for b in O.bodies:
-    b.state.pos = b.state.pos + spin.cross(b.state.pos)
         
 O.saveTmp()
 
@@ -112,7 +107,7 @@ def signature():
         sumRad=yade.math.toHP1(0) # after https://gitlab.com/yade-dev/trunk/-/merge_requests/599 is merged it can be: yade.math.Real(0)
         if i.id1 > 0: sumRad+=O.bodies[i.id1].shape.radius
         if i.id2 > 0: sumRad+=O.bodies[i.id2].shape.radius
-        away = abs(d[0])>sumRad or  abs(d[1])>sumRad or abs(d[2])>sumRad
+        away = abs(d[0])>=sumRad or  abs(d[1])>=sumRad or abs(d[2])>=sumRad
         
         if (not away or i.isReal): #isReal is for sphere-box
             sig+=i.id1+i.id2
