@@ -153,7 +153,7 @@ namespace CGT {
 #define CHOLMOD(name) cholmod_l_##name
 		void add_T_entry(cholmod_triplet* T, long r, long c, Real x)
 		{
-			size_t k         = T->nnz;
+			size_t k = T->nnz;
 			((long*)T->i)[k] = r;
 			((long*)T->j)[k] = c;
 			((Real*)T->x)[k] = x;
@@ -163,9 +163,9 @@ namespace CGT {
 #define CHOLMOD(name) cholmod_##name
 		void add_T_entry(cholmod_triplet* T, int r, int c, Real x)
 		{
-			size_t k         = T->nnz;
-			((int*)T->i)[k]  = r;
-			((int*)T->j)[k]  = c;
+			size_t k = T->nnz;
+			((int*)T->i)[k] = r;
+			((int*)T->j)[k] = c;
 			((Real*)T->x)[k] = x;
 			T->nnz++;
 		}

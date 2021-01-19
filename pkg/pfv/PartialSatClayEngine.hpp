@@ -82,23 +82,23 @@ public:
 
 	PartialSatCellInfo(void)
 	{
-		entered           = false;
-		initialPorosity   = 0.25;
+		entered = false;
+		initialPorosity = 0.25;
 		initialSaturation = 0.01;
-		oldPressure       = 0;
-		crackArea         = 0;
-		saturation        = 0.01;
-		porosity          = 0.25;
-		dsdp              = 0;
-		vSolids           = 0;
-		crack             = false;
-		crackNum          = 0;
-		isExposed         = false; // flag for determining if a pore is exposed to atmosphere, which controls the pressure force calculations
-		Po                = 1.5;
-		lambdao           = 0.2;
-		clumped           = false;
-		blocked           = false;
-		initiallyCracked  = false;
+		oldPressure = 0;
+		crackArea = 0;
+		saturation = 0.01;
+		porosity = 0.25;
+		dsdp = 0;
+		vSolids = 0;
+		crack = false;
+		crackNum = 0;
+		isExposed = false; // flag for determining if a pore is exposed to atmosphere, which controls the pressure force calculations
+		Po = 1.5;
+		lambdao = 0.2;
+		clumped = false;
+		blocked = false;
+		initiallyCracked = false;
 		opened.resize(4, 0);
 		entry.resize(4, 0);
 		visited.resize(4, 0);
@@ -208,19 +208,19 @@ public:
 	Real getEnteredRatio();
 
 	//	void setPositionsBuffer(bool current);
-	Real     leakOffRate                 = 0;
-	Real     averageAperture             = 0;
-	Real     sumOfApertures              = 0;
+	Real     leakOffRate = 0;
+	Real     averageAperture = 0;
+	Real     sumOfApertures = 0;
 	Real     averageFracturePermeability = 0;
-	Real     maxAperture                 = 0;
-	Real     crackArea                   = 0;
-	Real     crackVolume                 = 0;
-	Real     waterVolume                 = 0;
-	int      numCracks                   = 0;
-	Real     totalFractureArea           = 0;
-	Real     solverDT                    = 0;
-	bool     emulatingAction             = false;
-	Real     maxDSDPj                    = 0;
+	Real     maxAperture = 0;
+	Real     crackArea = 0;
+	Real     crackVolume = 0;
+	Real     waterVolume = 0;
+	int      numCracks = 0;
+	Real     totalFractureArea = 0;
+	Real     solverDT = 0;
+	bool     emulatingAction = false;
+	Real     maxDSDPj = 0;
 	Vector3r crack_fabric_vector;
 	Real     crack_fabric_area;
 
@@ -231,7 +231,7 @@ public:
 	virtual void action();
 	virtual void emulateAction()
 	{
-		scene           = Omega::instance().getScene().get();
+		scene = Omega::instance().getScene().get();
 		emulatingAction = true;
 		action();
 		emulatingAction = false;

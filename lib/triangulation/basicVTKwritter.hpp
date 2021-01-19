@@ -28,7 +28,7 @@ struct basicVTKwritter {
 	void setNums(unsigned int nV, unsigned int nC)
 	{
 		nbVertices = nV;
-		nbCells    = nC;
+		nbCells = nC;
 	}
 	bool open(const char* filename, const char* comment);
 	bool close();

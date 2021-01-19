@@ -50,7 +50,7 @@ namespace CGT {
 
 			Grain(void)
 			{
-				id       = -1;
+				id = -1;
 				isSphere = true;
 			}
 		};
@@ -72,7 +72,7 @@ namespace CGT {
 			Contact(void)
 			{
 				visited = false;
-				status  = PERSISTENT;
+				status = PERSISTENT;
 			}
 		};
 
