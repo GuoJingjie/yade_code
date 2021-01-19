@@ -31,6 +31,7 @@
 #  ENABLE_OAR: generate a script for oar-based task scheduler (OFF by default)
 #  ENABLE_ASAN: AddressSanitizer build, please see documentation (OFF by default)
 #  ENABLE_MPFR: use https://www.mpfr.org/ library, can be used for higher precision calculations or for CGAL exact predicates (OFF by default)
+#  ENABLE_REALHP: Enable using precision types higher than Real==RealHP<1>, such as RealHP<2> RealHP<3> RealHP<4> https://yade-dem.org/doc/HighPrecisionReal.html#installation
 #  ENABLE_PARTIALSAT: enable the partially saturated clay engine, under construction (OFF by default)
 #  REAL_PRECISION_BITS , REAL_DECIMAL_PLACES: specify either of them to use a custom calculation precision. By default double (64 bits, 15 decimal places) precision is used.
 #  runtimePREFIX: used for packaging, when install directory is not the same is runtime directory (/usr/local by default)
@@ -85,6 +86,7 @@ OPTION(ENABLE_PROFILING "Enable profiling, e.g. shows some more metrics, which c
 OPTION(ENABLE_POTENTIAL_PARTICLES "Enable potential particles" ON)
 OPTION(ENABLE_OAR "Generate script for oar-based task scheduler" OFF)
 OPTION(ENABLE_MPFR "Use mpfr library (higher precision calculations or CGAL exact predicates)" OFF)
+OPTION(ENABLE_REALHP "Enable using precision types higher than Real==RealHP<1>, such as RealHP<2> RealHP<3> RealHP<4> https://yade-dem.org/doc/HighPrecisionReal.html#installation" ON)
 OPTION(USE_QT5 "USE Qt5 for GUI" ON)
 OPTION(ENABLE_POTENTIAL_BLOCKS "Enable PotentialBlocks" ON)
 OPTION(ENABLE_DEFORM "Enable Deformation Engine" OFF)
@@ -482,7 +484,7 @@ ENDIF()
 
 # Detect if RealHP<N> is supported. Allow option to override this for testing.
 FIND_PACKAGE(Mpmath)
-IF((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9.2.1) OR ((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8.3.0) AND (ENABLE_MPFR) AND (REAL_PRECISION_BITS GREATER 128)) OR (ALLOW_CRASHES))
+IF((ENABLE_REALHP) AND ((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9.2.1) OR ((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8.3.0) AND (ENABLE_MPFR) AND (REAL_PRECISION_BITS GREATER 128)) OR (ALLOW_CRASHES)))
  IF(Boost_MAJOR_VERSION EQUAL 1 AND Boost_MINOR_VERSION LESS 67)
     SET(REAL_MULTI_HP "OFF")
     MESSAGE(STATUS "${Esc}[31mDisabling RealHP<N> because boost version < 1.67 is too old.${Esc}[0m")
@@ -504,7 +506,7 @@ IF((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9.2.1) OR ((CMAKE_CXX_COMPI
  ENDIF()
 ELSE()
   SET(REAL_MULTI_HP "OFF")
-  MESSAGE(STATUS "${Esc}[31mDisabling RealHP<N>, this compiler is too old to make this work.${Esc}[0m")
+  MESSAGE(STATUS "${Esc}[31mDisabling RealHP<N>, it was turned off by the user via option ENABLE_REALHP=OFF or this compiler is too old to make this work.${Esc}[0m")
 ENDIF()
 IF(REAL_MULTI_HP)
   SET(REAL_USE_MPMATH "ON")
