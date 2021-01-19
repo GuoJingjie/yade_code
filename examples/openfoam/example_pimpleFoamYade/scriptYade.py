@@ -8,7 +8,7 @@
 # Usage :
 #
 # 1. Enable the OpenFOAM coupling engine : (Requires MPI installation)
-#       cmake -DCMAKE_INSTALL_PREFIX= /path/to/install  /path/to/sources -DDEBUG=0 -DCHUNKSIZE=1 -DENABLE_MPI=ON
+#       cmake -DCMAKE_INSTALL_PREFIX= /path/to/install  /path/to/sources -DDEBUG=0 -DENABLE_MPI=ON
 #       make
 #       make install
 #

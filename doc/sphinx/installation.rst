@@ -292,7 +292,6 @@ The following cmake options are available: (see the `source code <https://gitlab
 	* ENABLE_REALHP: Enable using precision types higher than ``Real==RealHP<1>``, such as ``RealHP<2>``, ``RealHP<3>``, ``RealHP<4>`` see :ref:`high precision documentation<higher-hp-precision>` for details (ON by default)
 	* REAL_PRECISION_BITS, REAL_DECIMAL_PLACES: specify either of them to use a custom calculation precision. By default double (64 bits, 15 decimal places) precision is used as ``Real`` type. See :ref:`high precision documentation<highPrecisionReal>` for additional details.
 	* runtimePREFIX: used for packaging, when install directory is not the same as runtime directory (/usr/local by default)
-	* CHUNKSIZE: specifiy the chunk size if you want several sources to be compiled at once. Increases compilation speed but RAM-consumption during compilation as well (1 by default)
 	* VECTORIZE: enables vectorization and alignment in Eigen3 library, experimental (OFF by default)
 	* USE_QT5: use QT5 for GUI (ON by default)
 	* CHOLMOD_GPU link Yade to custom SuiteSparse installation and activate GPU accelerated PFV (OFF by default)

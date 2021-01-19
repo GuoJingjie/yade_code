@@ -35,7 +35,6 @@
 #  ENABLE_PARTIALSAT: enable the partially saturated clay engine, under construction (OFF by default)
 #  REAL_PRECISION_BITS , REAL_DECIMAL_PLACES: specify either of them to use a custom calculation precision. By default double (64 bits, 15 decimal places) precision is used.
 #  runtimePREFIX: used for packaging, when install directory is not the same is runtime directory (/usr/local by default)
-#  CHUNKSIZE: set >1, if you want several sources to be compiled at once. Increases compilation speed and RAM-consumption during it (1 by default)
 #  VECTORIZE: enables vectorization and alignment in Eigen3 library, experimental (OFF by default)
 #  USE_QT5: use QT5 for GUI (ON by default)
 #  CHOLMOD_GPU link Yade to custom SuiteSparse installation and activate GPU accelerated PFV (OFF by default)
@@ -1114,18 +1113,7 @@ ENDIF(ENABLE_POTENTIAL_PARTICLES OR ENABLE_POTENTIAL_BLOCKS)
 
 #===========================================================
 
-IF (CHUNKSIZE)
-  INCLUDE(CombineSources)
-  COMBINE_SOURCES(${CMAKE_BINARY_DIR}/core "${SRC_CORE}" ${CHUNKSIZE})
-  FILE(GLOB SRC_CORE_COMBINED "${CMAKE_BINARY_DIR}/core.*.cpp")
-  COMBINE_SOURCES(${CMAKE_BINARY_DIR}/pkg "${SRC_PKG}" ${CHUNKSIZE})
-  FILE(GLOB SRC_PKG_COMBINED "${CMAKE_BINARY_DIR}/pkg.*.cpp")
-  COMBINE_SOURCES(${CMAKE_BINARY_DIR}/lib "${SRC_LIB}" ${CHUNKSIZE})
-  FILE(GLOB SRC_LIB_COMBINED "${CMAKE_BINARY_DIR}/lib.*.cpp")
-  ADD_LIBRARY(yade SHARED ${SRC_LIB_COMBINED} ${SRC_CORE_COMBINED} ${SRC_PKG_COMBINED})
-ELSE (CHUNKSIZE)
   ADD_LIBRARY(yade SHARED ${SRC_CORE} ${SRC_PKG} ${SRC_LIB})
-ENDIF (CHUNKSIZE)
 
 #===========================================================
 
@@ -1229,9 +1217,6 @@ ELSE (DEBUG)
   ENDIF (ENABLE_ASAN)
 ENDIF (DEBUG)
 MESSAGE(STATUS "C++ standard version: ${CMAKE_CXX_STANDARD}")
-IF (CHUNKSIZE)
-  MESSAGE(STATUS "CHUNKSIZE is set to " ${CHUNKSIZE})
-ENDIF (CHUNKSIZE)
 
 MESSAGE(STATUS "===========================================================")
 #===========================================================
