@@ -662,7 +662,7 @@ void PotentialBlockVTKRecorder::action()
 		pbColors->SetNumberOfComponents(3);
 
 		Vector3r color = particleColour;
-#if VTK_MAJOR_VERSION < 9
+#if ((VTK_MAJOR_VERSION <= 8) and (VTK_MINOR_VERSION < 2)) or (VTK_MAJOR_VERSION <= 7) // unsigned char for VTK versions < 8.2
 		unsigned char c[3]; //c = {color[0],color[1],color[2]};
 		c[0] = (unsigned char)(color[0]);
 		c[1] = (unsigned char)(color[1]);
