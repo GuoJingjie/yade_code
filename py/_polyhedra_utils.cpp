@@ -14,7 +14,7 @@
 #include <pkg/dem/Polyhedra.hpp>
 #include <numpy/ndarraytypes.h>
 
-CREATE_CPP_LOCAL_LOGGER("_polyhedra_utils.cpp");
+CREATE_CPP_LOCAL_LOGGER(_polyhedra_utils_cpp);
 
 namespace yade { // Cannot have #include directive inside.
 

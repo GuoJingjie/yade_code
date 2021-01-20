@@ -40,7 +40,7 @@
 #include <core/Subdomain.hpp>
 #endif
 
-CREATE_CPP_LOCAL_LOGGER("yadeWrapper.cpp");
+CREATE_CPP_LOCAL_LOGGER(yadeWrapper_cpp);
 
 namespace yade { // Cannot have #include directive inside.
 

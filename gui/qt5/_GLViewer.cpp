@@ -7,7 +7,7 @@
 #include <QApplication>
 #include <QCloseEvent>
 
-CREATE_CPP_LOCAL_LOGGER("qt5/_GLViewer.cpp");
+CREATE_CPP_LOCAL_LOGGER(qt5_GLViewer_cpp);
 
 namespace yade { // Cannot have #include directive inside.
 

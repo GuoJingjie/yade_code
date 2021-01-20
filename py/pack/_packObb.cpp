@@ -7,7 +7,7 @@
 #include <lib/high-precision/Constants.hpp>
 #include <lib/pyutil/doc_opts.hpp>
 
-CREATE_CPP_LOCAL_LOGGER("_packObb.cpp");
+CREATE_CPP_LOCAL_LOGGER(_packObb_cpp);
 
 template <typename Scalar> Eigen::Matrix<Scalar, 3, 3> matrixFromEulerAnglesXYZ(Scalar x, Scalar y, Scalar z)
 {

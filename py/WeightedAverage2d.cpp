@@ -1,7 +1,7 @@
 #include <lib/base/Logging.hpp>
 #include <lib/smoothing/WeightedAverage2d.hpp>
 
-CREATE_CPP_LOCAL_LOGGER("WeightedAverage2d.cpp");
+CREATE_CPP_LOCAL_LOGGER(WeightedAverage2d_cpp);
 
 namespace yade { // Cannot have #include directive inside.
 

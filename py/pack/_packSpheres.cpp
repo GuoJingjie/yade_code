@@ -5,7 +5,7 @@
 #include <lib/pyutil/doc_opts.hpp>
 #include <pkg/dem/SpherePack.hpp>
 
-CREATE_CPP_LOCAL_LOGGER("_packSpheres.cpp");
+CREATE_CPP_LOCAL_LOGGER(_packSpheres_cpp);
 
 // BOOST_PYTHON_MODULE cannot be inside yade namespace, it has 'extern "C"' keyword, which strips it out of any namespaces.
 BOOST_PYTHON_MODULE(_packSpheres)

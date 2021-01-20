@@ -28,7 +28,7 @@
 #include <pkg/common/OpenGLRenderer.hpp>
 #endif
 
-CREATE_CPP_LOCAL_LOGGER("customConverters.cpp");
+CREATE_CPP_LOCAL_LOGGER(customConverters_cpp);
 
 namespace yade { // Cannot have #include directive inside.
 

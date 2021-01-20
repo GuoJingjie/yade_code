@@ -14,7 +14,7 @@
 
 namespace yade { // Cannot have #include directive inside.
 
-CREATE_CPP_LOCAL_LOGGER("Polyhedra_support.cpp");
+CREATE_CPP_LOCAL_LOGGER(Polyhedra_support_cpp);
 
 //EMPRIRICAL CONSTANTS - ADJUST IF SEGMENTATION FAULT OCCUR, IT IS A PROBLEM OF CGAL. THESE ARE USED TO CHECK CGAL IMPUTS
 //DISTANCE_LIMIT controls numerical issues in calculating intersection. It should be small enough to neglect only extremely

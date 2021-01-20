@@ -9,7 +9,7 @@
 #include <numpy/arrayobject.h>
 #pragma GCC diagnostic pop
 
-CREATE_CPP_LOCAL_LOGGER("_utils.cpp");
+CREATE_CPP_LOCAL_LOGGER(_utils_cpp);
 
 namespace yade { // Cannot have #include directive inside.
 

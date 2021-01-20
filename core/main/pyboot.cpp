@@ -2,7 +2,7 @@
 #include <core/Omega.hpp>
 #include <signal.h>
 
-CREATE_CPP_LOCAL_LOGGER("pyboot.cpp");
+CREATE_CPP_LOCAL_LOGGER(pyboot_cpp);
 
 #ifdef YADE_DEBUG
 void crashHandler(int sig)

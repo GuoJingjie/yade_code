@@ -4,7 +4,7 @@
 #include <lib/base/Math.hpp>
 #include <lib/pyutil/doc_opts.hpp>
 
-CREATE_CPP_LOCAL_LOGGER("_packPredicates.cpp");
+CREATE_CPP_LOCAL_LOGGER(_packPredicates_cpp);
 
 namespace yade { // Cannot have #include directive inside.
 

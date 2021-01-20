@@ -41,7 +41,7 @@
 #include <boost/math/concepts/real_type_concept.hpp>
 
 #include <lib/high-precision/ToFromPythonConverter.hpp>
-CREATE_CPP_LOCAL_LOGGER("_math.cpp")
+CREATE_CPP_LOCAL_LOGGER(_math_cpp);
 
 namespace boost {
 void assertion_failed(char const* expr, char const* function, char const* /*file*/, long line)

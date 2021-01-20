@@ -28,7 +28,7 @@ using namespace ::yade::MathEigenTypes;
 #include <py/high-precision/minieigen/expose.hpp>
 #include <py/high-precision/minieigen/visitors.hpp>
 
-CREATE_CPP_LOCAL_LOGGER("_minieigenHP.cpp")
+CREATE_CPP_LOCAL_LOGGER(_minieigenHP_cpp);
 
 template <int N, bool registerConverters> struct RegisterEigenHP {
 	// registerConverters is because C++ ↔ python converers need to be registered. In one of them (parent or child) it has to be skipped to avoid duplicate registrations.

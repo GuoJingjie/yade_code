@@ -19,7 +19,7 @@
 #include <string>
 #include <thread>
 
-CREATE_CPP_LOCAL_LOGGER("_log.cpp");
+CREATE_CPP_LOCAL_LOGGER(_log_cpp);
 
 namespace yade { // Cannot have #include directive inside.
 

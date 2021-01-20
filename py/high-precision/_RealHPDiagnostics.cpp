@@ -24,7 +24,7 @@
 
 #include <lib/high-precision/ToFromPythonConverter.hpp>
 
-CREATE_CPP_LOCAL_LOGGER("_RealHPDiagnostics.cpp")
+CREATE_CPP_LOCAL_LOGGER(_RealHPDiagnostics_cpp);
 
 namespace py = ::boost::python;
 

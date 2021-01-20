@@ -26,7 +26,7 @@ using math::min; // using inside .cpp file is ok.
 
 YADE_PLUGIN((Law2_ScGeom_CapillaryPhys_Capillarity));
 
-CREATE_CPP_LOCAL_LOGGER("Law2_ScGeom_CapillaryPhys_Capillarity.cpp");
+CREATE_CPP_LOCAL_LOGGER(Law2_ScGeom_CapillaryPhys_Capillarity_cpp);
 
 void Law2_ScGeom_CapillaryPhys_Capillarity::postLoad(Law2_ScGeom_CapillaryPhys_Capillarity&)
 {

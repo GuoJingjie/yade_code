@@ -2,7 +2,7 @@
 #include <lib/pyutil/gil.hpp>
 #include <boost/python.hpp>
 
-CREATE_CPP_LOCAL_LOGGER("gil.cpp")
+CREATE_CPP_LOCAL_LOGGER(gil_cpp);
 void pyRunString(const std::string& cmd, bool ignoreErrors, bool updateGlobals)
 {
 	namespace py = ::boost::python;
