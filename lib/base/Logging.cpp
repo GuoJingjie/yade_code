@@ -224,7 +224,7 @@ std::map<std::string, short int>::iterator Logging::findFilterName(const std::st
 		throw std::runtime_error(
 		        name
 		        + " is not recognized. Did you forget CREATE_LOGGER; and DECLARE_LOGGER(Classname); macros? Or maybe "
-		          "CREATE_CPP_LOCAL_LOGGER(\"filename.cpp\"); macro?\n");
+		          "CREATE_CPP_LOCAL_LOGGER(filename_cpp); macro?\n");
 	}
 	return it;
 }

@@ -13,7 +13,12 @@
  * - LOG_* for actual logging,
  * - DECLARE_LOGGER; that should be used in class header to create separate logger for that class,
  * - CREATE_LOGGER(ClassName); that must be used in class implementation file to create the static variable.
- * - CREATE_CPP_LOCAL_LOGGER("filename.cpp"); use this inside a *.cpp file which has code that does not belong to any class, and needs logging. The name will be used for filtering logging.
+ * - CREATE_CPP_LOCAL_LOGGER(filename_cpp); use this inside a *.cpp file which has code that does not belong to any class, and needs logging. The name will be used for filtering logging.
+ *      Important:
+ *        1. filename is *without* quotes, this is wrong: "filename"
+ *        2. and without a dot, this is wrong "filename.cpp".
+ *      Example: in file pyboot.cpp write CREATE_CPP_LOCAL_LOGGER(pyboot_cpp)
+ *      BOOST_PP_STRINGIZE is used to create a valid C++ variable identifier from this name.
  * - TRVARn(…) for printing variables
  * - TRACE; for quick tracing
  *
@@ -50,7 +55,7 @@ constexpr unsigned long hash(const char* str, int ha = 0) { return !str[ha] ? 53
 	    << Logging::instance().colorEnd() << ": "
 // If you get "error: ‘logger’ was not declared in this scope" then you have to declare logger.
 // Use DECLARE_LOGGER; inside class and CREATE_LOGGER(ClassName); inside .cpp file
-// or use CREATE_CPP_LOCAL_LOGGER("filename.cpp") if you need logging outside some class.
+// or use CREATE_CPP_LOCAL_LOGGER(filename) if you need logging outside some class.
 #define LOG_TRACE(msg)                                                                                                                                         \
 	{                                                                                                                                                      \
 		BOOST_LOG_SEV(logger, Logging::SeverityLevel::eTRACE) << _LOG_HEAD << msg;                                                                     \
@@ -142,7 +147,7 @@ public:                                                                         
 #define TEMPLATE_CREATE_LOGGER(ClassName) template <> CREATE_LOGGER(ClassName) /* Use this when creating a logger for a templated ClassName<SomeOtherClass> */
 #define CREATE_CPP_LOCAL_LOGGER(filtername)                                                                                                                    \
 	namespace {                                                                                                                                            \
-		boost::log::sources::severity_logger<Logging::SeverityLevel> logger = Logging::instance().createNamedLogger(filtername);                       \
+		boost::log::sources::severity_logger<Logging::SeverityLevel> logger = Logging::instance().createNamedLogger(BOOST_PP_STRINGIZE(filtername));   \
 	}
 #else // #ifdef YADE_BOOST_LOG, without boost::log use the simplified logging method:
 #include <iostream>
