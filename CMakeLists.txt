@@ -174,6 +174,11 @@ ELSE (DEBUG)
   ENDIF (NOT(CMAKE_BUILD_TYPE))
 ENDIF (DEBUG)
 
+IF(CHUNKSIZE)
+    SET(ENABLE_LOGGER OFF)
+    MESSAGE(STATUS "Disabling boost::log library, it is currently incompatibile with CHUNKSIZE. Only rundimentary unfiltered logging is available.")
+ENDIF(CHUNKSIZE)
+
 IF(ENABLE_LOGGER)
   MESSAGE(STATUS "${Esc}[36mLog filtering: enabled${Esc}[0m")
   SET(CONFIGURED_FEATS "${CONFIGURED_FEATS} BoostLog")
