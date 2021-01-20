@@ -48,6 +48,8 @@ The files are
 
 namespace yade { // Cannot have #include directive inside.
 
+#ifndef USEFLOWSOLVER_ENUM // this is necessary only because this file is a *.hpp.in file, the @TEMPLATE_FLOW_NAME@ includes it it several times
+#define USEFLOWSOLVER_ENUM // without *.in files, the regular #pragma once (written above) is enough.
 // 0:Gauss-Seidel, 3: Cholesky factorization (via Eigen3 interface), 4:multicore CPU or GPU accelerated CHOLMOD (without Eigen3)
 enum /* class */ UseFlowSolver {
 	// TODO: use `enum class` here instead, but need to replace `== 0` with `== UseFlowSolver::GaussSeidel` in all other places.
@@ -56,6 +58,7 @@ enum /* class */ UseFlowSolver {
 	CholeskyFactorization = 3,
 	MulticoreCPUorGPU     = 4
 };
+#endif
 
 template<class _CellInfo, class _VertexInfo, class _Tesselation=CGT::_Tesselation<CGT::TriangulationTypes<_VertexInfo,_CellInfo> >, class solverT=DEFAULTSOLVER >
 class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
