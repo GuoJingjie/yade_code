@@ -393,7 +393,7 @@ make_clang:
     - export CXX="/usr/bin/clang++-11"
     # We should escape disabling features for the clang-build. Clang should work exactly like gcc.
     - export EXTRA_CMAKE_ARGS="-DENABLE_USEFUL_ERRORS=0 $EXTRA_CMAKE_ARGS"
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-clang11
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
 
 ## High precision - testing debian bullseye
 
