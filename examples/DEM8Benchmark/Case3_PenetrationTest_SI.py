@@ -45,7 +45,7 @@ urls = {}
 urls["25000"]="https://cloud.tuhh.de/index.php/s/9BHg3p39FzC7pYL/download"
 urls["50000"]="https://cloud.tuhh.de/index.php/s/28ETraDs3fbY3xo/download"
 urls["100000"]="https://cloud.tuhh.de/index.php/s/Pw2Tyc7Aw9g2kCB/download"
-urls["walls"]="https://cloud.tuhh.de/index.php/s/28ETraDs3fbY3xo/download"  # <======= NOT USED / Need a fix - we are using data from yade-dem  herefafter 
+urls["walls"]="https://cloud.tuhh.de/index.php/s/49HZwje9zj4R78m/download"  # <======= NOT USED / Need a fix - we are using data from yade-dem  herefafter 
 
 # download from organizer at TUHH
 if not os.path.exists(inputFileName):    
