@@ -12,10 +12,9 @@ angularVelocity = 2
 
 # -------------------------------------------------------------------- #
 # MPI initialization
-numMPIThreads=0
+numMPIThreads=6
 
 if numMPIThreads > 1:
-	print('in mpi?')
 	from yade import mpy as mp
 	mp.initialize(numMPIThreads)
 
@@ -33,13 +32,7 @@ e_M2_St=0.4;	f_M2_St=0.2
 
 M1=O.materials.append(FrictMat(young=1.0e9,poisson=0.2,density=2500,label='M1'))
 
-
-#	O.dt=1.5e-6	# FIXME: This is the suggested timestep value by the organizers for M1.
-
 M2=O.materials.append(FrictMat(young=0.5e9,poisson=0.2,density=2000,label='M2'))
-
-
-#	O.dt=2e-6	# FIXME: This is the suggested timestep value by the organizers for M2.
 
 F_g1g2=atan(f_M1_M2)
 F_g1g1=atan(f_M1_M1)
@@ -52,15 +45,34 @@ F_gs=atan(f_M1_St) # Friction Angle between granular material (g) and steel (s).
 from yade import ymport
 import os
 
-# FIXME: Download coordinate files like this
-#os.system('wget http://perso.3sr-grenoble.fr/users/bchareyre/yade/input/'+fileName+'.stl')
 
-sp_m2=ymport.text('inputData/Case2_Drum_PartCoordinates_M2.txt',material=M2,color=(0,0,1))
-sp_m1=ymport.text('inputData/Case2_Drum_PartCoordinates_M1.txt',material=M1,color=(1,0,0))
+from yade import ymport
+wallFile='Case2_Drum_Walls.txt'
+spheres_M1='Case2_Drum_PartCoordinates_M1.txt'
+spheres_M2='Case2_Drum_PartCoordinates_M2.txt'
 
-# Load facets making the cylinder
-facets = ymport.textFacets('inputData/Case2_Drum_Walls.txt',color=(0,1,0),material=Steel)
+hasInputSpheres = os.path.exists(spheres_M1)
+if not hasInputSpheres:
+	print("Downloading sphere file",spheres_M1)
+	try:
+		os.system('wget http://yade-dem.org/publi/data/DEM8/'+spheres_M1)
+		os.system('wget http://yade-dem.org/publi/data/DEM8/'+spheres_M2)
+	except:
+		print("** probably no internet connection, grab",spheres_M1,"by yourself **")
+sp_m1=ymport.text(spheres_M1,material=M1,color=(1,0,0))
+sp_m2=ymport.text(spheres_M2,material=M2,color=(0,0,1))
+
+hasInputWall = os.path.exists(wallFile)
+if not hasInputWall:
+	print("Downloading mesh file",wallFile)
+	try:
+		os.system('wget http://yade-dem.org/publi/data/DEM8/'+wallFile)
+	except:
+		print("** probably no internet connection, grab",wallFile,"by yourself **")
+facets = ymport.textFacets(wallFile,color=(0,1,0),material=Steel)
+#facets = ymport.stl(fileName+'.stl',color=(0,1,0),material=Steel)
 drum_ids = range(len(facets))
+
 
 
 # -------------------------------------------------------------------- #
@@ -77,7 +89,7 @@ O.engines=[
 		[Law2_ScGeom_MindlinPhys_Mindlin()],
 	),
 	NewtonIntegrator(damping=0,gravity=[0,0,-9.81],label="newton"),
-	RotationEngine(rotateAroundZero=True,zeroPoint=(0,0,0),rotationAxis=(0,1,0),angularVelocity=angularVelocity,ids=drum_ids),
+	RotationEngine(dead=1,rotateAroundZero=True,zeroPoint=(0,0,0),rotationAxis=(0,1,0),angularVelocity=angularVelocity,ids=drum_ids,label='rotation'),
 	#GlobalStiffnessTimeStepper(active=1,timestepSafetyCoefficient=0.8, timeStepUpdateInterval=100, parallelMode=False, label = "ts",defaultDt=PWaveTimeStep()) #FIXME Remember to reinstate parallelMode=True when we use MPI
 	#VTKRecorder(virtPeriod=0.01,fileName='tmp/Case2_drum-',recorders=['spheres','facets']),
 ]
@@ -86,6 +98,8 @@ O.engines=[
 # -------------------------------------------------------------------- #
 
 NSTEPS = 1000
+
+sp=sp_m1+sp_m2
 
 if numMPIThreads > 1:
 	mp.mprint("appending bodies, rank", mp.rank)
@@ -99,7 +113,7 @@ if numMPIThreads > 1:
 			mp.mprint("layers",[len(l) for l in layers])
 			layerNo = mp.rank-1 #rank zero is for facets
 			nextId = int(len(facets) + np.sum([len(x) for x in layers[:layerNo]]))
-			mp.mprint("s",s,"startId",nextId)
+			#mp.mprint("s",s,"startId",nextId)
 			for s in layers[layerNo]:
 			    s.subdomain = mp.rank
 			    O.bodies.insertAtId(s,nextId)
@@ -120,12 +134,10 @@ else:
 	O.bodies.append(sp_m2)
 
 
-#collider.verletDist = 0.5e-3
+collider.verletDist = 0.5e-3
 O.dt=2e-6
-#O.dt=0.8*PWaveTimeStep() #FIXME: Consider larger timestep instead?
+#O.dt=0.8*PWaveTimeStep() 
 O.dynDt=False
-
-O.stopAtTime=5 #5 sec. This is the timeframe of interest, proposed by the organizers in the latest update of the data.
 
 if numMPIThreads>1:
 	mp.mpirun(1,numMPIThreads,False) #this is to eliminate initialization overhead in Cundall number and timings.
@@ -174,10 +186,23 @@ def addPlotData():
 						time1=O.time)
 	plot.saveDataTxt('Case2_rotating_drum_data.txt',vars=('time1','zone1_M1_count','zone1_M2_count','zone2_M1_count','zone2_M2_count'))
 
+
+# let the unbalanced force settle before 
+while 1:
+	O.run(1000, True)
+	unb=unbalancedForce()
+	print('settling particles unb',unb)
+	if unb<0.01: break
+
+rotation.dead=0
+
+print('particles settled and ready to rotate')
+
+O.resetTime()
+O.stopAtTime=5 #5 sec. This is the timeframe of interest, proposed by the organizers in the latest update of the data.
+
 addPlotData() # I use this to record the initial state for O.time=0.0 FIXME: Since we already run NSTEPS, O.time is not exactly zero.
 O.engines=O.engines+[PyRunner(virtPeriod=0.01,command='addPlotData()')] # Here I use virtPeriod=0.1, following the provided .xlsx example file.
-
-O.stopAtTime=5
 
 plot.plots={'time1':('zone1_M1_count','zone1_M2_count','zone2_M1_count','zone2_M2_count')}
 plot.plot(noShow=False)
