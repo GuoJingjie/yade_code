@@ -288,24 +288,50 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 #endif
 	// tangential and normal stiffness coefficients, recomputed from betan,betas at every step
 	Real cn = 0, cs = 0;
+	// Define shifts to handle periodicity
+	const Vector3r shift2   = scene->isPeriodic ? scene->cell->intrShiftPos(contact->cellDist) : Vector3r::Zero();
+	const Vector3r shiftVel = scene->isPeriodic ? scene->cell->intrShiftVel(contact->cellDist) : Vector3r::Zero();
+	// Get Un, incident velocity, get shear and normal components	
+	const Real& uN = scg->penetrationDepth; // get overlapping
+	Vector3r incidentV  = scg->getIncidentVel(de1, de2, dt, shift2, shiftVel, preventGranularRatcheting);
+	Real incidentVnReal = scg->normal.dot(incidentV);
+	Vector3r incidentVn = incidentVnReal * scg->normal; // contact normal velocity
+	Vector3r incidentVs = incidentV - incidentVn;                   // contact shear velocity
+	
+	/*******************************/
+	/* TANGENTIAL NORMAL STIFFNESS */
+	/*******************************/
+
+	phys->kn = 3. / 2. * phys->kno * math::pow(uN, 0.5); // here we store the value of kn to compute the time step
+
+	/******************************/
+	/* TANGENTIAL SHEAR STIFFNESS */
+	/******************************/
+
+	phys->ks = phys->kso * math::pow(uN, 0.5); // get tangential stiffness (this is a tangent value, so we can pass it to the GSTS)
 
 	/****************/
 	/* NORMAL FORCE */
 	/****************/
-
-	Real uN = scg->penetrationDepth; // get overlapping
 	if (uN < 0) {
 		if (neverErase) {
 			phys->shearForce = phys->normalForce = Vector3r::Zero();
 			phys->kn = phys->ks = 0;
 			return true;
-		} else
+		} else {
+			if (phys) phys->shearForce = phys->normalForce = Vector3r::Zero();
+			if (!phys) LOG_ERROR("BUG HERE");
 			return false;
+		}
 	}
 	/* Hertz-Mindlin's formulation (PFC)
 	Note that the normal stiffness here is a secant value (so as it is cannot be used in the GSTS)
 	In the first place we get the normal force and then we store kn to be passed to the GSTS */
-	Real Fn = phys->kno * math::pow(uN, 1.5); // normal Force (scalar)
+	
+	Real Fn;
+	if (not incrementalFn) Fn = phys->kno * math::pow(uN, 1.5); // normal Force (scalar)
+	else Fn = std::max(Real(0) , phys->normalForce.norm() - phys->kn *incidentVnReal*dt);
+	
 	if (includeAdhesion) {
 		Fn -= phys->adhesionForce;   // include adhesion force to account for the effect of Van der Waals interactions
 		phys->isAdhesive = (Fn < 0); // set true the bool to count the number of adhesive contacts
@@ -318,18 +344,6 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 		        = pow((Fn + (includeAdhesion ? phys->adhesionForce : 0.)) * pow(R, 3 / 2.) / phys->kno,
 		              1 / 3.); // attribute not used anywhere, we do not need it
 	}
-
-	/*******************************/
-	/* TANGENTIAL NORMAL STIFFNESS */
-	/*******************************/
-
-	phys->kn = 3. / 2. * phys->kno * math::pow(uN, 0.5); // here we store the value of kn to compute the time step
-
-	/******************************/
-	/* TANGENTIAL SHEAR STIFFNESS */
-	/******************************/
-
-	phys->ks = phys->kso * math::pow(uN, 0.5); // get tangential stiffness (this is a tangent value, so we can pass it to the GSTS)
 
 	/************************/
 	/* DAMPING COEFFICIENTS */
@@ -372,16 +386,10 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 	/***************/
 
 	Vector3r& shearElastic = phys->shearElastic; // reference for shearElastic force
-	// Define shifts to handle periodicity
-	const Vector3r shift2   = scene->isPeriodic ? scene->cell->intrShiftPos(contact->cellDist) : Vector3r::Zero();
-	const Vector3r shiftVel = scene->isPeriodic ? scene->cell->intrShiftVel(contact->cellDist) : Vector3r::Zero();
 	// 1. Rotate shear force
 	shearElastic            = scg->rotate(shearElastic);
 	Vector3r prev_FsElastic = shearElastic; // save shear force at previous time step
-	// 2. Get incident velocity, get shear and normal components
-	Vector3r incidentV  = scg->getIncidentVel(de1, de2, dt, shift2, shiftVel, preventGranularRatcheting);
-	Vector3r incidentVn = scg->normal.dot(incidentV) * scg->normal; // contact normal velocity
-	Vector3r incidentVs = incidentV - incidentVn;                   // contact shear velocity
+
 	// 3. Get shear force (incrementally)
 	shearElastic = shearElastic - phys->ks * (incidentVs * dt);
 
