@@ -4,7 +4,7 @@ yade.bodiesHandling module
 ==========================================
 
 .. automodule:: yade.bodiesHandling
-	:members:
-	:undoc-members:
-	:inherited-members:
+    :members:
+    :undoc-members:
+    :inherited-members:
 

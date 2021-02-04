@@ -22,12 +22,10 @@ To install Yade, run the following::
 
 After that you can normally start Yade using the command ``yade`` or ``yade-batch``.
 
-To check which version of Yade is included in your specific distribution, visit
-`Ubuntu <https://launchpad.net/ubuntu/+source/yade>`_ or
-`Debian <http://packages.qa.debian.org/y/yade.html>`_.
-The `Debian-Backports <http://backports.debian.org/Instructions>`_
-repository is updated regularly to bring the newest Yade version to the users of stable
-Debians (more on this `here <https://lists.launchpad.net/yade-dev/msg15033.html>`_ for Debian 9 and 10).
+This image shows versions and up to date status of Yade in some repositories:
+
+.. image:: https://repology.org/badge/vertical-allrepos/yade.svg
+    :alt: Yade versions in different repositories
 
 **Daily packages**
 
