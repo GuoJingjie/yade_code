@@ -22,10 +22,12 @@ To install Yade, run the following::
 
 After that you can normally start Yade using the command ``yade`` or ``yade-batch``.
 
-This image shows versions and up to date status of Yade in some repositories:
+`This image <https://repology.org/badge/vertical-allrepos/yade.svg>`_ shows versions and up to date status of Yade in some repositories.
 
-.. image:: https://repology.org/badge/vertical-allrepos/yade.svg
-    :alt: Yade versions in different repositories
+.. only:: html
+
+	.. image:: https://repology.org/badge/vertical-allrepos/yade.svg
+		:alt: Yade versions in different repositories
 
 **Daily packages**
 
