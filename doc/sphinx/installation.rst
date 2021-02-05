@@ -397,7 +397,16 @@ Ongoing development of Yade now assumes a Python 3 environment, and you may refe
 Speed-up compilation
 ---------------------
 
-Compile time
+Compile with ccache
+^^^^^^^^^^^^^^^^^^^^^
+
+Caching previous compilations with `ccache <https://ccache.samba.org/>`_ can significantly speed up re-compilation::
+
+	cmake -DCMAKE_CXX_COMPILER_LAUNCHER=ccache [options as usual]
+
+Additionally one can check current ccache status with command ``ccache --show-stats`` (``ccache -s`` for short) or change the default `cache size <https://wiki.archlinux.org/index.php/ccache#Set_maximum_cache_size>`_ stored in file ``~/.ccache/ccache.conf``.
+
+Compile with distcc
 ^^^^^^^^^^^^^^^^^^^^^
 
 When spliting the compilation on many cores (``make -jN``), ``N`` is limited by the available cores and memory. It is possible to use more cores if remote computers are available, distributing the compilation with `distcc <https://wiki.archlinux.org/index.php/Distcc>`_  (see distcc documentation for configuring slaves and master)::
@@ -407,11 +416,7 @@ When spliting the compilation on many cores (``make -jN``), ``N`` is limited by 
 	cmake [options as usual]
 	make -jN
 
-In addition, and independently of distcc, caching previous compilations with `ccache <https://ccache.samba.org/>`_ can speed up re-compilation::
-
-	cmake -DCMAKE_CXX_COMPILER_LAUNCHER=ccache [options as usual]
-
-The two tools can be combined very simply, adding to the above exports::
+The two tools can be combined, adding to the above exports::
 
 	export CCACHE_PREFIX="distcc"
 
