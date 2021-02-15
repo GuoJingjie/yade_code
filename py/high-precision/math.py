@@ -57,6 +57,12 @@ def needsMpmathAtN(N):
 		raise ValueError("Incorrect N argument: "+str(N))
 	return yade._math.RealHPConfig.getDigits10(N) > 15
 
+def usesHP():
+	"""
+	:return: ``True`` if yade is using default ``Real`` precision higher than 15 digit (53 bits) ``double`` type.
+	"""
+	return needsMpmathAtN(1)
+
 def getRealHPCppDigits10():
 	"""
 	:return: tuple containing amount of decimal digits supported on C++ side by Eigen and CGAL.
@@ -97,7 +103,7 @@ def toHP1(arg):
 	if(type(arg) == float):
 		raise RuntimeError("Error: only first 15 digits would be used for arg = "+str(arg)+", better pass the argument as string or python mpmath high precision type.")
 		#print('\033[91m'+"Warning: only 15 digits are used for arg = ",arg,'\033[0m')
-	if((type(arg) == str) and (getDigits2(1)==53)): # also: ("PrecisionDouble" in yade.config.features)
+	if((type(arg) == str) and (not usesHP())):      # also: ("PrecisionDouble" in yade.config.features)  or  (getDigits2(1)==53)  or  (getDigits10(1)==15)
 		return yade._math.toHP1(float(arg))     # if yade is compiled with `double` then toHP1(…) cannot accept string and python float has enough precision. So here we make sure it works.
 	else:
 		return yade._math.toHP1(arg)
@@ -111,6 +117,24 @@ def radiansHP1(arg):
 	We only need to find the best backward compatible approach for this. The function ``yade.math.radiansHP1(arg)`` will remain as the function which uses native yade ``Real`` precision.
 	"""
 	return yade.math.HP1.Pi() * toHP1(arg) / toHP1(180)
+
+# Note: why toHP1(…) is used differently in radiansHP1(…) and in degreesHP1(…) ?
+#   * radiansHP1 is often used for specifying initial conditions for simulations. Call toHP1 makes sure that there is no loss in precision when same script switches to higher precision yade.
+#   * degreesHP1 is rather used to extract results from trigonometric functions. In such case we allow to accept double type when it is guaranteed to not produce an error.
+#                   this little relaxation of requirements in degreesHP1 means that some script might break when switching to higher precision yade. But this breakage will be because
+#                   of improper use of precision in the script and will be properly detected.
+
+def degreesHP1(arg):
+	"""
+	:return: arg in radians converted to degrees, using yade.math.Real precision.
+	"""
+	if((type(arg) == float) and (not usesHP())):
+		return toHP1(180) * arg / yade.math.HP1.Pi()
+	else:
+		return toHP1(180) * toHP1(arg) / yade.math.HP1.Pi()
+
+radians = radiansHP1
+degrees = degreesHP1
 
 # Create convenience compatibility aliases for all n ∈ getSupportedByMinieigen()
 #    yade.math.Real2 → yade._math.HP2.toHP2
