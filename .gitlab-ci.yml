@@ -397,6 +397,14 @@ make_clang:
 
 ## High precision - testing debian bullseye
 
+mkHP_float:
+  <<: *make_definition
+  <<: *artifacts_definition
+  before_script:
+    - export EXTRA_CMAKE_ARGS="-DREAL_DECIMAL_PLACES=6 $EXTRA_CMAKE_ARGS"
+    - echo $EXTRA_CMAKE_ARGS
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
+
 mkHP_long_double:
   <<: *make_definition
   <<: *artifacts_definition
