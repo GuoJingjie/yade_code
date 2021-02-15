@@ -56,7 +56,9 @@ namespace math {
 #else
 	           15
 #endif
-	        );
+		) and
+		// 24 decimal places are used for RealHP<4> which cannot use constexpr when compiling yade with float, see lib/high-precision/RealHP.hpp:103
+		(std::numeric_limits<Rr>::digits10 != 24);
 
 	// constexpr whenever possible
 	template <int N> struct ConstexprConstantsHP {
