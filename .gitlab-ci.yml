@@ -345,7 +345,7 @@ make_asan_HP:
     when: always
     paths:
       - screenshots
-  timeout: 6 hours
+  timeout: 10 hours
 
 make_minimal:
   <<: *make_definition
@@ -463,7 +463,7 @@ make_SSE:
     - install/bin/yade-ci --quickperformance -j8
     - cat /etc/os-release
     - /usr/bin/dpkg --print-architecture
-  timeout: 25 minutes
+  timeout: 30 minutes
   artifacts:
     when: always
     paths:
@@ -532,7 +532,7 @@ tst_bll_ppc64el:
   needs: ["mk_bll_ppc64el"]
   tags:
     - qemu
-  timeout: 45 minutes
+  timeout: 55 minutes
 
 tst_bll_arm64:
   <<: *test_definition
@@ -543,7 +543,7 @@ tst_bll_arm64:
   needs: ["mk_bll_arm64"]
   tags:
     - qemu
-  timeout: 45 minutes
+  timeout: 55 minutes
 
 test_no_mpi:
   <<: *test_definition
@@ -685,7 +685,7 @@ test_SSE:
     - install/bin/yade-ci -j5 --checkall
     - cat /etc/os-release
     - /usr/bin/dpkg --print-architecture
-  timeout: 25 minutes
+  timeout: 35 minutes
 
 check_16_04:
   <<: *check_definition
@@ -755,7 +755,7 @@ ck_bll_ppc64el:
   needs: ["mk_bll_ppc64el"]
   tags:
     - qemu
-  timeout: 2 hours
+  timeout: 3 hours
 
 ck_bll_arm64:
   <<: *check_definition
@@ -766,7 +766,7 @@ ck_bll_arm64:
   needs: ["mk_bll_arm64"]
   tags:
     - qemu
-  timeout: 2 hours
+  timeout: 3 hours
 
 check_no_mpi:
   <<: *check_definition
@@ -824,7 +824,7 @@ ckHP_long_double:
   dependencies:
     - mkHP_long_double
   needs: ["mkHP_long_double"]
-  timeout: 4 hours
+  timeout: 5 hours
 
 ckHP_float128:
   <<: *check_definition
@@ -833,7 +833,7 @@ ckHP_float128:
   dependencies:
     - mkHP_float128
   needs: ["mkHP_float128"]
-  timeout: 4 hours
+  timeout: 5 hours
 
 ckHP_mpfr150:
   <<: *check_definition
@@ -842,7 +842,7 @@ ckHP_mpfr150:
   dependencies:
     - mkHP_mpfr150
   needs: ["mkHP_mpfr150"]
-  timeout: 4 hours
+  timeout: 5 hours
 
 ckHP_bf45:
   <<: *check_definition
@@ -851,7 +851,7 @@ ckHP_bf45:
   dependencies:
     - mkHP_bf45
   needs: ["mkHP_bf45"]
-  timeout: 8 hours
+  timeout: 9 hours
 
 ## High precision - all tests done.
 
