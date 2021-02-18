@@ -6,8 +6,12 @@
 # Case 1: Silo flow
 # Units: SI (m, N, Pa, kg, sec)
 
+# script execution:
+# yade Case1SiloFlow.py   (with default arguments, else)
+# yade Case1SiloFlow.py  [small|large] [M1|M2]
+# example: yade Case1SiloFlow.py  small M1 (equivalent to default)
 
-numThreads=4
+numThreads=1
 reportTiming=False
 
 # Configure MPI module if needed
@@ -22,15 +26,16 @@ else:
 # -------------------------------------------------------------------- #
 # Input Data -> Define Material and Orifice size. Uncomment the prefered choice
 
-fileName='LargeOrifice'
-#fileName='SiloSmallOrifice'
-if fileName=='LargeOrifice':
-    z=55.4222/1000. 	# This is the height of the lowest point of the funnel (at the orifice), measuring from the lowest cylindrical cross section of the silo
-elif fileName=='SmallOrifice':
-    z=59.3008/1000.
+size=str(sys.argv[1]) if len(sys.argv)>1 else 'small'
+granularMaterial=str(sys.argv[2]) if len(sys.argv)>2 else 'M1'
 
-granularMaterial='M1'
-#granularMaterial='M2'
+if size == 'large':
+    fileName='LargeOrifice'
+    z=55.4222/1000. 	# This is the height of the lowest point of the funnel (at the orifice), measuring from the lowest cylindrical cross section of the silo
+else:
+    z=59.3008/1000.
+    fileName='SmallOrifice'
+
 
 # -------------------------------------------------------------------- #
 # Materials
@@ -66,7 +71,7 @@ F_gs=atan(f_gs) # Friction Angle between granular material (g) and steel (s)
 ## Engines 
 O.engines=[
     ForceResetter(),
-    InsertionSortCollider([Bo1_Sphere_Aabb(),Bo1_Facet_Aabb()],smartInsertErase=False,label="collider"),
+    InsertionSortCollider([Bo1_Sphere_Aabb(),Bo1_Facet_Aabb()],label="collider"),
     InteractionLoop(
         [Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom()],
         [Ip2_FrictMat_FrictMat_MindlinPhys(
@@ -80,6 +85,13 @@ O.engines=[
     #VTKRecorder(virtPeriod=0.04,fileName='/tmp/Silo-',recorders=['spheres','facets']),
 ]
 
+urls = {} # case name will be size+granularMaterial
+urls["smallM1"]="https://cloud.tuhh.de/index.php/s/rz4sdtAdKLTJiXX/download"
+urls["smallM2"]="https://cloud.tuhh.de/index.php/s/dqM3yRy2TsdFDGS/download"
+urls["largeM1"]="https://cloud.tuhh.de/index.php/s/Pa7JtpksrF5cSjp/download"
+urls["largeM2"]="https://cloud.tuhh.de/index.php/s/cs8PJX2BHd2KfnB/download"
+urls["smallWalls"]="https://cloud.tuhh.de/index.php/s/Eyq9K9mdcDzg8Hb/download"
+urls["largeWalls"]="https://cloud.tuhh.de/index.php/s/mKsiEZ6YnHHJ4gJ/download"
 
 # This condition is not abolutely necessary but it would be inelegant to
 # download *.stl and generate densePack N times when we need it done only on master (centralized scene method)
@@ -92,18 +104,28 @@ if not mpi or mp.rank==0:
     if not hasInputSpheres:
         print("Downloading sphere file",sphereFile)
         try:
-            os.system('wget http://yade-dem.org/publi/data/DEM8/'+sphereFile)
+            print('wget --no-clobber -O '+sphereFile+'_temp '+ urls[size+granularMaterial])
+            os.system('wget --no-clobber -O '+sphereFile+'_temp '+ urls[size+granularMaterial])
         except:
             print("** probably no internet connection, grab",sphereFile,"by yourself **")
-    sp=ymport.text(sphereFile,material=granularMaterial)
-    
+            
+        with open(sphereFile+'_temp') as x, open(sphereFile, 'w') as y:
+            for line in x:
+                columns=line.split()
+                if len(columns)<3: continue # trailing empty lines
+                y.write('\t'.join(columns)+' 0.002\n')
+        y.close()
+   
     hasInputWall = os.path.exists(wallFile)
     if not hasInputWall:
         print("Downloading mesh file",wallFile)
         try:
+            # os.system('wget -O '+str(wallFile)+" "+urls[size+"Walls"]) # would be with native format
             os.system('wget http://yade-dem.org/publi/data/DEM8/'+wallFile)
         except:
             print("** probably no internet connection, grab",wallFile,"by yourself **")
+            
+    sp=ymport.text(sphereFile,material=granularMaterial)
     facets = ymport.textFacets(wallFile,color=(0,1,0),material=Steel)
     #facets = ymport.stl(fileName+'.stl',color=(0,1,0),material=Steel)
     fctIds = range(len(facets))
@@ -120,8 +142,8 @@ if not mpi or mp.rank==0:
     print('The total number of spheres is: ',numSpheres)
         
     collider.verletDist = 0.2*O.bodies[-1].shape.radius
-    O.dt=0.6 * PWaveTimeStep()
     O.dynDt=False
+    O.dt = 1.5e-6 if granularMaterial=='M1' else 2e-6
 
 # -------------------------------------------------------------------- #
 # Erase particles flowing out of the silo
@@ -172,20 +194,19 @@ if mpi: # import and tune MPI module
 else:
     O.timingEnabled=reportTiming
 
-substeps=400
-while len(O.bodies)-numErased>0 or len(O.bodies)==0:
-#for k in range(0):
+substeps=500
+while len(O.bodies)-numErased>0 and O.time < 5: # 5 sec max
+#for k in range(4):
     t1=time.time()
     if mpi:
         mp.mpirun(substeps,numThreads,withMerge=True) # if numThreads=1 this will fall-back to normal O.run() and mp.rank=0
     else:
         O.run(substeps,True)
-    tbf=time.time()
     eraseEscapedParticles()
     if mpi and mp.rank>0: continue # mpi workers do not record
     t2=time.time()
     addPlotData((numSpheres-numErased)*substeps/(t2-t1))
-    vtk.exportSpheres(what=dict(particleVelocity='b.state.vel',domain='b.subdomain'))
+    #vtk.exportSpheres(what=dict(particleVelocity='b.state.vel',domain='b.subdomain'))
     plot.plot(noShow=True).savefig(fileName+'_'+granularMaterial+'_np'+str(numThreads)+'.png')
     plot.saveDataTxt(fileName+'_'+granularMaterial+'.txt')
     print("iter=",O.iter,", last substep erased", numErased,"in",t2-t1,"s")
