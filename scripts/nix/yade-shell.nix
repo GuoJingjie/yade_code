@@ -10,8 +10,8 @@ let
       src = pkgs.fetchFromGitHub {                                                           
         owner = "eudoxos";                                                                   
         repo = "minieigen";                                                                  
-        rev = "7bd0a2e823333477a2172b428a3801d9cae0800f";                                    
-        sha256 = "1jksrbbcxshxx8iqpxkc1y0v091hwji9xvz9w963gjpan4jf61wj";                     
+        rev = "1e992b1452638e636b6681a9ab17f6bbb51a727d";                                    
+        sha256 = "1a0c01kzgiy3p00ifids0qwqdkyaly5iiy5mf76ymn0hzcwldnfx";                     
       };                                                                                     
                                                                                              
       buildInputs = [ unzip pythonPackages.boost eigen ];                       

@@ -7,8 +7,8 @@ minieigen = pkgs.python37Packages.buildPythonPackage rec{
       src = pkgs.fetchFromGitHub {
         owner = "eudoxos";
         repo = "minieigen";
-        rev = "7bd0a2e823333477a2172b428a3801d9cae0800f";
-        sha256 = "1jksrbbcxshxx8iqpxkc1y0v091hwji9xvz9w963gjpan4jf61wj";
+        rev = "1e992b1452638e636b6681a9ab17f6bbb51a727d";
+        sha256 = "1a0c01kzgiy3p00ifids0qwqdkyaly5iiy5mf76ymn0hzcwldnfx";
       };
 
       buildInputs = [ unzip python37Packages.boost eigen ];
@@ -30,7 +30,7 @@ in
         extraLibs = with pkgs.python37Packages;[
                         pygments mpi4py pexpect decorator numpy xlib
                         ipython ipython_genutils traitlets pygraphviz
-                        six minieigen ipython future matplotlib tkinter pkgs.cmake
+                        six minieigen ipython future matplotlib tkinter pillow pkgs.cmake
                       ] ;
         ignoreCollisions = true;
     };
