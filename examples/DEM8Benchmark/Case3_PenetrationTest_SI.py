@@ -19,7 +19,7 @@
 # additional arg, if any is used to define N, else 25k is default
 if len(sys.argv)>1: N=int(sys.argv[1])
 else: N=25000
-if N not in [25000,50000,10000]: print("input error, call 'yadedaily -n -x scriptName.py' or 'yadedaily -n -x scriptName.py 25000' (or 50000, etc.)")
+if N not in [25000,50000,100000]: print("input error, call 'yadedaily -n -x scriptName.py' or 'yadedaily -n -x scriptName.py 25000' (or 50000, etc.)")
 
 # -------------------------------------------------------------------- #
 # Materials
@@ -36,8 +36,11 @@ e_gs=e_M1_St	# Coefficient of restitution (e) between granular material (g) and 
 
 # -------------------------------------------------------------------- #
 # Load the initial sphere pack from .txt file
+try:
+    os.mkdir('inputData')
+except:
+    pass
 
-import os
 inputFileName = 'inputData/'+str(int(N/1000))+'KParticles.txt'
 altName = 'inputData/'+str(int(N/1000))+'KParticlesSwapped.txt'
 
@@ -45,7 +48,8 @@ urls = {}
 urls["25000"]="https://cloud.tuhh.de/index.php/s/9BHg3p39FzC7pYL/download"
 urls["50000"]="https://cloud.tuhh.de/index.php/s/28ETraDs3fbY3xo/download"
 urls["100000"]="https://cloud.tuhh.de/index.php/s/Pw2Tyc7Aw9g2kCB/download"
-urls["walls"]="https://cloud.tuhh.de/index.php/s/49HZwje9zj4R78m/download"  # <======= NOT USED / Need a fix - we are using data from yade-dem  herefafter 
+#urls["walls"]="https://cloud.tuhh.de/index.php/s/49HZwje9zj4R78m/download"  # <======= NOT USED / Need a fix - we are using data from yade-dem  herefafter 
+urls["walls"]="http://yade-dem.org/publi/data/DEM8/Case3_PenetrationTest_Walls.txt"
 
 # download from organizer at TUHH
 if not os.path.exists(inputFileName):    
@@ -79,8 +83,14 @@ O.bodies.append(sp)
 
 # -------------------------------------------------------------------- #
 # Load facets making the box
+wallFileName = 'inputData/Case3Walls'+str(int(N/1000))+'.txt' # a bit pointless to download again with different N but it's to avoid collisions with parallel runs
+
+# download from organizer at TUHH
+if not os.path.exists(wallFileName):    
+    os.system("wget -O "+wallFileName+" "+urls["walls"])
+
 from yade import ymport
-facets = ymport.textFacets('inputData/Case3_PenetrationTest_Walls.txt',color=(0,1,0),material=Steel)
+facets = ymport.textFacets(wallFileName,color=(0,1,0),material=Steel)
 fctIds = range(len(facets))
 O.bodies.append(facets)
 
