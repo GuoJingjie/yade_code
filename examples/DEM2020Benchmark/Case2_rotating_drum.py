@@ -12,11 +12,21 @@ angularVelocity = 2
 
 # -------------------------------------------------------------------- #
 # MPI initialization
-numMPIThreads=6
+numMPIThreads=1
 
 if numMPIThreads > 1:
 	from yade import mpy as mp
 	mp.initialize(numMPIThreads)
+	
+try:
+    os.mkdir('inputData')
+except:
+    pass # will pass if folders already exist
+
+try:
+    os.mkdir('outputData')
+except:
+    pass # will pass if folders already exist
 
 # -------------------------------------------------------------------- #
 # Materials
@@ -42,31 +52,28 @@ F_gs=atan(f_M1_St) # Friction Angle between granular material (g) and steel (s).
 
 # -------------------------------------------------------------------- #
 # Load particles from .txt file
-from yade import ymport
-import os
-
 
 from yade import ymport
 wallFile='Case2_Drum_Walls.txt'
 spheres_M1='Case2_Drum_PartCoordinates_M1.txt'
 spheres_M2='Case2_Drum_PartCoordinates_M2.txt'
 
-hasInputSpheres = os.path.exists(spheres_M1)
+hasInputSpheres = os.path.exists('inputData/'+spheres_M1)
 if not hasInputSpheres:
 	print("Downloading sphere file",spheres_M1)
 	try:
-		os.system('wget http://yade-dem.org/publi/data/DEM8/'+spheres_M1)
-		os.system('wget http://yade-dem.org/publi/data/DEM8/'+spheres_M2)
+		os.system('wget -O inputData/'+spheres_M1+' http://yade-dem.org/publi/data/DEM8/'+spheres_M1)
+		os.system('wget -O inputData/'+spheres_M2+' http://yade-dem.org/publi/data/DEM8/'+spheres_M2)
 	except:
 		print("** probably no internet connection, grab",spheres_M1,"by yourself **")
 sp_m1=ymport.text(spheres_M1,material=M1,color=(1,0,0))
 sp_m2=ymport.text(spheres_M2,material=M2,color=(0,0,1))
 
-hasInputWall = os.path.exists(wallFile)
+hasInputWall = os.path.exists('inputData/'+wallFile)
 if not hasInputWall:
 	print("Downloading mesh file",wallFile)
 	try:
-		os.system('wget http://yade-dem.org/publi/data/DEM8/'+wallFile)
+		os.system('wget -O inputData/'+wallFile+' http://yade-dem.org/publi/data/DEM8/'+wallFile)
 	except:
 		print("** probably no internet connection, grab",wallFile,"by yourself **")
 facets = ymport.textFacets(wallFile,color=(0,1,0),material=Steel)
@@ -177,6 +184,8 @@ def getNumParticlesInQuadrants():
 	return zone1_M1_count,zone1_M2_count,zone2_M1_count,zone2_M2_count
 
 from yade import plot
+plot.plots={'time1':('zone1_M1_count','zone1_M2_count','zone2_M1_count','zone2_M2_count')}
+
 def addPlotData(): 
 	zone1_M1_count,zone1_M2_count,zone2_M1_count,zone2_M2_count = getNumParticlesInQuadrants()
 	plot.addData(zone1_M1_count=zone1_M1_count,
@@ -184,11 +193,12 @@ def addPlotData():
 						zone2_M1_count=zone2_M1_count,
 						zone2_M2_count=zone2_M2_count, 
 						time1=O.time)
-	plot.saveDataTxt('Case2_rotating_drum_data.txt',vars=('time1','zone1_M1_count','zone1_M2_count','zone2_M1_count','zone2_M2_count'))
+	plot.saveDataTxt('outputData/Case2_rotating_drum.txt',vars=('time1','zone1_M1_count','zone1_M2_count','zone2_M1_count','zone2_M2_count'))
+	plot.plot(noShow=True).savefig('outputData/Case2_rotating_drum.png')
 
 
-# let the unbalanced force settle before 
-while 1:
+# let the unbalanced force settle before?
+while 0:
 	O.run(1000, True)
 	unb=unbalancedForce()
 	print('settling particles unb',unb)
@@ -204,23 +214,20 @@ O.stopAtTime=5 #5 sec. This is the timeframe of interest, proposed by the organi
 addPlotData() # I use this to record the initial state for O.time=0.0 FIXME: Since we already run NSTEPS, O.time is not exactly zero.
 O.engines=O.engines+[PyRunner(virtPeriod=0.01,command='addPlotData()')] # Here I use virtPeriod=0.1, following the provided .xlsx example file.
 
-plot.plots={'time1':('zone1_M1_count','zone1_M2_count','zone2_M1_count','zone2_M2_count')}
-plot.plot(noShow=False)
+
 
 # -------------------------------------------------------------------- #
 # GUI
 if opts.nogui==False:
 	from yade import qt
 	v=qt.View()
-
 	v.eyePosition = Vector3(0,-0.4,0)
 	#v.upVector    = Vector3(0,0,1)
 	v.viewDir     = Vector3(0,1,0)
 #	v.grid=(False,True,False)
 #	v.ortho       = True
-
 	rndr=yade.qt.Renderer()
 	#rndr.shape=False
 	#rndr.bound=True
 
-O.run()
+O.run(-1,wait = opts.nogui)

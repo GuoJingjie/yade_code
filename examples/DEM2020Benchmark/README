@@ -1,0 +1,14 @@
+
+# 2020 © Vasileios Angelidakis <v.angelidakis2@ncl.ac.uk>
+# 2020 © Robert Caulk <rob.caulk@gmail.com>
+# 2020 © Bruno Chareyre <bruno.chareyre@grenoble-inp.fr> 
+
+
+1/ The scripts in this folder were prepared as part of a benchmark exercise inspired by discussions at DEM8 Conference.
+
+2/ They need to be ran with stable release yade2020.01a or later, i.e. on debian/ubuntu systems:
+    $ apt update
+    $ apt install yade
+    $ path/to//runAll.sh
+    
+3/ Please find inspiration for command line execution in 'runAll.sh' and in preamble of the example scripts

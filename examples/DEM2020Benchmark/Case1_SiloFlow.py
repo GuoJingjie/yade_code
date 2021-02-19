@@ -21,20 +21,30 @@ if mpi:
 else:
     print("yade is compiled without MPI support, numThreads>1 ignored")
     numThreads = 1
+    
+try:
+    os.mkdir('inputData')
+except:
+    pass # will pass if folders already exist
+
+try:
+    os.mkdir('outputData')
+except:
+    pass # will pass if folders already exist
 
 
 # -------------------------------------------------------------------- #
-# Input Data -> Define Material and Orifice size. Uncomment the prefered choice
+# Input Data -> Define Material and Orifice size.
 
 size=str(sys.argv[1]) if len(sys.argv)>1 else 'small'
-granularMaterial=str(sys.argv[2]) if len(sys.argv)>2 else 'M1'
+material=str(sys.argv[2]) if len(sys.argv)>2 else 'M1'
 
 if size == 'large':
-    fileName='LargeOrifice'
+    fileName='Case1_large'
     z=55.4222/1000. 	# This is the height of the lowest point of the funnel (at the orifice), measuring from the lowest cylindrical cross section of the silo
 else:
     z=59.3008/1000.
-    fileName='SmallOrifice'
+    fileName='Case1_small'
 
 
 # -------------------------------------------------------------------- #
@@ -50,13 +60,13 @@ e_M1_St=0.4;	f_M1_St=0.2
 e_M2_M2=0.4;	f_M2_M2=0.4
 e_M2_St=0.4;	f_M2_St=0.2
 
-if granularMaterial=='M1':
+if material=='M1':
     M1=O.materials.append(FrictMat(young=1.0e9,poisson=0.2,density=2500,label='M1'))
     e_gg=e_M1_M1	# Coefficient of restitution (e) between granular material (g) and granular material (g)
     f_gg=f_M1_M1	# Coefficient of friction (f)...
     e_gs=e_M1_St	# Coefficient of restitution (e) between granular material (g) and steel (s)
     f_gs=f_M1_St	# Coefficient of friction (f)...
-elif granularMaterial=='M2':
+elif material=='M2':
     M2=O.materials.append(FrictMat(young=0.5e9,poisson=0.2,density=2000,label='M2'))
     e_gg=e_M2_M2
     f_gg=f_M2_M2
@@ -76,7 +86,7 @@ O.engines=[
         [Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom()],
         [Ip2_FrictMat_FrictMat_MindlinPhys(
             frictAngle = MatchMaker(matches=((1,1,F_gg),(0,1,F_gs))), # 0 being the id of Steel and
-            en         = MatchMaker(matches=((1,1,e_gg),(0,1,e_gs)))  # 1 being the id of granularMaterial
+            en         = MatchMaker(matches=((1,1,e_gg),(0,1,e_gs)))  # 1 being the id of material
         )],
         [Law2_ScGeom_MindlinPhys_Mindlin()],
     ),
@@ -85,27 +95,29 @@ O.engines=[
     #VTKRecorder(virtPeriod=0.04,fileName='/tmp/Silo-',recorders=['spheres','facets']),
 ]
 
-urls = {} # case name will be size+granularMaterial
+urls = {} # case name will be size+material
 urls["smallM1"]="https://cloud.tuhh.de/index.php/s/rz4sdtAdKLTJiXX/download"
 urls["smallM2"]="https://cloud.tuhh.de/index.php/s/dqM3yRy2TsdFDGS/download"
 urls["largeM1"]="https://cloud.tuhh.de/index.php/s/Pa7JtpksrF5cSjp/download"
 urls["largeM2"]="https://cloud.tuhh.de/index.php/s/cs8PJX2BHd2KfnB/download"
-urls["smallWalls"]="https://cloud.tuhh.de/index.php/s/Eyq9K9mdcDzg8Hb/download"
-urls["largeWalls"]="https://cloud.tuhh.de/index.php/s/mKsiEZ6YnHHJ4gJ/download"
+#urls["small"]="https://cloud.tuhh.de/index.php/s/Eyq9K9mdcDzg8Hb/download"
+#urls["large"]="https://cloud.tuhh.de/index.php/s/mKsiEZ6YnHHJ4gJ/download"
+urls["small"]="https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_Walls_SmallOrifice.txt"
+urls["large"]="https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_Walls_LargeOrifice.txt"
 
 # This condition is not abolutely necessary but it would be inelegant to
 # download *.stl and generate densePack N times when we need it done only on master (centralized scene method)
 if not mpi or mp.rank==0:
     from yade import ymport
-    wallFile='Case1_SiloFlow_Walls_'+fileName+'.txt'
-    sphereFile='Case1_SiloFlow_PartCoordinates_'+fileName+'.txt'
+    wallFile='inputData/Case1_SiloFlow_Walls_'+fileName+'.txt'
+    sphereFile='inputData/Case1_SiloFlow_PartCoordinates_'+fileName+'.txt'
     
     hasInputSpheres = os.path.exists(sphereFile)
     if not hasInputSpheres:
         print("Downloading sphere file",sphereFile)
         try:
-            print('wget --no-clobber -O '+sphereFile+'_temp '+ urls[size+granularMaterial])
-            os.system('wget --no-clobber -O '+sphereFile+'_temp '+ urls[size+granularMaterial])
+            print('wget --no-clobber -O '+sphereFile+'_temp '+ urls[size+material])
+            os.system('wget --no-clobber -O '+sphereFile+'_temp '+ urls[size+material])
         except:
             print("** probably no internet connection, grab",sphereFile,"by yourself **")
             
@@ -120,12 +132,11 @@ if not mpi or mp.rank==0:
     if not hasInputWall:
         print("Downloading mesh file",wallFile)
         try:
-            # os.system('wget -O '+str(wallFile)+" "+urls[size+"Walls"]) # would be with native format
-            os.system('wget http://yade-dem.org/publi/data/DEM8/'+wallFile)
+            os.system('wget -O '+wallFile+' '+urls[size])
         except:
             print("** probably no internet connection, grab",wallFile,"by yourself **")
             
-    sp=ymport.text(sphereFile,material=granularMaterial)
+    sp=ymport.text(sphereFile,material=material)
     facets = ymport.textFacets(wallFile,color=(0,1,0),material=Steel)
     #facets = ymport.stl(fileName+'.stl',color=(0,1,0),material=Steel)
     fctIds = range(len(facets))
@@ -143,7 +154,7 @@ if not mpi or mp.rank==0:
         
     collider.verletDist = 0.2*O.bodies[-1].shape.radius
     O.dynDt=False
-    O.dt = 1.5e-6 if granularMaterial=='M1' else 2e-6
+    O.dt = 1.5e-6 if material=='M1' else 2e-6
 
 # -------------------------------------------------------------------- #
 # Erase particles flowing out of the silo
@@ -171,7 +182,7 @@ plot.plots={'time':(('retained','bo--'),None,('Cu',"kx--"))}
 
 numErased = 0
 def addPlotData(Cu): 
-	plot.addData(retained=numSpheres-numErased, time=O.time, Cu=Cu)
+	plot.addData(time=O.time, retained=numSpheres-numErased, Cu=Cu)
 
 from yade import export
 vtk = export.VTKExporter("spheresFinal")
@@ -207,8 +218,8 @@ while len(O.bodies)-numErased>0 and O.time < 5: # 5 sec max
     t2=time.time()
     addPlotData((numSpheres-numErased)*substeps/(t2-t1))
     #vtk.exportSpheres(what=dict(particleVelocity='b.state.vel',domain='b.subdomain'))
-    plot.plot(noShow=True).savefig(fileName+'_'+granularMaterial+'_np'+str(numThreads)+'.png')
-    plot.saveDataTxt(fileName+'_'+granularMaterial+'.txt')
+    plot.plot(noShow=True).savefig('outputData/'+fileName+'_'+material+'_np'+str(numThreads)+'.png')
+    plot.saveDataTxt('outputData/'+fileName+'_'+material+'.txt')
     print("iter=",O.iter,", last substep erased", numErased,"in",t2-t1,"s")
 
 # -------------------------------------------------------------------- #

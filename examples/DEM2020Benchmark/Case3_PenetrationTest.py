@@ -6,9 +6,9 @@
 # Case 3: Penetration test
 
 # for efficient production run with the following command (it will terminate automatically when done):
-#   'yadedaily -n -x Case3_PenetrationTest_SI.py 25000'
+#   'yadedaily -n -x Case3_PenetrationTest_SI.py 25000 M1'
 # for keeping GUI run like this:
-#   'yadedaily Case3_PenetrationTest_SI.py 25000'
+#   'yadedaily Case3_PenetrationTest_SI.py 25000 M1'
 # adapt yade executable if not 'daily' version and pick one in 25000,50000,10000
 # the input scripts are downloaded from TUHH as part of the script execution if not available in current path
 # provided input should be in ./inputData relative to where yade is executed
@@ -20,6 +20,18 @@
 if len(sys.argv)>1: N=int(sys.argv[1])
 else: N=25000
 if N not in [25000,50000,100000]: print("input error, call 'yadedaily -n -x scriptName.py' or 'yadedaily -n -x scriptName.py 25000' (or 50000, etc.)")
+
+material=str(sys.argv[2]) if len(sys.argv)>2 else 'M1'
+
+try:
+    os.mkdir('inputData')
+except:
+    pass # will pass if folders already exist
+
+try:
+    os.mkdir('outputData')
+except:
+    pass # will pass if folders already exist
 
 # -------------------------------------------------------------------- #
 # Materials
@@ -36,10 +48,6 @@ e_gs=e_M1_St	# Coefficient of restitution (e) between granular material (g) and 
 
 # -------------------------------------------------------------------- #
 # Load the initial sphere pack from .txt file
-try:
-    os.mkdir('inputData')
-except:
-    pass
 
 inputFileName = 'inputData/'+str(int(N/1000))+'KParticles.txt'
 altName = 'inputData/'+str(int(N/1000))+'KParticlesSwapped.txt'
@@ -76,14 +84,14 @@ if not os.path.exists(altName):
     y.close()
 
 from yade import ymport
-sp=ymport.text(altName,material=M1)
+sp=ymport.text(altName,material= (M1 if material=="M1" else M2))
 
 sp[-1]=sphere(sp[-1].state.pos,sp[-1].shape.radius,material='Steel') # Redefine this with the correct material, as sp[-1] corresponds to the large sphere made of steel
 O.bodies.append(sp)
 
 # -------------------------------------------------------------------- #
 # Load facets making the box
-wallFileName = 'inputData/Case3Walls'+str(int(N/1000))+'.txt' # a bit pointless to download again with different N but it's to avoid collisions with parallel runs
+wallFileName = 'inputData/Case3Walls'+str(int(N/1000))+'.txt' # a bit pointless to download again with different N but it's to avoid collisions between parallel jobs
 
 # download from organizer at TUHH
 if not os.path.exists(wallFileName):    
@@ -127,8 +135,8 @@ plot.plots={'time1':'z'}
 def addPlotData(): 
 	z=bSphere.state.pos[2]
 	plot.addData(z=z, time1=O.time)
-	plot.plot(noShow=True).savefig('Case3_PenetrationTest_'+str(N)+'.png')
-	plot.saveDataTxt('Case3_PenetrationTest_'+str(N)+'.txt',vars=('time1','z'))
+	plot.plot(noShow=True).savefig('outputData/Case3_PenetrationTest_'+str(N)+material+'.png')
+	plot.saveDataTxt('outputData/Case3_PenetrationTest_'+str(N)+material+'.txt',vars=('time1','z'))
 
 addPlotData() #record the initial state for O.time=0.0
 O.engines=O.engines+[PyRunner(virtPeriod=5e-4,command='addPlotData()')] # Here I use virtPeriod=0.0005, following the provided .xlsx example file
