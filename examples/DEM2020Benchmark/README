@@ -6,9 +6,14 @@
 
 1/ The scripts in this folder were prepared as part of a benchmark exercise inspired by discussions at DEM8 Conference.
 
-2/ They need to be ran with stable release yade2020.01a or later, i.e. on debian/ubuntu systems:
+2/ They need to be ran with yade version release 01/2021 or later (version yadedaily on debian/ubuntu)
     $ apt update
-    $ apt install yade
+    $ apt install yadedaily
     $ path/to//runAll.sh
     
 3/ Please find inspiration for command line execution in 'runAll.sh' and in preamble of the example scripts
+
+4/ Execution time ranges from ~1h to couple days depending on the script and the number of threads. You can track
+ progress by checking the generated *.png files, they are updated continuously.
+ 
+5/ Alternatively, run with graphical interface (needs X server available) and inspet the 3D view (close it when done to not add overhead)

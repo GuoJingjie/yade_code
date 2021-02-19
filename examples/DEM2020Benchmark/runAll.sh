@@ -15,21 +15,25 @@ export YADE_BRANCH="https://gitlab.com/yade-dev/trunk/-/raw/edea1b5e219691753662
 # latest would be:
 # export YADE_BRANCH=https://gitlab.com/yade-dev/trunk/-/raw/master/examples//DEM2020Benchmark
 
-
 wget $YADE_BRANCH/Case1_SiloFlow.py
 wget $YADE_BRANCH/Case2_rotating_drum.py
 wget $YADE_BRANCH/Case3_PenetrationTest.py
 
-yadedaily -j 4 -n -x Case1_SiloFlow.py small M1 #[*]
-yadedaily -j 4 -n -x Case1_SiloFlow.py small M2
-yadedaily -j 4 -n -x Case1_SiloFlow.py large M1 #[*]
-yadedaily -j 4 -n -x Case1_SiloFlow.py large M2
-yadedaily -j 4 -n -x /mnt/Case2_rotating_drum.py #[*]
-yadedaily -j 4 -n -x Case3_PenetrationTest_SI.py 25000 M1 #[*]
-yadedaily -j 4 -n -x Case3_PenetrationTest_SI.py 50000 M1 #[*]
-yadedaily -j 4 -n -x Case3_PenetrationTest_SI.py 100000 M1 #[*]
-yadedaily -j 4 -n -x Case3_PenetrationTest_SI.py 25000 M2
-yadedaily -j 4 -n -x Case3_PenetrationTest_SI.py 50000 M2
-yadedaily -j 4 -n -x Case3_PenetrationTest_SI.py 100000 M2
+export YADE="yadedaily"
+# export YADE="/path/to/my/own/yadeVersion"
 
-yadedaily plotBenchmark.py
+export OMP_THREADS=4 # OpenMP threads, should be less than number of cores. 12 max suggested.
+
+$YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py small M1 #[*]
+$YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py small M2
+$YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py large M1 #[*]
+$YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py large M2
+$YADE -j $OMP_THREADS -n -x /mnt/Case2_rotating_drum.py #[*]
+$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 25000 M1 #[*]
+$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 50000 M1 #[*]
+$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 100000 M1 #[*]
+$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 25000 M2
+$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 50000 M2
+$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 100000 M2
+
+$YADE plotBenchmark.py # would run just as well with python3
