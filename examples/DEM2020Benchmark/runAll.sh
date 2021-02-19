@@ -11,7 +11,7 @@
 
 
 # That url should point to valid gitlab branch
-export YADE_BRANCH="https://gitlab.com/yade-dev/trunk/-/raw/edea1b5e219691753662104bb7cfac0986536aed/examples/DEM2020Benchmark"
+export YADE_BRANCH="https://gitlab.com/yade-dev/trunk/-/raw/9545beb39/examples/DEM2020Benchmark"
 # latest would be:
 # export YADE_BRANCH=https://gitlab.com/yade-dev/trunk/-/raw/master/examples//DEM2020Benchmark
 
