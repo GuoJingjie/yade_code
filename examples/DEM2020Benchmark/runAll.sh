@@ -6,7 +6,7 @@
 # 1. an internet connexion (else please comment out the download part and provide the scripts in current path)
 # 2. a recent version of yade (not earlier than 01/2021 else one python helper for converting mesh files will be missing)
 
-# The scripts themselves 
+# The scripts themselves
 # Cases with output provided in 02/2021 are signaled by ending the line [*]
 
 
@@ -18,6 +18,7 @@ export YADE_BRANCH="https://gitlab.com/yade-dev/trunk/-/raw/9545beb39/examples/D
 wget $YADE_BRANCH/Case1_SiloFlow.py
 wget $YADE_BRANCH/Case2_rotating_drum.py
 wget $YADE_BRANCH/Case3_PenetrationTest.py
+wget $YADE_BRANCH/plotBenchmark.py
 
 export YADE="yadedaily"
 # export YADE="/path/to/my/own/yadeVersion"
@@ -28,7 +29,7 @@ $YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py small M1 #[*]
 $YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py small M2
 $YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py large M1 #[*]
 $YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py large M2
-$YADE -j $OMP_THREADS -n -x /mnt/Case2_rotating_drum.py #[*]
+$YADE -j $OMP_THREADS -n -x Case2_rotating_drum.py #[*]
 $YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 25000 M1 #[*]
 $YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 50000 M1 #[*]
 $YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 100000 M1 #[*]
