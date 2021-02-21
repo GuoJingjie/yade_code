@@ -66,8 +66,8 @@ if not hasInputSpheres:
 		os.system('wget -O inputData/'+spheres_M2+' http://yade-dem.org/publi/data/DEM8/'+spheres_M2)
 	except:
 		print("** probably no internet connection, grab",spheres_M1,"by yourself **")
-sp_m1=ymport.text(spheres_M1,material=M1,color=(1,0,0))
-sp_m2=ymport.text(spheres_M2,material=M2,color=(0,0,1))
+sp_m1=ymport.text('inputData/'+spheres_M1,material=M1,color=(1,0,0))
+sp_m2=ymport.text('inputData/'+spheres_M2,material=M2,color=(0,0,1))
 
 hasInputWall = os.path.exists('inputData/'+wallFile)
 if not hasInputWall:
@@ -76,7 +76,7 @@ if not hasInputWall:
 		os.system('wget -O inputData/'+wallFile+' http://yade-dem.org/publi/data/DEM8/'+wallFile)
 	except:
 		print("** probably no internet connection, grab",wallFile,"by yourself **")
-facets = ymport.textFacets(wallFile,color=(0,1,0),material=Steel)
+facets = ymport.textFacets('inputData/'+wallFile,color=(0,1,0),material=Steel)
 #facets = ymport.stl(fileName+'.stl',color=(0,1,0),material=Steel)
 drum_ids = range(len(facets))
 
