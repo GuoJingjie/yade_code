@@ -30,11 +30,8 @@ $YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py small M2
 $YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py large M1 #[*]
 $YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py large M2
 $YADE -j $OMP_THREADS -n -x Case2_rotating_drum.py #[*]
-$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 25000 M1 #[*]
-$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 50000 M1 #[*]
-$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 100000 M1 #[*]
-$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 25000 M2
-$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 50000 M2
-$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest_SI.py 100000 M2
+$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest.py 25000 M1 #[*]
+$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest.py 50000 M1 #[*]
+$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest.py 100000 M1 #[*]
 
 $YADE plotBenchmark.py # would run just as well with python3
