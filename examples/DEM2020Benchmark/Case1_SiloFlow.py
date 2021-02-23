@@ -2,18 +2,30 @@
 # 2020 © Vasileios Angelidakis <v.angelidakis2@ncl.ac.uk>
 # 2020 © Bruno Chareyre <bruno.chareyre@grenoble-inp.fr> 
 
+
 # Benchmark of basic performance of open-source DEM simulation systems
-# Case 1: Silo flow
+# Case 1: Silo Flow
 # Units: SI (m, N, Pa, kg, sec)
 
 # script execution:
-# yade Case1SiloFlow.py   (with default arguments, else)
-# yade Case1SiloFlow.py  [small|large] [M1|M2]
-# example: yade Case1SiloFlow.py  small M1 (equivalent to default)
+#   Option 1:  'yadedaily -n -x Case1_SiloFlow.py small M1'	# use this command for efficient production (no GUI; Yade will terminate automatically when the simulation is finished)
+#   Option 2:  'yadedaily Case1_SiloFlow.py small M1'		# use this command to keep GUI (affects the overall performance)
 
+# input arguments:
+#   yadedaily Case1_SiloFlow.py   (with default arguments, else)
+#   yadedaily Case1_SiloFlow.py  [small|large] [M1|M2]
+# example:   yadedaily Case1_SiloFlow.py  small M1 (equivalent to default)
+
+# adapt yade executable if not 'daily' version and pick [small|large] [M1|M2]
+# the input data are downloaded from TUHH as part of the script execution if not available in current path
+# provided input should be in ./inputData relative to where yade is executed
+
+# -------------------------------------------------------------------- #
+# Options
 numThreads=1
 reportTiming=False
 
+# -------------------------------------------------------------------- #
 # Configure MPI module if needed
 mpi = 'MPI' in yade.config.features
 if mpi:
@@ -100,10 +112,10 @@ urls["smallM1"]="https://cloud.tuhh.de/index.php/s/rz4sdtAdKLTJiXX/download"
 urls["smallM2"]="https://cloud.tuhh.de/index.php/s/dqM3yRy2TsdFDGS/download"
 urls["largeM1"]="https://cloud.tuhh.de/index.php/s/Pa7JtpksrF5cSjp/download"
 urls["largeM2"]="https://cloud.tuhh.de/index.php/s/cs8PJX2BHd2KfnB/download"
-#urls["small"]="https://cloud.tuhh.de/index.php/s/Eyq9K9mdcDzg8Hb/download"
-#urls["large"]="https://cloud.tuhh.de/index.php/s/mKsiEZ6YnHHJ4gJ/download"
-urls["small"]="https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_Walls_SmallOrifice.txt"
-urls["large"]="https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_Walls_LargeOrifice.txt"
+urls["small"]="https://cloud.tuhh.de/index.php/s/Eyq9K9mdcDzg8Hb/download"
+urls["large"]="https://cloud.tuhh.de/index.php/s/mKsiEZ6YnHHJ4gJ/download"
+#urls["small"]="https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_Walls_SmallOrifice.txt"
+#urls["large"]="https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_Walls_LargeOrifice.txt"
 
 # This condition is not abolutely necessary but it would be inelegant to
 # download *.stl and generate densePack N times when we need it done only on master (centralized scene method)
@@ -132,10 +144,18 @@ if not mpi or mp.rank==0:
     if not hasInputWall:
         print("Downloading mesh file",wallFile)
         try:
-            os.system('wget -O '+wallFile+' '+urls[size])
+            os.system('wget --no-clobber -O '+wallFile+'_temp '+urls[size])
         except:
             print("** probably no internet connection, grab",wallFile,"by yourself **")
-            
+
+        with open(wallFile+'_temp') as x, open(wallFile, 'w') as y:
+            for line in x:
+                columns=line.split()
+                if columns[0]=='vertex1_X[m]': continue # skip first line of headers
+                if len(columns)<9: continue # trailing empty lines
+                y.write('\t'.join(columns)+'\n')
+        y.close()
+
     sp=ymport.text(sphereFile,material=material)
     facets = ymport.textFacets(wallFile,color=(0,1,0),material=Steel)
     #facets = ymport.stl(fileName+'.stl',color=(0,1,0),material=Steel)
@@ -204,6 +224,9 @@ if mpi: # import and tune MPI module
     #mp.VERBOSE_OUTPUT=True
 else:
     O.timingEnabled=reportTiming
+
+#substeps=1		# Used for debugging purposes
+#while O.iter<2:		# Used for debugging purposes
 
 substeps=500
 while len(O.bodies)-numErased>0 and O.time < 5: # 5 sec max
