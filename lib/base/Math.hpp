@@ -113,6 +113,8 @@ template <typename MatrixT> void matrixEigenDecomposition(const MatrixT& m, Matr
 	//assert(mRot); assert(mDiag);
 	Eigen::SelfAdjointEigenSolver<MatrixT> a(m);
 	mRot  = a.eigenvectors();
+	// make it right-handed
+	if (mRot.determinant()<0) for (unsigned i = 0; i<3; i++)  mRot(i,2) = -mRot(i,2);
 	mDiag = a.eigenvalues().asDiagonal();
 }
 

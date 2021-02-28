@@ -250,14 +250,16 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 	Ic_orientG(1, 0) = Ic_orientG(0, 1);
 	Ic_orientG(2, 0) = Ic_orientG(0, 2);
 	Ic_orientG(2, 1) = Ic_orientG(1, 2); // symmetrize
-	Eigen::SelfAdjointEigenSolver<Matrix3r> decomposed(Ic_orientG);
-	const Matrix3r&                         R_g2c(decomposed.eigenvectors());
+	
+	Matrix3r R_g2c;
+	matrixEigenDecomposition(Ic_orientG, R_g2c, Ic);
+
 	// has NaNs for identity matrix??
 	LOG_TRACE("R_g2c=\n" << R_g2c);
 	// set quaternion from rotation matrix
 	state->ori = Quaternionr(R_g2c);
 	state->ori.normalize();
-	state->inertia = decomposed.eigenvalues();
+	state->inertia = Ic.diagonal();
 	state->mass    = M;
 
 	// TODO: these might be calculated from members... but complicated... - someone needs that?!
@@ -348,26 +350,12 @@ void Clump::updatePropertiesNonSpherical(const shared_ptr<Body>& clumpBody, bool
 	Ic_orientG(2, 1) = Ic_orientG(1, 2); // symmetrize
 	//TRWM3MAT(Ic_orientG);
 	matrixEigenDecomposition(Ic_orientG, R_g2c, Ic);
-	/*! @bug eigendecomposition might be wrong. see http://article.gmane.org/gmane.science.physics.yade.devel/99 for message. It is worked around below, however.
-	*/
-	// has NaNs for identity matrix!
-	//TRWM3MAT(R_g2c);
 
 	// set quaternion from rotation matrix
 	state->ori = Quaternionr(R_g2c);
 	state->ori.normalize();
-	// now Ic is diagonal
 	state->inertia = Ic.diagonal();
 	state->mass    = M;
-
-
-	// this block will be removed once EigenDecomposition works for diagonal matrices
-	//#if 1
-	//	if(isnan(R_g2c(0,0))||isnan(R_g2c(0,1))||isnan(R_g2c(0,2))||isnan(R_g2c(1,0))||isnan(R_g2c(1,1))||isnan(R_g2c(1,2))||isnan(R_g2c(2,0))||isnan(R_g2c(2,1))||isnan(R_g2c(2,2))){
-	//		throw std::logic_error("Clump::updateProperties: NaNs in eigen-decomposition of inertia matrix?!");
-	//	}
-	//#endif
-	//TRWM3VEC(state->inertia);
 
 	// TODO: these might be calculated from members... but complicated... - someone needs that?!
 	state->vel = state->angVel = Vector3r::Zero();
