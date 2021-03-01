@@ -75,7 +75,6 @@ void InteractionContainer::clear()
 bool InteractionContainer::erase(Body::id_t id1, Body::id_t id2, int linPos)
 {
 	assert(bodies);
-#warning("is cpu cost of this mutex known?")
 	const std::lock_guard<std::mutex> lock(drawloopmutex);
 	if (id1 > id2) swap(id1, id2);
 	if (id2 >= (Body::id_t)bodies->size()) return false;
