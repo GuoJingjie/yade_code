@@ -26,9 +26,6 @@ void Law2_ScGeom6D_CohFrictPhys_CohesionMoment::initPlasticDissipation(Real init
 	plasticDissipation += initVal;
 }
 
-Vector3r CohFrictPhys::getRotStiffness() { return Vector3r(ktw, kr, kr); }
-
-
 Real Law2_ScGeom6D_CohFrictPhys_CohesionMoment::normElastEnergy()
 {
 	Real normEnergy = 0;

@@ -58,6 +58,7 @@ REGISTER_SERIALIZABLE(InelastCohFrictMat);
 class InelastCohFrictPhys : public FrictPhys {
 public:
 	virtual ~InelastCohFrictPhys() {};
+	virtual Vector3r getRotStiffness() const override { return Vector3r(ktw,kr,kr); };
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(InelastCohFrictPhys,FrictPhys,"",
 		((bool,cohesionBroken,false,,"is cohesion active? will be set false when a fragile contact is broken"))

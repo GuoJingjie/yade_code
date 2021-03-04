@@ -56,7 +56,7 @@ public:
 		normalAdhesion = 0;
 		shearAdhesion  = 0;
 	};
-	virtual Vector3r getRotStiffness();
+	virtual Vector3r getRotStiffness() const override { return Vector3r(ktw,kr,kr); };
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CohFrictPhys,FrictPhys,"",

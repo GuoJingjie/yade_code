@@ -28,6 +28,8 @@ namespace yade { // Cannot have #include directive inside.
 class MindlinPhys : public FrictPhys {
 public:
 	virtual ~MindlinPhys() {};
+	virtual Vector3r getRotStiffness() const override { return Vector3r(ktw,kr,kr); };
+
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(MindlinPhys,FrictPhys,"Representation of an interaction of the Hertz-Mindlin type.",
 			((Real,kno,0.0,,"Constant value in the formulation of the normal stiffness"))

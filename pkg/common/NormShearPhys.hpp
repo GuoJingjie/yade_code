@@ -9,7 +9,7 @@ namespace yade { // Cannot have #include directive inside.
 class NormPhys : public IPhys {
 public:
 	virtual ~NormPhys() {};
-	virtual Vector3r getRotStiffness() { return Vector3r::Zero(); }
+	virtual Vector3r getRotStiffness() const { return Vector3r::Zero(); }
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(NormPhys,IPhys,"Abstract class for interactions that have normal stiffness.",
 		((Real,kn,0,,"Normal stiffness"))
