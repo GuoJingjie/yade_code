@@ -266,10 +266,16 @@ void GlobalStiffnessTimeStepper::computeStiffnesses(Scene* rb)
 		        math::pow(normal.x(), 2) + math::pow(normal.y(), 2));
 		diag_Rstiffness *= ks;
 
+		Vector3r diag_Mstiffness = Vector3r::Zero();
+
 		// If contact moments are present, add the diagonal of (n⊗n*k_twist + (I-n⊗n)*k_roll = (k_twist-k_roll)*n⊗n + I*k_roll ) :
-		Vector3r kr = (static_cast<NormShearPhys*>(contact->phys.get()))->getRotStiffness();       //get the vector (k_twist,k_roll,k_roll)
-		Vector3r nn(math::pow(normal.x(), 2), math::pow(normal.y(), 2), math::pow(normal.z(), 2)); //n⊗n
-		Vector3r diag_Mstiffness = (kr[0] - kr[1]) * nn + Vector3r(1, 1, 1) * kr[1];
+		const auto RotStiffFrictPhys_ptr = dynamic_cast<RotStiffFrictPhys*>(contact->phys.get());
+		if (RotStiffFrictPhys_ptr) {
+			// Rotational stiffness is supported
+			Vector3r kr = RotStiffFrictPhys_ptr->getRotStiffness();                                    //get the vector (k_twist,k_roll,k_roll)
+			Vector3r nn(math::pow(normal.x(), 2), math::pow(normal.y(), 2), math::pow(normal.z(), 2)); //n⊗n
+			diag_Mstiffness = (kr[0] - kr[1]) * nn + Vector3r(1, 1, 1) * kr[1];
+		}
 
 		stiffnesses[contact->getId1()] += diag_stiffness;
 		Rstiffnesses[contact->getId1()] += diag_Rstiffness * pow(radius1, 2) + diag_Mstiffness;

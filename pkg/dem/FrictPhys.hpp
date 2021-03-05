@@ -16,7 +16,7 @@ namespace yade { // Cannot have #include directive inside.
 
 class FrictPhys : public NormShearPhys {
 public:
-	virtual ~FrictPhys() {};
+	virtual ~FrictPhys() = default;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(FrictPhys,NormShearPhys,"The simple linear elastic-plastic interaction with friction angle, like in the traditional [CundallStrack1979]_",
 		((Real,tangensOfFrictionAngle,NaN,,"tan of angle of friction")),
@@ -29,7 +29,7 @@ REGISTER_SERIALIZABLE(FrictPhys);
 
 class ViscoFrictPhys : public FrictPhys {
 public:
-	virtual ~ViscoFrictPhys() {};
+	virtual ~ViscoFrictPhys() = default;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(ViscoFrictPhys,FrictPhys,"Temporary version of :yref:`FrictPhys` for compatibility reasons",
 		((Vector3r,creepedShear,Vector3r(0,0,0),(Attr::readonly),"Creeped force (parallel)")),
@@ -39,6 +39,22 @@ public:
 	REGISTER_CLASS_INDEX(ViscoFrictPhys, FrictPhys);
 };
 REGISTER_SERIALIZABLE(ViscoFrictPhys);
+
+class RotStiffFrictPhys : public FrictPhys {
+public:
+	virtual ~RotStiffFrictPhys() = default;
+	Vector3r getRotStiffness() const;
+	// clang-format off
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR(RotStiffFrictPhys,FrictPhys,"Version of :yref:`FrictPhys` with a rotational stiffness",
+		((Vector3r,creepedShear,Vector3r(0,0,0),(Attr::readonly),"Creeped force (parallel)"))
+		((Real,kr,0,,"rotational stiffness [N.m/rad]"))
+		((Real,ktw,0,,"twist stiffness [N.m/rad]")),
+		createIndex()
+	);
+	// clang-format on
+	REGISTER_CLASS_INDEX(RotStiffFrictPhys, FrictPhys);
+};
+REGISTER_SERIALIZABLE(RotStiffFrictPhys);
 
 // The following code was moved from Ip2_FrictMat_FrictMat_FrictPhys.hpp
 

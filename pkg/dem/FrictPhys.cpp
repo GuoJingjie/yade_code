@@ -3,7 +3,7 @@
 
 namespace yade { // Cannot have #include directive inside.
 
-YADE_PLUGIN((FrictPhys)(ViscoFrictPhys)(Ip2_FrictMat_FrictMat_ViscoFrictPhys)(Ip2_FrictMat_FrictMat_FrictPhys));
+YADE_PLUGIN((FrictPhys)(ViscoFrictPhys)(RotStiffFrictPhys)(Ip2_FrictMat_FrictMat_ViscoFrictPhys)(Ip2_FrictMat_FrictMat_FrictPhys));
 
 // The following code was moved from Ip2_FrictMat_FrictMat_FrictPhys.hpp
 
@@ -72,5 +72,7 @@ void Ip2_FrictMat_FrictMat_ViscoFrictPhys::go(const shared_ptr<Material>& b1, co
 	contactPhysics->kn                     = Kn;
 	contactPhysics->ks                     = Ks;
 };
+
+Vector3r RotStiffFrictPhys::getRotStiffness() const { return Vector3r(ktw, kr, kr); };
 
 } // namespace yade

@@ -17,7 +17,6 @@
 #include <pkg/dem/ScGeom.hpp>
 #include <boost/tuple/tuple.hpp>
 
-
 namespace yade { // Cannot have #include directive inside.
 
 // The following code was moved from CohFrictMat.hpp
@@ -47,24 +46,21 @@ public:
 REGISTER_SERIALIZABLE(CohFrictMat);
 
 // The following code was moved from CohFrictPhys.hpp
-class CohFrictPhys : public FrictPhys {
+class CohFrictPhys : public RotStiffFrictPhys {
 public:
-	virtual ~CohFrictPhys() {};
+	virtual ~CohFrictPhys() = default;
 	void SetBreakingState()
 	{
 		cohesionBroken = true;
 		normalAdhesion = 0;
 		shearAdhesion  = 0;
 	};
-	virtual Vector3r getRotStiffness() const override { return Vector3r(ktw,kr,kr); };
 
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CohFrictPhys,FrictPhys,"",
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CohFrictPhys,RotStiffFrictPhys,"",
 		((bool,cohesionDisablesFriction,false,,"is shear strength the sum of friction and adhesion or only adhesion?"))
 		((bool,cohesionBroken,true,,"is cohesion active? Set to false at the creation of a cohesive contact, and set to true when a fragile contact is broken"))
 		((bool,fragile,true,,"do cohesion disappear when contact strength is exceeded?"))
-		((Real,kr,0,,"rotational stiffness [N.m/rad]"))
-		((Real,ktw,0,,"twist stiffness [N.m/rad]"))
 		((Real,maxRollPl,0.0,,"Coefficient of rolling friction (negative means elastic)."))
 		((Real,maxTwistPl,0.0,,"Coefficient of twisting friction (negative means elastic)."))
 		((Real,normalAdhesion,0,,"tensile strength"))
@@ -82,7 +78,7 @@ public:
 	);
 	// clang-format on
 	/// Indexable
-	REGISTER_CLASS_INDEX(CohFrictPhys, FrictPhys);
+	REGISTER_CLASS_INDEX(CohFrictPhys, RotStiffFrictPhys);
 };
 
 REGISTER_SERIALIZABLE(CohFrictPhys);
@@ -156,7 +152,7 @@ public:
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR(Ip2_CohFrictMat_CohFrictMat_CohFrictPhys,IPhysFunctor,
 		"Generates cohesive-frictional interactions with moments, used in the contact law :yref:`Law2_ScGeom6D_CohFrictPhys_CohesionMoment`. The normal/shear stiffness and friction definitions are the same as in :yref:`Ip2_FrictMat_FrictMat_FrictPhys`, check the documentation there for details.\n\nAdhesions related to the normal and the shear components are calculated from :yref:`CohFrictMat::normalCohesion` ($C_n$) and :yref:`CohFrictMat::shearCohesion` ($C_s$). For particles of size $R_1$,$R_2$ the adhesion will be $a_i=C_i min(R_1,R_2)^2$, $i=n,s$.\n\nTwist and rolling stiffnesses are proportional to the shear stiffness through dimensionless factors alphaKtw and alphaKr, such that the rotational stiffnesses are defined by $k_s \\alpha_i R_1 R_2$, $i=tw\\,r$",
 		((bool,setCohesionNow,false,,"If true, assign cohesion to all existing contacts in current time-step. The flag is turned false automatically, so that assignment is done in the current timestep only."))
-		((bool,setCohesionOnNewContacts,false,,"If true, assign cohesion at all new contacts. If false, only existing contacts can be cohesive (also see :yref:`Ip2_CohFrictMat_CohFrictMat_CohFrictPhys::setCohesionNow`), and new contacts are only frictional."))	
+		((bool,setCohesionOnNewContacts,false,,"If true, assign cohesion at all new contacts. If false, only existing contacts can be cohesive (also see :yref:`Ip2_CohFrictMat_CohFrictMat_CohFrictPhys::setCohesionNow`), and new contacts are only frictional."))
 		((shared_ptr<MatchMaker>,normalCohesion,,,"Instance of :yref:`MatchMaker` determining tensile strength"))
 		((shared_ptr<MatchMaker>,shearCohesion,,,"Instance of :yref:`MatchMaker` determining cohesive part of the shear strength (a frictional term might be added depending on :yref:`CohFrictPhys::cohesionDisablesFriction`)"))
 		((shared_ptr<MatchMaker>,frictAngle,,,"Instance of :yref:`MatchMaker` determining how to compute interaction's friction angle. If ``None``, minimum value is used."))

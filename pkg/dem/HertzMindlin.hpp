@@ -21,21 +21,17 @@ The DMT formulation is also considered (for adhesive particles, rigid and small 
 #include <lib/base/openmp-accu.hpp>
 #include <boost/tuple/tuple.hpp>
 
-
 namespace yade { // Cannot have #include directive inside.
 
 /******************** MindlinPhys *********************************/
-class MindlinPhys : public FrictPhys {
+class MindlinPhys : public RotStiffFrictPhys {
 public:
-	virtual ~MindlinPhys() {};
-	virtual Vector3r getRotStiffness() const override { return Vector3r(ktw,kr,kr); };
+	virtual ~MindlinPhys() = default;
 
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS_CTOR(MindlinPhys,FrictPhys,"Representation of an interaction of the Hertz-Mindlin type.",
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR(MindlinPhys,RotStiffFrictPhys,"Representation of an interaction of the Hertz-Mindlin type.",
 			((Real,kno,0.0,,"Constant value in the formulation of the normal stiffness"))
 			((Real,kso,0.0,,"Constant value in the formulation of the tangential stiffness"))
-			((Real,kr,0.0,,"Rotational stiffness"))
-			((Real,ktw,0.0,,"Rotational stiffness"))
 			((Real,maxBendPl,0.0,,"Coefficient to determine the maximum plastic moment to apply at the contact"))
 
 			((Vector3r,normalViscous,Vector3r::Zero(),,"Normal viscous component"))
@@ -73,7 +69,7 @@ public:
 			,
 			createIndex());
 	// clang-format on
-	REGISTER_CLASS_INDEX(MindlinPhys, FrictPhys);
+	REGISTER_CLASS_INDEX(MindlinPhys, RotStiffFrictPhys);
 	DECLARE_LOGGER;
 };
 REGISTER_SERIALIZABLE(MindlinPhys);

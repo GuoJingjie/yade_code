@@ -7,7 +7,6 @@ using math::min; // using inside .cpp file is ok.
 
 YADE_PLUGIN((InelastCohFrictMat)(InelastCohFrictPhys)(Ip2_2xInelastCohFrictMat_InelastCohFrictPhys)(Law2_ScGeom6D_InelastCohFrictPhys_CohesionMoment));
 
-
 void Ip2_2xInelastCohFrictMat_InelastCohFrictPhys::go(
         const shared_ptr<Material>& b1 // InelastCohFrictMat
         ,
@@ -95,7 +94,6 @@ Real Law2_ScGeom6D_InelastCohFrictPhys_CohesionMoment::shearElastEnergy()
 	}
 	return shearEnergy;
 }
-
 
 bool Law2_ScGeom6D_InelastCohFrictPhys_CohesionMoment::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip, Interaction* contact)
 {

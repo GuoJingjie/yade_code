@@ -17,7 +17,7 @@ namespace yade { // Cannot have #include directive inside.
 
 class InelastCohFrictMat : public FrictMat {
 public:
-	virtual ~InelastCohFrictMat() {};
+	virtual ~InelastCohFrictMat() = default;
 
 	/// Serialization
 	// clang-format off
@@ -33,20 +33,20 @@ public:
 		((Real,sigmaTension,0.0,,"Tension elastic stress limit"))
 		((Real,sigmaCompression,0.0,,"Compression elastic stress limit"))
 		((Real,shearCohesion,0.0,,"Shear elastic stress limit"))
-		
+
 		((Real,creepTension,0.0,,"Tension/compression creeping coefficient. Usual values between 0 and 1."))
 		((Real,creepBending,0.0,,"Bending creeping coefficient. Usual values between 0 and 1."))
 		((Real,creepTwist,0.0,,"Twist creeping coefficient. Usual values between 0 and 1."))
-		
+
 		((Real,unloadTension,0.0,,"Tension/compression plastic unload coefficient. Usual values between 0 and +infinity."))
 		((Real,unloadBending,0.0,,"Bending plastic unload coefficient. Usual values between 0 and +infinity."))
 		((Real,unloadTwist,0.0,,"Twist plastic unload coefficient. Usual values between 0 and +infinity."))
-		
+
 		((Real,epsilonMaxTension,0.0,,"Maximal plastic strain tension"))
 		((Real,epsilonMaxCompression,0.0,,"Maximal plastic strain compression"))
 		((Real,etaMaxBending,0.0,,"Maximal plastic bending strain"))
 		((Real,etaMaxTwist,0.0,,"Maximal plastic twist strain")),
-		createIndex();			  
+		createIndex();
 					);
 	// clang-format on
 	/// Indexable
@@ -55,54 +55,51 @@ public:
 
 REGISTER_SERIALIZABLE(InelastCohFrictMat);
 
-class InelastCohFrictPhys : public FrictPhys {
+class InelastCohFrictPhys : public RotStiffFrictPhys {
 public:
-	virtual ~InelastCohFrictPhys() {};
-	virtual Vector3r getRotStiffness() const override { return Vector3r(ktw,kr,kr); };
+	virtual ~InelastCohFrictPhys() = default;
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS_CTOR(InelastCohFrictPhys,FrictPhys,"",
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR(InelastCohFrictPhys,RotStiffFrictPhys,"",
 		((bool,cohesionBroken,false,,"is cohesion active? will be set false when a fragile contact is broken"))
-		
+
 		((Real,knT,0,,"tension stiffness"))
 		((Real,knC,0,,"compression stiffness"))
-		((Real,ktw,0,,"twist shear stiffness"))
 		((Real,ks,0,,"shear stiffness"))
-		((Real,kr,0,,"bending stiffness"))
-		
+
 		((Real,maxElB,0.0,,"Maximum bending elastic moment."))
 		((Real,maxElTw,0.0,,"Maximum twist elastic moment."))
 		((Real,maxElT,0.0,,"Maximum tension elastic force."))
 		((Real,maxElC,0.0,,"Maximum compression elastic force."))
 		((Real,shearAdhesion,0,,"Maximum elastic shear force (cohesion)."))
-		
+
 		((Real,kTCrp,0.0,,"Tension/compression creep stiffness"))
 		((Real,kRCrp,0.0,,"Bending creep stiffness"))
 		((Real,kTwCrp,0.0,,"Twist creep stiffness"))
-		
+
 		((Real,kTUnld,0.0,,"Tension/compression plastic unload stiffness"))
 		((Real,kRUnld,0.0,,"Bending plastic unload stiffness"))
 		((Real,kTwUnld,0.0,,"Twist plastic unload stiffness"))
-		
+
 		((Real,maxExten,0.0,,"Plastic failure extension (stretching)."))
 		((Real,maxContract,0.0,,"Plastic failure contraction (shrinkage)."))
 		((Real,maxBendMom,0.0,,"Plastic failure bending moment."))
 		((Real,maxTwist,0.0,,"Plastic failure twist angle"))
-		
+
 		((bool,isBroken,false,,"true if compression plastic fracture achieved"))
 
 		((Real,unp,0,,"plastic normal penetration depth describing the equilibrium state."))
 		((Real,twp,0,,"plastic twist penetration depth describing the equilibrium state."))
-		
+
 		((bool,onPlastB,false,Attr::readonly,"true if plasticity achieved on bending"))
 		((bool,onPlastTw,false,Attr::readonly,"true if plasticity achieved on twisting"))
 		((bool,onPlastT,false,Attr::readonly,"true if plasticity achieved on traction"))
 		((bool,onPlastC,false,Attr::readonly,"true if plasticity achieved on compression"))
-		
+
 		((Vector2r,maxCrpRchdT,Vector2r(0,0),Attr::readonly,"maximal extension reached on plastic deformation. maxCrpRchdT[0] stores un and maxCrpRchdT[1] stores Fn."))
 		((Vector2r,maxCrpRchdC,Vector2r(0,0),Attr::readonly,"maximal compression reached on plastic deformation. maxCrpRchdC[0] stores un and maxCrpRchdC[1] stores Fn."))
 		((Vector2r,maxCrpRchdTw,Vector2r(0,0),Attr::readonly,"maximal twist reached on plastic deformation. maxCrpRchdTw[0] stores twist angle and maxCrpRchdTw[1] stores twist moment."))
 		((Vector3r,maxCrpRchdB,Vector3r(0,0,0),Attr::readonly,"maximal bending moment reached on plastic deformation."))
-		
+
 		((Vector3r,moment_twist,Vector3r(0,0,0),(Attr::readonly),"Twist moment"))
 		((Vector3r,moment_bending,Vector3r(0,0,0),(Attr::readonly),"Bending moment"))
 		((Vector3r,pureCreep,Vector3r(0,0,0),(Attr::readonly),"Pure creep curve, used for comparison in calculation."))
@@ -113,7 +110,7 @@ public:
 	);
 	// clang-format on
 	/// Indexable
-	REGISTER_CLASS_INDEX(InelastCohFrictPhys, FrictPhys);
+	REGISTER_CLASS_INDEX(InelastCohFrictPhys, RotStiffFrictPhys);
 };
 
 REGISTER_SERIALIZABLE(InelastCohFrictPhys);
