@@ -14,7 +14,10 @@
 #include <pkg/dem/Tetra.hpp>
 #include <pkg/dem/ViscoelasticPM.hpp>
 #ifdef YADE_MPI
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <mpi.h>
+#pragma GCC diagnostic pop
 #endif
 
 

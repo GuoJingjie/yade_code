@@ -17,11 +17,14 @@
 #include <Eigen/Core>
 #include <stdio.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <ClpSimplex.hpp>
 #include <CoinBuild.hpp>
 #include <CoinHelperFunctions.hpp>
 #include <CoinModel.hpp>
 #include <CoinTime.hpp>
+#pragma GCC diagnostic pop
 
 #include <cassert>
 #include <iomanip>
@@ -39,7 +42,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       cm1,
 	        const shared_ptr<Shape>&       cm2,
@@ -47,7 +50,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 	Real getSignedArea(const Vector3r pt1, const Vector3r pt2, const Vector3r pt3);
 	Real evaluatePB(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial);
 	void getPtOnParticle2(

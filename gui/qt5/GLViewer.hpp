@@ -127,9 +127,9 @@ public:
 	std::pair<double, qglviewer::Vec> displayedSceneRadiusCenter();
 
 	//! Adds our attributes to the QGLViewer state that can be saved
-	QDomElement domElement(const QString& name, QDomDocument& document) const override;
+	virtual QDomElement domElement(const QString& name, QDomDocument& document) const override;
 	//! Adds our attributes to the QGLViewer state that can be restored
-	void initFromDOMElement(const QDomElement& element) override;
+	virtual void initFromDOMElement(const QDomElement& element) override;
 
 	// if defined, snapshot will be saved to this file right after being drawn and the string will be reset.
 	// this way the caller will be notified of the frame being saved successfully.

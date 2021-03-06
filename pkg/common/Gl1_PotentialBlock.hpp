@@ -11,19 +11,13 @@
 
 #ifdef YADE_VTK
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <vtkImplicitFunction.h>
 #include <vtkPolyData.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 
-// https://codeyarns.com/2014/03/11/how-to-selectively-ignore-a-gcc-warning/
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpragmas"
-#pragma GCC diagnostic ignored "-Wcomment"
-// Code that generates this warning, Note: we cannot do this trick in yade. If we have a warning in yade, we have to fix it! See also https://gitlab.com/yade-dev/trunk/merge_requests/73
-// This method will work once g++ bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53431#c34 is fixed.
-#include <vtkTriangle.h>
-#pragma GCC diagnostic pop
 #include <vtkActor.h>
 #include <vtkAppendPolyData.h>
 #include <vtkCellArray.h>
@@ -47,6 +41,13 @@
 #include <vtkXMLImageDataWriter.h>
 #include <vtkXMLStructuredGridWriter.h>
 #include <vtkXMLUnstructuredGridWriter.h>
+// https://codeyarns.com/2014/03/11/how-to-selectively-ignore-a-gcc-warning/
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wcomment"
+// Code that generates this warning, Note: we cannot do this trick in yade. If we have a warning in yade, we have to fix it! See also https://gitlab.com/yade-dev/trunk/merge_requests/73
+// This method will work once g++ bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53431#c34 is fixed.
+#include <vtkTriangle.h>
+#pragma GCC diagnostic pop
 
 #endif //YADE_VTK
 
@@ -143,7 +144,10 @@ namespace yade { // Cannot have #include directive inside.
 #ifdef YADE_VTK
 class ImpFuncPB : public vtkImplicitFunction {
 public:
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 	vtkTypeMacro(ImpFuncPB, vtkImplicitFunction);
+#pragma GCC diagnostic pop
 	//void PrintSelf(ostream& os, vtkIndent indent);
 
 	// Create a new function
@@ -162,18 +166,22 @@ public:
 	Real              clumpMemberCentreZ;
 
 	// Evaluate function
-	Real FunctionValue(Real x[3]);
-	Real EvaluateFunction(Real x[3])
+	Real         FunctionValue(Real x[3]);
+	virtual Real EvaluateFunction(Real x[3]) override
 	{
 		//return this->vtkImplicitFunction::EvaluateFunction(x);
 		return FunctionValue(x);
 	};
 
-	Real EvaluateFunction(Real x, Real y, Real z) { return this->vtkImplicitFunction::EvaluateFunction(x, y, z); };
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+	// In newer coinor version this function becomes virtual and needs override keyword. In older ones it can't have thie keyword.
+	virtual Real EvaluateFunction(Real x, Real y, Real z) { return this->vtkImplicitFunction::EvaluateFunction(x, y, z); };
+#pragma GCC diagnostic pop
 
 	// Evaluate gradient for function
-	void EvaluateGradient(
-	        Real /*x*/[3], Real /*n*/[3]) {}; // FIXME - better use Vector3r here instead of Real[3] (here I only fix the unused parameter warning).
+	// FIXME - better use Vector3r here instead of Real[3] (here I only fix the unused parameter warning).
+	virtual void EvaluateGradient(Real /*x*/[3], Real /*n*/[3]) override {};
 
 	// If you need to set parameters, add methods here
 
@@ -194,7 +202,7 @@ class PotentialBlockVTKRecorder : public PeriodicEngine {
 public:
 	vtkSmartPointer<ImpFuncPB> function;
 
-	virtual void action(void);
+	virtual void action(void) override;
 	// clang-format off
 	  YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(PotentialBlockVTKRecorder,PeriodicEngine,"Engine recording potential blocks as surfaces into files with given periodicity.",
 		((string,fileName,,,"File prefix to save to"))

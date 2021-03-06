@@ -13,7 +13,7 @@ class PeriIsoCompressor : public BoundaryController {
 	Real     currUnbalanced;
 
 public:
-	void action() override;
+	virtual void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(PeriIsoCompressor,BoundaryController,"Compress/decompress cloud of spheres by controlling periodic cell size until it reaches prescribed average stress, then moving to next stress value in given stress series.",
 		((vector<Real>,stresses,,,"Stresses that should be reached, one after another"))

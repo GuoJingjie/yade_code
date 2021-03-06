@@ -13,6 +13,8 @@
 #include <cstdlib>
 #include <ctime>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <vtkAppendPolyData.h>
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
@@ -49,6 +51,7 @@
 #include <vtkVectorText.h>
 
 #include <vtkLineSource.h>
+#pragma GCC diagnostic pop
 
 namespace yade { // Cannot have #include directive inside.
 

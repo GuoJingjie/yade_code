@@ -3,7 +3,10 @@
 #ifdef YADE_MPI
 
 #include "FoamCoupling.hpp"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <mpi.h>
+#pragma GCC diagnostic pop
 
 #include <pkg/common/Box.hpp>
 #include <pkg/common/Facet.hpp>

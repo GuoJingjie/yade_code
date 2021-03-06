@@ -144,7 +144,7 @@ REGISTER_SERIALIZABLE(PolyhedraGeom);
  * Self-contained. */
 class Bo1_Polyhedra_Aabb : public BoundFunctor {
 public:
-	void go(const shared_ptr<Shape>& ig, shared_ptr<Bound>& bv, const Se3r& se3, const Body*) override;
+	virtual void go(const shared_ptr<Shape>& ig, shared_ptr<Bound>& bv, const Se3r& se3, const Body*) override;
 	FUNCTOR1D(Polyhedra);
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS(Bo1_Polyhedra_Aabb,BoundFunctor,"Create/update :yref:`Aabb` of a :yref:`Polyhedra`",
@@ -218,8 +218,8 @@ REGISTER_SERIALIZABLE(Gl1_Polyhedra);
 
 struct Gl1_PolyhedraGeom : public GlIGeomFunctor {
 	RENDERS(PolyhedraGeom);
-	void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool) override;
-	void draw(const shared_ptr<IGeom>&);
+	virtual void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool) override;
+	void         draw(const shared_ptr<IGeom>&);
 	// clang-format off
 		YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_PolyhedraGeom,GlIGeomFunctor,"Render :yref:`PolyhedraGeom` geometry.",
 		);

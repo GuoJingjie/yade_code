@@ -202,9 +202,9 @@ public:
 	virtual void initializeVolumes(FlowSolver& flow);
 	virtual void updateVolumes(FlowSolver& flow);
 	virtual void buildTriangulation(Real pZero, Solver& flow, bool oneTes = false);
-	virtual void initSolver(FlowSolver& flow);
-	virtual void action();
-	virtual void emulateAction()
+	virtual void initSolver(FlowSolver& flow) override;
+	virtual void action() override;
+	virtual void emulateAction() override
 	{
 		scene           = Omega::instance().getScene().get();
 		emulatingAction = true;

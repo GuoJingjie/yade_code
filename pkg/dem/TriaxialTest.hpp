@@ -61,7 +61,7 @@ private:
 
 public:
 	~TriaxialTest();
-	bool generate(string& message) override;
+	virtual bool generate(string& message) override;
 
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_INIT_CTOR_PY(

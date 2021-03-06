@@ -27,7 +27,7 @@ public:
 	MatrixXr             calculateStiffness(Real, Real, Vector3r, Vector3r, Vector3r, Vector3r);
 	MatrixXr             calculateMassMatrix(Real, Real);
 	virtual ~Lin4NodeTetra();
-	void initialize(void);
+	void         initialize(void);
 	virtual Real getVolume(void) override
 	{
 		NodeMap::iterator i0(localmap.begin());

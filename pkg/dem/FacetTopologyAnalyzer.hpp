@@ -64,7 +64,7 @@ class FacetTopologyAnalyzer : public GlobalEngine {
 	};
 
 public:
-	void action() override;
+	virtual void action() override;
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(FacetTopologyAnalyzer,GlobalEngine,"Initializer for filling adjacency geometry data for facets.\n\nCommon vertices and common edges are identified and mutual angle between facet faces is written to Facet instances. If facets don't move with respect to each other, this must be done only at the beginng.",

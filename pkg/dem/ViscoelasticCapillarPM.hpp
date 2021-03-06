@@ -113,7 +113,7 @@ typedef boost::unordered_map<Body::id_t, int>  mapBodyInt;
 typedef boost::unordered_map<Body::id_t, Real> mapBodyReal;
 class LiqControl : public PartialEngine {
 public:
-	virtual void action();
+	virtual void action() override;
 	void         addBodyMapInt(mapBodyInt& m, Body::id_t b);
 	void         addBodyMapReal(mapBodyReal& m, Body::id_t b, Real addV);
 	Real         vMax(shared_ptr<Body> b1, shared_ptr<Body> b2);

@@ -239,7 +239,7 @@ public:
 		}
 	}
 
-	vector<Body::id_t> probeBoundingVolume(const Bound&) override;
+	virtual vector<Body::id_t> probeBoundingVolume(const Bound&) override;
 
 	virtual void action() override;
 	// clang-format off

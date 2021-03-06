@@ -239,7 +239,8 @@ public:
 	   const bool&                    force,
 	   const shared_ptr<Interaction>& c) override;
 	virtual bool
-	goReverse(const shared_ptr<Shape>&, const shared_ptr<Shape>&, const State&, const State&, const Vector3r&, const bool&, const shared_ptr<Interaction>&) override
+	goReverse(const shared_ptr<Shape>&, const shared_ptr<Shape>&, const State&, const State&, const Vector3r&, const bool&, const shared_ptr<Interaction>&)
+	        override
 	{
 		throw std::logic_error("Ig2_Tetra_Tetra_TTetraSimpleGeom::goReverse called, but the functor is symmetric.");
 	}

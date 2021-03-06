@@ -160,7 +160,7 @@ Real find_cn_from_en(const Real& en, const Real& m, const Real& kn, const shared
 #ifdef YADE_DEFORM
 class DeformControl : public PartialEngine {
 public:
-	virtual void action();
+	virtual void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(DeformControl,PartialEngine,"This engine implements particle deformation with const. volume, see [Haustein2017]_ . ",
 		// Attrs

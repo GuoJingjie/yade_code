@@ -323,7 +323,7 @@ REGISTER_SERIALIZABLE(Law2_GridCoGridCoGeom_FrictPhys_CundallStrack);
 
 class Bo1_GridConnection_Aabb : public BoundFunctor {
 public:
-	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*) override;
+	virtual void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*) override;
 	FUNCTOR1D(GridConnection);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Bo1_GridConnection_Aabb,BoundFunctor,"Functor creating :yref:`Aabb` from a :yref:`GridConnection`.",

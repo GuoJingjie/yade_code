@@ -38,8 +38,8 @@ protected:
 			incrementMaxCurrentlyUsedClassIndexOfKin();
 		}
 	}
-	virtual void       incrementMaxCurrentlyUsedClassIndexOfKin() { _THROW_NOT_OVERRIDDEN; };
-	virtual int&       modifyClassIndex() { _THROW_NOT_OVERRIDDEN; };
+	virtual void incrementMaxCurrentlyUsedClassIndexOfKin() { _THROW_NOT_OVERRIDDEN; };
+	virtual int& modifyClassIndex() { _THROW_NOT_OVERRIDDEN; };
 
 public:
 	Indexable() {};
@@ -63,11 +63,12 @@ private:                                                                        
 		static int index = -1;                                                                                                                         \
 		return index;                                                                                                                                  \
 	}                                                                                                                                                      \
+                                                                                                                                                               \
 protected:                                                                                                                                                     \
 	virtual int& modifyClassIndex() override { return modifyClassIndexStatic(); }                                                                          \
                                                                                                                                                                \
 public:                                                                                                                                                        \
-	static const int& getClassIndexStatic() { return modifyClassIndexStatic(); }                                                                     \
+	static const int&  getClassIndexStatic() { return modifyClassIndexStatic(); }                                                                          \
 	virtual const int& getClassIndex() const override { return getClassIndexStatic(); }                                                                    \
 	virtual const int& getBaseClassIndex(int depth) const override                                                                                         \
 	{                                                                                                                                                      \
@@ -88,11 +89,12 @@ private:                                                                        
 		static int index = -1;                                                                                                                         \
 		return index;                                                                                                                                  \
 	}                                                                                                                                                      \
+                                                                                                                                                               \
 protected:                                                                                                                                                     \
 	virtual int& modifyClassIndex() override { return modifyClassIndexStatic(); }                                                                          \
                                                                                                                                                                \
 public:                                                                                                                                                        \
-	static const int& getClassIndexStatic() { return modifyClassIndexStatic(); }                                                                     \
+	static const int&  getClassIndexStatic() { return modifyClassIndexStatic(); }                                                                          \
 	virtual const int& getClassIndex() const override { return getClassIndexStatic(); }                                                                    \
 	virtual const int& getBaseClassIndex(int) const override                                                                                               \
 	{                                                                                                                                                      \
@@ -115,7 +117,7 @@ public:                                                                         
 		SomeClass* Indexable##SomeClass = 0;                                                                                                           \
 		Indexable##SomeClass            = dynamic_cast<SomeClass*>(const_cast<SomeClass*>(this));                                                      \
 		if (Indexable##SomeClass) { assert(Indexable##SomeClass); }                                                                                    \
-		return modifyMaxCurrentlyUsedIndexStatic();  /* returns const reference, so won't be modified actually */                                      \
+		return modifyMaxCurrentlyUsedIndexStatic(); /* returns const reference, so won't be modified actually */                                       \
 	}                                                                                                                                                      \
                                                                                                                                                                \
 protected:                                                                                                                                                     \

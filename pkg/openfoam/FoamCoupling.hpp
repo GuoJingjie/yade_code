@@ -15,9 +15,11 @@
 #include <core/Aabb.hpp>
 #include <core/Dispatching.hpp>
 #include <pkg/common/Sphere.hpp>
-#include <mpi.h>
 #include <vector>
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#include <mpi.h>
+#pragma GCC diagnostic pop
 
 namespace yade { // Cannot have #include directive inside.
 
@@ -91,7 +93,7 @@ public:
 		}
 		PyObject* getMyComm() {	return PyMPIComm_New(*myComm_p);}
 
-		virtual void action(); 
+		virtual void action() override;
 		virtual ~FoamCoupling(){}; 
 		
 		std::vector<int> bodyList;  // 'global' all Ids across all procs which are in coupling. Used in serial mode  coupling. 
@@ -206,7 +208,7 @@ REGISTER_SERIALIZABLE(FluidDomainBbox);
 
 class Bo1_FluidDomainBbox_Aabb : public BoundFunctor {
 public:
-	void go(const shared_ptr<Shape>&, shared_ptr<Bound>&, const Se3r& se3, const Body*);
+	virtual void go(const shared_ptr<Shape>&, shared_ptr<Bound>&, const Se3r& se3, const Body*) override;
 	FUNCTOR1D(FluidDomainBbox);
 	YADE_CLASS_BASE_DOC(Bo1_FluidDomainBbox_Aabb, BoundFunctor, "creates/updates an :yref:`Aabb` of a :yref:`FluidDomainBbox`.");
 };

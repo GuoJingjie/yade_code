@@ -10,19 +10,8 @@
 
 #ifdef YADE_VTK
 #include <lib/compatibility/VTKCompatibility.hpp>
-#include <vtkImplicitFunction.h>
-#include <vtkPolyData.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderer.h>
-#include <vtkXMLUnstructuredGridWriter.h>
-// https://codeyarns.com/2014/03/11/how-to-selectively-ignore-a-gcc-warning/
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpragmas"
-#pragma GCC diagnostic ignored "-Wcomment"
-// Code that generates this warning, Note: we cannot do this trick in yade. If we have a warning in yade, we have to fix it! See also https://gitlab.com/yade-dev/trunk/merge_requests/73
-// This method will work once g++ bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53431#c34 is fixed.
-#include <vtkTriangle.h>
-#pragma GCC diagnostic pop
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <vtkActor.h>
 #include <vtkAppendPolyData.h>
 #include <vtkCellArray.h>
@@ -30,8 +19,12 @@
 #include <vtkCylinderSource.h>
 #include <vtkExtractVOI.h>
 #include <vtkFloatArray.h>
+#include <vtkImplicitFunction.h>
 #include <vtkLinearExtrusionFilter.h>
+#include <vtkPolyData.h>
+#include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
+#include <vtkRenderer.h>
 #include <vtkSampleFunction.h>
 #include <vtkSmartPointer.h>
 #include <vtkStructuredPoints.h>
@@ -46,6 +39,13 @@
 #include <vtkXMLImageDataWriter.h>
 #include <vtkXMLStructuredGridWriter.h>
 #include <vtkXMLUnstructuredGridWriter.h>
+// https://codeyarns.com/2014/03/11/how-to-selectively-ignore-a-gcc-warning/
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wcomment"
+// Code that generates this warning, Note: we cannot do this trick in yade. If we have a warning in yade, we have to fix it! See also https://gitlab.com/yade-dev/trunk/merge_requests/73
+// This method will work once g++ bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53431#c34 is fixed.
+#include <vtkTriangle.h>
+#pragma GCC diagnostic pop
 
 #endif // YADE_VTK
 
@@ -54,7 +54,10 @@ namespace yade { // Cannot have #include directive inside.
 #ifdef YADE_VTK
 class ImpFunc : public vtkImplicitFunction {
 public:
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 	vtkTypeMacro(ImpFunc, vtkImplicitFunction);
+#pragma GCC diagnostic pop
 	//void PrintSelf(ostream& os, vtkIndent indent);
 
 	// Description
@@ -86,21 +89,25 @@ public:
 		return static_cast<double>(FunctionValue(r));
 	}
 #endif
-	virtual double EvaluateFunction(double x[3])
+	virtual double EvaluateFunction(double x[3]) override
 	{
 		//return this->vtkImplicitFunction::EvaluateFunction(x);
 		return FunctionValue(x);
 	};
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+	// In newer coinor version this function becomes virtual and needs override keyword. In older ones it can't have thie keyword.
 	virtual double EvaluateFunction(double x, double y, double z) { return this->vtkImplicitFunction::EvaluateFunction(x, y, z); };
+#pragma GCC diagnostic pop
 
 
 	// Description
 	// Evaluate gradient for function
-	virtual void EvaluateGradient(
-	        double /*x*/[3], double /*n*/[3]) {}; // FIXME - better use Vector3r here instead of Real[3] (here I only fix the unused parameter warning).
-	//                                                 ↑     you would need to change the virtual function signature in file vtkImplicitFunction.h in VTK library. Which of course cannot be done
-	//                                                       without sending a patch to VTK library authors. So better to use your own function instead of vtkImplicitFunction. / Janek
+	virtual void EvaluateGradient(double /*x*/[3], double /*n*/[3]) override {};
+	// FIXME - better use Vector3r here instead of Real[3] (here I only fix the unused parameter warning).
+	//         you would need to change the virtual function signature in file vtkImplicitFunction.h in VTK library. Which of course cannot be done
+	//         without sending a patch to VTK library authors. So better to use your own function instead of vtkImplicitFunction. / Janek
 
 	// If you need to set parameters, add methods here
 
@@ -159,7 +166,7 @@ class PotentialParticleVTKRecorder : public PeriodicEngine {
 public:
 	vtkSmartPointer<ImpFunc> function;
 
-	virtual void action(void);
+	virtual void action(void) override;
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(PotentialParticleVTKRecorder,PeriodicEngine,"Engine recording potential blocks as surfaces into files with given periodicity.",
 			((string,fileName,,,"File prefix to save to"))

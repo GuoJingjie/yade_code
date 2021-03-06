@@ -126,8 +126,8 @@ class CohesiveFrictionalContactLaw : public GlobalEngine {
 	shared_ptr<Law2_ScGeom6D_CohFrictPhys_CohesionMoment> functor;
 
 public:
-	long iter; /// used for checking if new iteration
-	void action() override;
+	long         iter; /// used for checking if new iteration
+	virtual void action() override;
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(CohesiveFrictionalContactLaw,GlobalEngine,"[DEPRECATED] Loop over interactions applying :yref:`Law2_ScGeom6D_CohFrictPhys_CohesionMoment` on all interactions.\n\n.. note::\n  Use :yref:`InteractionLoop` and :yref:`Law2_ScGeom6D_CohFrictPhys_CohesionMoment` instead of this class for performance reasons.",

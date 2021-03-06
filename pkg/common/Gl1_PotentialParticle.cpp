@@ -14,6 +14,8 @@
 #ifdef YADE_VTK
 
 #include <lib/compatibility/VTKCompatibility.hpp> // fix InsertNextTupleValue → InsertNextTuple name change (and others in the future)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <vtkActor2D.h>
 #include <vtkAppendPolyData.h>
 #include <vtkCamera.h>
@@ -52,6 +54,7 @@
 #include <vtkXMLPolyDataWriter.h>
 #include <vtkXMLStructuredGridWriter.h>
 #include <vtkXMLUnstructuredGridWriter.h>
+#pragma GCC diagnostic pop
 
 #endif // YADE_VTK
 

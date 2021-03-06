@@ -103,11 +103,11 @@ YADE_PLUGIN((FlowEngine_PeriodicInfo));
 
 class PeriodicFlowEngine : public FlowEngine_PeriodicInfo {
 public:
-	void triangulate(FlowSolver& flow);
+	void         triangulate(FlowSolver& flow);
 	virtual void buildTriangulation(Real pzero, FlowSolver& flow) override;
-	void initializeVolumes(FlowSolver& flow);
-	void updateVolumes(FlowSolver& flow);
-	Real volumeCell(CellHandle cell);
+	void         initializeVolumes(FlowSolver& flow);
+	void         updateVolumes(FlowSolver& flow);
+	Real         volumeCell(CellHandle cell);
 
 	Real        volumeCellSingleFictious(CellHandle cell);
 	inline void locateCell(CellHandle baseCell, unsigned int& index, int& baseIndex, FlowSolver& flow, unsigned int count = 0);

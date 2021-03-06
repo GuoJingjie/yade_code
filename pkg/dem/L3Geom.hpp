@@ -85,8 +85,8 @@ REGISTER_SERIALIZABLE(L6Geom);
 #ifdef YADE_OPENGL
 struct Gl1_L3Geom : public GlIGeomFunctor {
 	RENDERS(L3Geom);
-	void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool) override;
-	void draw(const shared_ptr<IGeom>&, bool isL6Geom = false, const Real& phiScale = 0);
+	virtual void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool) override;
+	void         draw(const shared_ptr<IGeom>&, bool isL6Geom = false, const Real& phiScale = 0);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_L3Geom,GlIGeomFunctor,"Render :yref:`L3Geom` geometry.",
 		((bool,axesLabels,false,,"Whether to display labels for local axes (x,y,z)"))
@@ -101,7 +101,7 @@ REGISTER_SERIALIZABLE(Gl1_L3Geom);
 
 struct Gl1_L6Geom : public Gl1_L3Geom {
 	RENDERS(L6Geom);
-	void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool) override;
+	virtual void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_L6Geom,Gl1_L3Geom,"Render :yref:`L6Geom` geometry.",
 		((Real,phiScale,1.,,"Scale local rotations (:yref:`phi<L6Geom.phi>` - :yref:`phi0<L6Geom.phi0>`). The default scale is to draw $\\pi$ rotation with length equal to minimum radius."))

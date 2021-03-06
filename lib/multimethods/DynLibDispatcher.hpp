@@ -211,7 +211,8 @@ public:
 		if (index2 == -1) std::cerr << "--------> Did you forget to call createIndex(); in constructor?\n";
 		assert(index2 != -1);
 
-		if (typeid(BaseClass1) == typeid(BaseClass2)) assert(base1->getMaxCurrentlyUsedClassIndexOfKin() == base2->getMaxCurrentlyUsedClassIndexOfKin());
+		if (typeid(BaseClass1) == typeid(BaseClass2))
+			assert(base1->getMaxCurrentlyUsedClassIndexOfKin() == base2->getMaxCurrentlyUsedClassIndexOfKin());
 
 		int maxCurrentIndex1 = base1->getMaxCurrentlyUsedClassIndexOfKin();
 		int maxCurrentIndex2 = base2->getMaxCurrentlyUsedClassIndexOfKin();

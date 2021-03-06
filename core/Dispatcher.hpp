@@ -80,7 +80,7 @@ Because we need literal functor and class names for registration in python, we p
 			add(f);                                                                                                                                \
 		postLoad(*this);                                                                                                                               \
 	}                                                                                                                                                      \
-	void pyHandleCustomCtorArgs(boost::python::tuple& t, boost::python::dict& /*d*/) override                                                              \
+	virtual void pyHandleCustomCtorArgs(boost::python::tuple& t, boost::python::dict& /*d*/) override                                                      \
 	{                                                                                                                                                      \
 		if (boost::python::len(t) == 0) return;                                                                                                        \
 		if (boost::python::len(t) != 1) throw invalid_argument("Exactly one list of " BOOST_PP_STRINGIZE(FunctorT) " must be given.");                 \
@@ -201,7 +201,7 @@ public:
 		return ret;
 	}
 
-	int getDimension() const override { return 1; }
+	virtual int getDimension() const override { return 1; }
 
 	virtual string getFunctorType() const override
 	{

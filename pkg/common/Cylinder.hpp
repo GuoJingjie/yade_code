@@ -259,7 +259,7 @@ class Gl1_ChainedCylinder : public GlShapeFunctor{
 
 class Bo1_Cylinder_Aabb : public BoundFunctor {
 public:
-	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*) override;
+	virtual void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*) override;
 	FUNCTOR1D(Cylinder);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Bo1_Cylinder_Aabb,BoundFunctor,"Functor creating :yref:`Aabb` from :yref:`Cylinder`.",
@@ -271,7 +271,7 @@ REGISTER_SERIALIZABLE(Bo1_Cylinder_Aabb);
 
 class Bo1_ChainedCylinder_Aabb : public BoundFunctor {
 public:
-	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*) override;
+	virtual void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*) override;
 	FUNCTOR1D(ChainedCylinder);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Bo1_ChainedCylinder_Aabb,BoundFunctor,"Functor creating :yref:`Aabb` from :yref:`ChainedCylinder`.",

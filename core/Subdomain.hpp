@@ -12,9 +12,12 @@
 #include <core/Scene.hpp>
 #include <core/Aabb.hpp>
 #include <core/Dispatching.hpp>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <mpi.h>
 #include <mpi4py/mpi4py.h> // for passing MPI_Comm from python to c++
-namespace yade {           // Cannot have #include directive inside.
+#pragma GCC diagnostic pop
+namespace yade { // Cannot have #include directive inside.
 
 using projectedBoundElem = std::pair<double, std::pair<int, int>>; // [dist, subdomain, bodyid] this seems to be faster than struct.
 
@@ -397,7 +400,7 @@ REGISTER_SERIALIZABLE(Subdomain);
 
 class Bo1_Subdomain_Aabb : public BoundFunctor {
 public:
-	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body*);
+	virtual void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body*) override;
 	FUNCTOR1D(Subdomain);
 	// clang-format off
 	YADE_CLASS_BASE_DOC(Bo1_Subdomain_Aabb,BoundFunctor,"Creates/updates an :yref:`Aabb` of a :yref:`Facet`.");

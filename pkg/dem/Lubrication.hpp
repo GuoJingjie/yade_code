@@ -119,7 +119,7 @@ REGISTER_SERIALIZABLE(Law2_ScGeom_VirtualLubricationPhys);
 
 class Law2_ScGeom_ImplicitLubricationPhys : public Law2_ScGeom_VirtualLubricationPhys {
 public:
-	bool go(shared_ptr<IGeom>& iGeom, shared_ptr<IPhys>& iPhys, Interaction* interaction) override;
+	virtual bool go(shared_ptr<IGeom>& iGeom, shared_ptr<IPhys>& iPhys, Interaction* interaction) override;
 	FUNCTOR2D(GenericSpheresContact, LubricationPhys);
 
 	// integration of the gap by implicit theta method, adaptative sub-stepping is used if solutionless, the normal force is returned

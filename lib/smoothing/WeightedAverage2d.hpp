@@ -138,10 +138,10 @@ template <typename T, typename Tvalue> struct WeightedAverage {
 	Real                               weightedSupportArea; // must be computed by derived class
 	WeightedAverage(const shared_ptr<GridContainer<T>>& _grid)
 	        : grid(_grid) {};
-	virtual Vector2r         getPosition(const T&)                      const = 0;
+	virtual Vector2r         getPosition(const T&) const                      = 0;
 	virtual Real             getWeight(const Vector2r& refPt, const T&) const = 0;
-	virtual Tvalue           getValue(const T&)                         const = 0;
-	virtual vector<Vector2i> filterCells(const Vector2r& refPt)         const = 0;
+	virtual Tvalue           getValue(const T&) const                         = 0;
+	virtual vector<Vector2i> filterCells(const Vector2r& refPt) const         = 0;
 	Tvalue                   computeAverage(const Vector2r& refPt)
 	{
 		Real sumValues, sumWeights;
@@ -204,9 +204,12 @@ struct SGDA_Scalar2d : public WeightedAverage<Scalar2d, Real> {
 		//return (1./(stDev*sqrt(2*M_PI)))*exp(-rSq/(2*stDev*stDev));
 		return boost::math::pdf(distrib, sqrt(rSq));
 	}
-	vector<Vector2i> filterCells(const Vector2r& refPt) const override { return WeightedAverage<Scalar2d, Real>::grid->circleFilter(refPt, stDev * relThreshold); }
-	Real             getValue(const Scalar2d& dp) const override { return (Real)dp.val; }
-	Vector2r         getPosition(const Scalar2d& dp) const override { return dp.pos; }
+	virtual vector<Vector2i> filterCells(const Vector2r& refPt) const override
+	{
+		return WeightedAverage<Scalar2d, Real>::grid->circleFilter(refPt, stDev * relThreshold);
+	}
+	virtual Real     getValue(const Scalar2d& dp) const override { return (Real)dp.val; }
+	virtual Vector2r getPosition(const Scalar2d& dp) const override { return dp.pos; }
 };
 
 /* simplified interface for python:

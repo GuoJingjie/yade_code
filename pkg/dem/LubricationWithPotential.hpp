@@ -38,7 +38,7 @@ REGISTER_SERIALIZABLE(GenericPotential);
 
 class Law2_ScGeom_PotentialLubricationPhys : public Law2_ScGeom_ImplicitLubricationPhys {
 public:
-	bool go(shared_ptr<IGeom>& iGeom, shared_ptr<IPhys>& iPhys, Interaction* interaction) override;
+	virtual bool go(shared_ptr<IGeom>& iGeom, shared_ptr<IPhys>& iPhys, Interaction* interaction) override;
 
 	/*
              * This function solve the lubricated interaction with provided potential. It set:

@@ -22,7 +22,7 @@ private:
 public:
 	virtual ~KinemCTDEngine() {};
 
-	void action() override;
+	virtual void action() override;
 	// 			;
 
 	// clang-format off
@@ -43,7 +43,7 @@ private:
 	int temoinfin;
 
 public:
-	void action() override;
+	virtual void action() override;
 
 protected:
 	// clang-format off
@@ -66,7 +66,7 @@ private:
 	        it_stop;
 
 public:
-	void action() override;
+	virtual void action() override;
 
 
 	// clang-format off
@@ -89,7 +89,7 @@ private:
 	int temoin, it_stop;
 
 public:
-	void action() override;
+	virtual void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(KinemCNSEngine,KinemSimpleShearBox,
 		"To apply a Constant Normal Stifness (CNS) shear for a parallelogram box (simple shear)\n\nThis engine, useable in simulations implying one deformable parallelepipedic box, allows one to translate horizontally the upper plate while the lateral ones rotate so that they always keep contact with the lower and upper walls. The upper plate can move not only horizontally but also vertically, so that the normal rigidity defined by DeltaF(upper plate)/DeltaU(upper plate) = constant (= :yref:`KnC<KinemCNSEngine.KnC>` defined by the user).\n\nThe movement is moreover controlled by the user via a :yref:`shearSpeed<KinemCNLEngine.shearSpeed>` which is the horizontal speed of the upper wall, and by a maximum value of horizontal displacement :yref:`gammalim<KinemCNLEngine.gammalim>` (of the upper plate), after which the shear stops.\n\n.. note::\n\t not only the positions of walls are updated but also their speeds, which is all but useless considering the fact that in the contact laws these velocities of bodies are used to compute values of tangential relative displacements.\n\n.. warning::\n\tBut, because of this last point, if you want to use later saves of simulations executed with this Engine, but without that stopMovement was executed, your boxes will keep their speeds => you will have to cancel them by hand in the .xml",

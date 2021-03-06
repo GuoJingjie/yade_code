@@ -1,8 +1,11 @@
 #pragma once
 #include <lib/compatibility/VTKCompatibility.hpp> // fix InsertNextTupleValue → InsertNextTuple name change (and others in the future)
 #include <pkg/common/PeriodicEngines.hpp>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <vtkQuad.h>
 #include <vtkSmartPointer.h>
+#pragma GCC diagnostic pop
 // multiblock features don't seem to exist prioor to 5.2
 #if (VTK_MAJOR_VERSION == 5 && VTK_MINOR_VERSION >= 2) || (VTK_MAJOR_VERSION > 5)
 #define YADE_VTK_MULTIBLOCK
@@ -50,7 +53,7 @@ public:
 		REC_PARTIALSAT,
 		REC_HERTZMINDLIN
 	};
-	virtual void action();
+	virtual void action() override;
 	void addWallVTK(vtkSmartPointer<vtkQuad>& boxes, vtkSmartPointer<vtkPointsReal>& boxesPos, Vector3r& W1, Vector3r& W2, Vector3r& W3, Vector3r& W4);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(VTKRecorder,PeriodicEngine,"Engine recording snapshots of simulation into series of \\*.vtu files, readable by VTK-based postprocessing programs such as Paraview. Both bodies (spheres and facets) and interactions can be recorded, with various vector/scalar quantities that are defined on them.\n\n:yref:`PeriodicEngine.initRun` is initialized to ``True`` automatically.",

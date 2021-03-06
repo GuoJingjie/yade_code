@@ -81,7 +81,7 @@ public:
 	{
 	}
 	virtual bool      operator()(const Vector3r& pt, Real pad) const override { return obj2pred(A)(pt, pad) || obj2pred(B)(pt, pad); }
-	virtual py::tuple aabb() const override 
+	virtual py::tuple aabb() const override
 	{
 		Vector3r minA, maxA, minB, maxB;
 		ttuple2vvec(obj2pred(A).aabb(), minA, maxA);
@@ -213,7 +213,7 @@ public:
 			mx = mx.cwiseMax(vertices[i]);
 		}
 	}
-	virtual bool operator()(const Vector3r& pt, Real pad = 0.) const override 
+	virtual bool operator()(const Vector3r& pt, Real pad = 0.) const override
 	{
 		for (int i = 0; i < 6; i++)
 			if ((pt - pts[i]).dot(n[i]) > -pad) return false;
@@ -236,7 +236,7 @@ public:
 		radius = _radius;
 		ht     = c12.norm();
 	}
-	bool operator()(const Vector3r& pt, Real pad = 0.) const override 
+	virtual bool operator()(const Vector3r& pt, Real pad = 0.) const override
 	{
 		Real u = (pt.dot(c12) - c1.dot(c12)) / (ht * ht);            // normalized coordinate along the c1--c2 axis
 		if ((u * ht < 0 + pad) || (u * ht > ht - pad)) return false; // out of cylinder along the axis
@@ -244,7 +244,7 @@ public:
 		if (axisDist > radius - pad) return false;
 		return true;
 	}
-	py::tuple aabb() const override
+	virtual py::tuple aabb() const override
 	{
 		// see http://www.gamedev.net/community/forums/topic.asp?topic_id=338522&forum_id=20&gforum_id=0 for the algorithm
 		const Vector3r& A(c1);
@@ -279,7 +279,7 @@ public:
 		c         = ht / (2 * uMax);
 	}
 	// WARN: this is not accurate, since padding is taken as perpendicular to the axis, not the the surface
-	bool operator()(const Vector3r& pt, Real pad = 0.) const override
+	virtual bool operator()(const Vector3r& pt, Real pad = 0.) const override
 	{
 		Real v = (pt.dot(c12) - c1.dot(c12)) / (ht * ht);            // normalized coordinate along the c1--c2 axis
 		if ((v * ht < 0 + pad) || (v * ht > ht - pad)) return false; // out of cylinder along the axis
@@ -289,7 +289,7 @@ public:
 		if (axisDist > rHere - pad) return false;
 		return true;
 	}
-	py::tuple aabb() const override
+	virtual py::tuple aabb() const override
 	{
 		// the lazy way
 		return inCylinder(c1, c2, R).aabb();
@@ -306,7 +306,7 @@ public:
 		c   = _c;
 		abc = _abc;
 	}
-	bool operator()(const Vector3r& pt, Real pad = 0.) const override
+	virtual bool operator()(const Vector3r& pt, Real pad = 0.) const override
 	{
 		//Define the ellipsoid X-coordinate of given Y and Z
 		Real x = sqrt((1 - pow((pt[1] - c[1]), 2) / ((abc[1] - pad) * (abc[1] - pad)) - pow((pt[2] - c[2]), 2) / ((abc[2] - pad) * (abc[2] - pad)))
@@ -318,7 +318,7 @@ public:
 		else
 			return false;
 	}
-	py::tuple aabb() const override
+	virtual py::tuple aabb() const override
 	{
 		const Vector3r& center(c);
 		const Vector3r& ABC(abc);
@@ -368,7 +368,7 @@ public:
 		aperture = _aperture;
 		// LOG_DEBUG("edge="<<edge<<", normal="<<normal<<", inside="<<inside<<", aperture="<<aperture);
 	}
-	bool operator()(const Vector3r& pt, Real pad = 0.) const override
+	virtual bool operator()(const Vector3r& pt, Real pad = 0.) const override
 	{
 		Real distUp = normal.dot(pt - c) - aperture / 2, distDown = -normal.dot(pt - c) - aperture / 2, distInPlane = -inside.dot(pt - c);
 		// LOG_DEBUG("pt="<<pt<<", distUp="<<distUp<<", distDown="<<distDown<<", distInPlane="<<distInPlane);
@@ -382,7 +382,7 @@ public:
 		return false;
 	}
 	// This predicate is not bounded, return infinities
-	py::tuple aabb() const override
+	virtual py::tuple aabb() const override
 	{
 		Real inf = std::numeric_limits<Real>::infinity();
 		return vvec2tuple(Vector3r(-inf, -inf, -inf), Vector3r(inf, inf, inf));
@@ -438,7 +438,7 @@ public:
 		if ((tree = gts_bb_tree_surface(surf)) == NULL) throw std::runtime_error("Could not create GTree.");
 	}
 	~inGtsSurface() { g_node_destroy(tree); }
-	py::tuple aabb() const override
+	virtual py::tuple aabb() const override
 	{
 		Real                          inf = std::numeric_limits<Real>::infinity();
 		std::pair<Vector3r, Vector3r> bb;
@@ -459,7 +459,7 @@ public:
 		gp.z = static_cast<gdouble>(pt[2]);
 		return (bool)gts_point_is_inside_surface(&gp, tree, is_open);
 	}
-	bool operator()(const Vector3r& pt, Real pad = 0.) const override
+	virtual bool operator()(const Vector3r& pt, Real pad = 0.) const override
 	{
 		if (noPad) {
 			if (pad != 0. && noPadWarned) LOG_WARN("inGtsSurface constructed with noPad; requested non-zero pad set to zero.");

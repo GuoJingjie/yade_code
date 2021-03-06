@@ -15,12 +15,15 @@
 #include <lib/multimethods/Indexable.hpp>
 #include <lib/serialization/Serializable.hpp>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <ClpSimplex.hpp>
 #include <ClpSimplexDual.hpp>
 #include <CoinBuild.hpp>
 #include <CoinHelperFunctions.hpp>
 #include <CoinModel.hpp>
 #include <CoinTime.hpp>
+#pragma GCC diagnostic pop
 #include <cassert>
 #include <iomanip>
 
@@ -44,7 +47,7 @@ protected:
 
 public:
 	~BlockGen();
-	bool                    generate(string&);
+	virtual bool            generate(string&) override;
 	template <class T> Real gen_normal_3(T& generator) { return generator(); }
 
 	struct Discontinuity {

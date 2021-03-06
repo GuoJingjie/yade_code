@@ -12,6 +12,8 @@ And use a macro in these places:
 #pragma once
 
 #ifdef YADE_VTK
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <vtkVersion.h>
 // fix InsertNextTupleValue → InsertNextTuple name change
 #if VTK_MAJOR_VERSION < 8
@@ -28,6 +30,7 @@ And use a macro in these places:
 #include <vtkPoints.h>
 #include <vtkSampleFunction.h>
 #include <vtkTransform.h>
+#pragma GCC diagnostic pop
 
 // these classes serve the purpose of converting Real to double without macros.
 // Maybe VTK in the future will support non-double types. If that will be needed,

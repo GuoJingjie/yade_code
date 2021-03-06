@@ -98,7 +98,7 @@ namespace CGT {
 		virtual void computeFacetForcesWithCache(bool onlyCache = false) override;
 		virtual void computePermeability() override;
 		virtual void gaussSeidel(Real dt = 0) override;
-		void displayStatistics();
+		void         displayStatistics();
 #ifdef EIGENSPARSE_LIB
 		//Eigen's sparse matrix for forces computation
 		// 		Eigen::SparseMatrix<Real> FIntegral;

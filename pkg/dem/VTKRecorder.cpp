@@ -1,6 +1,9 @@
 #ifdef YADE_VTK
 
 #include "VTKRecorder.hpp"
+// https://codeyarns.com/2014/03/11/how-to-selectively-ignore-a-gcc-warning/
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <lib/compatibility/VTKCompatibility.hpp> // fix InsertNextTupleValue → InsertNextTuple name change (and others in the future)
 
 #include <vtkCellArray.h>
@@ -17,21 +20,17 @@
 
 #ifdef YADE_MPI
 #include <core/Subdomain.hpp>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <mpi.h>
 #include <vtkXMLPMultiBlockDataWriter.h>
 #include <vtkXMLPPolyDataWriter.h>
 #include <vtkXMLPUnstructuredGridWriter.h>
+#pragma GCC diagnostic pop
 #endif
 
-// https://codeyarns.com/2014/03/11/how-to-selectively-ignore-a-gcc-warning/
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpragmas"
-#pragma GCC diagnostic ignored "-Wcomment"
 // Code that generates this warning, Note: we cannot do this trick in yade. If we have a warning in yade, we have to fix it! See also https://gitlab.com/yade-dev/trunk/merge_requests/73
 // This method will work once g++ bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53431#c34 is fixed.
-#include <vtkTriangle.h>
-#pragma GCC diagnostic pop
-
 #include <vtkHexahedron.h>
 #include <vtkLine.h>
 #include <vtkQuad.h>
@@ -39,6 +38,10 @@
 #include <vtkMultiBlockDataSet.h>
 #include <vtkXMLMultiBlockDataWriter.h>
 #endif
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wcomment"
+#include <vtkTriangle.h>
+#pragma GCC diagnostic pop
 
 #include <core/Scene.hpp>
 #include <pkg/common/Box.hpp>
