@@ -15,7 +15,10 @@ Singleton class managing OpenGL views,
 a renderer instance and timer to refresh the display.
 */
 class OpenGLManager : public QObject {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 	Q_OBJECT
+#pragma GCC diagnostic pop
 	DECLARE_LOGGER;
 
 public:
@@ -49,7 +52,7 @@ public slots:
 	virtual void createViewSlot();
 	virtual void resizeViewSlot(int id, int wd, int ht);
 	virtual void closeViewSlot(int id = -1);
-	virtual void timerEvent(QTimerEvent* event);
+	virtual void timerEvent(QTimerEvent* event) override;
 	virtual void startTimerSlot();
 	void         centerAllViews(const Real& suggestedRadius, const Vector3r& gridOrigin, const Vector3r& suggestedCenter, int gridDecimalPlaces);
 

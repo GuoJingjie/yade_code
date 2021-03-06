@@ -134,7 +134,7 @@ public:
 	void              registerPluginClasses(const char* fileAndClasses[]);
 	std::list<string> pluginClasses;
 
-	virtual string getClassName() const { return "Factorable"; };
+	virtual string getClassName() const { return "Factorable"; }; // FIXME - are they even inherited ????
 	virtual string getBaseClassName(int) const { return ""; };
 
 	FRIEND_SINGLETON(ClassFactory);

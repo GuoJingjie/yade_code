@@ -10,7 +10,7 @@ namespace yade { // Cannot have #include directive inside.
 /*! Homogeneous gravity field; applies gravity×mass force on all bodies. */
 class GravityEngine : public FieldApplier {
 public:
-	virtual void action();
+	virtual void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(GravityEngine,FieldApplier,"Engine applying constant acceleration to all bodies. DEPRECATED, use :yref:`Newton::gravity` unless you need energy tracking or selective gravity application using groupMask).",
 		((Vector3r,gravity,Vector3r::Zero(),,"Acceleration [kgms⁻²]"))
@@ -31,7 +31,7 @@ REGISTER_SERIALIZABLE(GravityEngine);
  */
 class CentralGravityEngine : public FieldApplier {
 public:
-	virtual void action();
+	virtual void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(CentralGravityEngine,FieldApplier,"Engine applying acceleration to all bodies, towards a central body.",
 		((Body::id_t,centralBody,Body::ID_NONE,,"The :yref:`body<Body>` towards which all other bodies are attracted."))
@@ -49,7 +49,7 @@ REGISTER_SERIALIZABLE(CentralGravityEngine);
  */
 class AxialGravityEngine : public FieldApplier {
 public:
-	virtual void action();
+	virtual void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(AxialGravityEngine,FieldApplier,"Apply acceleration (independent of distance) directed towards an axis.",
 		((Vector3r,axisPoint,Vector3r::Zero(),,"Point through which the axis is passing."))
@@ -64,7 +64,7 @@ REGISTER_SERIALIZABLE(AxialGravityEngine);
 class HdapsGravityEngine : public GravityEngine {
 public:
 	Vector2i     readSysfsFile(const std::string& name);
-	virtual void action();
+	virtual void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(HdapsGravityEngine,GravityEngine,"Read accelerometer in Thinkpad laptops (`HDAPS <http://en.wikipedia.org/wiki/Active_hard_drive_protection>`__ and accordingly set gravity within the simulation. This code draws from `hdaps-gl <https://sourceforge.net/project/showfiles.php?group_id=138242>`__ . See :ysrc:`scripts/test/hdaps.py` for an example.",
 		((string,hdapsDir,"/sys/devices/platform/hdaps",,"Hdaps directory; contains ``position`` (with accelerometer readings) and ``calibration`` (zero acceleration)."))

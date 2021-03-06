@@ -63,7 +63,7 @@ REGISTER_SERIALIZABLE(ViscElCapPhys);
 /// Convert material to interaction physics.
 class Ip2_ViscElCapMat_ViscElCapMat_ViscElCapPhys : public Ip2_ViscElMat_ViscElMat_ViscElPhys {
 public:
-	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction);
+	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC(Ip2_ViscElCapMat_ViscElCapMat_ViscElCapPhys,Ip2_ViscElMat_ViscElMat_ViscElPhys,"Convert 2 instances of :yref:`ViscElCapMat` to :yref:`ViscElCapPhys` using the rule of consecutive connection.");
 	// clang-format on
@@ -74,7 +74,7 @@ REGISTER_SERIALIZABLE(Ip2_ViscElCapMat_ViscElCapMat_ViscElCapPhys);
 /// Constitutive law
 class Law2_ScGeom_ViscElCapPhys_Basic : public LawFunctor {
 public:
-	virtual bool                                                             go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*);
+	virtual bool                                                             go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
 	static Real                                                              Willett_numeric_f(const ScGeom& geom, ViscElCapPhys& phys);
 	static Real                                                              Willett_analytic_f(const ScGeom& geom, ViscElCapPhys& phys);
 	static Real                                                              Weigert_f(const ScGeom& geom, ViscElCapPhys& phys);

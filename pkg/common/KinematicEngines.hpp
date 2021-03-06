@@ -10,7 +10,7 @@ namespace yade { // Cannot have #include directive inside.
 struct KinematicEngine;
 
 struct CombinedKinematicEngine : public PartialEngine {
-	virtual void action();
+	virtual void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(CombinedKinematicEngine,PartialEngine,"Engine for applying combined displacements on pre-defined bodies. Constructed using ``+`` operator on regular :yref:`KinematicEngines<KinematicEngine>`. The ``ids`` operated on are those of the first engine in the combination (assigned automatically).",
 		((vector<shared_ptr<KinematicEngine> >,comb,,,"Kinematic engines that will be combined by this one, run in the order given."))
@@ -29,7 +29,7 @@ struct CombinedKinematicEngine : public PartialEngine {
 REGISTER_SERIALIZABLE(CombinedKinematicEngine);
 
 struct KinematicEngine : public PartialEngine {
-	virtual void action();
+	virtual void action() override;
 	virtual void apply(const vector<Body::id_t>& /*ids*/)
 	{
 		LOG_ERROR("KinematicEngine::apply called, derived class (" << getClassName() << ") did not override that method?");
@@ -45,7 +45,7 @@ REGISTER_SERIALIZABLE(KinematicEngine);
 
 
 struct TranslationEngine : public KinematicEngine {
-	virtual void apply(const vector<Body::id_t>& ids);
+	virtual void apply(const vector<Body::id_t>& ids) override;
 	void         postLoad(TranslationEngine&) { translationAxis.normalize(); }
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(TranslationEngine,KinematicEngine,"Engine applying translation motion (by setting linear velocity) to subscribed bodies.",
@@ -57,7 +57,7 @@ struct TranslationEngine : public KinematicEngine {
 REGISTER_SERIALIZABLE(TranslationEngine);
 
 struct HarmonicMotionEngine : public KinematicEngine {
-	virtual void apply(const vector<Body::id_t>& ids);
+	virtual void apply(const vector<Body::id_t>& ids) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(HarmonicMotionEngine,KinematicEngine,"This engine implements the harmonic oscillation of bodies. http://en.wikipedia.org/wiki/Simple_harmonic_motion#Dynamics_of_simple_harmonic_motion",
 		((Vector3r,A,Vector3r::Zero(),,"Amplitude [m]"))
@@ -69,7 +69,7 @@ struct HarmonicMotionEngine : public KinematicEngine {
 REGISTER_SERIALIZABLE(HarmonicMotionEngine);
 
 struct RotationEngine : public KinematicEngine {
-	virtual void apply(const vector<Body::id_t>& ids);
+	virtual void apply(const vector<Body::id_t>& ids) override;
 	void         postLoad(RotationEngine&) { rotationAxis.normalize(); }
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(RotationEngine,KinematicEngine,"Engine applying rotation (by setting angular velocity) to subscribed bodies. If :yref:`rotateAroundZero<RotationEngine.rotateAroundZero>` is set, then each body is also displaced around :yref:`zeroPoint<RotationEngine.zeroPoint>`.",
@@ -83,7 +83,7 @@ struct RotationEngine : public KinematicEngine {
 REGISTER_SERIALIZABLE(RotationEngine);
 
 struct HelixEngine : public RotationEngine {
-	virtual void apply(const vector<Body::id_t>& ids);
+	virtual void apply(const vector<Body::id_t>& ids) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(HelixEngine,RotationEngine,"Engine applying both rotation and translation, along the same axis, whence the name HelixEngine",
 		((Real,linearVelocity,0,,"Linear velocity [m/s]"))
@@ -94,7 +94,7 @@ struct HelixEngine : public RotationEngine {
 REGISTER_SERIALIZABLE(HelixEngine);
 
 struct InterpolatingHelixEngine : public HelixEngine {
-	virtual void apply(const vector<Body::id_t>& ids);
+	virtual void apply(const vector<Body::id_t>& ids) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(InterpolatingHelixEngine,HelixEngine,"Engine applying spiral motion, finding current angular velocity by linearly interpolating in times and velocities and translation by using slope parameter. \n\n The interpolation assumes the margin value before the first time point and last value after the last time point. If wrap is specified, time will wrap around the last times value to the first one (note that no interpolation between last and first values is done).",
 		((vector<Real>,times,,,"List of time points at which velocities are given; must be increasing [s]"))
@@ -108,7 +108,7 @@ struct InterpolatingHelixEngine : public HelixEngine {
 REGISTER_SERIALIZABLE(InterpolatingHelixEngine);
 
 struct HarmonicRotationEngine : public RotationEngine {
-	virtual void apply(const vector<Body::id_t>& ids);
+	virtual void apply(const vector<Body::id_t>& ids) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(HarmonicRotationEngine,RotationEngine,"This engine implements the harmonic-rotation oscillation of bodies. http://en.wikipedia.org/wiki/Simple_harmonic_motion#Dynamics_of_simple_harmonic_motion ; please, set dynamic=False for bodies, droven by this engine, otherwise amplitude will be 2x more, than awaited.",
 		((Real,A,0,,"Amplitude [rad]"))
@@ -120,7 +120,7 @@ struct HarmonicRotationEngine : public RotationEngine {
 REGISTER_SERIALIZABLE(HarmonicRotationEngine);
 
 struct ServoPIDController : public TranslationEngine {
-	virtual void apply(const vector<Body::id_t>& ids);
+	virtual void apply(const vector<Body::id_t>& ids) override;
 	// clang-format off
   YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(ServoPIDController,TranslationEngine,"PIDController servo-engine for applying prescribed force on bodies. http://en.wikipedia.org/wiki/PID_controller",
     ((Real,maxVelocity,0.0,,"Velocity [m/s]"))
@@ -146,7 +146,7 @@ struct ServoPIDController : public TranslationEngine {
 REGISTER_SERIALIZABLE(ServoPIDController);
 
 struct BicyclePedalEngine : public KinematicEngine {
-	virtual void apply(const vector<Body::id_t>& ids);
+	virtual void apply(const vector<Body::id_t>& ids) override;
 	void         postLoad(BicyclePedalEngine&) { rotationAxis.normalize(); }
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(BicyclePedalEngine,KinematicEngine,"Engine applying the linear motion of ``bicycle pedal`` e.g. moving points around the axis without rotation",

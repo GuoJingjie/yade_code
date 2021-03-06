@@ -18,7 +18,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       cm1,
 	        const shared_ptr<Shape>&       cm2,
@@ -26,7 +26,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS(Ig2_Sphere_Sphere_ScGeom,IGeomFunctor,
@@ -60,7 +60,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       cm1,
 	        const shared_ptr<Shape>&       cm2,
@@ -68,7 +68,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS(Ig2_Sphere_Sphere_ScGeom6D,Ig2_Sphere_Sphere_ScGeom,"Create/update a :yref:`ScGeom6D` instance representing the geometry of a contact point between two :yref:`Spheres<Sphere>`, including relative rotations.",

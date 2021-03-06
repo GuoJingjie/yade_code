@@ -104,7 +104,7 @@ YADE_PLUGIN((FlowEngine_PeriodicInfo));
 class PeriodicFlowEngine : public FlowEngine_PeriodicInfo {
 public:
 	void triangulate(FlowSolver& flow);
-	void buildTriangulation(Real pzero, FlowSolver& flow);
+	virtual void buildTriangulation(Real pzero, FlowSolver& flow) override;
 	void initializeVolumes(FlowSolver& flow);
 	void updateVolumes(FlowSolver& flow);
 	Real volumeCell(CellHandle cell);
@@ -114,7 +114,7 @@ public:
 
 	virtual ~PeriodicFlowEngine();
 
-	virtual void action();
+	virtual void action() override;
 	//Cache precomputed values for pressure shifts, based on current hSize and pGrad
 	void preparePShifts();
 

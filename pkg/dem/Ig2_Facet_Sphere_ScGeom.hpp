@@ -25,7 +25,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       cm1,
 	        const shared_ptr<Shape>&       cm2,
@@ -33,7 +33,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ig2_Facet_Sphere_ScGeom,IGeomFunctor,"Create/update a :yref:`ScGeom` instance representing intersection of :yref:`Facet` and :yref:`Sphere`. The equivalent radius for the Facet (:yref:`ScGeom.refR1`) is chosen as twice the Sphere's one.",
 		((Real,shrinkFactor,((void)"no shrinking",0),,"The radius of the inscribed circle of the facet is decreased by the value of the sphere's radius multiplied by *shrinkFactor*. From the definition of contact point on the surface made of facets, the given surface is not continuous and becomes in effect surface covered with triangular tiles, with gap between the separate tiles equal to the sphere's radius multiplied by 2×*shrinkFactor*. If zero, no shrinking is done."))
@@ -55,7 +55,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       cm1,
 	        const shared_ptr<Shape>&       cm2,
@@ -63,7 +63,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC(Ig2_Facet_Sphere_ScGeom6D,Ig2_Facet_Sphere_ScGeom,"Create an interaction geometry :yref:`ScGeom6D` from :yref:`Facet` and :yref:`Sphere`, representing the Facet with a projected virtual sphere of same radius.")
 	// clang-format on
@@ -81,7 +81,7 @@ public:
 	   const State&                   state2,
 	   const Vector3r&                shift2,
 	   const bool&                    force,
-	   const shared_ptr<Interaction>& c);
+	   const shared_ptr<Interaction>& c) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ig2_Wall_Sphere_ScGeom,IGeomFunctor,"Create/update a :yref:`ScGeom` instance representing intersection of :yref:`Wall` and :yref:`Sphere`. The equivalent radius for the Wall (:yref:`ScGeom.refR1`) is chosen equal to the Sphere's radius.",
 		((bool,noRatch,true,,"Avoid granular ratcheting"))

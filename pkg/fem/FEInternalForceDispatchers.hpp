@@ -41,7 +41,7 @@ REGISTER_SERIALIZABLE(InternalForceFunctor);
 class InternalForceDispatcher : public Dispatcher2D<
                                         /* functor type*/ InternalForceFunctor> {
 public:
-	virtual void action();
+	virtual void action() override;
 	//	void explicitAction(const shared_ptr<DeformableElement>& deformableelement,const Body* bdy);
 
 	//virtual bool isActivated(){ return activated; }

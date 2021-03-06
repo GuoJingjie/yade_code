@@ -57,7 +57,7 @@ REGISTER_SERIALIZABLE(LubricationPhys);
 
 class Ip2_FrictMat_FrictMat_LubricationPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& material1, const shared_ptr<Material>& material2, const shared_ptr<Interaction>& interaction);
+	virtual void go(const shared_ptr<Material>& material1, const shared_ptr<Material>& material2, const shared_ptr<Interaction>& interaction) override;
 	FUNCTOR2D(FrictMat, FrictMat);
 	DECLARE_LOGGER;
 	// clang-format off
@@ -73,7 +73,7 @@ REGISTER_SERIALIZABLE(Ip2_FrictMat_FrictMat_LubricationPhys);
 
 class Law2_ScGeom_VirtualLubricationPhys : public LawFunctor {
 public:
-	virtual bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*)
+	virtual bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override
 	{
 		LOG_ERROR("Do not use this class. This is virtual one!");
 		return false;
@@ -119,7 +119,7 @@ REGISTER_SERIALIZABLE(Law2_ScGeom_VirtualLubricationPhys);
 
 class Law2_ScGeom_ImplicitLubricationPhys : public Law2_ScGeom_VirtualLubricationPhys {
 public:
-	bool go(shared_ptr<IGeom>& iGeom, shared_ptr<IPhys>& iPhys, Interaction* interaction);
+	bool go(shared_ptr<IGeom>& iGeom, shared_ptr<IPhys>& iPhys, Interaction* interaction) override;
 	FUNCTOR2D(GenericSpheresContact, LubricationPhys);
 
 	// integration of the gap by implicit theta method, adaptative sub-stepping is used if solutionless, the normal force is returned
@@ -171,7 +171,7 @@ REGISTER_SERIALIZABLE(Law2_ScGeom_ImplicitLubricationPhys);
 
 class LubricationPDFEngine : public PDFEngine {
 public:
-	virtual void action();
+	virtual void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(LubricationPDFEngine,PDFEngine,
 		 "Implementation of :yref:`PDFEngine` for Lubrication law",/*ATTRS*/

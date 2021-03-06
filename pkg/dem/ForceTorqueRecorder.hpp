@@ -6,7 +6,7 @@ namespace yade { // Cannot have #include directive inside.
 
 class ForceRecorder : public Recorder {
 public:
-	virtual void action();
+	virtual void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(ForceRecorder,Recorder,"Engine saves the resultant force affecting to bodies, listed in `ids`. For instance, can be useful for defining the forces, which affects to _buldozer_ during its work.",
 		((std::vector<int>,ids,,,"List of bodies whose state will be measured"))
@@ -22,7 +22,7 @@ REGISTER_SERIALIZABLE(ForceRecorder);
 
 class TorqueRecorder : public Recorder {
 public:
-	virtual void action();
+	virtual void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(TorqueRecorder,Recorder,"Engine saves the total torque according to the given axis and ZeroPoint, the force is taken from bodies, listed in `ids`  For instance, can be useful for defining the torque, which affects on ball mill during its work.",
 		((std::vector<int>,ids,,,"List of bodies whose state will be measured"))

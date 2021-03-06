@@ -137,7 +137,7 @@ public:
 
 #define DEFINE_FUNCTOR_ORDER_2D(class1, class2)                                                                                                                \
 public:                                                                                                                                                        \
-	virtual std::string checkOrder() const { return (string(#class1) + " " + string(#class2)); }
+	virtual std::string checkOrder() const override { return (string(#class1) + " " + string(#class2)); }
 
 
 }; // namespace yade

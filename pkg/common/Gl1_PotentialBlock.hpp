@@ -68,7 +68,7 @@ namespace yade { // Cannot have #include directive inside.
 /* Draw PotentialBlocks using OpenGL */
 class Gl1_PotentialBlock : public GlShapeFunctor {
 public:
-	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&);
+	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
 	// clang-format off
 			YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_PotentialBlock,GlShapeFunctor,"Renders :yref:`PotentialBlock` object",
 				((bool,wire,false,,"Only show wireframe"))

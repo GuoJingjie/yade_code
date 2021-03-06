@@ -15,7 +15,7 @@ namespace yade { // Cannot have #include directive inside.
 
 class Bo1_Node_Aabb : public BoundFunctor {
 public:
-	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*);
+	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*) override;
 	FUNCTOR1D(Node);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Bo1_Node_Aabb,BoundFunctor,"Functor creating :yref:`Aabb` from :yref:`Node`.",

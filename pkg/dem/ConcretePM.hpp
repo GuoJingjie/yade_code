@@ -99,8 +99,8 @@ REGISTER_SERIALIZABLE(CpmState);
 /* This class holds information associated with each body */
 class CpmMat : public FrictMat {
 public:
-	virtual shared_ptr<State> newAssocState() const { return shared_ptr<State>(new CpmState); }
-	virtual bool              stateTypeOk(State* s) const { return (bool)dynamic_cast<CpmState*>(s); }
+	virtual shared_ptr<State> newAssocState() const override { return shared_ptr<State>(new CpmState); }
+	virtual bool              stateTypeOk(State* s) const override { return (bool)dynamic_cast<CpmState*>(s); }
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CpmMat,FrictMat,"Concrete material, for use with other Cpm classes. \n\n.. note::\n\n\t:yref:`Density<Material::density>` is initialized to 4800 kgm⁻³automatically, which gives approximate 2800 kgm⁻³ on 0.5 density packing.\n\nConcrete Particle Model (CPM)\n\n\n:yref:`CpmMat` is particle material, :yref:`Ip2_CpmMat_CpmMat_CpmPhys` averages two particles' materials, creating :yref:`CpmPhys`, which is then used in interaction resultion by :yref:`Law2_ScGeom_CpmPhys_Cpm`. :yref:`CpmState` is associated to :yref:`CpmMat` and keeps state defined on particles rather than interactions (such as number of completely damaged interactions).\n\nThe model is contained in externally defined macro CPM_MATERIAL_MODEL, which features damage in tension, plasticity in shear and compression and rate-dependence. For commercial reasons, rate-dependence and compression-plasticity is not present in reduced version of the model, used when CPM_MATERIAL_MODEL is not defined. The full model will be described in detail in my (Václav Šmilauer) thesis along with calibration procedures (rigidity, poisson's ratio, compressive/tensile strength ratio, fracture energy, behavior under confinement, rate-dependent behavior).\n\nEven the public model is useful enough to run simulation on concrete samples, such as :ysrc:`uniaxial tension-compression test<examples/concrete/uniax.py>`.",
@@ -225,7 +225,7 @@ REGISTER_SERIALIZABLE(CpmPhys);
  * */
 class Ip2_CpmMat_CpmMat_CpmPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction);
+	virtual void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction) override;
 	FUNCTOR2D(CpmMat, CpmMat);
 	DECLARE_LOGGER;
 	// clang-format off
@@ -240,7 +240,7 @@ REGISTER_SERIALIZABLE(Ip2_CpmMat_CpmMat_CpmPhys);
 
 class Ip2_FrictMat_CpmMat_FrictPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction);
+	virtual void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction) override;
 	FUNCTOR2D(FrictMat, CpmMat);
 	DECLARE_LOGGER;
 	// clang-format off
@@ -260,7 +260,7 @@ REGISTER_SERIALIZABLE(Ip2_FrictMat_CpmMat_FrictPhys);
 
 class Law2_ScGeom_CpmPhys_Cpm : public LawFunctor {
 public:
-	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I);
+	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	Real         elasticEnergy();
 
 	Real yieldSigmaTMagnitude(Real /*sigmaN*/, Real /*omega*/, Real /*undamagedCohesion*/, Real /*tanFrictionAngle*/)
@@ -303,7 +303,7 @@ REGISTER_SERIALIZABLE(Law2_ScGeom_CpmPhys_Cpm);
 #ifdef YADE_OPENGL
 class Gl1_CpmPhys : public GlIPhysFunctor {
 public:
-	virtual void go(const shared_ptr<IPhys>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool wireFrame);
+	virtual void go(const shared_ptr<IPhys>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool wireFrame) override;
 	virtual ~Gl1_CpmPhys() {};
 	RENDERS(CpmPhys);
 	DECLARE_LOGGER;
@@ -348,7 +348,7 @@ class CpmStateUpdater : public PeriodicEngine {
 	};
 
 public:
-	virtual void action() { update(scene); }
+	virtual void action() override { update(scene); }
 	void         update(Scene* rb = NULL);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CpmStateUpdater,PeriodicEngine,"Update :yref:`CpmState` of bodies based on state variables in :yref:`CpmPhys` of interactions with this bod. In particular, bodies' colors and :yref:`CpmState::normDmg` depending on average :yref:`damage<CpmPhys::omega>` of their interactions and number of interactions that were already fully broken and have disappeared is updated. This engine contains its own loop (2 loops, more precisely) over all bodies and should be run periodically to update colors during the simulation, if desired.",

@@ -116,7 +116,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       cm1,
 	        const shared_ptr<Shape>&       cm2,
@@ -124,7 +124,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ig2_Sphere_ChainedCylinder_CylScGeom,IGeomFunctor,"Create/update a :yref:`ScGeom` instance representing intersection of two :yref:`Spheres<Sphere>`.",
 		((Real,interactionDetectionFactor,1,,"Enlarge both radii by this factor (if >1), to permit creation of distant interactions."))
@@ -144,7 +144,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       cm1,
 	        const shared_ptr<Shape>&       cm2,
@@ -152,7 +152,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 
 	// clang-format off
     YADE_CLASS_BASE_DOC_ATTRS(Ig2_Sphere_ChainedCylinder_CylScGeom6D,Ig2_Sphere_ChainedCylinder_CylScGeom,"Create/update a :yref:`ScGeom6D` instance representing the geometry of a contact point between two :yref:`Spheres<Sphere>`, including relative rotations.",
@@ -177,7 +177,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       cm1,
 	        const shared_ptr<Shape>&       cm2,
@@ -185,7 +185,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ig2_ChainedCylinder_ChainedCylinder_ScGeom6D,IGeomFunctor,"Create/update a :yref:`ScGeom` instance representing connexion between :yref:`chained cylinders<ChainedCylinder>`.",
 		((Real,interactionDetectionFactor,1,,"Enlarge both radii by this factor (if >1), to permit creation of distant interactions."))
@@ -208,7 +208,7 @@ private:
 	void       initGlLists(void);
 
 public:
-	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&);
+	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
 	void         out(Quaternionr q);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_Cylinder,GlShapeFunctor,"Renders :yref:`Cylinder` object",
@@ -225,7 +225,7 @@ public:
 //!This doesn't work : the 1D dispatcher will pick Gl1_Cylinder to display ChainedCylinders, workaround : add shift to cylinders (should be a variable of chained cylinders only).
 class Gl1_ChainedCylinder : public Gl1_Cylinder {
 public:
-	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>& state, bool, const GLViewInfo&);
+	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>& state, bool, const GLViewInfo&) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC(Gl1_ChainedCylinder,Gl1_Cylinder,"Renders :yref:`ChainedCylinder` object including a shift for compensating flexion."
 	);
@@ -259,7 +259,7 @@ class Gl1_ChainedCylinder : public GlShapeFunctor{
 
 class Bo1_Cylinder_Aabb : public BoundFunctor {
 public:
-	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*);
+	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*) override;
 	FUNCTOR1D(Cylinder);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Bo1_Cylinder_Aabb,BoundFunctor,"Functor creating :yref:`Aabb` from :yref:`Cylinder`.",
@@ -271,7 +271,7 @@ REGISTER_SERIALIZABLE(Bo1_Cylinder_Aabb);
 
 class Bo1_ChainedCylinder_Aabb : public BoundFunctor {
 public:
-	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*);
+	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*) override;
 	FUNCTOR1D(ChainedCylinder);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Bo1_ChainedCylinder_Aabb,BoundFunctor,"Functor creating :yref:`Aabb` from :yref:`ChainedCylinder`.",
@@ -285,7 +285,7 @@ REGISTER_SERIALIZABLE(Bo1_ChainedCylinder_Aabb);
 class Law2_CylScGeom_FrictPhys_CundallStrack : public LawFunctor {
 public:
 	//OpenMPAccumulator<Real> plasticDissipation;
-	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I);
+	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	//Real elasticEnergy ();
 	//Real getPlasticDissipation();
 	//void initPlasticDissipation(Real initVal=0);
@@ -308,7 +308,7 @@ REGISTER_SERIALIZABLE(Law2_CylScGeom_FrictPhys_CundallStrack);
 class Law2_CylScGeom6D_CohFrictPhys_CohesionMoment : public LawFunctor {
 public:
 	//OpenMPAccumulator<Real> plasticDissipation;
-	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I);
+	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	//Real elasticEnergy ();
 	//Real getPlasticDissipation();
 	//void initPlasticDissipation(Real initVal=0);
@@ -335,7 +335,7 @@ REGISTER_SERIALIZABLE(Law2_CylScGeom6D_CohFrictPhys_CohesionMoment);
 class Law2_ChCylGeom6D_CohFrictPhys_CohesionMoment : public LawFunctor {
 public:
 	//OpenMPAccumulator<Real> plasticDissipation;
-	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I);
+	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	// clang-format off
     YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(Law2_ChCylGeom6D_CohFrictPhys_CohesionMoment,LawFunctor,"Law for linear compression, and Mohr-Coulomb plasticity surface without cohesion.\nThis law implements the classical linear elastic-plastic law from [CundallStrack1979]_ (see also [Pfc3dManual30]_). The normal force is (with the convention of positive tensile forces) $F_n=\\min(k_n u_n, 0)$. The shear force is $F_s=k_s u_s$, the plasticity condition defines the maximum value of the shear force : $F_s^{\\max}=F_n\\tan(\\phi)$, with $\\phi$ the friction angle.\n\n.. note::\n This law is well tested in the context of triaxial simulation, and has been used for a number of published results (see e.g. [Scholtes2009b]_ and other papers from the same authors). It is generalised by :yref:`Law2_ScGeom6D_CohFrictPhys_CohesionMoment`, which adds cohesion and moments at contact.",
                                       ((bool,neverErase,false,,"Keep interactions even if particles go away from each other (only in case another constitutive law is in the scene, e.g. :yref:`Law2_ScGeom_CapillaryPhys_Capillarity`)"))

@@ -60,7 +60,7 @@ REGISTER_SERIALIZABLE(BubblePhys);
 /********************** Ip2_BubbleMat_BubbleMat_BubblePhys ****************************/
 class Ip2_BubbleMat_BubbleMat_BubblePhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& m1, const shared_ptr<Material>& m2, const shared_ptr<Interaction>& interaction);
+	virtual void go(const shared_ptr<Material>& m1, const shared_ptr<Material>& m2, const shared_ptr<Interaction>& interaction) override;
 	FUNCTOR2D(BubbleMat, BubbleMat);
 	DECLARE_LOGGER;
 	// clang-format off
@@ -77,7 +77,7 @@ private:
 	Real c1; //Coeff used for many contacts
 
 public:
-	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* interaction);
+	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* interaction) override;
 	FUNCTOR2D(GenericSpheresContact, BubblePhys);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(Law2_ScGeom_BubblePhys_Bubble,LawFunctor,"Constitutive law for Bubble model.",

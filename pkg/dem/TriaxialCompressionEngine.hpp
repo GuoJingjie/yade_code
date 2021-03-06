@@ -82,7 +82,7 @@ public:
 	bool firstRun;
 	int  FinalIterationPhase1, Iteration /*, testEquilibriumInterval*/; //FIXME : what is that?
 
-	virtual void action();
+	virtual void action() override;
 	void         updateParameters();
 
 	///Change physical properties of interactions and/or bodies in the middle of a simulation (change only friction for the moment, complete this function to set cohesion and others before compression test)

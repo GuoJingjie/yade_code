@@ -15,7 +15,7 @@ namespace yade { // Cannot have #include directive inside.
 
 class TorqueEngine : public PartialEngine {
 public:
-	virtual void action()
+	virtual void action() override
 	{
 		FOREACH(const Body::id_t id, ids)
 		{

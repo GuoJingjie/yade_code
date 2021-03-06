@@ -21,7 +21,7 @@ class Scene;
 
 class Functor : public Serializable {
 public:
-	virtual vector<std::string> getFunctorTypes() { throw; }
+	virtual vector<std::string> getFunctorTypes() const { throw; }
 	shared_ptr<TimingDeltas>    timingDeltas;
 	//! updated before every dispatch loop by the dispatcher; DO NOT ABUSE access to scene, except for getting global variables like scene->dt.
 	Scene* scene;
@@ -48,13 +48,13 @@ public:
 	typedef _ArgumentTypes ArgumentTypes;
 #define FUNCTOR1D(type1)                                                                                                                                       \
 public:                                                                                                                                                        \
-	std::string         get1DFunctorType1(void) { return string(#type1); }                                                                                 \
-	int                 checkArgTypes(const shared_ptr<DispatchType1>& arg1) { return (bool)YADE_PTR_DYN_CAST<type1>(arg1) ? 1 : 0; }
-	virtual std::string get1DFunctorType1(void)
+	std::string         get1DFunctorType1(void) const override { return string(#type1); }                                                                  \
+	int                 checkArgTypes(const shared_ptr<DispatchType1>& arg1) const { return (bool)YADE_PTR_DYN_CAST<type1>(arg1) ? 1 : 0; }
+	virtual std::string get1DFunctorType1(void) const
 	{
 		throw runtime_error("Class " + this->getClassName() + " did not use FUNCTOR1D to declare its argument type?");
 	}
-	virtual vector<string> getFunctorTypes(void)
+	virtual vector<string> getFunctorTypes(void) const override
 	{
 		vector<string> ret;
 		ret.push_back(get1DFunctorType1());
@@ -75,23 +75,23 @@ public:
 	typedef _ArgumentTypes ArgumentTypes;
 #define FUNCTOR2D(type1, type2)                                                                                                                                \
 public:                                                                                                                                                        \
-	std::string get2DFunctorType1(void) { return string(#type1); };                                                                                        \
-	std::string get2DFunctorType2(void) { return string(#type2); };                                                                                        \
-	int         checkArgTypes(const shared_ptr<DispatchType1>& arg1, const shared_ptr<DispatchType2>& arg2)                                                \
+	std::string get2DFunctorType1(void) const override { return string(#type1); };                                                                         \
+	std::string get2DFunctorType2(void) const override { return string(#type2); };                                                                         \
+	int         checkArgTypes(const shared_ptr<DispatchType1>& arg1, const shared_ptr<DispatchType2>& arg2) const                                          \
 	{                                                                                                                                                      \
 		if (YADE_PTR_DYN_CAST<type1>(arg1) && YADE_PTR_DYN_CAST<type2>(arg2)) return 1;                                                                \
 		if (YADE_PTR_DYN_CAST<type1>(arg2) && YADE_PTR_DYN_CAST<type2>(arg1)) return -1;                                                               \
 		return 0;                                                                                                                                      \
 	}
-	virtual std::string get2DFunctorType1(void)
+	virtual std::string get2DFunctorType1(void) const
 	{
 		throw logic_error("Class " + this->getClassName() + " did not use FUNCTOR2D to declare its argument types?");
 	}
-	virtual std::string get2DFunctorType2(void)
+	virtual std::string get2DFunctorType2(void) const
 	{
 		throw logic_error("Class " + this->getClassName() + " did not use FUNCTOR2D to declare its argument types?");
 	}
-	virtual vector<string> getFunctorTypes()
+	virtual vector<string> getFunctorTypes() const override
 	{
 		vector<string> ret;
 		ret.push_back(get2DFunctorType1());

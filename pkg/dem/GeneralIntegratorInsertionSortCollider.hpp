@@ -27,9 +27,9 @@ class GeneralIntegratorInsertionSortCollider : public InsertionSortCollider {
 	// if False, no type of striding is used
 
 public:
-	virtual bool isActivated(); //override this function to change NewtonIntegrator dependency.
+	virtual bool isActivated() override; //override this function to change NewtonIntegrator dependency.
 
-	virtual void action(); //override this function to change behaviour with the NewtonIntegrator dependency.
+	virtual void action() override; //override this function to change behaviour with the NewtonIntegrator dependency.
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC(GeneralIntegratorInsertionSortCollider,InsertionSortCollider," This class is the adaptive version of the InsertionSortCollider and changes the NewtonIntegrator dependency of the collider algorithms to the Integrator interface which is more general.");

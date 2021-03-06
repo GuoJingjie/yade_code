@@ -27,7 +27,7 @@ class SimpleShear : public FileGenerator {
 
 public:
 	~SimpleShear();
-	bool generate(std::string& message);
+	virtual bool generate(std::string& message) override;
 
 
 	// clang-format off

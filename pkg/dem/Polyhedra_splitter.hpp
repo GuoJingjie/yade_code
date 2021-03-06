@@ -15,7 +15,7 @@ namespace yade { // Cannot have #include directive inside.
 /* Polyhedra Splitter */
 class PolyhedraSplitter : public PeriodicEngine {
 public:
-	virtual void action();
+	virtual void action() override;
 	Real         getStrength(const Real& volume, const Real& strength) const;
 	void         Symmetrize(Matrix3r& bStress);
 
@@ -34,7 +34,7 @@ REGISTER_SERIALIZABLE(PolyhedraSplitter);
 
 class SplitPolyTauMax : public PolyhedraSplitter {
 public:
-	virtual void action();
+	virtual void action() override;
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(
@@ -51,7 +51,7 @@ REGISTER_SERIALIZABLE(SplitPolyTauMax);
 
 class SplitPolyMohrCoulomb : public PolyhedraSplitter {
 public:
-	virtual void action();
+	virtual void action() override;
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(

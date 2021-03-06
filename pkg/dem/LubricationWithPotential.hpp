@@ -38,7 +38,7 @@ REGISTER_SERIALIZABLE(GenericPotential);
 
 class Law2_ScGeom_PotentialLubricationPhys : public Law2_ScGeom_ImplicitLubricationPhys {
 public:
-	bool go(shared_ptr<IGeom>& iGeom, shared_ptr<IPhys>& iPhys, Interaction* interaction);
+	bool go(shared_ptr<IGeom>& iGeom, shared_ptr<IPhys>& iPhys, Interaction* interaction) override;
 
 	/*
              * This function solve the lubricated interaction with provided potential. It set:
@@ -71,8 +71,8 @@ REGISTER_SERIALIZABLE(Law2_ScGeom_PotentialLubricationPhys);
 
 class CundallStrackPotential : public GenericPotential {
 public:
-	Real potential(Real const& u, LubricationPhys const& phys) const;
-	void applyPotential(Real const& u, LubricationPhys& phys, Vector3r const& n);
+	virtual Real potential(Real const& u, LubricationPhys const& phys) const override;
+	virtual void applyPotential(Real const& u, LubricationPhys& phys, Vector3r const& n) override;
 	// clang-format off
         YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(CundallStrackPotential,GenericPotential,
 		"Potential with only Cundall-and-Strack-like contact.",
@@ -88,8 +88,8 @@ REGISTER_SERIALIZABLE(CundallStrackPotential)
 
 class CundallStrackAdhesivePotential : public CundallStrackPotential {
 public:
-	Real potential(Real const& u, LubricationPhys const& phys) const;
-	void applyPotential(Real const& u, LubricationPhys& phys, Vector3r const& n);
+	virtual Real potential(Real const& u, LubricationPhys const& phys) const override;
+	virtual void applyPotential(Real const& u, LubricationPhys& phys, Vector3r const& n) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(CundallStrackAdhesivePotential, CundallStrackPotential,
 		"CundallStrack model with adhesive part. Contact is created when $u/a-\\varepsilon < 0$ and released when $u/a-\\varepsilon > l_{adh}$, where $l_{adh} = f_{adh}/k_n$. This lead to an hysteretic attractive part.",
@@ -105,8 +105,8 @@ REGISTER_SERIALIZABLE(CundallStrackAdhesivePotential)
 
 class LinExponentialPotential : public CundallStrackPotential {
 public:
-	Real potential(Real const& u, LubricationPhys const& phys) const;
-	void applyPotential(Real const& u, LubricationPhys& phys, Vector3r const& n);
+	virtual Real potential(Real const& u, LubricationPhys const& phys) const override;
+	virtual void applyPotential(Real const& u, LubricationPhys& phys, Vector3r const& n) override;
 
 	Real LinExpPotential(Real const& u_) const;
 	void setParameters(Real const& x_0, Real const& xe, Real const& k);

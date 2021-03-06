@@ -26,7 +26,7 @@ public:
 	   const State&                   state2,
 	   const Vector3r&                shift2,
 	   const bool&                    force,
-	   const shared_ptr<Interaction>& c);
+	   const shared_ptr<Interaction>& c) override;
 
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       cm1,
@@ -35,7 +35,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ig2_Box_Sphere_ScGeom,IGeomFunctor,"Create an interaction geometry :yref:`ScGeom` from :yref:`Box` and :yref:`Sphere`, representing the box with a projected virtual sphere of same radius.",
@@ -55,7 +55,7 @@ public:
 	   const State&                   state2,
 	   const Vector3r&                shift2,
 	   const bool&                    force,
-	   const shared_ptr<Interaction>& c);
+	   const shared_ptr<Interaction>& c) override;
 
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       cm1,
@@ -64,7 +64,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC(Ig2_Box_Sphere_ScGeom6D,Ig2_Box_Sphere_ScGeom,"Create an interaction geometry :yref:`ScGeom6D` from :yref:`Box` and :yref:`Sphere`, representing the box with a projected virtual sphere of same radius.")

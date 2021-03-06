@@ -94,7 +94,7 @@ REGISTER_SERIALIZABLE(TTetraSimpleGeom);
  * Self-contained. */
 class Bo1_Tetra_Aabb : public BoundFunctor {
 public:
-	void go(const shared_ptr<Shape>& ig, shared_ptr<Bound>& bv, const Se3r& se3, const Body*);
+	virtual void go(const shared_ptr<Shape>& ig, shared_ptr<Bound>& bv, const Se3r& se3, const Body*) override;
 	FUNCTOR1D(Tetra);
 	// clang-format off
 	YADE_CLASS_BASE_DOC(Bo1_Tetra_Aabb,BoundFunctor,"Create/update :yref:`Aabb` of a :yref:`Tetra`");
@@ -106,7 +106,7 @@ REGISTER_SERIALIZABLE(Bo1_Tetra_Aabb);
 /*! Draw Tetra using OpenGL */
 class Gl1_Tetra : public GlShapeFunctor {
 public:
-	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&);
+	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
 	// clang-format off
 		YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_Tetra,GlShapeFunctor,"Renders :yref:`Tetra` object",
 			((bool,wire,true,,"TODO"))
@@ -121,7 +121,7 @@ REGISTER_SERIALIZABLE(Gl1_Tetra);
 
 class TetraVolumetricLaw : public GlobalEngine {
 public:
-	void action();
+	virtual void action() override;
 	DECLARE_LOGGER;
 	// clang-format off
 	YADE_CLASS_BASE_DOC(TetraVolumetricLaw,GlobalEngine,"Calculate physical response of 2 :yref:`tetrahedra<Tetra>` in interaction, based on penetration configuration given by :yref:`TTetraGeom`.");
@@ -142,7 +142,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>& /*cm1*/,
 	        const shared_ptr<Shape>& /*cm2*/,
@@ -150,7 +150,7 @@ public:
 	        const State& /*state2*/,
 	        const Vector3r& /*shift2*/,
 	        const bool& /*force*/,
-	        const shared_ptr<Interaction>& /*c*/)
+	        const shared_ptr<Interaction>& /*c*/) override
 	{
 		throw std::logic_error("Ig2_Tetra_Tetra_TTetraGeom::goReverse called, but the functor is symmetric.");
 	}
@@ -237,9 +237,9 @@ public:
 	   const State&                   state2,
 	   const Vector3r&                shift2,
 	   const bool&                    force,
-	   const shared_ptr<Interaction>& c);
+	   const shared_ptr<Interaction>& c) override;
 	virtual bool
-	goReverse(const shared_ptr<Shape>&, const shared_ptr<Shape>&, const State&, const State&, const Vector3r&, const bool&, const shared_ptr<Interaction>&)
+	goReverse(const shared_ptr<Shape>&, const shared_ptr<Shape>&, const State&, const State&, const Vector3r&, const bool&, const shared_ptr<Interaction>&) override
 	{
 		throw std::logic_error("Ig2_Tetra_Tetra_TTetraSimpleGeom::goReverse called, but the functor is symmetric.");
 	}
@@ -255,7 +255,7 @@ REGISTER_SERIALIZABLE(Ig2_Tetra_Tetra_TTetraSimpleGeom);
 
 class Law2_TTetraSimpleGeom_NormPhys_Simple : public LawFunctor {
 public:
-	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I);
+	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC(Law2_TTetraSimpleGeom_NormPhys_Simple,LawFunctor,"EXPERIMENTAL. TODO");
 	// clang-format on

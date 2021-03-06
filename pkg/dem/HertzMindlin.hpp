@@ -78,7 +78,7 @@ REGISTER_SERIALIZABLE(MindlinPhys);
 /******************** Ip2_FrictMat_FrictMat_MindlinPhys *******/
 class Ip2_FrictMat_FrictMat_MindlinPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction);
+	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
 	FUNCTOR2D(FrictMat, FrictMat);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(
@@ -113,7 +113,7 @@ REGISTER_SERIALIZABLE(Ip2_FrictMat_FrictMat_MindlinPhys);
 
 class Law2_ScGeom_MindlinPhys_MindlinDeresiewitz : public LawFunctor {
 public:
-	virtual bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*);
+	virtual bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
 	FUNCTOR2D(ScGeom, MindlinPhys);
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS(Law2_ScGeom_MindlinPhys_MindlinDeresiewitz,LawFunctor,
@@ -126,7 +126,7 @@ REGISTER_SERIALIZABLE(Law2_ScGeom_MindlinPhys_MindlinDeresiewitz);
 
 class Law2_ScGeom_MindlinPhys_HertzWithLinearShear : public LawFunctor {
 public:
-	virtual bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*);
+	virtual bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
 	FUNCTOR2D(ScGeom, MindlinPhys);
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS(Law2_ScGeom_MindlinPhys_HertzWithLinearShear,LawFunctor,
@@ -142,7 +142,7 @@ REGISTER_SERIALIZABLE(Law2_ScGeom_MindlinPhys_HertzWithLinearShear);
 /******************** Law2_ScGeom_MindlinPhys_Mindlin *********/
 class Law2_ScGeom_MindlinPhys_Mindlin : public LawFunctor {
 public:
-	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I);
+	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	Real         normElastEnergy();
 	Real         adhesionEnergy();
 
@@ -208,7 +208,7 @@ REGISTER_SERIALIZABLE(MindlinCapillaryPhys);
 
 class Ip2_FrictMat_FrictMat_MindlinCapillaryPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction);
+	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
 
 	FUNCTOR2D(FrictMat, FrictMat);
 	// clang-format off

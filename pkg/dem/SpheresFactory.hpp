@@ -17,7 +17,7 @@ protected:
 	vector<Real> PSDNeedProc; //Need value of procent in each bin
 	bool         PSDuse;      //PSD or not
 public:
-	virtual void action();
+	virtual void action() override;
 	struct SpherCoord {
 		Vector3r c;
 		Real     r;
@@ -64,7 +64,7 @@ REGISTER_SERIALIZABLE(SpheresFactory);
 
 class CircularFactory : public SpheresFactory {
 protected:
-	virtual void pickRandomPosition(Vector3r&, Real);
+	virtual void pickRandomPosition(Vector3r&, Real) override;
 
 public:
 	virtual ~CircularFactory() {};
@@ -81,7 +81,7 @@ REGISTER_SERIALIZABLE(CircularFactory);
 
 class BoxFactory : public SpheresFactory {
 protected:
-	virtual void pickRandomPosition(Vector3r&, Real);
+	virtual void pickRandomPosition(Vector3r&, Real) override;
 
 public:
 	virtual ~BoxFactory() {};

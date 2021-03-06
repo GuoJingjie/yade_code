@@ -31,7 +31,7 @@ namespace yade { // Cannot have #include directive inside.
 
 #define RENDERS(name)                                                                                                                                          \
 public:                                                                                                                                                        \
-	virtual string renders() const { return #name; };                                                                                                      \
+	virtual string renders() const override { return #name; };                                                                                             \
 	FUNCTOR1D(name);
 
 struct GLViewInfo {

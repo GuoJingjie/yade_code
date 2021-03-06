@@ -4,7 +4,7 @@
 namespace yade { // Cannot have #include directive inside.
 
 class BoundaryController : public GlobalEngine {
-	virtual void action()
+	virtual void action() override
 	{
 		{
 			throw std::runtime_error("BoundaryController must not be used in simulations directly (BoundaryController::action called).");

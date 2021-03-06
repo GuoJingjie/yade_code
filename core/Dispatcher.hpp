@@ -20,9 +20,9 @@ namespace yade { // Cannot have #include directive inside.
 class Dispatcher : public Engine {
 public:
 	// these functions look to be completely unused...?
-	virtual string getFunctorType() { throw; };
-	virtual int    getDimension() { throw; };
-	virtual string getBaseClassType(unsigned int) { throw; };
+	virtual string getFunctorType() const { throw; };
+	virtual int    getDimension() const { throw; };
+	virtual string getBaseClassType(unsigned int) const { throw; };
 	//
 	virtual ~Dispatcher() {};
 	// clang-format off
@@ -80,7 +80,7 @@ Because we need literal functor and class names for registration in python, we p
 			add(f);                                                                                                                                \
 		postLoad(*this);                                                                                                                               \
 	}                                                                                                                                                      \
-	void pyHandleCustomCtorArgs(boost::python::tuple& t, boost::python::dict& /*d*/)                                                                       \
+	void pyHandleCustomCtorArgs(boost::python::tuple& t, boost::python::dict& /*d*/) override                                                              \
 	{                                                                                                                                                      \
 		if (boost::python::len(t) == 0) return;                                                                                                        \
 		if (boost::python::len(t) != 1) throw invalid_argument("Exactly one list of " BOOST_PP_STRINGIZE(FunctorT) " must be given.");                 \
@@ -201,15 +201,15 @@ public:
 		return ret;
 	}
 
-	int getDimension() { return 1; }
+	int getDimension() const override { return 1; }
 
-	virtual string getFunctorType()
+	virtual string getFunctorType() const override
 	{
 		shared_ptr<FunctorType> eu(new FunctorType);
 		return eu->getClassName();
 	}
 
-	virtual string getBaseClassType(unsigned int i)
+	virtual string getBaseClassType(unsigned int i) const override
 	{
 		if (i == 0) {
 			shared_ptr<baseClass> bc(new baseClass);
@@ -265,14 +265,14 @@ public:
 		return ret;
 	}
 
-	virtual int getDimension() { return 2; }
+	virtual int getDimension() const override { return 2; }
 
-	virtual string getFunctorType()
+	virtual string getFunctorType() const override
 	{
 		shared_ptr<FunctorType> eu(new FunctorType);
 		return eu->getClassName();
 	}
-	virtual string getBaseClassType(unsigned int i)
+	virtual string getBaseClassType(unsigned int i) const override
 	{
 		if (i == 0) {
 			shared_ptr<baseClass1> bc(new baseClass1);

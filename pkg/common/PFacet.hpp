@@ -36,7 +36,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       cm1,
 	        const shared_ptr<Shape>&       cm2,
@@ -44,7 +44,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ig2_Sphere_PFacet_ScGridCoGeom,Ig2_Sphere_GridConnection_ScGridCoGeom,"Create/update a :yref:`ScGridCoGeom` instance representing intersection of :yref:`PFacet` and :yref:`Sphere`.",
 		((Real,shrinkFactor,((void)"no shrinking",0),,"The radius of the inscribed circle of the facet is decreased by the value of the sphere's radius multipled by *shrinkFactor*. From the definition of contact point on the surface made of facets, the given surface is not continuous and becomes in effect surface covered with triangular tiles, with gap between the separate tiles equal to the sphere's radius multiplied by 2×*shrinkFactor*. If zero, no shrinking is done."))
@@ -67,7 +67,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       cm1,
 	        const shared_ptr<Shape>&       cm2,
@@ -75,7 +75,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ig2_GridConnection_PFacet_ScGeom,Ig2_Sphere_GridConnection_ScGridCoGeom,"Create/update a :yref:`ScGeom` instance representing intersection of :yref:`Facet` and :yref:`GridConnection`.",
 		((Real,shrinkFactor,((void)"no shrinking",0),,"The radius of the inscribed circle of the facet is decreased by the value of the sphere's radius multipled by *shrinkFactor*. From the definition of contact point on the surface made of facets, the given surface is not continuous and becomes in effect surface covered with triangular tiles, with gap between the separate tiles equal to the sphere's radius multiplied by 2×*shrinkFactor*. If zero, no shrinking is done."))
@@ -98,7 +98,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       cm1,
 	        const shared_ptr<Shape>&       cm2,
@@ -106,7 +106,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ig2_PFacet_PFacet_ScGeom,Ig2_Sphere_PFacet_ScGridCoGeom,"Create/update a :yref:`ScGridCoGeom` instance representing intersection of :yref:`Facet` and :yref:`Sphere`.",
 		((Real,shrinkFactor,((void)"no shrinking",0),,"The radius of the inscribed circle of the facet is decreased by the value of the sphere's radius multipled by *shrinkFactor*. From the definition of contact point on the surface made of facets, the given surface is not continuous and becomes in effect surface covered with triangular tiles, with gap between the separate tiles equal to the sphere's radius multiplied by 2×*shrinkFactor*. If zero, no shrinking is done."))
@@ -131,7 +131,7 @@ public:
 	   const State&                   state2,
 	   const Vector3r&                shift2,
 	   const bool&                    force,
-	   const shared_ptr<Interaction>& c);
+	   const shared_ptr<Interaction>& c) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ig2_Wall_PFacet_ScGeom,Ig2_Wall_Sphere_ScGeom,"Create/update a :yref:`ScGeom` instance representing intersection of :yref:`Wall` and :yref:`PFacet`.",
 	);
@@ -146,7 +146,7 @@ REGISTER_SERIALIZABLE(Ig2_Wall_PFacet_ScGeom);
 
 class Bo1_PFacet_Aabb : public BoundFunctor {
 public:
-	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*);
+	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*) override;
 	FUNCTOR1D(PFacet);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Bo1_PFacet_Aabb,BoundFunctor,"Functor creating :yref:`Aabb` from a :yref:`PFacet`.",

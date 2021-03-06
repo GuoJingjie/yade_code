@@ -10,7 +10,7 @@ namespace yade { // Cannot have #include directive inside.
 
 class PotentialParticle2AABB : public BoundFunctor {
 public:
-	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*);
+	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*) override;
 
 	FUNCTOR1D(PotentialParticle);
 	//REGISTER_ATTRIBUTES(BoundFunctor,(aabbEnlargeFactor));

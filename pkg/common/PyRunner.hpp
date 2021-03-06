@@ -10,7 +10,7 @@ namespace yade { // Cannot have #include directive inside.
 class PyRunner : public PeriodicEngine {
 public:
 	/* virtual bool isActivated: not overridden, PeriodicEngine handles that */
-	virtual void action()
+	virtual void action() override
 	{
 		if (command.size() > 0) pyRunString(command, ignoreErrors, updateGlobals);
 	}

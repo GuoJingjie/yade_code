@@ -50,7 +50,7 @@ public:
 	//! common initialization called from both constructor and reset()
 	void init();
 
-	virtual ::boost::python::dict pyDictCustom() const
+	virtual ::boost::python::dict pyDictCustom() const override
 	{
 		::boost::python::dict ret;
 		ret["isReal"] = ::boost::python::object(isReal());

@@ -229,19 +229,19 @@ public:
 			return !spatialOverlapPeri(id1, id2, rb, periods);
 		}
 	}
-	virtual bool isActivated();
+	virtual bool isActivated() override;
 
 	// force reinitialization at next run
-	virtual void invalidatePersistentData()
+	virtual void invalidatePersistentData() override
 	{
 		for (int i = 0; i < 3; i++) {
 			BB[i].clear();
 		}
 	}
 
-	vector<Body::id_t> probeBoundingVolume(const Bound&);
+	vector<Body::id_t> probeBoundingVolume(const Bound&) override;
 
-	virtual void action();
+	virtual void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(InsertionSortCollider,Collider,"\
 		Collider with O(n log(n)) complexity, using :yref:`Aabb` for bounds.\

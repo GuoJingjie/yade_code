@@ -149,8 +149,8 @@ public:
 	Vector3r FhTotale; ///Total hydrodynamic force
 
 	virtual ~HydrodynamicsLawLBM();
-	virtual bool isActivated();
-	virtual void action();
+	virtual bool isActivated() override;
+	virtual void action() override;
 	void         save(int iter_number, Real timestep);
 	void         saveStats(int iter_number, Real timestep);
 	void         saveEroded(int iter_number, Real timestep);

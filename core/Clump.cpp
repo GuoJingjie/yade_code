@@ -132,8 +132,7 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 	}
 	//check for intersections:
 	bool               intersecting = false;
-	shared_ptr<Sphere> sph(new Sphere);
-	int                Sph_Index = sph->getClassIndexStatic(); // get sphere index for checking if bodies are spheres
+	int                Sph_Index    = Sphere::getClassIndexStatic(); // get sphere index for checking if bodies are spheres
 	if (discretization > 0) {
 		for (const auto& mm : clump->members) {
 			const shared_ptr<Body> subBody1 = Body::byId(mm.first);

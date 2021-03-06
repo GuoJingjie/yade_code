@@ -18,7 +18,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       shape1,
 	        const shared_ptr<Shape>&       shape2,
@@ -26,7 +26,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 	FUNCTOR2D(Polyhedra, Polyhedra);
 	DEFINE_FUNCTOR_ORDER_2D(Polyhedra, Polyhedra);
 	// clang-format off
@@ -50,7 +50,7 @@ public:
 	   const State&                   state2,
 	   const Vector3r&                shift2,
 	   const bool&                    force,
-	   const shared_ptr<Interaction>& c);
+	   const shared_ptr<Interaction>& c) override;
 	FUNCTOR2D(Wall, Polyhedra);
 	DEFINE_FUNCTOR_ORDER_2D(Wall, Polyhedra);
 	// clang-format off
@@ -72,7 +72,7 @@ public:
 	   const State&                   state2,
 	   const Vector3r&                shift2,
 	   const bool&                    force,
-	   const shared_ptr<Interaction>& c);
+	   const shared_ptr<Interaction>& c) override;
 	FUNCTOR2D(Facet, Polyhedra);
 	DEFINE_FUNCTOR_ORDER_2D(Facet, Polyhedra);
 	// clang-format off
@@ -95,7 +95,7 @@ public:
 	   const State&                   state2,
 	   const Vector3r&                shift2,
 	   const bool&                    force,
-	   const shared_ptr<Interaction>& c);
+	   const shared_ptr<Interaction>& c) override;
 	FUNCTOR2D(Sphere, Polyhedra);
 	DEFINE_FUNCTOR_ORDER_2D(Sphere, Polyhedra);
 	// clang-format off
@@ -121,7 +121,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       shape1,
 	        const shared_ptr<Shape>&       shape2,
@@ -129,7 +129,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 	FUNCTOR2D(Polyhedra, Polyhedra);
 	DEFINE_FUNCTOR_ORDER_2D(Polyhedra, Polyhedra);
 	// clang-format off
@@ -151,7 +151,7 @@ public:
 	                const State&                   state2,
 	                const Vector3r&                shift2,
 	                const bool&                    force,
-	                const shared_ptr<Interaction>& c);
+	                const shared_ptr<Interaction>& c) override;
 	virtual bool goReverse(
 	        const shared_ptr<Shape>&       shape1,
 	        const shared_ptr<Shape>&       shape2,
@@ -159,7 +159,7 @@ public:
 	        const State&                   state2,
 	        const Vector3r&                shift2,
 	        const bool&                    force,
-	        const shared_ptr<Interaction>& c);
+	        const shared_ptr<Interaction>& c) override;
 	FUNCTOR2D(Polyhedra, Polyhedra);
 	DEFINE_FUNCTOR_ORDER_2D(Polyhedra, Polyhedra);
 	// clang-format off

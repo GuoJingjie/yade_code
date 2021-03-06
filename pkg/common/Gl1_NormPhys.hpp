@@ -12,7 +12,7 @@ namespace yade { // Cannot have #include directive inside.
 class Gl1_NormPhys : public GlIPhysFunctor {
 	static GLUquadric* gluQuadric; // needed for gluCylinder, initialized by ::go if no initialized yet
 public:
-	virtual void go(const shared_ptr<IPhys>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool wireFrame);
+	virtual void go(const shared_ptr<IPhys>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool wireFrame) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_NormPhys,GlIPhysFunctor,"Renders :yref:`NormPhys` objects as cylinders of which diameter and color depends on :yref:`NormPhys.normalForce` magnitude.",
 		// changed doc maxDiameter -> maxRadius ((Real,maxFn,0,,"Value of :yref:`NormPhys.normalForce` corresponding to :yref:`maxDiameter<Gl1_NormPhys.maxDiameter>`. This value will be increased (but *not decreased* ) automatically."))

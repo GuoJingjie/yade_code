@@ -8,7 +8,7 @@ namespace yade { // Cannot have #include directive inside.
 class Scene;
 class ForceResetter : public GlobalEngine {
 public:
-	virtual void action()
+	virtual void action() override
 	{
 		scene->forces.reset(scene->iter);
 		if (scene->trackEnergy) scene->energy->resetResettables();

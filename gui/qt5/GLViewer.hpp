@@ -37,7 +37,10 @@ namespace yade { // Cannot have #include directive inside.
  * and recompile to have more.
  */
 class GLViewer : public QGLViewer {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 	Q_OBJECT
+#pragma GCC diagnostic pop
 
 	friend class QGLThread;
 
@@ -94,8 +97,8 @@ public:
 #if 0
 			virtual void paintGL();
 #endif
-	virtual void draw();
-	virtual void drawWithNames();
+	virtual void draw() override;
+	virtual void drawWithNames() override;
 	void         displayMessage(const std::string& s) { QGLViewer::displayMessage(QString(s.c_str())); }
 	void         centerScene(
 	                const Real&     suggestedRadius      = -1,
@@ -124,9 +127,9 @@ public:
 	std::pair<double, qglviewer::Vec> displayedSceneRadiusCenter();
 
 	//! Adds our attributes to the QGLViewer state that can be saved
-	QDomElement domElement(const QString& name, QDomDocument& document) const;
+	QDomElement domElement(const QString& name, QDomDocument& document) const override;
 	//! Adds our attributes to the QGLViewer state that can be restored
-	void initFromDOMElement(const QDomElement& element);
+	void initFromDOMElement(const QDomElement& element) override;
 
 	// if defined, snapshot will be saved to this file right after being drawn and the string will be reset.
 	// this way the caller will be notified of the frame being saved successfully.
@@ -142,18 +145,18 @@ public:
 	DECLARE_LOGGER;
 
 protected:
-	virtual void keyPressEvent(QKeyEvent* e);
-	virtual void postDraw();
+	virtual void keyPressEvent(QKeyEvent* e) override;
+	virtual void postDraw() override;
 	// overridden in the player that doesn't get time from system clock but from the db
 	virtual string  getRealTimeString();
-	virtual void    closeEvent(QCloseEvent* e);
-	virtual void    postSelection(const QPoint& point);
-	virtual void    endSelection(const QPoint& point);
-	virtual void    mouseDoubleClickEvent(QMouseEvent* e);
-	virtual void    wheelEvent(QWheelEvent* e);
-	virtual void    mouseMoveEvent(QMouseEvent* e);
-	virtual void    mousePressEvent(QMouseEvent* e);
-	virtual QString helpString() const;
+	virtual void    closeEvent(QCloseEvent* e) override;
+	virtual void    postSelection(const QPoint& point) override;
+	virtual void    endSelection(const QPoint& point) override;
+	virtual void    mouseDoubleClickEvent(QMouseEvent* e) override;
+	virtual void    wheelEvent(QWheelEvent* e) override;
+	virtual void    mouseMoveEvent(QMouseEvent* e) override;
+	virtual void    mousePressEvent(QMouseEvent* e) override;
+	virtual QString helpString() const override;
 
 	// Draws text, where each letter has a shifted background letter of opposite color.
 	void drawReadableNum(const Real& n, const Vector3r& pos, unsigned precision = 4, const Vector3r& color = Vector3r(1, 1, 1));
@@ -162,7 +165,10 @@ protected:
 };
 
 class YadeCamera : public qglviewer::Camera {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 	Q_OBJECT
+#pragma GCC diagnostic pop
 private:
 	float cuttingDistance;
 
@@ -174,7 +180,7 @@ public:
 #else
 	using QGLCompatDouble = float;
 #endif
-	virtual QGLCompatDouble zNear() const;
+	virtual QGLCompatDouble zNear() const override;
 
 	virtual void setCuttingDistance(float s) { cuttingDistance = s; };
 };

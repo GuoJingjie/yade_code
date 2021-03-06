@@ -52,7 +52,7 @@ REGISTER_SERIALIZABLE(LudingPhys);
 
 class Ip2_LudingMat_LudingMat_LudingPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction);
+	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
 	// clang-format off
   YADE_CLASS_BASE_DOC(Ip2_LudingMat_LudingMat_LudingPhys,IPhysFunctor,"Convert 2 instances of :yref:`LudingMat` to :yref:`LudingPhys` using the rule of consecutive connection.");
 	// clang-format on
@@ -65,7 +65,7 @@ REGISTER_SERIALIZABLE(Ip2_LudingMat_LudingMat_LudingPhys);
 
 class Law2_ScGeom_LudingPhys_Basic : public LawFunctor {
 public:
-	virtual bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*);
+	virtual bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
 
 private:
 	Real calculateCapillarForce(const ScGeom& geom, LudingPhys& phys);

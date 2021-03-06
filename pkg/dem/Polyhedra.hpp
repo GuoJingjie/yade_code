@@ -144,7 +144,7 @@ REGISTER_SERIALIZABLE(PolyhedraGeom);
  * Self-contained. */
 class Bo1_Polyhedra_Aabb : public BoundFunctor {
 public:
-	void go(const shared_ptr<Shape>& ig, shared_ptr<Bound>& bv, const Se3r& se3, const Body*);
+	void go(const shared_ptr<Shape>& ig, shared_ptr<Bound>& bv, const Se3r& se3, const Body*) override;
 	FUNCTOR1D(Polyhedra);
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS(Bo1_Polyhedra_Aabb,BoundFunctor,"Create/update :yref:`Aabb` of a :yref:`Polyhedra`",
@@ -206,7 +206,7 @@ REGISTER_SERIALIZABLE(PolyhedraPhys);
 /*! Draw Polyhedra using OpenGL */
 class Gl1_Polyhedra : public GlShapeFunctor {
 public:
-	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&);
+	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
 	// clang-format off
 			YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_Polyhedra,GlShapeFunctor,"Renders :yref:`Polyhedra` object",
 			((bool,wire,false,,"Only show wireframe"))
@@ -218,7 +218,7 @@ REGISTER_SERIALIZABLE(Gl1_Polyhedra);
 
 struct Gl1_PolyhedraGeom : public GlIGeomFunctor {
 	RENDERS(PolyhedraGeom);
-	void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool);
+	void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool) override;
 	void draw(const shared_ptr<IGeom>&);
 	// clang-format off
 		YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_PolyhedraGeom,GlIGeomFunctor,"Render :yref:`PolyhedraGeom` geometry.",
@@ -230,7 +230,7 @@ REGISTER_SERIALIZABLE(Gl1_PolyhedraGeom);
 class Gl1_PolyhedraPhys : public GlIPhysFunctor {
 	static GLUquadric* gluQuadric; // needed for gluCylinder, initialized by ::go if no initialized yet
 public:
-	virtual void go(const shared_ptr<IPhys>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool wireFrame);
+	virtual void go(const shared_ptr<IPhys>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool wireFrame) override;
 	// clang-format off
 		YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_PolyhedraPhys,GlIPhysFunctor,"Renders :yref:`PolyhedraPhys` objects as cylinders of which diameter and color depends on :yref:`PolyhedraPhys::normForce` magnitude.",
 			((Real,maxFn,0,,"Value of :yref:`NormPhys.normalForce` corresponding to :yref:`maxDiameter<Gl1_NormPhys.maxDiameter>`. This value will be increased (but *not decreased* ) automatically."))
@@ -251,7 +251,7 @@ REGISTER_SERIALIZABLE(Gl1_PolyhedraPhys);
 //***************************************************************************
 class Ip2_PolyhedraMat_PolyhedraMat_PolyhedraPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction);
+	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
 	FUNCTOR2D(PolyhedraMat, PolyhedraMat);
 	// clang-format off
 	YADE_CLASS_BASE_DOC(Ip2_PolyhedraMat_PolyhedraMat_PolyhedraPhys,IPhysFunctor,"Computes the :yref:`interaction properties<PolyhedraPhys>` from the :yref:`material properties<PolyhedraMat>` of the two interacting bodies 1,2. Contact friction angle is taken as the minimum of the two :yref:`frictionAngle<PolyhedraMat.frictionAngle>`, and contact stiffnesses :yref:`kn<PolyhedraPhys.kn>` and :yref:`ks<PolyhedraPhys.ks>` obey $1/k_n = 1/Y_1 + 1/Y_2$ and $1/k_s = 1/(Y_1 P_1) + 1/(Y_2 P_2)$, with $Y_i$ and $P_i$ corresponding to :yref:`young<PolyhedraMat.young>` and :yref:`poisson<PolyhedraMat.poisson>` for 1 and 2. The unit system to interpret these equations and quantities depend on :yref:`Law2_PolyhedraGeom_PolyhedraPhys_Volumetric.volumePower`."
@@ -262,7 +262,7 @@ REGISTER_SERIALIZABLE(Ip2_PolyhedraMat_PolyhedraMat_PolyhedraPhys);
 
 class Ip2_FrictMat_PolyhedraMat_FrictPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction);
+	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
 	FUNCTOR2D(FrictMat, PolyhedraMat);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ip2_FrictMat_PolyhedraMat_FrictPhys,IPhysFunctor,"",		
@@ -276,7 +276,7 @@ REGISTER_SERIALIZABLE(Ip2_FrictMat_PolyhedraMat_FrictPhys);
 
 class Law2_PolyhedraGeom_PolyhedraPhys_Volumetric : public LawFunctor {
 	OpenMPAccumulator<Real> plasticDissipation;
-	virtual bool            go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*);
+	virtual bool            go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
 	Real                    elasticEnergy();
 	Real                    getPlasticDissipation();
 	void                    initPlasticDissipation(Real initVal = 0);

@@ -10,7 +10,7 @@ public:
 	OpenMPAccumulator<int>        numIntr;
 	OpenMPAccumulator<Real>       force;
 	static void                   go(IntrCallback*, Interaction*);
-	virtual IntrCallback::FuncPtr stepInit();
+	virtual IntrCallback::FuncPtr stepInit() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC(SumIntrForcesCb,IntrCallback,"Callback summing magnitudes of forces over all interactions. :yref:`IPhys` of interactions must derive from :yref:`NormShearPhys` (responsability fo the user).");
 	// clang-format on

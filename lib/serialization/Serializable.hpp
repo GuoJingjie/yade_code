@@ -217,14 +217,14 @@ private:                                                                        
 	}
 
 #define _REGISTER_ATTRIBUTES_DEPREC(thisClass, baseClass, attrs, deprec)                                                                                                                                                                                                   \
-	_REGISTER_BOOST_ATTRIBUTES(baseClass, attrs) public : void pySetAttr(const std::string& key, const ::boost::python::object& value)                                                                                                                                 \
+	_REGISTER_BOOST_ATTRIBUTES(baseClass, attrs) public : virtual void pySetAttr(const std::string& key, const ::boost::python::object& value) override                                                                                                                \
 	{                                                                                                                                                                                                                                                                  \
 		BOOST_PP_SEQ_FOR_EACH(_PYSET_ATTR, ~, attrs);                                                                                                                                                                                                              \
 		BOOST_PP_SEQ_FOR_EACH(_PYSET_ATTR_DEPREC, thisClass, deprec);                                                                                                                                                                                              \
 		baseClass::pySetAttr(key, value);                                                                                                                                                                                                                          \
 	}                                                                                                                                                                                                                                                                  \
 	/* list all attributes (except deprecated ones); could return ::boost::python::set instead*/ /* ::boost::python::list pyKeys() const {  ::boost::python::list ret; BOOST_PP_SEQ_FOR_EACH(_PYKEYS_ATTR,~,attrs); ret.extend(baseClass::pyKeys()); return ret; }  */ \
-	/* return dictionary of all acttributes and values; deprecated attributes omitted */ ::boost::python::dict pyDict() const                                                                                                                                          \
+	/* return dictionary of all acttributes and values; deprecated attributes omitted */ virtual ::boost::python::dict pyDict() const override                                                                                                                         \
 	{                                                                                                                                                                                                                                                                  \
 		::boost::python::dict ret;                                                                                                                                                                                                                                 \
 		BOOST_PP_SEQ_FOR_EACH(_PYDICT_ATTR, ~, attrs);                                                                                                                                                                                                             \
@@ -232,7 +232,7 @@ private:                                                                        
 		ret.update(baseClass::pyDict());                                                                                                                                                                                                                           \
 		return ret;                                                                                                                                                                                                                                                \
 	}                                                                                                                                                                                                                                                                  \
-	virtual void callPostLoad(void)                                                                                                                                                                                                                                    \
+	virtual void callPostLoad(void) override                                                                                                                                                                                                                           \
 	{                                                                                                                                                                                                                                                                  \
 		baseClass::callPostLoad();                                                                                                                                                                                                                                 \
 		postLoad(*this);                                                                                                                                                                                                                                           \
@@ -287,7 +287,7 @@ private:                                                                        
 	REGISTER_CLASS_AND_BASE(thisClass, baseClass)                                                                                                          \
 	/* accessors for deprecated attributes, with warnings */ BOOST_PP_SEQ_FOR_EACH(                                                                        \
 	        _ACCESS_DEPREC, thisClass, deprec) /* python class registration */ virtual void                                                                \
-	pyRegisterClass(::boost::python::object _scope)                                                                                                        \
+	pyRegisterClass(::boost::python::object _scope) override                                                                                               \
 	{                                                                                                                                                      \
 		checkPyClassRegistersItself(#thisClass);                                                                                                       \
 		::boost::python::scope thisScope(_scope);                                                                                                      \
@@ -327,7 +327,7 @@ private:                                                                        
 
 
 #define _STATCLASS_PY_REGISTER_CLASS(thisClass, baseClass, docString, attrs)                                                                                   \
-	virtual void pyRegisterClass(::boost::python::object _scope)                                                                                           \
+	virtual void pyRegisterClass(::boost::python::object _scope) override                                                                                  \
 	{                                                                                                                                                      \
 		checkPyClassRegistersItself(#thisClass);                                                                                                       \
 		initSetStaticAttributesValue();                                                                                                                \
@@ -344,7 +344,7 @@ private:                                                                        
 	REGISTER_CLASS_AND_BASE(pyClassName, baseClass)                                                                                                        \
 	/* accessors for deprecated attributes, with warnings */ BOOST_PP_SEQ_FOR_EACH(                                                                        \
 	        _ACCESS_DEPREC, thisClass, deprec) /* python class registration */ virtual void                                                                \
-	pyRegisterClass(::boost::python::object _scope)                                                                                                        \
+	pyRegisterClass(::boost::python::object _scope) override                                                                                               \
 	{                                                                                                                                                      \
 		checkPyClassRegistersItself(#pyClassName);                                                                                                     \
 		::boost::python::scope thisScope(_scope);                                                                                                      \

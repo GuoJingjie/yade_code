@@ -39,8 +39,8 @@ class FlatGridCollider : public Collider {
 	void         updateGrid();
 	void         updateBodyCells(const shared_ptr<Body>& b);
 	void         updateCollisions();
-	virtual void action();
-	virtual bool isActivated();
+	virtual void action() override;
+	virtual bool isActivated() override;
 	DECLARE_LOGGER;
 
 	// clang-format off

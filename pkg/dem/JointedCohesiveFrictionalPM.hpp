@@ -38,8 +38,8 @@ REGISTER_SERIALIZABLE(JCFpmState);
 /** This class holds information associated with each body */
 class JCFpmMat : public FrictMat {
 public:
-	virtual shared_ptr<State> newAssocState() const { return shared_ptr<State>(new JCFpmState); }
-	virtual bool              stateTypeOk(State* s) const { return (bool)dynamic_cast<JCFpmState*>(s); }
+	virtual shared_ptr<State> newAssocState() const override { return shared_ptr<State>(new JCFpmState); }
+	virtual bool              stateTypeOk(State* s) const override { return (bool)dynamic_cast<JCFpmState*>(s); }
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(JCFpmMat,FrictMat,"Possibly jointed, cohesive frictional material, for use with other JCFpm classes",
@@ -120,7 +120,7 @@ REGISTER_SERIALIZABLE(JCFpmPhys);
 /** 2d functor creating InteractionPhysics (Ip2) taking JCFpmMat and JCFpmMat of 2 bodies, returning type JCFpmPhys */
 class Ip2_JCFpmMat_JCFpmMat_JCFpmPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction);
+	virtual void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction) override;
 	void         distributeCrossSectionsWeibull(shared_ptr<JCFpmPhys> contactPhysics, Real R1, Real R2);
 	FUNCTOR2D(JCFpmMat, JCFpmMat);
 	DECLARE_LOGGER;
@@ -139,7 +139,7 @@ REGISTER_SERIALIZABLE(Ip2_JCFpmMat_JCFpmMat_JCFpmPhys);
 /** 2d functor creating the interaction law (Law2) based on SphereContactGeometry (ScGeom) and JCFpmPhys of 2 bodies, returning type JointedCohesiveFrictionalPM */
 class Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM : public LawFunctor {
 public:
-	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I);
+	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	FUNCTOR2D(ScGeom, JCFpmPhys);
 	void checkForCluster(JCFpmPhys* phys, ScGeom* geom, Body* b1, Body* b2, Interaction* contact);
 	void clusterInteractions(JCFpmPhys* phys, Interaction* contact);

@@ -52,7 +52,8 @@ private:
 
 
 public:
-	void action(), computeAlpha();
+	void action() override;
+	void computeAlpha();
 	void postLoad(Disp2DPropLoadEngine&);
 
 	// clang-format off

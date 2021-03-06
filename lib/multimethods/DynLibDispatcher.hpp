@@ -181,11 +181,11 @@ public:
 		shared_ptr<Indexable> base = YADE_PTR_CAST<Indexable>(baseClass);
 
 		assert(base);
-		int& index = base->getClassIndex();
+		const int& index = base->getClassIndex();
 		if (index == -1) std::cerr << "--------> Did you forget to call createIndex(); in constructor?\n";
 		assert(index != -1);
 
-		int maxCurrentIndex = base->getMaxCurrentlyUsedClassIndex();
+		int maxCurrentIndex = base->getMaxCurrentlyUsedClassIndexOfKin();
 		callBacks.resize(maxCurrentIndex + 1); // make sure that there is a place for new Functor
 
 		callBacks[index] = executor;
@@ -203,18 +203,18 @@ public:
 		assert(base1);
 		assert(base2);
 
-		int& index1 = base1->getClassIndex();
+		const int& index1 = base1->getClassIndex();
 		if (index1 == -1) std::cerr << "--------> Did you forget to call createIndex(); in constructor?\n";
 		assert(index1 != -1);
 
-		int& index2 = base2->getClassIndex();
+		const int& index2 = base2->getClassIndex();
 		if (index2 == -1) std::cerr << "--------> Did you forget to call createIndex(); in constructor?\n";
 		assert(index2 != -1);
 
-		if (typeid(BaseClass1) == typeid(BaseClass2)) assert(base1->getMaxCurrentlyUsedClassIndex() == base2->getMaxCurrentlyUsedClassIndex());
+		if (typeid(BaseClass1) == typeid(BaseClass2)) assert(base1->getMaxCurrentlyUsedClassIndexOfKin() == base2->getMaxCurrentlyUsedClassIndexOfKin());
 
-		int maxCurrentIndex1 = base1->getMaxCurrentlyUsedClassIndex();
-		int maxCurrentIndex2 = base2->getMaxCurrentlyUsedClassIndex();
+		int maxCurrentIndex1 = base1->getMaxCurrentlyUsedClassIndexOfKin();
+		int maxCurrentIndex2 = base2->getMaxCurrentlyUsedClassIndexOfKin();
 
 		callBacks.resize(maxCurrentIndex1 + 1); // resizing callBacks table
 		callBacksInfo.resize(maxCurrentIndex1 + 1);
