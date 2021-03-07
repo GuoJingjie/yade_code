@@ -91,7 +91,7 @@ public:
 	Real                    bendingElastEnergy();
 	Real                    twistElastEnergy();
 	Real                    totalElastEnergy();
-	Real                    getPlasticDissipation();
+	Real                    getPlasticDissipation() const;
 	void                    initPlasticDissipation(Real initVal = 0);
 	virtual bool            go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	// clang-format off

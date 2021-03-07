@@ -34,8 +34,8 @@ public:
 	virtual ~PotentialBlock();
 	void postLoad(PotentialBlock&);
 
-	Real getDet(const MatrixXr A);
-	Real getSignedArea(const Vector3r pt1, const Vector3r pt2, const Vector3r pt3);
+	Real getDet(const MatrixXr A) const;
+	Real getSignedArea(const Vector3r pt1, const Vector3r pt2, const Vector3r pt3) const;
 	void calculateVertices();
 	void calculateInertia(Vector3r& centroid, Real& Ixx, Real& Iyy, Real& Izz, Real& Ixy, Real& Ixz, Real& Iyz);
 

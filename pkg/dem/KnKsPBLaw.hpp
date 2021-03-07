@@ -182,11 +182,11 @@ public:
 	OpenMPAccumulator<Real> shearDampDissip;    // Energy dissipated by tangential damping
 
 	Real elasticEnergy();
-	Real getPlasticDissipation();
+	Real getPlasticDissipation() const;
 	void initPlasticDissipation(Real initVal = 0);
 	Real ratioSlidingContacts();
-	Real getnormDampDissip();
-	Real getshearDampDissip();
+	Real getnormDampDissip() const;
+	Real getshearDampDissip() const;
 
 	//		Real stressUpdate(shared_ptr<IPhys>& ip, const Vector3r Fs_prev, const Vector3r du, const Vector3r prev_us, const Real ks /*shear stiffness */,const Real fN, const Real dFn, const Real phi_b, Vector3r & newFs);
 	Real stressUpdateVec(

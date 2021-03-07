@@ -180,7 +180,7 @@ public:
 	void timeStepControl();
 	void computeVertexSphericalArea();
 	void resetParticleSuctions();
-	Real getEnteredRatio();
+	Real getEnteredRatio() const;
 
 	//	void setPositionsBuffer(bool current);
 	Real     leakOffRate                 = 0;
@@ -232,7 +232,7 @@ public:
 	bool              getCellGasPImposed(unsigned int id) const { return gas_solver->T[gas_solver->currentTes].cellHandles[id]->info().Pcondition; }
 	bool              getCellCracked(Vector3r pos) const { return solver->getCellCracked(pos[0], pos[1], pos[2]); }
 	Real              getAverageSaturation() const { return solver->getAverageSaturation(); }
-	Real              getEnteredThroatRatio() { return getEnteredRatio(); }
+	Real              getEnteredThroatRatio() const { return getEnteredRatio(); }
 	Real              getAverageSuction() const { return solver->getAverageSuction(); }
 	Real              getTotalSpecimenVolume() { return getTotalVolume(); }
 	Vector3r          getCrackFabricVector() const { return crack_fabric_vector / crack_fabric_area; }
@@ -406,8 +406,8 @@ REGISTER_SERIALIZABLE(PartialSatState);
 
 class PartialSatMat : public FrictMat {
 public:
-	virtual shared_ptr<State> newAssocState() const { return shared_ptr<State>(new PartialSatState); }
-	virtual bool              stateTypeOk(State* s) const { return (bool)dynamic_cast<PartialSatState*>(s); }
+	virtual shared_ptr<State> newAssocState() const override { return shared_ptr<State>(new PartialSatState); }
+	virtual bool              stateTypeOk(State* s) const override { return (bool)dynamic_cast<PartialSatState*>(s); }
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(PartialSatMat,FrictMat,"Material used for :yref:`PartialSatClayEngine`. Necessary for the custom PartialSatState.",
@@ -422,7 +422,7 @@ REGISTER_SERIALIZABLE(PartialSatMat);
 
 class Ip2_PartialSatMat_PartialSatMat_MindlinPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction);
+	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
 	FUNCTOR2D(PartialSatMat, PartialSatMat);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(

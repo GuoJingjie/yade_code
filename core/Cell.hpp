@@ -182,45 +182,45 @@ public:
 	Vector3r wrapPt_py(const Vector3r& pt) const { return wrapPt(pt); }
 
 	// strain measures
-	Matrix3r             getDefGrad() { return trsf; }
-	Matrix3r             getSmallStrain() { return .5 * (trsf + trsf.transpose()) - Matrix3r::Identity(); }
-	Matrix3r             getRCauchyGreenDef() { return trsf.transpose() * trsf; }
-	Matrix3r             getLCauchyGreenDef() { return trsf * trsf.transpose(); }
-	Matrix3r             getLagrangianStrain() { return .5 * (getRCauchyGreenDef() - Matrix3r::Identity()); }
-	Matrix3r             getEulerianAlmansiStrain() { return .5 * (Matrix3r::Identity() - getLCauchyGreenDef().inverse()); }
-	void                 computePolarDecOfDefGrad(Matrix3r& R, Matrix3r& U) { Matrix_computeUnitaryPositive(trsf, &R, &U); }
-	boost::python::tuple getPolarDecOfDefGrad()
+	Matrix3r             getDefGrad() const { return trsf; }
+	Matrix3r             getSmallStrain() const { return .5 * (trsf + trsf.transpose()) - Matrix3r::Identity(); }
+	Matrix3r             getRCauchyGreenDef() const { return trsf.transpose() * trsf; }
+	Matrix3r             getLCauchyGreenDef() const { return trsf * trsf.transpose(); }
+	Matrix3r             getLagrangianStrain() const { return .5 * (getRCauchyGreenDef() - Matrix3r::Identity()); }
+	Matrix3r             getEulerianAlmansiStrain() const { return .5 * (Matrix3r::Identity() - getLCauchyGreenDef().inverse()); }
+	void                 computePolarDecOfDefGrad(Matrix3r& R, Matrix3r& U) const { Matrix_computeUnitaryPositive(trsf, &R, &U); }
+	boost::python::tuple getPolarDecOfDefGrad() const
 	{
 		Matrix3r R, U;
 		computePolarDecOfDefGrad(R, U);
 		return boost::python::make_tuple(R, U);
 	}
-	Matrix3r getRotation()
+	Matrix3r getRotation() const
 	{
 		Matrix3r R, U;
 		computePolarDecOfDefGrad(R, U);
 		return R;
 	}
-	Matrix3r getLeftStretch()
+	Matrix3r getLeftStretch() const
 	{
 		Matrix3r R, U;
 		computePolarDecOfDefGrad(R, U);
 		return U;
 	}
-	Matrix3r getRightStretch()
+	Matrix3r getRightStretch() const
 	{
 		Matrix3r R, U;
 		computePolarDecOfDefGrad(R, U);
 		return trsf * R.transpose();
 	}
-	Vector3r getSpin()
+	Vector3r getSpin() const
 	{
 		Matrix3r R = .5 * (velGrad - velGrad.transpose());
 		return Vector3r(-R(1, 2), R(0, 2), -R(0, 1));
 	}
 
 	// stress measures
-	//Matrix3r getStress() { return Shop::getStress(); }
+	//Matrix3r getStress() const { return Shop::getStress(); }
 	//Matrix3r getCauchyStress() { Matrix3r s=getStress(); return .5*(s+s.transpose()); }
 
 	enum { HOMO_NONE = 0, HOMO_POS = 1, HOMO_VEL = 2, HOMO_VEL_2ND = 3 };

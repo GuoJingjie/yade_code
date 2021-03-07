@@ -278,7 +278,7 @@ class Law2_PolyhedraGeom_PolyhedraPhys_Volumetric : public LawFunctor {
 	OpenMPAccumulator<Real> plasticDissipation;
 	virtual bool            go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
 	Real                    elasticEnergy();
-	Real                    getPlasticDissipation();
+	Real                    getPlasticDissipation() const;
 	void                    initPlasticDissipation(Real initVal = 0);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(Law2_PolyhedraGeom_PolyhedraPhys_Volumetric,LawFunctor,"Calculate physical response of 2 :yref:`Polyhedra` in interaction, based on penetration configuration given by :yref:`PolyhedraGeom`. Normal force is proportional to the volume of intersection",

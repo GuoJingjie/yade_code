@@ -111,7 +111,7 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 		virtual void initSolver (FlowSolver& flow);
 		#ifdef LINSOLV
 		void setForceMetis (bool force);
-		bool getForceMetis ();
+		bool getForceMetis () const;
 		void updateLinearSystem (Solver& flow);
 		void pyResetLinearSystem() { solver->resetLinearSystem(); }
 		#endif
@@ -133,13 +133,13 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 			else LOG_ERROR("updateBCs not applied");
 			solver->pressureChanged=true;}
 
-		bool checkMaxId(unsigned id) {//used in other functions
+		bool checkMaxId(unsigned id) const {//used in other functions
 			if (id>=solver->T[solver->currentTes].cellHandles.size()) {
 				LOG_ERROR("id out of range, max value is "<<solver->T[solver->currentTes].cellHandles.size());
 				return false;}
 			return true;}
 
-		boost::python::list getIncidentCells(unsigned vertexId) {
+		boost::python::list getIncidentCells(unsigned vertexId) const {
 			RTriangulation& Tri = solver->tesselation().Triangulation();
 			unsigned& id = vertexId;
 			if (vertexId >= solver->tesselation().vertexHandles.size()) LOG_ERROR("vertexId exceeds number of vertices");
@@ -161,8 +161,8 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 		void clearImposedFlux();
 		unsigned int imposeCavity(Vector3r pos);
 		void computeViscousForces(Solver& flow);
-		Real getCellFlux(unsigned int cond);
-		Real getCellFluxFromId(unsigned long id);
+		Real getCellFlux(unsigned int cond) const;
+		Real getCellFluxFromId(unsigned long id) const;
 		std::vector<Real> getCellVelocity(Vector3r pos) const {return solver->getCellVelocity(pos[0], pos[1], pos[2]);}
 		Real getCellVolume(Vector3r pos) const {return solver->getCellVolume(pos[0], pos[1], pos[2]);}
 		Real getBoundaryFlux(unsigned int boundary) const {return solver->boundaryFlux(boundary);}
@@ -209,10 +209,10 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 			return (solver->onlySpheresInteractions.size());}
 		int onlySpheresInteractions(unsigned int interaction) {
 			return (solver->onlySpheresInteractions[interaction]);}
-		boost::python::list getConstrictions(bool all) {
+		boost::python::list getConstrictions(bool all) const {
 			vector<Real> csd=solver->getConstrictions(); boost::python::list pycsd;
 			for (unsigned int k=0;k<csd.size();k++) if ((all && csd[k]!=0) || csd[k]>0) pycsd.append(csd[k]); return pycsd;}
-		boost::python::list getConstrictionsFull(bool all) {
+		boost::python::list getConstrictionsFull(bool all) const {
 			vector<Constriction> csd=solver->getConstrictionsFull(); boost::python::list pycsd;
 			for (unsigned int k=0;k<csd.size();k++) if ((all && csd[k].second[0]!=0) || csd[k].second[0]>0) {
 				boost::python::list cons;
@@ -224,7 +224,7 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 				cons.append(csd[k].second[3]);
 				pycsd.append(cons);}
 			return pycsd;}
-		boost::python::list getNeighbors(unsigned int id){ // Temporary function to allow for simulations in Python, can be easily accessed in c++
+		boost::python::list getNeighbors(unsigned int id) const { // Temporary function to allow for simulations in Python, can be easily accessed in c++
 		        boost::python::list ids;
 		        const RTriangulation& Tri = solver->tesselation().Triangulation();
 		        if (id>=solver->tesselation().cellHandles.size()) {LOG_ERROR("id out of range, max value is "<<solver->T[solver->currentTes].cellHandles.size()); return ids;}
@@ -271,7 +271,7 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 		CELL_SCALAR_GETTER(bool,.Tcondition,cellTImposed)
 		CELL_SCALAR_SETTER_EXTRA(bool,.Pcondition,setCellPImposed,solver->resetLinearSystem())
 		CELL_SCALAR_SETTER(double,.Tcondition,setCellTImposed)
-		boost::python::list getVertices(unsigned int id){
+		boost::python::list getVertices(unsigned int id) const {
 			boost::python::list ids;
 			if (not checkMaxId(id)) return ids;
 			for (unsigned int i=0;i<4;i++) ids.append(solver->T[solver->currentTes].cellHandles[id]->vertex(i)->info().id());
@@ -282,7 +282,7 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 			solver->T[solver->currentTes].cellHandles[id]->info().blocked=true;
 			solver->T[solver->currentTes].cellHandles[id]->info().Pcondition=blockPressure;
 		}
-		Real getDiffusionCoeff(unsigned cellId, unsigned throat) {
+		Real getDiffusionCoeff(unsigned cellId, unsigned throat) const {
 			if (not checkMaxId(cellId))  return 0;
 			const CellHandle& cell = solver->tesselation().cellHandles[cellId];
 			Real length = 	sqrt (  (cell->info()

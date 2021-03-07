@@ -37,9 +37,9 @@ public:
 
 CREATE_LOGGER(Omega);
 
-const std::map<string, DynlibDescriptor>& Omega::getDynlibsDescriptor() { return dynlibs; }
+const std::map<string, DynlibDescriptor>& Omega::getDynlibsDescriptor() const { return dynlibs; }
 
-const shared_ptr<Scene>& Omega::getScene() { return scenes.at(currentSceneNb); }
+const shared_ptr<Scene>& Omega::getScene() const { return scenes.at(currentSceneNb); }
 void                     Omega::resetCurrentScene()
 {
 	RenderMutexLock lock;
@@ -69,9 +69,9 @@ void Omega::switchToScene(int i)
 	currentSceneNb = i;
 }
 
-Real Omega::getRealTime() { return (boost::posix_time::microsec_clock::local_time() - startupLocalTime).total_milliseconds() / 1e3; }
+Real Omega::getRealTime() const { return (boost::posix_time::microsec_clock::local_time() - startupLocalTime).total_milliseconds() / 1e3; }
 
-boost::posix_time::time_duration Omega::getRealTime_duration() { return boost::posix_time::microsec_clock::local_time() - startupLocalTime; }
+boost::posix_time::time_duration Omega::getRealTime_duration() const { return boost::posix_time::microsec_clock::local_time() - startupLocalTime; }
 
 void Omega::initTemps()
 {

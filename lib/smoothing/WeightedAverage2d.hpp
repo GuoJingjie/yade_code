@@ -15,9 +15,9 @@ private:
 	Vector2i nCells;
 
 public:
-	Vector2r                  getLo() { return lo; }
-	Vector2r                  getHi() { return hi; }
-	Vector2r                  getCellSize() { return cellSizes; }
+	Vector2r                  getLo() const { return lo; }
+	Vector2r                  getHi() const { return hi; }
+	Vector2r                  getCellSize() const { return cellSizes; }
 	vector<vector<vector<T>>> grid;
 	/* construct grid from lower left corner, upper right corner and number of cells in each direction */
 	GridContainer(Vector2r _lo, Vector2r _hi, Vector2i _nCells)
@@ -271,7 +271,7 @@ public:
 	void                 stDev_set(Real s) { sgda->stDev = s; }
 	Real                 relThreshold_get() { return sgda->relThreshold; }
 	void                 relThreshold_set(Real rt) { sgda->relThreshold = rt; }
-	boost::python::tuple aabb_get() { return boost::python::make_tuple(sgda->grid->getLo(), sgda->grid->getHi()); }
+	boost::python::tuple aabb_get() const { return boost::python::make_tuple(sgda->grid->getLo(), sgda->grid->getHi()); }
 	boost::python::list  clips_get()
 	{
 		boost::python::list ret;
@@ -314,7 +314,7 @@ public:
 		}
 		return boost::python::make_tuple(x, y, val);
 	}
-	Vector2i nCells_get() { return sgda->grid->getSize(); }
+	Vector2i nCells_get() const { return sgda->grid->getSize(); }
 	int      cellNum(const Vector2i& cell) { return sgda->grid->grid[cell[0]][cell[1]].size(); }
 	Real     cellSum(const Vector2i& cell)
 	{
@@ -330,7 +330,7 @@ public:
 		Vector2r sz = sgda->grid->getCellSize();
 		return sz[0] * sz[1];
 	}
-	Vector2r cellDim() { return sgda->grid->getCellSize(); }
+	Vector2r cellDim() const { return sgda->grid->getCellSize(); }
 };
 
 }; // namespace yade

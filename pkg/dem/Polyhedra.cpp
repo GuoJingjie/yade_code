@@ -552,7 +552,7 @@ void Ip2_FrictMat_PolyhedraMat_FrictPhys::go(const shared_ptr<Material>& pp1, co
 }
 
 //**************************************************************************************
-Real Law2_PolyhedraGeom_PolyhedraPhys_Volumetric::getPlasticDissipation() { return (Real)plasticDissipation; }
+Real Law2_PolyhedraGeom_PolyhedraPhys_Volumetric::getPlasticDissipation() const { return (Real)plasticDissipation; }
 void Law2_PolyhedraGeom_PolyhedraPhys_Volumetric::initPlasticDissipation(Real initVal)
 {
 	plasticDissipation.reset();

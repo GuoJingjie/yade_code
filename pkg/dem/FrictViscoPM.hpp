@@ -107,7 +107,7 @@ public:
 	OpenMPAccumulator<Real> plasticDissipation;
 	virtual bool            go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	Real                    elasticEnergy();
-	Real                    getPlasticDissipation();
+	Real                    getPlasticDissipation() const;
 	void                    initPlasticDissipation(Real initVal = 0);
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(Law2_ScGeom_FrictViscoPhys_CundallStrackVisco,LawFunctor,"Constitutive law for the FrictViscoPM. Corresponds to :yref:`Law2_ScGeom_FrictPhys_CundallStrack` with the only difference that viscous damping in normal direction can be considered.",

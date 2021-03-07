@@ -62,7 +62,7 @@ public:
 	void                                      timeInit();
 	void                                      initTemps();
 	void                                      cleanupTemps();
-	const std::map<string, DynlibDescriptor>& getDynlibsDescriptor();
+	const std::map<string, DynlibDescriptor>& getDynlibsDescriptor() const;
 	void                                      loadPlugins(vector<string> pluginFiles);
 	bool                                      isInheritingFrom(const string& className, const string& baseClassName);
 	bool                                      isInheritingFrom_recursive(const string& className, const string& baseClassName);
@@ -90,14 +90,14 @@ public:
 	void                     resetScene();
 	void                     resetCurrentScene();
 	void                     resetAllScenes();
-	const shared_ptr<Scene>& getScene();
+	const shared_ptr<Scene>& getScene() const;
 	void                     setScene(const shared_ptr<Scene>& source) { scenes[currentSceneNb] = source; }
 	int                      addScene();
 	void                     switchToScene(int i);
 	//! Return unique temporary filename. May be deleted by the user; if not, will be deleted at shutdown.
 	string                           tmpFilename();
-	Real                             getRealTime();
-	boost::posix_time::time_duration getRealTime_duration();
+	Real                             getRealTime() const;
+	boost::posix_time::time_duration getRealTime_duration() const;
 
 	// configuration directory used for logging config and possibly other things
 	std::string confDir;

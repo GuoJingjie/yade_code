@@ -190,7 +190,7 @@ void PotentialBlock::postLoad(PotentialBlock&)
 }
 
 
-Real PotentialBlock::getDet(const MatrixXr A)
+Real PotentialBlock::getDet(const MatrixXr A) const
 {
 	/* if positive, counter clockwise, 2nd point makes a larger angle */
 	/* if negative, clockwise, 3rd point makes a larger angle */
@@ -205,7 +205,7 @@ Real PotentialBlock::getDet(const MatrixXr A)
 }
 
 
-Real PotentialBlock::getSignedArea(const Vector3r pt1, const Vector3r pt2, const Vector3r pt3)
+Real PotentialBlock::getSignedArea(const Vector3r pt1, const Vector3r pt2, const Vector3r pt3) const
 {
 	/* if positive, counter clockwise, 2nd point makes a larger angle */
 	/* if negative, clockwise, 3rd point makes a larger angle */

@@ -174,7 +174,7 @@ void Logging::setDefaultLogLevel(short int level)
 	defaultLogLevel           = level;
 }
 
-short int Logging::getNamedLogLevel(const std::string& name) { return findFilterName(name)->second; }
+short int Logging::getNamedLogLevel(const std::string& name) const { return findFilterName(name)->second; }
 
 void Logging::setNamedLogLevel(const std::string& name, short int level)
 {
@@ -217,7 +217,7 @@ boost::log::sources::severity_logger<Logging::SeverityLevel> Logging::createName
 	return l;
 };
 
-std::map<std::string, short int>::iterator Logging::findFilterName(const std::string& name)
+std::map<std::string, short int>::iterator Logging::findFilterName(const std::string& name) const
 {
 	auto it = classLogLevels.find(name);
 	if (it == classLogLevels.end()) {

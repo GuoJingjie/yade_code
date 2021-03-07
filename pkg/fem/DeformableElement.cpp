@@ -33,9 +33,9 @@ void DeformableElement::addFace(Vector3r& indexes) { faces.push_back(indexes); }
 //{
 //
 //}
-shared_ptr<Body> DeformableElement::getNode(int id)
+shared_ptr<Body> DeformableElement::getNode(int id) const
 {
-	NodeMap::iterator i1(this->localmap.begin());
+	NodeMap::const_iterator i1(this->localmap.cbegin());
 	std::advance(i1, id);
 	return i1->first;
 }

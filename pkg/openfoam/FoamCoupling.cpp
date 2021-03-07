@@ -98,9 +98,9 @@ void FoamCoupling::eraseId(int bId)
 }
 
 
-int FoamCoupling::getNumBodies() { return bodyList.size(); }
+int FoamCoupling::getNumBodies() const { return bodyList.size(); }
 
-std::vector<int> FoamCoupling::getIdList() { return bodyList; }
+std::vector<int> FoamCoupling::getIdList() const { return bodyList; }
 
 void FoamCoupling::castParticle()
 {
@@ -219,7 +219,7 @@ void FoamCoupling::exchangeDeltaT()
 	dataExchangeInterval = (long int)((yadeDt < foamDeltaT) ? foamDeltaT / yadeDt : 1);
 }
 
-Real FoamCoupling::getViscousTimeScale()
+Real FoamCoupling::getViscousTimeScale() const
 {
 	//  Real hDeltaT = 0.0;
 	//  Real dummy = 1e9;

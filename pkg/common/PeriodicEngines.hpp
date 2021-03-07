@@ -10,7 +10,7 @@ namespace yade { // Cannot have #include directive inside.
 
 class PeriodicEngine : public GlobalEngine {
 public:
-	static Real getClock()
+	static Real getClock() // FIXME - we have clock in lib/base/Timer.hpp
 	{
 		timeval tp;
 		gettimeofday(&tp, NULL);

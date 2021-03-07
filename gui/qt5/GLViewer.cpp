@@ -635,7 +635,7 @@ void GLViewer::endSelection(const QPoint& point)
 	QGLViewer::endSelection(point);
 }
 
-string GLViewer::getRealTimeString()
+string GLViewer::getRealTimeString() const
 {
 	std::ostringstream               oss;
 	boost::posix_time::time_duration t = Omega::instance().getRealTime_duration();
@@ -686,7 +686,7 @@ void GLViewer::initFromDOMElement(const QDomElement& element)
 	}
 }
 
-boost::posix_time::ptime GLViewer::getLastUserEvent() { return last_user_event; };
+boost::posix_time::ptime GLViewer::getLastUserEvent() const { return last_user_event; };
 
 YadeCamera::QGLCompatDouble YadeCamera::zNear() const
 {

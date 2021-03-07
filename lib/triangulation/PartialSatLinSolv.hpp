@@ -185,7 +185,7 @@ namespace CGT {
 		bool              getCellCracked(Real x, Real y, Real z);
 		vector<Real>      getCellGasVelocity(Real X, Real Y, Real Z);
 		Real              getCellGasVolume(Real X, Real Y, Real Z);
-		//Real partialSatBoundaryFlux(unsigned int boundaryId);
+		//Real partialSatBoundaryFlux(unsigned int boundaryId) const;
 	};
 
 } //namespace CGTF

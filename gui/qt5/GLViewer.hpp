@@ -139,7 +139,7 @@ public:
 	FILE* gl2psStream;
 #endif
 
-	boost::posix_time::ptime getLastUserEvent();
+	boost::posix_time::ptime getLastUserEvent() const;
 
 
 	DECLARE_LOGGER;
@@ -148,7 +148,7 @@ protected:
 	virtual void keyPressEvent(QKeyEvent* e) override;
 	virtual void postDraw() override;
 	// overridden in the player that doesn't get time from system clock but from the db
-	virtual string  getRealTimeString();
+	virtual string  getRealTimeString() const;
 	virtual void    closeEvent(QCloseEvent* e) override;
 	virtual void    postSelection(const QPoint& point) override;
 	virtual void    endSelection(const QPoint& point) override;

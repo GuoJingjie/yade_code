@@ -35,9 +35,9 @@ public:
 	        const Vector3r&                shift2,
 	        const bool&                    force,
 	        const shared_ptr<Interaction>& c) override;
-	Real evaluatePP(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial);
+	Real evaluatePP(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial) const;
 	void getPtOnParticle2(
-	        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r previousPt, Vector3r searchDir, Vector3r& newlocalPoint);
+	        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r previousPt, Vector3r searchDir, Vector3r& newlocalPoint) const;
 	bool customSolve(
 	        const shared_ptr<Shape>& cm1,
 	        const State&             state1,
@@ -46,9 +46,9 @@ public:
 	        const Vector3r&          shift2,
 	        Vector3r&                contactPt,
 	        bool                     warmstart);
-	Vector3r getNormal(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial);
+	Vector3r getNormal(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial) const;
 	void     BrentZeroSurf(
-	            const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r bracketA, const Vector3r bracketB, Vector3r& zero);
+	            const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r bracketA, const Vector3r bracketB, Vector3r& zero) const;
 	Real getAreaPolygon2(
 	        const shared_ptr<Shape>& cm1,
 	        const State&             state1,
@@ -62,7 +62,7 @@ public:
 	        Real&                    jointLength,
 	        const bool               twoDimension,
 	        Real                     unitWidth2D,
-	        int                      areaStep);
+	        int                      areaStep) const;
 
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR(Ig2_PP_PP_ScGeom,IGeomFunctor,"EXPERIMENTAL. IGeom functor for PotentialParticle - PotentialParticle pair",

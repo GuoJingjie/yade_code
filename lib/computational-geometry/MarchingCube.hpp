@@ -22,19 +22,19 @@ private:
 	vector<Vector3r> triangles;
 
 public:
-	const vector<Vector3r>& getTriangles() { return triangles; }
+	const vector<Vector3r>& getTriangles() const { return triangles; }
 
 private:
 	vector<Vector3r> normals;
 
 public:
-	const vector<Vector3r>& getNormals() { return normals; }
+	const vector<Vector3r>& getNormals() const { return normals; }
 
 private:
 	int nbTriangles;
 
 public:
-	int getNbTriangles() { return nbTriangles; }
+	int getNbTriangles() const { return nbTriangles; }
 
 private:
 	int sizeX, sizeY, sizeZ;

@@ -58,10 +58,10 @@ public:
 		myComm_p         = PyMPIComm_Get(py_obj);
 		if (myComm_p == NULL) LOG_ERROR("invalid COMM received from Python");
 	}
-	PyObject* getMyComm() { return PyMPIComm_New(*myComm_p); }
+	PyObject* getMyComm() const { return PyMPIComm_New(*myComm_p); }
 
 	// returns pos,vel,angVel,ori of bodies interacting with a given otherDomain
-	std::vector<Real> getStateValuesFromIds(const vector<Body::id_t>& search)
+	std::vector<Real> getStateValuesFromIds(const vector<Body::id_t>& search) const
 	{
 		const shared_ptr<Scene>& scene = Omega::instance().getScene();
 		unsigned int             N     = search.size();
@@ -116,7 +116,7 @@ public:
 		return res;
 	}
 
-	std::vector<Real> getStateValues(unsigned otherSubdomain)
+	std::vector<Real> getStateValues(unsigned otherSubdomain) const
 	{
 		const shared_ptr<Scene>& scene = Omega::instance().getScene();
 		if (scene->subdomain == int(otherSubdomain)) {
@@ -283,7 +283,7 @@ public:
 	void                         getRankSize();
 	void                         clearRecvdCharBuff(std::vector<char*>&); // frees std::vector<char*>
 	void                         setSubdomainIds(std::vector<Body::id_t>);
-	std::vector<Body::id_t>      getSubdomainIds();
+	std::vector<Body::id_t>      getSubdomainIds() const;
 	void                         append(Body::id_t);
 	void                         appendList(const boost::python::list&);
 

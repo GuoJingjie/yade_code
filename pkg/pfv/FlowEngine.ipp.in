@@ -233,7 +233,7 @@ void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
 template< class _CellInfo, class _VertexInfo, class _Tesselation, class solverT >
 void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,solverT>::clearImposedFlux () { solver->imposedF.clear(); solver->IFCells.clear();}
 template< class _CellInfo, class _VertexInfo, class _Tesselation, class solverT >
-Real TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,solverT>::getCellFlux ( unsigned int cond)
+Real TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,solverT>::getCellFlux ( unsigned int cond) const
 {
 	if ( cond>=solver->imposedP.size() ) {LOG_ERROR ( "Getting flux with cond higher than imposedP size." ); return 0;}
         Real flux=0;
@@ -246,7 +246,7 @@ Real TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
 }
 
 template< class _CellInfo, class _VertexInfo, class _Tesselation, class solverT >
-Real TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,solverT>::getCellFluxFromId ( unsigned long id)
+Real TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,solverT>::getCellFluxFromId ( unsigned long id) const
 {
         if (id>=solver->T[solver->currentTes].cellHandles.size()) {LOG_ERROR("id out of range, max value is "<<solver->T[solver->currentTes].cellHandles.size()); return 0;}
         Real flux=0;
@@ -319,7 +319,7 @@ void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
 	} else {cholmod_defaults(&(solver->eSolver.cholmod())); metisForced=false;}
 }
 template< class _CellInfo, class _VertexInfo, class _Tesselation, class solverT >
-bool TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,solverT>::getForceMetis () {return (solver->eSolver.cholmod().nmethods==1);}
+bool TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,solverT>::getForceMetis () const {return (solver->eSolver.cholmod().nmethods==1);}
 #endif
 template< class _CellInfo, class _VertexInfo, class _Tesselation, class solverT >
 void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,solverT>::buildTriangulation ( Solver& flow )

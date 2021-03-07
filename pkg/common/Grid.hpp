@@ -38,10 +38,10 @@ namespace yade { // Cannot have #include directive inside.
 class GridConnection : public Sphere {
 public:
 	virtual ~GridConnection();
-	Real                     getLength();
-	Vector3r                 getSegment();
+	Real                     getLength() const;
+	Vector3r                 getSegment() const;
 	void                     addPFacet(shared_ptr<Body> PF);
-	vector<shared_ptr<Body>> getPFacets() { return pfacetList; }
+	vector<shared_ptr<Body>> getPFacets() const { return pfacetList; }
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(GridConnection,Sphere,"GridConnection shape (see [Effeindzourou2016]_, [Bourrier2013]_). Component of a grid designed to link two :yref:`GridNodes<GridNode>`. It is highly recommended to use :yref:`yade.gridpfacet.gridConnection` to generate correct :yref:`GridConnections<GridConnection>`.",
 		((shared_ptr<Body> , node1 , ,,"First :yref:`Body` the GridConnection is connected to."))
@@ -65,8 +65,8 @@ public:
 	virtual ~GridNode();
 	void                     addConnection(shared_ptr<Body> GC);
 	void                     addPFacet(shared_ptr<Body> PF);
-	vector<shared_ptr<Body>> getPFacets() { return pfacetList; }
-	vector<shared_ptr<Body>> getConnections() { return ConnList; }
+	vector<shared_ptr<Body>> getPFacets() const { return pfacetList; }
+	vector<shared_ptr<Body>> getConnections() const { return ConnList; }
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(GridNode,Sphere,"GridNode shape, component of a grid.\nTo create a Grid, place the nodes first, they will define the spacial discretisation of it. It is highly recommended to use :yref:`yade.gridpfacet.gridNode` to generate correct :yref:`GridNodes<GridNode>`. Note that the GridNodes should only be in an Interaction with other GridNodes. The Sphere-Grid contact is only handled by the :yref:`GridConnections<GridConnection>`.",

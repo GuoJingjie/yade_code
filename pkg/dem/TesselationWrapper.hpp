@@ -78,10 +78,10 @@ public:
 
 #ifdef ALPHASHAPE
 	void                testAlphaShape(double alpha) { Tes->testAlphaShape(alpha); }
-	boost::python::list getAlphaFaces(double alpha);
-	boost::python::list getAlphaCaps(double alpha, double shrinkedAlpha, bool fixedAlpha);
-	boost::python::list getAlphaVertices(double alpha);
-	boost::python::list getAlphaGraph(double alpha, double shrinkedAlpha, bool fixedAlpha);
+	boost::python::list getAlphaFaces(double alpha) const;
+	boost::python::list getAlphaCaps(double alpha, double shrinkedAlpha, bool fixedAlpha) const;
+	boost::python::list getAlphaVertices(double alpha) const;
+	boost::python::list getAlphaGraph(double alpha, double shrinkedAlpha, bool fixedAlpha) const;
 	void                applyAlphaForces(Matrix3r stress, double alpha, double shrinkedAlpha, bool fixedAlpha);
 #endif
 
@@ -125,7 +125,8 @@ public:
 	void defToVtk(string outputFile = "def.vtk");
 
 	/// return python array containing voronoi volumes, per-particle porosity, and optionaly per-particle deformation, if states 0 and 1 have been assigned
-	boost::python::dict getVolPoroDef(bool deformation); //FIXME ; unexplained crash for now
+#warning "All getter functions should be marked with a const, but ↓ this won't compile. Likely this is the cause of the crash here."
+	boost::python::dict getVolPoroDef(bool deformation) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
 
 
 public:

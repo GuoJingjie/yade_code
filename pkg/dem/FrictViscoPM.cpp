@@ -151,7 +151,7 @@ void Ip2_FrictMat_FrictViscoMat_FrictViscoPhys::go(const shared_ptr<Material>& b
 /********************** Law2_ScGeom_FrictViscoPhys_CundallStrackVisco ****************************/
 
 // #if 1
-Real Law2_ScGeom_FrictViscoPhys_CundallStrackVisco::getPlasticDissipation() { return (Real)plasticDissipation; }
+Real Law2_ScGeom_FrictViscoPhys_CundallStrackVisco::getPlasticDissipation() const { return (Real)plasticDissipation; }
 void Law2_ScGeom_FrictViscoPhys_CundallStrackVisco::initPlasticDissipation(Real initVal)
 {
 	plasticDissipation.reset();

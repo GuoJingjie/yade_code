@@ -51,10 +51,10 @@ public:
 	        const Vector3r&                shift2,
 	        const bool&                    force,
 	        const shared_ptr<Interaction>& c) override;
-	Real getSignedArea(const Vector3r pt1, const Vector3r pt2, const Vector3r pt3);
-	Real evaluatePB(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial);
+	Real getSignedArea(const Vector3r pt1, const Vector3r pt2, const Vector3r pt3) const;
+	Real evaluatePB(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial) const;
 	void getPtOnParticle2(
-	        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r previousPt, Vector3r searchDir, Vector3r& newlocalPoint);
+	        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r previousPt, Vector3r searchDir, Vector3r& newlocalPoint) const;
 	//		void getPtOnParticleArea(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r previousPt, Vector3r normal, Vector3r& newlocalPoint);
 	bool getPtOnParticleAreaNormal(
 	        const shared_ptr<Shape>& cm1,
@@ -65,8 +65,8 @@ public:
 	        const int                prevNo,
 	        Vector3r&                newlocalPoint,
 	        Vector3r&                newNormal,
-	        int&                     newNo);
-	Real getDet(const MatrixXr A);
+	        int&                     newNo) const;
+	Real getDet(const MatrixXr A) const;
 	bool customSolve(
 	        const shared_ptr<Shape>& cm1,
 	        const State&             state1,
@@ -87,9 +87,9 @@ public:
 	        /* Real &lambda0, Real &heatCapacity, Real &hwater, */ bool& intactRock,
 	        int&                                                         activePlanesNo,
 	        int&                                                         jointType);
-	Vector3r getNormal(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial, const bool twoDimension);
+	Vector3r getNormal(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial, const bool twoDimension) const;
 	void     BrentZeroSurf(
-	            const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r bracketA, const Vector3r bracketB, Vector3r& zero);
+	            const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r bracketA, const Vector3r bracketB, Vector3r& zero) const;
 	bool startingPointFeasibilityCLP(
 	        const shared_ptr<Shape>& cm1,
 	        const State&             state1,
@@ -116,7 +116,7 @@ public:
 	        Vector3r                 shearDir,
 	        Real&                    jointLength,
 	        const bool               twoDimension,
-	        Real                     unitWidth2D);
+	        Real                     unitWidth2D) const;
 
 
 	// clang-format off

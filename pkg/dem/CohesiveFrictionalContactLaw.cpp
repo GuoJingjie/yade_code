@@ -19,7 +19,7 @@ using math::min; // using inside .cpp file is ok.
 YADE_PLUGIN((CohesiveFrictionalContactLaw)(Law2_ScGeom6D_CohFrictPhys_CohesionMoment)(CohFrictMat)(CohFrictPhys)(Ip2_CohFrictMat_CohFrictMat_CohFrictPhys));
 CREATE_LOGGER(Law2_ScGeom6D_CohFrictPhys_CohesionMoment);
 
-Real Law2_ScGeom6D_CohFrictPhys_CohesionMoment::getPlasticDissipation() { return (Real)plasticDissipation; }
+Real Law2_ScGeom6D_CohFrictPhys_CohesionMoment::getPlasticDissipation() const { return (Real)plasticDissipation; }
 void Law2_ScGeom6D_CohFrictPhys_CohesionMoment::initPlasticDissipation(Real initVal)
 {
 	plasticDissipation.reset();

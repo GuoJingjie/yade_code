@@ -174,11 +174,11 @@ public:
 	OpenMPAccumulator<Real> shearDampDissip;    // Energy dissipated by tangential damping
 
 	Real elasticEnergy();
-	Real getPlasticDissipation();
+	Real getPlasticDissipation() const;
 	void initPlasticDissipation(Real initVal = 0);
 	Real ratioSlidingContacts();
-	Real getnormDampDissip();
-	Real getshearDampDissip();
+	Real getnormDampDissip() const;
+	Real getshearDampDissip() const;
 
 	//		static Real Real0;
 	//OpenMPAccumulator<Real,&Law2_SCG_KnKsPhys_KnKsLaw::Real0> plasticDissipation;

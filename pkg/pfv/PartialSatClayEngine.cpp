@@ -18,6 +18,9 @@
 
 #ifdef YADE_VTK
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 //#include<vtkSmartPointer.h>
 #include <lib/compatibility/VTKCompatibility.hpp>
 #include <vtkCellArray.h>
@@ -33,6 +36,7 @@
 //#include<vtkDoubleArray.h>
 //#include<vtkUnstructuredGrid.h>
 #include <vtkPolyData.h>
+#pragma GCC diagnostic pop
 
 #endif
 
@@ -977,7 +981,7 @@ void PartialSatClayEngine::artificialParticleSwell(const Real volStrain){
 // 	writer->Write();
 // }
 
-Real PartialSatClayEngine::getEnteredRatio()
+Real PartialSatClayEngine::getEnteredRatio() const
 {
 	Tesselation&                   Tes   = solver->tesselation(); //flow.T[flow.currentTes];
 	Real enteredThroats = 0;

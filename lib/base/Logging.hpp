@@ -89,8 +89,8 @@ public:
 	void                                                         saveConfigFile(const std::string&);
 	std::string                                                  defaultConfigFileName();
 	void                                                         setOutputStream(const std::string&, bool reset);
-	short int                                                    getDefaultLogLevel() { return defaultLogLevel; };
-	short int                                                    getNamedLogLevel(const std::string&);
+	short int                                                    getDefaultLogLevel() const { return defaultLogLevel; };
+	short int                                                    getNamedLogLevel(const std::string&) const;
 	void                                                         setNamedLogLevel(const std::string&, short int);
 	void                                                         unsetNamedLogLevel(const std::string&);
 	boost::log::sources::severity_logger<Logging::SeverityLevel> createNamedLogger(std::string name);
@@ -107,7 +107,7 @@ public:
 private:
 	void                                                                                 setDefaultLogLevel(short int);
 	typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend> TextSink;
-	std::map<std::string, short int>::iterator                                           findFilterName(const std::string&);
+	std::map<std::string, short int>::iterator                                           findFilterName(const std::string&) const;
 	void                                                                                 updateFormatter();
 	short int                                                                            defaultLogLevel {
                 (short int)(SeverityLevel::eWARN)

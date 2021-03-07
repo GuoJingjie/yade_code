@@ -40,15 +40,15 @@ public:
 
 	virtual ~DeformableElement();
 	void             addNode(const shared_ptr<Body>& subBody);
-	shared_ptr<Body> getNode(int id);
+	shared_ptr<Body> getNode(int id) const;
 
 	void                  delNode(const shared_ptr<Body>& subBody);
-	std::vector<Vector3r> getDisplacements(void);
+	std::vector<Vector3r> getDisplacements(void) const;
 
 	void addFace(Vector3r&);
 	void removeLastFace(void);
 	//! Recalculate physical properties of DeformableElement.
-	//virtual void getMassMatrix()=0;
+	//virtual void getMassMatrix()=0 const;
 
 	Se3r frame_get() const
 	{
@@ -60,7 +60,7 @@ public:
 
 	boost::python::dict localmap_get();
 
-	virtual Real getVolume() { return -1; }
+	virtual Real getVolume() const { return -1; }
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_INIT_CTOR_PY(DeformableElement,Shape,"Deformable aggregate of nodes",
 		((NodeMap,localmap,,,"Ids and relative positions+orientations of members of the deformable element (should not be accessed directly)"))

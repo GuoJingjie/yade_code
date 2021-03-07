@@ -12,10 +12,10 @@ YADE_PLUGIN((MindlinPhys)(Ip2_FrictMat_FrictMat_MindlinPhys)(Law2_ScGeom_Mindlin
         Law2_ScGeom_MindlinPhys_Mindlin)(MindlinCapillaryPhys)(Ip2_FrictMat_FrictMat_MindlinCapillaryPhys)
 );
 
-Real Law2_ScGeom_MindlinPhys_Mindlin::getfrictionDissipation() { return (Real)frictionDissipation; }
-Real Law2_ScGeom_MindlinPhys_Mindlin::getshearEnergy() { return (Real)shearEnergy; }
-Real Law2_ScGeom_MindlinPhys_Mindlin::getnormDampDissip() { return (Real)normDampDissip; }
-Real Law2_ScGeom_MindlinPhys_Mindlin::getshearDampDissip() { return (Real)shearDampDissip; }
+Real Law2_ScGeom_MindlinPhys_Mindlin::getfrictionDissipation() const { return (Real)frictionDissipation; }
+Real Law2_ScGeom_MindlinPhys_Mindlin::getshearEnergy() const { return (Real)shearEnergy; }
+Real Law2_ScGeom_MindlinPhys_Mindlin::getnormDampDissip() const { return (Real)normDampDissip; }
+Real Law2_ScGeom_MindlinPhys_Mindlin::getshearDampDissip() const { return (Real)shearDampDissip; }
 
 /******************** Ip2_FrictMat_FrictMat_MindlinPhys *******/
 CREATE_LOGGER(Ip2_FrictMat_FrictMat_MindlinPhys);

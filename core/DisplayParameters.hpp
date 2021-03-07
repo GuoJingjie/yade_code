@@ -19,12 +19,12 @@ private:
 
 public:
 	//! Get value of given display type and put it in string& value and return true; if there is no such display type, return false.
-	bool getValue(std::string displayType, std::string& value)
+	bool getValue(std::string displayType, std::string& value) const
 	{
 		assert(values.size() == displayTypes.size());
-		vector<string>::iterator I = std::find(displayTypes.begin(), displayTypes.end(), displayType);
+		vector<string>::const_iterator I = std::find(displayTypes.cbegin(), displayTypes.cend(), displayType);
 		if (I == displayTypes.end()) return false;
-		value = values[std::distance(displayTypes.begin(), I)];
+		value = values[std::distance(displayTypes.cbegin(), I)];
 		return true;
 	}
 	//! Set value of given display type; if such display type exists, it is overwritten, otherwise a new one is created.

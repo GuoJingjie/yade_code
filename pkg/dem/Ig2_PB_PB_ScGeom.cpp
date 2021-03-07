@@ -526,7 +526,7 @@ Real Ig2_PB_PB_ScGeom::evaluatePhys(
 
 
 /* ***************************************************************************************************************************** */
-Real Ig2_PB_PB_ScGeom::getSignedArea(const Vector3r pt1, const Vector3r pt2, const Vector3r pt3)
+Real Ig2_PB_PB_ScGeom::getSignedArea(const Vector3r pt1, const Vector3r pt2, const Vector3r pt3) const
 {
 	/* if positive, counter clockwise, 2nd point makes a larger angle */
 	/* if negative, clockwise, 3rd point makes a larger angle */
@@ -557,7 +557,7 @@ Real Ig2_PB_PB_ScGeom::getAreaPolygon2(
         Vector3r                 shearDir,
         Real&                    jointLength,
         const bool               twoD,
-        Real                     unitWidth2D)
+        Real                     unitWidth2D) const
 {
 	//const Real PI = 3.14159265358979323846;
 	Real areaTri = 0.0;
@@ -846,7 +846,7 @@ bool Ig2_PB_PB_ScGeom::getPtOnParticleAreaNormal(
         const int                prevNo,
         Vector3r&                newPt,
         Vector3r&                newNormal,
-        int&                     newNo)
+        int&                     newNo) const
 {
 	//intersect a line and a plane other than the ID of the previous plane
 	PotentialBlock* s1 = static_cast<PotentialBlock*>(cm1.get());
@@ -1262,7 +1262,7 @@ bool Ig2_PB_PB_ScGeom::customSolveAnalyticCentre(
 
 
 /* ***************************************************************************************************************************** */
-Real Ig2_PB_PB_ScGeom::getDet(const MatrixXr A)
+Real Ig2_PB_PB_ScGeom::getDet(const MatrixXr A) const
 {
 	/* if positive, counter clockwise, 2nd point makes a larger angle */
 	/* if negative, clockwise, 3rd point makes a larger angle */
@@ -1411,7 +1411,7 @@ bool Ig2_PB_PB_ScGeom::startingPointFeasibilityCLP(
 
 /* ***************************************************************************************************************************** */
 void Ig2_PB_PB_ScGeom::BrentZeroSurf(
-        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r bracketA, const Vector3r bracketB, Vector3r& zero)
+        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r bracketA, const Vector3r bracketB, Vector3r& zero) const
 {
 	Real     a = 0.0;
 	Real     b = 1.0;
@@ -1533,7 +1533,7 @@ void Ig2_PB_PB_ScGeom::BrentZeroSurf(
 
 /* ***************************************************************************************************************************** */
 /* Routine to get value of function (constraint) at a particular position */
-Real Ig2_PB_PB_ScGeom::evaluatePB(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial)
+Real Ig2_PB_PB_ScGeom::evaluatePB(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial) const
 {
 	PotentialBlock* s1 = static_cast<PotentialBlock*>(cm1.get());
 	///////////////////Transforming trial values to local frame of particles//////////////////
@@ -1561,7 +1561,7 @@ Real Ig2_PB_PB_ScGeom::evaluatePB(const shared_ptr<Shape>& cm1, const State& sta
 
 
 /* ***************************************************************************************************************************** */
-Vector3r Ig2_PB_PB_ScGeom::getNormal(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial, const bool twoD)
+Vector3r Ig2_PB_PB_ScGeom::getNormal(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial, const bool twoD) const
 {
 	PotentialBlock* s1 = static_cast<PotentialBlock*>(cm1.get());
 	///////////////////Transforming trial values to local frame of particles//////////////////
@@ -1664,7 +1664,7 @@ Vector3r Ig2_PB_PB_ScGeom::getNormal(const shared_ptr<Shape>& cm1, const State& 
 
 /* ***************************************************************************************************************************** */
 void Ig2_PB_PB_ScGeom::getPtOnParticle2(
-        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r midPoint, Vector3r searchDir, Vector3r& ptOnParticle)
+        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r midPoint, Vector3r searchDir, Vector3r& ptOnParticle) const
 {
 	//PotentialBlock *s1=static_cast<PotentialBlock*>(cm1.get());
 	ptOnParticle   = midPoint;

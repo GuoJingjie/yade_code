@@ -61,7 +61,7 @@ public:
 		void runCoupling(); 
 		bool exchangeData();
                 void castTerminate(); 
-		Real getViscousTimeScale();  // not fully implemented, piece of code left in foam.
+		Real getViscousTimeScale() const;  // not fully implemented, piece of code left in foam.
 		void getParticleForce();
 		virtual void verifyParticleDetection(); 
 		virtual void buildSharedIds(); 
@@ -76,8 +76,8 @@ public:
 		void exchangeDeltaTParallel(); 
 		void insertBodyId(int); 
 		void eraseId(int);
-		int getNumBodies(); 
-		std::vector<int> getIdList(); 
+		int getNumBodies() const;
+		std::vector<int> getIdList() const;
 		MPI_Comm *myComm_p; 
 		bool bodyListModified; 
     
@@ -91,7 +91,7 @@ public:
 			myComm_p = PyMPIComm_Get(py_obj);
 			if (myComm_p == NULL) LOG_ERROR("invalid COMM received from Python");
 		}
-		PyObject* getMyComm() {	return PyMPIComm_New(*myComm_p);}
+		PyObject* getMyComm() const {	return PyMPIComm_New(*myComm_p);}
 
 		virtual void action() override;
 		virtual ~FoamCoupling(){}; 
@@ -125,7 +125,7 @@ public:
 		int ifSharedIdMap(const Body::id_t& ); 
 		bool commSizeSet=false;
 		//bool couplingModeParallel = false; 
-		bool getCouplingMode(){return couplingModeParallel; }
+		bool getCouplingMode() const {return couplingModeParallel; }
 		void setCouplingMode(bool val){couplingModeParallel = val; } 
 		bool initDone; 
       

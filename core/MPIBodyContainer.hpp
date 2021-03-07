@@ -60,16 +60,16 @@ public:
 		}
 	}
 
-	unsigned int getCount() { return bContainer.size(); }
+	unsigned int getCount() const { return bContainer.size(); }
 
-	shared_ptr<Body> getBodyat(int pos) { return bContainer[pos]; }
+	shared_ptr<Body> getBodyat(int pos) const { return bContainer[pos]; }
 
-	//     shared_ptr<Body> getBodybyId(int id ){
+	//     shared_ptr<Body> getBodybyId(int id ) const {
 	//
 	//     }
 
 
-	std::vector<Body::id_t> getIds()
+	std::vector<Body::id_t> getIds() const
 	{
 		std::vector<Body::id_t> ids;
 		for (unsigned int i = 0; i != bContainer.size(); ++i) {

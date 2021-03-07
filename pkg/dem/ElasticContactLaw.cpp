@@ -17,7 +17,7 @@ namespace yade { // Cannot have #include directive inside.
 YADE_PLUGIN((Law2_ScGeom_FrictPhys_CundallStrack)(Law2_ScGeom_ViscoFrictPhys_CundallStrack)(ElasticContactLaw));
 
 #if 1
-Real Law2_ScGeom_FrictPhys_CundallStrack::getPlasticDissipation() { return (Real)plasticDissipation; }
+Real Law2_ScGeom_FrictPhys_CundallStrack::getPlasticDissipation() const { return (Real)plasticDissipation; }
 void Law2_ScGeom_FrictPhys_CundallStrack::initPlasticDissipation(Real initVal)
 {
 	plasticDissipation.reset();

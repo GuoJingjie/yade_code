@@ -257,7 +257,7 @@ Real Ig2_PP_PP_ScGeom::getAreaPolygon2(
         Real&                    jointLength,
         const bool               twoD,
         Real                     unitWidth2D,
-        int                      areaStep)
+        int                      areaStep) const
 {
 	Real areaTri = 0.0;
 	//	Real bisectionStepSize = 1.0;//*math::min(s1->R, s2->R);
@@ -396,7 +396,7 @@ Real Ig2_PP_PP_ScGeom::getAreaPolygon2(
 
 /* ***************************************************************************************************************************** */
 void Ig2_PP_PP_ScGeom::BrentZeroSurf(
-        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r bracketA, const Vector3r bracketB, Vector3r& zero)
+        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r bracketA, const Vector3r bracketB, Vector3r& zero) const
 {
 	Real     a = 0.0;
 	Real     b = 1.0;
@@ -520,7 +520,7 @@ void Ig2_PP_PP_ScGeom::BrentZeroSurf(
 
 /* ***************************************************************************************************************************** */
 /* Routine to get value of function (constraint) at a particular position */
-Real Ig2_PP_PP_ScGeom::evaluatePP(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial)
+Real Ig2_PP_PP_ScGeom::evaluatePP(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial) const
 {
 	PotentialParticle* s1 = static_cast<PotentialParticle*>(cm1.get());
 	///////////////////Transforming trial values to local frame of particles//////////////////
@@ -550,7 +550,7 @@ Real Ig2_PP_PP_ScGeom::evaluatePP(const shared_ptr<Shape>& cm1, const State& sta
 
 
 /* ***************************************************************************************************************************** */
-Vector3r Ig2_PP_PP_ScGeom::getNormal(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial)
+Vector3r Ig2_PP_PP_ScGeom::getNormal(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial) const
 {
 	PotentialParticle* s1 = static_cast<PotentialParticle*>(cm1.get());
 	///////////////////Transforming trial values to local frame of particles//////////////////
@@ -636,7 +636,7 @@ Vector3r Ig2_PP_PP_ScGeom::getNormal(const shared_ptr<Shape>& cm1, const State& 
 
 /* ***************************************************************************************************************************** */
 void Ig2_PP_PP_ScGeom::getPtOnParticle2(
-        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r midPoint, Vector3r searchDir, Vector3r& ptOnParticle)
+        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r midPoint, Vector3r searchDir, Vector3r& ptOnParticle) const
 {
 	//PotentialParticle *s1=static_cast<PotentialParticle*>(cm1.get());
 	ptOnParticle   = midPoint;

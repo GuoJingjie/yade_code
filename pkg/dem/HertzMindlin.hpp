@@ -146,10 +146,10 @@ public:
 	Real         normElastEnergy();
 	Real         adhesionEnergy();
 
-	Real getfrictionDissipation();
-	Real getshearEnergy();
-	Real getnormDampDissip();
-	Real getshearDampDissip();
+	Real getfrictionDissipation() const;
+	Real getshearEnergy() const;
+	Real getnormDampDissip() const;
+	Real getshearDampDissip() const;
 	Real contactsAdhesive();
 	Real ratioSlidingContacts();
 

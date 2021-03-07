@@ -75,7 +75,7 @@ public:
 	        const PotentialBlock* cm2,
 	        const State*          state2,
 	        const Vector3r        localPt1,
-	        const Vector3r        localPt2);
+	        const Vector3r        localPt2) const;
 	bool installLining(
 	        const PotentialBlock* cm1,
 	        const State*          state1,

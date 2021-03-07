@@ -32,7 +32,7 @@ YADE_PLUGIN((GridCoGridCoGeom));
 
 void GridNode::addConnection(shared_ptr<Body> GC) { ConnList.push_back(GC); }
 
-Vector3r GridConnection::getSegment()
+Vector3r GridConnection::getSegment() const
 {
 	if (!periodic) return node2->state->pos - node1->state->pos;
 	//else
@@ -40,7 +40,7 @@ Vector3r GridConnection::getSegment()
 	return node2->state->pos + scene->cell->hSize * cellDist.cast<Real>() - node1->state->pos;
 }
 
-Real GridConnection::getLength() { return getSegment().norm(); }
+Real GridConnection::getLength() const { return getSegment().norm(); }
 
 void GridNode::addPFacet(shared_ptr<Body> PF) { pfacetList.push_back(PF); }
 

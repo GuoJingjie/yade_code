@@ -32,14 +32,14 @@ Real Law2_SCG_KnKsPhys_KnKsLaw::ratioSlidingContacts()
 
 /* ***************************************************************************************************************************** */
 /** Energy calculations */
-Real Law2_SCG_KnKsPhys_KnKsLaw::getPlasticDissipation() { return (Real)plasticDissipation; }
+Real Law2_SCG_KnKsPhys_KnKsLaw::getPlasticDissipation() const { return (Real)plasticDissipation; }
 void Law2_SCG_KnKsPhys_KnKsLaw::initPlasticDissipation(Real initVal)
 {
 	plasticDissipation.reset();
 	plasticDissipation += initVal;
 }
-Real Law2_SCG_KnKsPhys_KnKsLaw::getnormDampDissip() { return (Real)normDampDissip; }
-Real Law2_SCG_KnKsPhys_KnKsLaw::getshearDampDissip() { return (Real)shearDampDissip; }
+Real Law2_SCG_KnKsPhys_KnKsLaw::getnormDampDissip() const { return (Real)normDampDissip; }
+Real Law2_SCG_KnKsPhys_KnKsLaw::getshearDampDissip() const { return (Real)shearDampDissip; }
 
 Real Law2_SCG_KnKsPhys_KnKsLaw::elasticEnergy()
 {
