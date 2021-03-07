@@ -94,7 +94,7 @@ public:
 	void                                                         setNamedLogLevel(const std::string&, short int);
 	void                                                         unsetNamedLogLevel(const std::string&);
 	boost::log::sources::severity_logger<Logging::SeverityLevel> createNamedLogger(std::string name);
-	const std::map<std::string, short int>&                      getClassLogLevels() { return classLogLevels; };
+	const std::map<std::string, short int>&                      getClassLogLevels() const { return classLogLevels; };
 	static constexpr short int                                   maxLogLevel { MAX_LOG_LEVEL };
 
 	void        setUseColors(bool);
@@ -107,7 +107,8 @@ public:
 private:
 	void                                                                                 setDefaultLogLevel(short int);
 	typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend> TextSink;
-	std::map<std::string, short int>::iterator                                           findFilterName(const std::string&) const;
+	const short int&                                                                     findFilterName(const std::string&) const;
+	short int&                                                                           findFilterName(const std::string&);
 	void                                                                                 updateFormatter();
 	short int                                                                            defaultLogLevel {
                 (short int)(SeverityLevel::eWARN)

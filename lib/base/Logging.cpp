@@ -174,7 +174,7 @@ void Logging::setDefaultLogLevel(short int level)
 	defaultLogLevel           = level;
 }
 
-short int Logging::getNamedLogLevel(const std::string& name) const { return findFilterName(name)->second; }
+short int Logging::getNamedLogLevel(const std::string& name) const { return findFilterName(name); }
 
 void Logging::setNamedLogLevel(const std::string& name, short int level)
 {
@@ -194,7 +194,7 @@ void Logging::setNamedLogLevel(const std::string& name, short int level)
 	if (name == "Default") {
 		setDefaultLogLevel(level);
 	} else {
-		findFilterName(name)->second = level;
+		findFilterName(name) = level;
 	}
 }
 
@@ -205,7 +205,7 @@ void Logging::unsetNamedLogLevel(const std::string& name)
 		classLogLevels["Default"] = (short int)(SeverityLevel::eTRACE);
 	} else {
 		// unsetting anything else will result in printing it at Default level.
-		findFilterName(name)->second = -1;
+		findFilterName(name) = -1;
 	}
 }
 
@@ -217,7 +217,7 @@ boost::log::sources::severity_logger<Logging::SeverityLevel> Logging::createName
 	return l;
 };
 
-std::map<std::string, short int>::iterator Logging::findFilterName(const std::string& name) const
+const short int& Logging::findFilterName(const std::string& name) const
 {
 	auto it = classLogLevels.find(name);
 	if (it == classLogLevels.end()) {
@@ -226,7 +226,14 @@ std::map<std::string, short int>::iterator Logging::findFilterName(const std::st
 		        + " is not recognized. Did you forget CREATE_LOGGER; and DECLARE_LOGGER(Classname); macros? Or maybe "
 		          "CREATE_CPP_LOCAL_LOGGER(\"filename.cpp\"); macro?\n");
 	}
-	return it;
+	return it->second;
+}
+
+short int& Logging::findFilterName(const std::string& name)
+{
+	// Call the const version of this function, remove const from the returned result: const short int& → short int&
+	return const_cast<short int&>((static_cast<const Logging&>(*this)).findFilterName(name));
+	// Now the named log level can be modified.
 }
 
 // https://misc.flogisoft.com/bash/tip_colors_and_formatting
