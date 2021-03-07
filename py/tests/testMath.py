@@ -624,7 +624,7 @@ class SimpleTests(unittest.TestCase):
 			if(self.testRecordingMode and (self.totalCount % 20000 == 0)):
 				self.tearDown() # save progress
 
-	def testConstants(self):
+	def testConstantsPythonSide(self):
 		for N in self.testLevelsHP:
 			self.runCheck(N , self.HPtestConstants)
 
@@ -637,6 +637,9 @@ class SimpleTests(unittest.TestCase):
 
 	def HPtestArray(self,N,HPn,MPn):
 		HPn.testArray()
+
+	def testConstantsCppSide(self):
+		mth.testLoopRealHP()
 
 	def testBasicVariable(self):
 		for N in self.testLevelsHP:
