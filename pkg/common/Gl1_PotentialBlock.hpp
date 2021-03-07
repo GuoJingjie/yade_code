@@ -145,6 +145,7 @@ namespace yade { // Cannot have #include directive inside.
 class ImpFuncPB : public vtkImplicitFunction {
 public:
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 	vtkTypeMacro(ImpFuncPB, vtkImplicitFunction);
 #pragma GCC diagnostic pop
@@ -174,6 +175,7 @@ public:
 	};
 
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 	// In newer coinor version this function becomes virtual and needs override keyword. In older ones it can't have thie keyword.
 	virtual Real EvaluateFunction(Real x, Real y, Real z) { return this->vtkImplicitFunction::EvaluateFunction(x, y, z); };

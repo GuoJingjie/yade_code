@@ -13,6 +13,7 @@ And use a macro in these places:
 
 #ifdef YADE_VTK
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <vtkVersion.h>
 // fix InsertNextTupleValue → InsertNextTuple name change

@@ -16,6 +16,7 @@ a renderer instance and timer to refresh the display.
 */
 class OpenGLManager : public QObject {
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 	Q_OBJECT
 #pragma GCC diagnostic pop

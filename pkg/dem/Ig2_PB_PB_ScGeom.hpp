@@ -18,6 +18,7 @@
 #include <stdio.h>
 
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <ClpSimplex.hpp>
 #include <CoinBuild.hpp>

@@ -38,6 +38,7 @@ namespace yade { // Cannot have #include directive inside.
  */
 class GLViewer : public QGLViewer {
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 	Q_OBJECT
 #pragma GCC diagnostic pop
@@ -166,6 +167,7 @@ protected:
 
 class YadeCamera : public qglviewer::Camera {
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 	Q_OBJECT
 #pragma GCC diagnostic pop

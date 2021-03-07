@@ -13,6 +13,7 @@
 #include <core/Aabb.hpp>
 #include <core/Dispatching.hpp>
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <mpi.h>
 #include <mpi4py/mpi4py.h> // for passing MPI_Comm from python to c++

@@ -17,6 +17,7 @@
 #include <pkg/common/Sphere.hpp>
 #include <vector>
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #pragma GCC diagnostic ignored "-Wcast-function-type"
 #include <mpi.h>
