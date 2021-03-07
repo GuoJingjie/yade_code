@@ -162,7 +162,7 @@ template <int N> void multVec(::yade::math::UnderlyingRealHP<RealHP<N>>* array, 
 namespace yade {
 template <int N> void testConstants()
 {
-	LOG_NOFILTER("Checking ConstantsHP<" << N << ">");
+	LOG_NOFILTER("ConstantsHP<" << N << ">::PI = " << math::toStringHP(math::ConstantsHP<N>::PI));
 	BOOST_ASSERT(math::ConstantsHP<N>::PI == boost::math::constants::pi<RealHP<N>>());
 	BOOST_ASSERT(math::ConstantsHP<N>::TWO_PI == boost::math::constants::two_pi<RealHP<N>>());
 	BOOST_ASSERT(math::ConstantsHP<N>::HALF_PI == boost::math::constants::half_pi<RealHP<N>>());
@@ -181,12 +181,13 @@ template <int N> void testConstants()
 void                  testLoopRealHP();
 template <int N> void testArray()
 {
-	LOG_NOFILTER(
-	        "sizeof RealHP<" << N << ">" << std::setw(2) << " "
-	                         << " in bytes: " << sizeof(RealHP<N>));
-	LOG_NOFILTER("sizeof float       in bytes: " << sizeof(float));
-	LOG_NOFILTER("sizeof double      in bytes: " << sizeof(double));
-	LOG_NOFILTER("sizeof long double in bytes: " << sizeof(long double));
+	// clang-format off
+	LOG_NOFILTER("sizeof RealHP<" << N << ">" << std::setw(2) << " "
+	                            << " in bytes: " << std::setw(4) << sizeof(RealHP<N>  ) << " bits: " << std::setw(4) << std::numeric_limits<RealHP<N>  >::digits << " digits: " << std::numeric_limits<RealHP<N>  >::digits10 );
+	LOG_NOFILTER("sizeof float       in bytes: " << std::setw(4) << sizeof(float      ) << " bits: " << std::setw(4) << std::numeric_limits<float      >::digits << " digits: " << std::numeric_limits<float      >::digits10 );
+	LOG_NOFILTER("sizeof double      in bytes: " << std::setw(4) << sizeof(double     ) << " bits: " << std::setw(4) << std::numeric_limits<double     >::digits << " digits: " << std::numeric_limits<double     >::digits10 );
+	LOG_NOFILTER("sizeof long double in bytes: " << std::setw(4) << sizeof(long double) << " bits: " << std::setw(4) << std::numeric_limits<long double>::digits << " digits: " << std::numeric_limits<long double>::digits10 );
+	// clang-format on
 	std::vector<RealHP<N>> vec {};
 	int                    i = 1000;
 	while (i-- > 0)
@@ -201,8 +202,6 @@ template <int N> void testArray()
 			exit(1);
 		}
 	}
-	LOG_NOFILTER("calling testLoopRealHP()");
-	testLoopRealHP();
 }
 }
 
@@ -910,6 +909,10 @@ try {
 	// this loop registers all python functions from range defined in YADE_EIGENCGAL_HP, file lib/high-precision/RealHPEigenCgal.hpp
 	// Some functions for large N are extremely slow during python 'import yade.math', so they are not registered, see struct IfConstexprForSlowFunctions
 	::yade::math::detail::registerLoopForHPn<::yade::math::RealHPConfig::SupportedByMinieigen, RegisterRealHPMath>();
+
+	py::def("testLoopRealHP",
+	        ::yade::testLoopRealHP,
+	        R"""(This function tests lib/high-precision/Constants.hpp, but the C++ side: all precisions, even those inaccessible from python)""");
 
 	expose_storage_ordering();
 	exposeRealHPDiagnostics();
