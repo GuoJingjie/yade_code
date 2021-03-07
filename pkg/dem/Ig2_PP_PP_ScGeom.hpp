@@ -37,7 +37,8 @@ public:
 	        const shared_ptr<Interaction>& c) override;
 	Real evaluatePP(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial) const;
 	void getPtOnParticle2(
-	        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r previousPt, Vector3r searchDir, Vector3r& newlocalPoint) const;
+	        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r previousPt, Vector3r searchDir, Vector3r& newlocalPoint)
+	        const;
 	bool customSolve(
 	        const shared_ptr<Shape>& cm1,
 	        const State&             state1,
@@ -48,7 +49,8 @@ public:
 	        bool                     warmstart);
 	Vector3r getNormal(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial) const;
 	void     BrentZeroSurf(
-	            const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r bracketA, const Vector3r bracketB, Vector3r& zero) const;
+	            const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r bracketA, const Vector3r bracketB, Vector3r& zero)
+	        const;
 	Real getAreaPolygon2(
 	        const shared_ptr<Shape>& cm1,
 	        const State&             state1,

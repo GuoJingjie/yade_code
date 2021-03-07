@@ -3,6 +3,8 @@
 #include "VTKRecorder.hpp"
 // https://codeyarns.com/2014/03/11/how-to-selectively-ignore-a-gcc-warning/
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wcomment"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <lib/compatibility/VTKCompatibility.hpp> // fix InsertNextTupleValue → InsertNextTuple name change (and others in the future)
 
@@ -21,7 +23,7 @@
 #ifdef YADE_MPI
 #include <core/Subdomain.hpp>
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-override"
+#pragma GCC diagnostic ignored "-Wcast-function-type"
 #include <mpi.h>
 #include <vtkXMLPMultiBlockDataWriter.h>
 #include <vtkXMLPPolyDataWriter.h>
@@ -38,8 +40,6 @@
 #include <vtkMultiBlockDataSet.h>
 #include <vtkXMLMultiBlockDataWriter.h>
 #endif
-#pragma GCC diagnostic ignored "-Wpragmas"
-#pragma GCC diagnostic ignored "-Wcomment"
 #include <vtkTriangle.h>
 #pragma GCC diagnostic pop
 

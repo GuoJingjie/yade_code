@@ -54,7 +54,8 @@ public:
 	Real getSignedArea(const Vector3r pt1, const Vector3r pt2, const Vector3r pt3) const;
 	Real evaluatePB(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial) const;
 	void getPtOnParticle2(
-	        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r previousPt, Vector3r searchDir, Vector3r& newlocalPoint) const;
+	        const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r previousPt, Vector3r searchDir, Vector3r& newlocalPoint)
+	        const;
 	//		void getPtOnParticleArea(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, Vector3r previousPt, Vector3r normal, Vector3r& newlocalPoint);
 	bool getPtOnParticleAreaNormal(
 	        const shared_ptr<Shape>& cm1,
@@ -89,7 +90,8 @@ public:
 	        int&                                                         jointType);
 	Vector3r getNormal(const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r newTrial, const bool twoDimension) const;
 	void     BrentZeroSurf(
-	            const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r bracketA, const Vector3r bracketB, Vector3r& zero) const;
+	            const shared_ptr<Shape>& cm1, const State& state1, const Vector3r& shift2, const Vector3r bracketA, const Vector3r bracketB, Vector3r& zero)
+	        const;
 	bool startingPointFeasibilityCLP(
 	        const shared_ptr<Shape>& cm1,
 	        const State&             state1,

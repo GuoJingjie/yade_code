@@ -126,7 +126,8 @@ public:
 
 	/// return python array containing voronoi volumes, per-particle porosity, and optionaly per-particle deformation, if states 0 and 1 have been assigned
 #warning "All getter functions should be marked with a const, but ↓ this won't compile. Likely this is the cause of the crash here."
-	boost::python::dict getVolPoroDef(bool deformation) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
+	boost::python::dict
+	getVolPoroDef(bool deformation) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
 
 
 public:

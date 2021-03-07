@@ -5,6 +5,7 @@
 #include "FoamCoupling.hpp"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsuggest-override"
+#pragma GCC diagnostic ignored "-Wcast-function-type"
 #include <mpi.h>
 #pragma GCC diagnostic pop
 
