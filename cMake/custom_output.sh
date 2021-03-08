@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# shell script invoked with the following arguments
+# shell script invoked with the following arguments if CMAKE_TIMING_VERBOSE is ON
 # $(CXX) $(CXX_DEFINES) $(CXX_FLAGS) -o OBJECT_FILE -c SOURCE_FILE
+# based on https://github.com/PointCloudLibrary/pcl/blob/master/cmake/custom_output.sh
 
 # extract parameters
 SOURCE_FILE="${@: -1:1}"
