@@ -11,9 +11,6 @@
 namespace yade { // Cannot have #include directive inside.
 
 YADE_PLUGIN((ScGeom)(ScGeom6D)(ChCylGeom6D));
-ScGeom::~ScGeom() {};
-ScGeom6D::~ScGeom6D() {};
-ChCylGeom6D::~ChCylGeom6D() {};
 
 Vector3r& ScGeom::rotate(Vector3r& shearForce) const
 {
@@ -66,7 +63,7 @@ void ScGeom::precompute(
 
 
 Vector3r
-ScGeom::getIncidentVel(const State* rbp1, const State* rbp2, Real /*dt*/, const Vector3r& shift2, const Vector3r& shiftVel, bool avoidGranularRatcheting)
+ScGeom::getIncidentVel(const State* rbp1, const State* rbp2, Real /*dt*/, const Vector3r& shift2, const Vector3r& shiftVel, bool avoidGranularRatcheting) const
 {
 	if (avoidGranularRatcheting) {
 		/* B.C. Comment :
@@ -96,13 +93,13 @@ ScGeom::getIncidentVel(const State* rbp1, const State* rbp2, Real /*dt*/, const 
 	}
 }
 
-Vector3r ScGeom::getIncidentVel(const State* rbp1, const State* rbp2, Real dt, bool avoidGranularRatcheting)
+Vector3r ScGeom::getIncidentVel(const State* rbp1, const State* rbp2, Real dt, bool avoidGranularRatcheting) const
 {
 	//Just pass null shift to the periodic version
 	return getIncidentVel(rbp1, rbp2, dt, Vector3r::Zero(), Vector3r::Zero(), avoidGranularRatcheting);
 }
 
-Vector3r ScGeom::getIncidentVel_py(shared_ptr<Interaction> i, bool avoidGranularRatcheting)
+Vector3r ScGeom::getIncidentVel_py(shared_ptr<Interaction> i, bool avoidGranularRatcheting) const
 {
 	if (i->geom.get() != this) throw invalid_argument("ScGeom object is not the same as Interaction.geom.");
 	Scene* scene = Omega::instance().getScene().get();
@@ -115,13 +112,13 @@ Vector3r ScGeom::getIncidentVel_py(shared_ptr<Interaction> i, bool avoidGranular
 	        avoidGranularRatcheting);
 }
 
-Vector3r ScGeom::getRelAngVel(const State* rbp1, const State* rbp2, Real /*dt*/)
+Vector3r ScGeom::getRelAngVel(const State* rbp1, const State* rbp2, Real /*dt*/) const
 {
 	Vector3r relAngVel = (rbp2->angVel - rbp1->angVel);
 	return relAngVel;
 }
 
-Vector3r ScGeom::getRelAngVel_py(shared_ptr<Interaction> i)
+Vector3r ScGeom::getRelAngVel_py(shared_ptr<Interaction> i) const
 {
 	if (i->geom.get() != this) throw invalid_argument("ScGeom object is not the same as Interaction.geom.");
 	Scene* scene = Omega::instance().getScene().get();

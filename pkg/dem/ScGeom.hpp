@@ -26,7 +26,8 @@ private:
 public:
 	// inherited from GenericSpheresContact: Vector3r& normal;
 	Real &radius1, &radius2;
-	virtual ~ScGeom();
+	virtual ~ScGeom() = default;
+	ScGeom(const ScGeom&) = default;
 	inline ScGeom& operator=(const ScGeom& source)
 	{
 		normal           = source.normal;
@@ -58,16 +59,16 @@ public:
 	const Vector3r& shearIncrement() const { return shearInc; }
 
 	// Add method which returns the relative velocity (then, inside the contact law, this can be split into shear and normal component). Handle periodicity.
-	Vector3r
-	getIncidentVel(const State* rbp1, const State* rbp2, Real dt, const Vector3r& shiftVel, const Vector3r& shift2, bool avoidGranularRatcheting = true);
+	Vector3r getIncidentVel(
+	        const State* rbp1, const State* rbp2, Real dt, const Vector3r& shiftVel, const Vector3r& shift2, bool avoidGranularRatcheting = true) const;
 	// Implement another version of getIncidentVel which does not handle periodicity.
-	Vector3r getIncidentVel(const State* rbp1, const State* rbp2, Real dt, bool avoidGranularRatcheting = true);
+	Vector3r getIncidentVel(const State* rbp1, const State* rbp2, Real dt, bool avoidGranularRatcheting = true) const;
 	// Add function to get the relative angular velocity (useful to determine bending moment at the contact level)
-	Vector3r getRelAngVel(const State* rbp1, const State* rbp2, Real dt);
+	Vector3r getRelAngVel(const State* rbp1, const State* rbp2, Real dt) const;
 
 	// convenience version to be called from python
-	Vector3r getIncidentVel_py(shared_ptr<Interaction> i, bool avoidGranularRatcheting);
-	Vector3r getRelAngVel_py(shared_ptr<Interaction> i);
+	Vector3r getIncidentVel_py(shared_ptr<Interaction> i, bool avoidGranularRatcheting) const;
+	Vector3r getRelAngVel_py(shared_ptr<Interaction> i) const;
 
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_INIT_CTOR_PY(ScGeom,GenericSpheresContact,
@@ -116,7 +117,7 @@ REGISTER_SERIALIZABLE(ScGeom);
 
 class ScGeom6D : public ScGeom {
 public:
-	virtual ~ScGeom6D();
+	virtual ~ScGeom6D() = default;
 	const Real&     getTwist() const { return twist; }
 	const Vector3r& getBending() const { return bending; }
 	void            precomputeRotations(const State& rbp1, const State& rbp2, bool isNew, bool creep = false);
@@ -141,7 +142,7 @@ REGISTER_SERIALIZABLE(ScGeom6D);
 
 class ChCylGeom6D : public ScGeom6D {
 public:
-	virtual ~ChCylGeom6D();
+	virtual ~ChCylGeom6D() = default;
 	State fictiousState1;
 	State fictiousState2;
 	Real  relPos1, relPos2;
