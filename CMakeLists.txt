@@ -277,6 +277,7 @@ if(ENABLE_USEFUL_ERRORS)
   #   (1) libeigen ver. <=3.3.4 : -Wshadow=compatible-local -Wno-error=float-conversion
   #   (2) numpy    ver. < 1.13  : -Wunused-function
   # These impossible to fix warnings are in ${WORKAROUND_LIBRARY_WARNINGS}
+  SET(WORKAROUND_LIBRARY_WARNINGS " -Wno-error=maybe-uninitialized") # This one is always enabled, it is useful, but can be a false positive
   # to keep a warning printed as not an error add to WORKAROUND_LIBRARY_WARNINGS -Wno-error=cast-align, to disable the warning and not print it at all add: -Wno-cast-align
   # So depending on compiler version I need to turn these errors off.
   # They will be still printed as warnings. But they will not be an error due to -Werror flag.
@@ -287,7 +288,7 @@ if(ENABLE_USEFUL_ERRORS)
   # g++ ver < 11 ; all workarounds are for g++ < ver.11; When version 11 appears I hope that there will be fewer warnigs to disable.
   # This 'IF' is to trigger the re-evealuation when g++ v.11 appears.
   IF (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11.0 )
-    SET(WORKAROUND_LIBRARY_WARNINGS " -Wno-error=maybe-uninitialized -Wno-comment")
+    SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-comment")
     # g++ ver >= 8
     IF (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 8.0) # can't use VERSION_GREATER_EQUAL here, it's not working on ubuntu 16.04
       SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-cast-function-type")
@@ -308,7 +309,15 @@ if(ENABLE_USEFUL_ERRORS)
         SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wshadow=compatible-local")
       ENDIF()
     ENDIF()
-  ENDIF()
+  ELSE (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11.0 )
+    # Now, the standard procedure for disabling a single error for some external libraary is to use pragma like in Scene.hpp for #include <mpi.h>
+    # also we could report a bug in these libraries which required these pragmas. Then these pragmas could be wrapped inside an #if version.
+    MESSAGE(STATUS   "${Esc}[32mAlmost all useful errors are enabled and it is g++ version >= 11${Esc}[0m")
+    IF    (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 12.0 )
+      SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-comment")
+      MESSAGE(STATUS   "Except for this one g++ bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53431#c34 , so we add -Wno-comment")
+    ENDIF (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 12.0 )
+  ENDIF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11.0 )
 
   # mips64el architecture has different alignments for types than the other architectures. This warning is very good.
   # It warns about a potential crash, if we don't make sure that the alignment is indeed correct. !
