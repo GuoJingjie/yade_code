@@ -64,8 +64,6 @@ MeniscusParameters::MeniscusParameters(const MeniscusParameters& source)
 	nn33   = source.nn33;
 }
 
-MeniscusParameters::~MeniscusParameters() { }
-
 void Law2_ScGeom_CapillaryPhys_Capillarity::action()
 {
 	if (!scene) cerr << "scene not defined!";

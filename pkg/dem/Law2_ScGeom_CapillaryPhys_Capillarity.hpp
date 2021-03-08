@@ -45,7 +45,8 @@ public:
 
 	MeniscusParameters();
 	MeniscusParameters(const MeniscusParameters& source);
-	~MeniscusParameters();
+	MeniscusParameters& operator=(const MeniscusParameters&) = default;
+	~MeniscusParameters()                                    = default;
 };
 
 /// R = ratio(RadiusParticle1 on RadiusParticle2). Here, 10 R values from interpolation files (yade/extra/capillaryFiles), R = 1, 1.1, 1.25, 1.5, 1.75, 2, 3, 4, 5, 10
@@ -83,8 +84,8 @@ public:
 	shared_ptr<capillarylaw> capillary;
 	BodiesMenisciiList       bodiesMenisciiList;
 
-	void action();
-	void postLoad(Law2_ScGeom_CapillaryPhys_Capillarity&);
+	virtual void action() override;
+	void         postLoad(Law2_ScGeom_CapillaryPhys_Capillarity&);
 
 	bool hertzInitialized;
 	bool hertzOn;
