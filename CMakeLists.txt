@@ -6,6 +6,7 @@
 #  MAX_LOG_LEVEL: set maximum level for LOG_* macros compiled with ENABLE_LOGGER. For production build use MAX_LOG_LEVEL<=5, to avoid filter integer comparison on each call to LOG_TRACE(…)
 #  ENABLE_USEFUL_ERRORS: enable useful compiler errors which help a lot in error-free development.
 #  CMAKE_VERBOSE_MAKEFILE: output additional information during compiling (OFF by default)
+#  CMAKE_TIMING_VERBOSE: custom output for timing per target  (OFF by default)
 #  SUFFIX: suffix, added after binary-names (version number by default)
 #  NOSUFFIX: do not add a suffix after binary-name (OFF by default)
 #  YADE_VERSION: explicitely set version number (is defined from git-directory by default)
@@ -48,6 +49,13 @@ ELSE()
   set (CMAKE_CXX_STANDARD 17)
 ENDIF()
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Enable verbose timing display?
+if(CMAKE_TIMING_VERBOSE)
+#   set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)  #<==== if so, usual make output is replaced by next line, else timing log is one more line
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_SOURCE_DIR}/cMake/custom_output.sh")
+endif()
+
 
 # https://misc.flogisoft.com/bash/tip_colors_and_formatting
 # https://stackoverflow.com/questions/18968979/how-to-get-colorized-output-with-cmake , use ${Esc} for printing colors
