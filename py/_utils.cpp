@@ -39,8 +39,7 @@ py::tuple coordsAndDisplacements(int axis, py::tuple Aabb)
 		bbMax = py::extract<Vector3r>(Aabb[1])();
 	}
 	py::list retCoord, retDispl;
-	FOREACH(const shared_ptr<Body>& b, *Omega::instance().getScene()->bodies)
-	{
+	for (const auto& b : *Omega::instance().getScene()->bodies) {
 		if (useBB && !Shop::isInBB(b->state->pos, bbMin, bbMax)) continue;
 		retCoord.append(b->state->pos[axis]);
 		retDispl.append(b->state->pos[axis] - b->state->refPos[axis]);
@@ -74,8 +73,7 @@ py::tuple interactionAnglesHistogram(int axis, int mask, size_t bins, py::tuple 
 	int               axis2 = (axis + 1) % 3, axis3 = (axis + 2) % 3;
 	vector<Real>      cummProj(bins, 0.);
 	shared_ptr<Scene> rb = Omega::instance().getScene();
-	FOREACH(const shared_ptr<Interaction>& i, *rb->interactions)
-	{
+	for (const auto& i : *rb->interactions) {
 		if (!i->isReal()) continue;
 		const shared_ptr<Body>&b1 = Body::byId(i->getId1(), rb), b2 = Body::byId(i->getId2(), rb);
 		if (!b1->maskOk(mask) || !b2->maskOk(mask)) continue;
@@ -112,8 +110,7 @@ py::tuple bodyNumInteractionsHistogram(py::tuple aabb)
 	vector<int>              bodyNumIntr;
 	bodyNumIntr.resize(rb->bodies->size(), 0);
 	int maxIntr = 0;
-	FOREACH(const shared_ptr<Interaction>& i, *rb->interactions)
-	{
+	for (const auto& i : *rb->interactions) {
 		if (!i->isReal()) continue;
 		const Body::id_t       id1 = i->getId1(), id2 = i->getId2();
 		const shared_ptr<Body>&b1 = Body::byId(id1, rb), b2 = Body::byId(id2, rb);
@@ -226,8 +223,7 @@ Real sumFacetNormalForces(vector<Body::id_t> ids, int axis)
 	shared_ptr<Scene> rb = Omega::instance().getScene();
 	rb->forces.sync();
 	Real ret = 0;
-	FOREACH(const Body::id_t id, ids)
-	{
+	for (const Body::id_t& id : ids) {
 		Facet* f = YADE_CAST<Facet*>(Body::byId(id, rb)->shape.get());
 		if (axis < 0) ret += rb->forces.getForce(id).dot(f->normal);
 		else {
@@ -352,8 +348,7 @@ Vector3r forcesOnPlane(const Vector3r& planePt, const Vector3r& normal)
 {
 	Vector3r ret(Vector3r::Zero());
 	Scene*   scene = Omega::instance().getScene().get();
-	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
-	{
+	for (const auto& I : *scene->interactions) {
 		if (!I->isReal()) continue;
 		NormShearPhys* nsi = dynamic_cast<NormShearPhys*>(I->phys.get());
 		if (!nsi) continue;
@@ -420,8 +415,7 @@ Real maxOverlapRatio()
 {
 	Scene* scene = Omega::instance().getScene().get();
 	Real   ret   = -1;
-	FOREACH(const shared_ptr<Interaction> I, *scene->interactions)
-	{
+	for (const auto& I : *scene->interactions) {
 		if (!I->isReal()) continue;
 		Sphere *s1(dynamic_cast<Sphere*>(Body::byId(I->getId1(), scene)->shape.get())),
 		        *s2(dynamic_cast<Sphere*>(Body::byId(I->getId2(), scene)->shape.get()));
@@ -485,8 +479,7 @@ py::list intrsOfEachBody()
 		ret.append(py::list());
 	}
 	// loop over all interactions and fill the list ret
-	FOREACH(const shared_ptr<Interaction>& i, *rb->interactions)
-	{
+	for (const auto& i : *rb->interactions) {
 		if (!i->isReal()) { continue; }
 		temp = py::extract<py::list>(ret[i->getId1()]);
 		temp.append(i);
@@ -506,8 +499,7 @@ py::list numIntrsOfEachBody()
 		ret.append(0);
 	}
 	// loop over all interactions and fill the list ret
-	FOREACH(const shared_ptr<Interaction>& i, *rb->interactions)
-	{
+	for (const auto& i : *rb->interactions) {
 		if (!i->isReal()) continue;
 		ret[i->getId1()] += 1;
 		ret[i->getId2()] += 1;

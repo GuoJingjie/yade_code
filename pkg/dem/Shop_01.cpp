@@ -90,12 +90,12 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 	invFlip << 1 - flip(2, 1) * flip(1, 2), flip(2, 1) * flip(0, 2) - flip(0, 1), flip(0, 1) * flip(1, 2) - flip(0, 2),
 	        flip(1, 2) * flip(2, 0) - flip(1, 0), 1 - flip(0, 2) * flip(2, 0), flip(0, 2) * flip(1, 0) - flip(1, 2), flip(1, 0) * flip(2, 1) - flip(2, 0),
 	        flip(2, 0) * flip(0, 1) - flip(2, 1), 1 - flip(1, 0) * flip(0, 1);
-	FOREACH(const shared_ptr<Interaction>& i, *scene->interactions) i->cellDist = invFlip * i->cellDist;
+	for (const auto& i : *scene->interactions)
+		i->cellDist = invFlip * i->cellDist;
 
 	// force reinitialization of the collider
 	bool colliderFound = false;
-	FOREACH(const shared_ptr<Engine>& e, scene->engines)
-	{
+	for (const auto& e : scene->engines) {
 		Collider* c = dynamic_cast<Collider*>(e.get());
 		if (c) {
 			colliderFound = true;
@@ -131,8 +131,7 @@ Vector3r Shop::totalForceInVolume(Real& avgIsoStiffness, Scene* _rb)
 	Vector3r force(Vector3r::Zero());
 	Real     stiff = 0;
 	long     n     = 0;
-	FOREACH(const shared_ptr<Interaction>& I, *rb->interactions)
-	{
+	for (const auto& I : *rb->interactions) {
 		if (!I->isReal()) continue;
 		NormShearPhys* nsi = YADE_CAST<NormShearPhys*>(I->phys.get());
 		force += Vector3r(
@@ -152,8 +151,7 @@ Real Shop::unbalancedForce(bool useMaxForce, Scene* _rb)
 	rb->forces.sync();
 	shared_ptr<NewtonIntegrator> newton;
 	Vector3r                     gravity = Vector3r::Zero();
-	FOREACH(shared_ptr<Engine> & e, rb->engines)
-	{
+	for (const auto& e : rb->engines) {
 		newton = YADE_PTR_DYN_CAST<NewtonIntegrator>(e);
 		if (newton) {
 			gravity = newton->gravity;
@@ -181,8 +179,7 @@ Real Shop::unbalancedForce(bool useMaxForce, Scene* _rb)
 	// get mean force on interactions
 	sumF = 0;
 	nb   = 0;
-	FOREACH(const shared_ptr<Interaction>& I, *rb->interactions)
-	{
+	for (const auto& I : *rb->interactions) {
 		if (!I->isReal()) continue;
 		shared_ptr<NormShearPhys> nsi = YADE_PTR_CAST<NormShearPhys>(I->phys);
 		assert(nsi);
@@ -238,7 +235,9 @@ Vector3r Shop::momentum()
 {
 	Vector3r ret   = Vector3r::Zero();
 	Scene*   scene = Omega::instance().getScene().get();
-	FOREACH(const shared_ptr<Body> b, *scene->bodies) { ret += b->state->mass * b->state->vel; }
+	for (const auto& b : *scene->bodies) {
+		ret += b->state->mass * b->state->vel;
+	}
 	return ret;
 }
 
@@ -247,8 +246,7 @@ Vector3r Shop::angularMomentum(Vector3r origin)
 	Vector3r ret   = Vector3r::Zero();
 	Scene*   scene = Omega::instance().getScene().get();
 	Matrix3r T, Iloc;
-	FOREACH(const shared_ptr<Body> b, *scene->bodies)
-	{
+	for (const auto& b : *scene->bodies) {
 		ret += (b->state->pos - origin).cross(b->state->mass * b->state->vel);
 		ret += b->state->angMom;
 	}
@@ -325,8 +323,7 @@ void Shop::saveSpheresToFile(string fname)
 	std::ofstream            f(fname.c_str());
 	if (!f.good()) throw runtime_error("Unable to open file `" + fname + "'");
 
-	FOREACH(shared_ptr<Body> b, *scene->bodies)
-	{
+	for (const auto& b : *scene->bodies) {
 		if (!b->isDynamic()) continue;
 		shared_ptr<Sphere> intSph = YADE_PTR_DYN_CAST<Sphere>(b->shape);
 		if (!intSph) continue;
@@ -340,8 +337,7 @@ Real Shop::getSpheresVolume(const shared_ptr<Scene>& _scene, int mask)
 {
 	const shared_ptr<Scene> scene = (_scene ? _scene : Omega::instance().getScene());
 	Real                    vol   = 0;
-	FOREACH(shared_ptr<Body> b, *scene->bodies)
-	{
+	for (const auto& b : *scene->bodies) {
 		if (!b) continue;
 		Sphere* s = dynamic_cast<Sphere*>(b->shape.get());
 		if ((!s) or ((mask > 0) and ((b->groupMask & mask) == 0))) continue;
@@ -354,8 +350,7 @@ Real Shop::getSpheresMass(const shared_ptr<Scene>& _scene, int mask)
 {
 	const shared_ptr<Scene> scene = (_scene ? _scene : Omega::instance().getScene());
 	Real                    mass  = 0;
-	FOREACH(shared_ptr<Body> b, *scene->bodies)
-	{
+	for (const auto& b : *scene->bodies) {
 		if (!b) continue;
 		Sphere* s = dynamic_cast<Sphere*>(b->shape.get());
 		if ((!s) or ((mask > 0) and ((b->groupMask & mask) == 0))) continue;
@@ -421,10 +416,9 @@ Real Shop::getVoxelPorosity(const shared_ptr<Scene>& _scene, int _resolution, Ve
 
 	Vector3r start(_start), size(_end - _start);
 
-	FOREACH(shared_ptr<Body> bi, *scene->bodies)
-	{
+	for (const auto& bi : *scene->bodies) {
 		if ((bi)->isClump()) continue;
-		const shared_ptr<Body>& b = bi;
+		const auto& b = bi;
 		if (b->isDynamic() || b->isClumpMember()) {
 			const shared_ptr<Sphere>& sphere = YADE_PTR_CAST<Sphere>(b->shape);
 			Real                      r      = sphere->radius;
@@ -487,7 +481,8 @@ vector<boost::tuple<Vector3r, Real, int>> Shop::loadSpheresFromFile(const string
 		lineNo++;
 		boost::tokenizer<boost::char_separator<char>> toks(line, boost::char_separator<char>(" \t"));
 		vector<string>                                tokens;
-		FOREACH(const string& s, toks) tokens.push_back(s);
+		for (const string& s : toks)
+			tokens.push_back(s);
 		if (tokens.empty()) continue;
 		if (tokens[0] == "##PERIODIC::") {
 			if (tokens.size() != 4)

@@ -30,13 +30,13 @@ YADE_PLUGIN((TriaxialStressController));
 
 TriaxialStressController::~TriaxialStressController() { }
 
-Vector3r TriaxialStressController::getStress(int boundId)
+Vector3r TriaxialStressController::getStress(int boundId) const
 {
 	assert(boundId >= 0 && boundId <= 5);
 	return stress[boundId];
 }
 
-Vector3r TriaxialStressController::getStrainRate()
+Vector3r TriaxialStressController::getStrainRate() const
 {
 	return Vector3r(
 	        (Body::byId(wall_right_id, scene)->state->vel[0] - Body::byId(wall_left_id, scene)->state->vel[0]) / width,
@@ -48,8 +48,7 @@ void TriaxialStressController::updateStiffness()
 {
 	Real fluidStiffness = 0.;
 #ifdef FLOW_ENGINE
-	FOREACH(const shared_ptr<Engine> e, Omega::instance().getScene()->engines)
-	{
+	for (const auto& e : Omega::instance().getScene()->engines) {
 		if (e->getClassName() == "FlowEngine") {
 			TemplateFlowEngine_FlowEngineT<FlowCellInfo_FlowEngineT, FlowVertexInfo_FlowEngineT>* flow
 			        = dynamic_cast<TemplateFlowEngine_FlowEngineT<FlowCellInfo_FlowEngineT, FlowVertexInfo_FlowEngineT>*>(e.get());

@@ -38,8 +38,7 @@ void ThermalEngine::action()
 	scene = Omega::instance().getScene().get();
 	if (first) setInitialValues();
 	if (debug) cout << "initial values set" << endl;
-	FOREACH(const shared_ptr<Engine> e, Omega::instance().getScene()->engines)
-	{
+	for (const auto& e : Omega::instance().getScene()->engines) {
 		if (e->getClassName() == "FlowEngine") { flow = dynamic_cast<FlowEngineT*>(e.get()); }
 	}
 	// some initialization stuff for timestep and efficiency.

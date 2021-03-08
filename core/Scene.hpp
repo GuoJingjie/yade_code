@@ -20,7 +20,12 @@
 #include <core/InteractionContainer.hpp>
 #include <core/Material.hpp>
 #ifdef YADE_MPI
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#pragma GCC diagnostic ignored "-Wcast-function-type"
 #include <mpi.h>
+#pragma GCC diagnostic pop
 #endif
 
 #ifdef YADE_OPENMP

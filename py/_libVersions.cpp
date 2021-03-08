@@ -175,8 +175,12 @@ py::list sqliteVer()
 
 // 12. VTK
 #ifdef YADE_VTK
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <vtkVersion.h>
-py::list vtkVer()
+#pragma GCC diagnostic pop
+py::list               vtkVer()
 {
 	py::list ret;
 	ret.append(py::make_tuple(VTK_MAJOR_VERSION, VTK_MINOR_VERSION, VTK_BUILD_VERSION));
@@ -263,7 +267,12 @@ py::list metisVer() { return {}; }
 
 // 17. mpi
 #ifdef YADE_MPI
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#pragma GCC diagnostic ignored "-Wcast-function-type"
 #include <mpi.h>
+#pragma GCC diagnostic pop
 // https://www.open-mpi.org/software/ompi/versions/
 py::list mpiVer()
 {
@@ -300,9 +309,13 @@ py::list mpiVer() { return {}; }
 
 // 18. clp
 #ifdef YADE_POTENTIAL_BLOCKS
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <ClpConfig.h>
 #include <CoinUtilsConfig.h>
-py::list clpVer()
+#pragma GCC diagnostic pop
+py::list               clpVer()
 {
 	py::list ret;
 	ret.append(py::make_tuple(CLP_VERSION_MAJOR, CLP_VERSION_MINOR, CLP_VERSION_RELEASE));

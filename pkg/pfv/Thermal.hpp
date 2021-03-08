@@ -70,7 +70,7 @@ public:
 	Real         cavityDtemp;
 
 	virtual ~ThermalEngine();
-	virtual void action();
+	virtual void action() override;
 	void         setReynoldsNumbers();
 	void         setInitialValues();
 	void         applyTempDeltaToSolids(Real delT);

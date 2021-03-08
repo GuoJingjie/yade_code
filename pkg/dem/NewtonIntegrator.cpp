@@ -151,8 +151,7 @@ void NewtonIntegrator::action()
 #ifdef YADE_BODY_CALLBACK
 	// setup callbacks
 	vector<BodyCallback::FuncPtr> callbackPtrs;
-	FOREACH(const shared_ptr<BodyCallback>& cb, callbacks)
-	{
+	for (const auto& cb : callbacks) {
 		cerr << "<cb=" << cb.get() << ", setting cb->scene=" << scene << ">";
 		cb->scene = scene;
 		callbackPtrs.push_back(cb->stepInit());
@@ -165,7 +164,9 @@ void NewtonIntegrator::action()
 	const bool isPeriodic(scene->isPeriodic);
 
 #ifdef YADE_OPENMP
-	FOREACH(Real & thrMaxVSq, threadMaxVelocitySq) { thrMaxVSq = 0; }
+	for (Real& thrMaxVSq : threadMaxVelocitySq) {
+		thrMaxVSq = 0;
+	}
 #endif
 	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 	{
@@ -268,7 +269,9 @@ void NewtonIntegrator::action()
 	YADE_PARALLEL_FOREACH_BODY_END();
 	timingDeltas->checkpoint("motion integration");
 #ifdef YADE_OPENMP
-	FOREACH(const Real& thrMaxVSq, threadMaxVelocitySq) { maxVelocitySq = max(maxVelocitySq, thrMaxVSq); }
+	for (const Real& thrMaxVSq : threadMaxVelocitySq) {
+		maxVelocitySq = max(maxVelocitySq, thrMaxVSq);
+	}
 #endif
 	timingDeltas->checkpoint("sync max vel");
 	if (scene->isPeriodic) {
@@ -324,10 +327,9 @@ void NewtonIntegrator::leapfrogAsphericalRotate(State* state, const Real& dt, co
 	state->ori.normalize();
 }
 
-bool NewtonIntegrator::get_densityScaling()
+bool NewtonIntegrator::get_densityScaling() const
 {
-	FOREACH(const shared_ptr<Engine> e, Omega::instance().getScene()->engines)
-	{
+	for (const auto& e : Omega::instance().getScene()->engines) {
 		GlobalStiffnessTimeStepper* ts = dynamic_cast<GlobalStiffnessTimeStepper*>(e.get());
 		if (ts && densityScaling != ts->densityScaling)
 			LOG_WARN("density scaling is not active in the timeStepper, it will have no effect unless a scaling is specified manually for some "
@@ -341,8 +343,7 @@ bool NewtonIntegrator::get_densityScaling()
 
 void NewtonIntegrator::set_densityScaling(bool dsc)
 {
-	FOREACH(const shared_ptr<Engine> e, Omega::instance().getScene()->engines)
-	{
+	for (const auto& e : Omega::instance().getScene()->engines) {
 		GlobalStiffnessTimeStepper* ts = dynamic_cast<GlobalStiffnessTimeStepper*>(e.get());
 		if (ts) {
 			ts->densityScaling = dsc;

@@ -787,7 +787,7 @@ void TwoPhaseFlowEngine::savePoreNetwork(const char* folder)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-Real TwoPhaseFlowEngine::getKappa(int numberFacets)
+Real TwoPhaseFlowEngine::getKappa(int numberFacets) const
 {
 	if (numberFacets == 0) {
 		return 0;
@@ -819,7 +819,7 @@ Real TwoPhaseFlowEngine::getKappa(int numberFacets)
 	}
 }
 
-Real TwoPhaseFlowEngine::getChi(int numberFacets)
+Real TwoPhaseFlowEngine::getChi(int numberFacets) const
 {
 	if (numberFacets == 0) {
 		return 0;
@@ -852,7 +852,7 @@ Real TwoPhaseFlowEngine::getChi(int numberFacets)
 }
 
 
-Real TwoPhaseFlowEngine::getLambda(int numberFacets)
+Real TwoPhaseFlowEngine::getLambda(int numberFacets) const
 {
 	if (numberFacets == 0) {
 		return 0;
@@ -884,7 +884,7 @@ Real TwoPhaseFlowEngine::getLambda(int numberFacets)
 	}
 }
 
-Real TwoPhaseFlowEngine::getN(int numberFacets)
+Real TwoPhaseFlowEngine::getN(int numberFacets) const
 {
 	if (numberFacets == 0) {
 		return 0;
@@ -916,7 +916,7 @@ Real TwoPhaseFlowEngine::getN(int numberFacets)
 	}
 }
 
-Real TwoPhaseFlowEngine::getDihedralAngle(int numberFacets)
+Real TwoPhaseFlowEngine::getDihedralAngle(int numberFacets) const
 { //given in radians which is reported as tetha in manuscript Sweijen et al.,
 	if (numberFacets == 0) {
 		return 0;
@@ -948,7 +948,7 @@ Real TwoPhaseFlowEngine::getDihedralAngle(int numberFacets)
 	}
 }
 
-Real TwoPhaseFlowEngine::getConstantC3(CellHandle cell)
+Real TwoPhaseFlowEngine::getConstantC3(CellHandle cell) const
 {
 	Real c1 = 54.92 * math::pow(Real(cell->info().numberFacets), -1.14);
 	if (cell->info().numberFacets == 4) { c1 = 8.291; }
@@ -963,7 +963,7 @@ Real TwoPhaseFlowEngine::getConstantC3(CellHandle cell)
 	return c3;
 }
 
-Real TwoPhaseFlowEngine::getConstantC4(CellHandle cell)
+Real TwoPhaseFlowEngine::getConstantC4(CellHandle cell) const
 {
 	Real c2 = 4.85 * math::pow(Real(cell->info().numberFacets), -1.19);
 	if (cell->info().numberFacets == 4) { c2 = 1.409; }
@@ -1232,7 +1232,7 @@ void TwoPhaseFlowEngine::countFacets()
 }
 
 
-void TwoPhaseFlowEngine::getMergedCellStats()
+void TwoPhaseFlowEngine::getMergedCellStats() const
 {
 	std::array<Real, 26> countFacets   = { 0 };
 	std::array<Real, 30> countMergedNR = { 0 };
@@ -2638,7 +2638,7 @@ void TwoPhaseFlowEngine::updateDeformationFluxTPF()
 	}
 }
 
-Real TwoPhaseFlowEngine::getSolidVolumeInCell(CellHandle cell)
+Real TwoPhaseFlowEngine::getSolidVolumeInCell(CellHandle cell) const
 {
 	//Dublicate function that depends on position buffer of particles
 	//FIXME this function be replaced if function of void volume can be made dependent on updated location of particles
@@ -3555,7 +3555,7 @@ void TwoPhaseFlowEngine::updateReservoirs2()
 	}
 }
 
-Real TwoPhaseFlowEngine::getMinDrainagePc()
+Real TwoPhaseFlowEngine::getMinDrainagePc() const
 {
 	Real                nextEntry = 1e50;
 	RTriangulation&     tri       = solver->T[solver->currentTes].Triangulation();
@@ -3584,7 +3584,7 @@ Real TwoPhaseFlowEngine::getMinDrainagePc()
 		return nextEntry;
 }
 
-Real TwoPhaseFlowEngine::getMaxImbibitionPc()
+Real TwoPhaseFlowEngine::getMaxImbibitionPc() const
 {
 	Real                nextEntry = -1e50;
 	RTriangulation&     tri       = solver->T[solver->currentTes].Triangulation();
@@ -3612,7 +3612,7 @@ Real TwoPhaseFlowEngine::getMaxImbibitionPc()
 		return nextEntry;
 }
 
-Real TwoPhaseFlowEngine::getSaturation(bool isSideBoundaryIncluded)
+Real TwoPhaseFlowEngine::getSaturation(bool isSideBoundaryIncluded) const
 {
 	if ((!isInvadeBoundary) && (isSideBoundaryIncluded)) cerr << "In isInvadeBoundary=false drainage, isSideBoundaryIncluded can't set true." << endl;
 	RTriangulation&     tri         = solver->T[solver->currentTes].Triangulation();
@@ -3753,7 +3753,7 @@ bool TwoPhaseFlowEngine::detectBridge(RTriangulation::Finite_edges_iterator& edg
 	}
 }
 
-bool TwoPhaseFlowEngine::isCellNeighbor(unsigned int cell1, unsigned int cell2)
+bool TwoPhaseFlowEngine::isCellNeighbor(unsigned int cell1, unsigned int cell2) const
 {
 	bool neighbor = false;
 	for (unsigned int i = 0; i < 4; i++) {
@@ -3778,7 +3778,7 @@ void TwoPhaseFlowEngine::setPoreThroatRadius(unsigned int cell1, unsigned int ce
 		}
 	}
 }
-Real TwoPhaseFlowEngine::getPoreThroatRadius(unsigned int cell1, unsigned int cell2)
+Real TwoPhaseFlowEngine::getPoreThroatRadius(unsigned int cell1, unsigned int cell2) const
 {
 	Real r = -1.;
 	if (isCellNeighbor(cell1, cell2) == false) {

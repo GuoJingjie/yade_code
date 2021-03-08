@@ -26,7 +26,10 @@ class State;
 class TriaxialStressController : public BoundaryController {
 private:
 	bool                  first;
-	inline const Vector3r getForce(Scene* rb, Body::id_t id) { return rb->forces.getForce(id); /* needs sync, which is done at the beginning of action */ }
+	inline const Vector3r getForce(Scene* rb, Body::id_t id) const
+	{
+		return rb->forces.getForce(id); /* needs sync, which is done at the beginning of action */
+	}
 
 public:
 	//! internal index values for retrieving walls
@@ -61,7 +64,7 @@ public:
 
 	virtual ~TriaxialStressController();
 
-	virtual void action();
+	virtual void action() override;
 	//! Regulate the stress applied on walls with flag wall_XXX_activated = true
 	void controlExternalStress(int wall, Vector3r resultantForce, State* p, Real wall_max_vel);
 	//! Regulate the mean stress by changing spheres size, WARNING : this function assumes that all dynamic bodies in the problem are spheres
@@ -73,8 +76,8 @@ public:
 	//! Compute the mean/max unbalanced force in the assembly (normalized by mean contact force)
 	Real ComputeUnbalancedForce(bool maxUnbalanced = false);
 	///! Getter for stress and rates in python
-	Vector3r getStress(int boundId);
-	Vector3r getStrainRate();
+	Vector3r getStress(int boundId) const;
+	Vector3r getStrainRate() const;
 
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_INIT_CTOR_PY(TriaxialStressController,BoundaryController,

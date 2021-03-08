@@ -436,7 +436,7 @@ long SpherePack::makeClumpCloud(const Vector3r& mn, const Vector3r& mx, const ve
 	vector<SpherePack> clumps; /* vector<Vector3r> margins; */
 	Real               maxR = 0;
 	vector<Real>       boundRad; // squared radii of bounding sphere for each clump
-	for (const shared_ptr<SpherePack>& c : _clumps) {
+	for (const auto& c : _clumps) {
 		SpherePack c2(*c);
 		c2.translate(c2.midPt()); //recenter
 		clumps.push_back(c2);

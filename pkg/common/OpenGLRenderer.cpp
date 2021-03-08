@@ -33,10 +33,7 @@ OpenGLRenderer::~OpenGLRenderer() { }
 
 void OpenGLRenderer::init()
 {
-	typedef std::pair<string, DynlibDescriptor>
-	        strDldPair; // necessary as FOREACH, being macro, cannot have the "," inside the argument (preprocessor does not parse templates)
-	FOREACH(const strDldPair& item, Omega::instance().getDynlibsDescriptor())
-	{
+	for (const auto& item : Omega::instance().getDynlibsDescriptor()) {
 		// if (Omega::instance().isInheritingFrom_recursive(item.first,"GlStateFunctor")) stateFunctorNames.push_back(item.first);
 		if (Omega::instance().isInheritingFrom_recursive(item.first, "GlBoundFunctor")) boundFunctorNames.push_back(item.first);
 		if (Omega::instance().isInheritingFrom_recursive(item.first, "GlShapeFunctor")) shapeFunctorNames.push_back(item.first);
@@ -247,8 +244,7 @@ void OpenGLRenderer::render(const shared_ptr<Scene>& _scene, Body::id_t selectio
 	if (intrGeom) renderIGeom();
 	if (intrPhys) renderIPhys();
 
-	FOREACH(const shared_ptr<GlExtraDrawer> d, extraDrawers)
-	{
+	for (const auto& d : extraDrawers) {
 		if (d->dead) continue;
 		glPushMatrix();
 		d->scene = scene.get();
@@ -259,8 +255,7 @@ void OpenGLRenderer::render(const shared_ptr<Scene>& _scene, Body::id_t selectio
 
 void OpenGLRenderer::renderAllInteractionsWire()
 {
-	FOREACH(const shared_ptr<Interaction>& i, *scene->interactions)
-	{
+	for (const auto& i : *scene->interactions) {
 		// geometry must exist              , sometimes a body can get deleted
 		if ((not i->functorCache.geomExists)) { continue; }
 		const boost::shared_ptr<const Body> b1 = Body::byId(i->getId1(), scene);
@@ -289,8 +284,7 @@ void OpenGLRenderer::renderDOF_ID()
 {
 	const GLfloat ambientColorSelected[4]   = { 10.0, 0.0, 0.0, 1.0 };
 	const GLfloat ambientColorUnselected[4] = { 0.5, 0.5, 0.5, 1.0 };
-	FOREACH(const shared_ptr<Body> b, *scene->bodies)
-	{
+	for (const auto& b : *scene->bodies) {
 		if (!b) continue;
 		if (b->shape && ((b->getGroupMask() & mask) || b->getGroupMask() == 0)) {
 			if (!id && b->state->blockedDOFs == 0) continue;
@@ -321,8 +315,7 @@ void OpenGLRenderer::renderIGeom()
 	geomDispatcher.updateScenePtr();
 	{
 		const std::lock_guard<std::mutex> lock(scene->interactions->drawloopmutex);
-		FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
-		{
+		for (const auto& I : *scene->interactions) {
 			if (!I->geom) continue;        // avoid refcount manipulations if the interaction is not real anyway
 			shared_ptr<IGeom> ig(I->geom); // keep reference so that ig does not disappear suddenly while being rendered
 			if (!ig) continue;
@@ -341,8 +334,7 @@ void OpenGLRenderer::renderIPhys()
 	physDispatcher.updateScenePtr();
 	{
 		const std::lock_guard<std::mutex> lock(scene->interactions->drawloopmutex);
-		FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
-		{
+		for (const auto& I : *scene->interactions) {
 			shared_ptr<IPhys> ip(I->phys);
 			if (!ip) continue;
 			const shared_ptr<Body>&b1 = Body::byId(I->getId1(), scene), b2 = Body::byId(I->getId2(), scene);
@@ -398,8 +390,7 @@ void OpenGLRenderer::renderShape()
 	// instead of const shared_ptr&, get proper shared_ptr;
 	// Less efficient in terms of performance, since memory has to be written (not measured, though),
 	// but it is still better than crashes if the body gets deleted meanwile.
-	FOREACH(shared_ptr<Body> b, *scene->bodies)
-	{
+	for (const auto& b : *scene->bodies) {
 		if (!b || !b->shape) continue;
 		if (!(bodyDisp[b->getId()].isDisplayed and !bodyDisp[b->getId()].hidden)) continue;
 		Vector3r    pos = bodyDisp[b->getId()].pos;

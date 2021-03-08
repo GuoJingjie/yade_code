@@ -217,37 +217,37 @@ public:
 		otherCluster.reset();
 	}
 
-	vector<int> getPores()
+	vector<int> getPores() const
 	{
 		vector<int> res;
-		for (vector<CellHandle>::iterator it = pores.begin(); it != pores.end(); it++)
+		for (vector<CellHandle>::const_iterator it = pores.cbegin(); it != pores.cend(); it++)
 			res.push_back((*it)->info().id);
 		return res;
 	}
 
-	boost::python::list getInterfaces(int cellId = -1)
+	boost::python::list getInterfaces(int cellId = -1) const
 	{
 		boost::python::list ints;
-		for (vector<Interface>::iterator it = interfaces.begin(); it != interfaces.end(); it++)
+		for (vector<Interface>::const_iterator it = interfaces.cbegin(); it != interfaces.cend(); it++)
 			if (cellId == -1 or unsigned(cellId) == it->first.first)
 				ints.append(boost::python::make_tuple(it->first.first, it->first.second, it->second, it - interfaces.begin()));
 		return ints;
 	}
-	Real getFlux(unsigned nf)
+	Real getFlux(unsigned nf) const
 	{
 		const CellHandle& innerCell = interfaces[nf].innerCell;
 		return innerCell->info().kNorm()[interfaces[nf].outerIndex]
 		        * (innerCell->info().p() + interfaces[nf].capillaryP - innerCell->neighbor(interfaces[nf].outerIndex)->info().p());
 	}
-	Real getCapVol(unsigned nf) { return interfaces[nf].volume; }
-	Real getConductivity(unsigned nf)
+	Real getCapVol(unsigned nf) const { return interfaces[nf].volume; }
+	Real getConductivity(unsigned nf) const
 	{
 		const CellHandle& innerCell = interfaces[nf].innerCell;
 		return innerCell->info().kNorm()[interfaces[nf].outerIndex];
 	}
 
 	void setCapPressure(unsigned nf, Real pcap) { interfaces[nf].capillaryP = pcap; }
-	Real getCapPressure(unsigned nf) { return interfaces[nf].capillaryP; }
+	Real getCapPressure(unsigned nf) const { return interfaces[nf].capillaryP; }
 	void setCapVol(unsigned nf, Real vcap) { interfaces[nf].volume = vcap; }
 	Real updateCapVol(unsigned nf, Real dt)
 	{
@@ -301,7 +301,7 @@ public:
 
 	//We can overload every functions of the base engine to make it behave differently
 	//if we overload action() like this, this engine is doing nothing in a standard timestep, it can still have useful functions
-	virtual void action() {};
+	virtual void action() override {};
 
 	//If a new function is specific to the derived engine, put it here, else go to the base TemplateFlowEngine if it is useful for everyone
 	void computePoreBodyVolume();
@@ -334,9 +334,9 @@ public:
 	void invasion(); //functions can be shared by two modes
 	void invasionSingleCell(CellHandle cell);
 	void updatePressure();
-	Real getMinDrainagePc();
-	Real getMaxImbibitionPc();
-	Real getSaturation(bool isSideBoundaryIncluded = false);
+	Real getMinDrainagePc() const;
+	Real getMaxImbibitionPc() const;
+	Real getSaturation(bool isSideBoundaryIncluded = false) const;
 
 	void invasion1(); //with-trap
 	void updateReservoirs1();
@@ -389,7 +389,7 @@ public:
 	}
 	boost::python::list pyClusters();
 	bool                connectedAroundEdge(const RTriangulation& Tri, CellHandle& cell, unsigned facet1, unsigned facet2);
-	// 	int getMaxCellLabel();
+	// 	int getMaxCellLabel() const;
 
 	//compute forces
 	void computeFacetPoreForcesWithCache(bool onlyCache = false);
@@ -427,17 +427,17 @@ public:
 	bool detectBridge(RTriangulation::Finite_edges_iterator& edge);
 
 	//Library TwoPhaseFlow
-	Real getKappa(int numberFacets);
-	Real getChi(int numberFacets);
-	Real getLambda(int numberFacets);
-	Real getN(int numberFacets);
-	Real getDihedralAngle(int numberFacets);
+	Real getKappa(int numberFacets) const;
+	Real getChi(int numberFacets) const;
+	Real getLambda(int numberFacets) const;
+	Real getN(int numberFacets) const;
+	Real getDihedralAngle(int numberFacets) const;
 
 	//Merging Library
 	void mergeCells();
 	void countFacets();
 	void computeMergedVolumes();
-	void getMergedCellStats();
+	void getMergedCellStats() const;
 	void calculateResidualSaturation();
 	void adjustUnresolvedPoreThroatsAfterMerging();
 	void actionMergingAlgorithm();
@@ -452,10 +452,10 @@ public:
 	void setListOfPores();
 	void getQuantities();
 	Real porePressureFromPcS(CellHandle cell, Real saturation);
-	Real getSolidVolumeInCell(CellHandle cell);
+	Real getSolidVolumeInCell(CellHandle cell) const;
 
-	Real getConstantC4(CellHandle cell);
-	Real getConstantC3(CellHandle cell);
+	Real getConstantC4(CellHandle cell) const;
+	Real getConstantC3(CellHandle cell) const;
 	Real dsdp(CellHandle cell, Real pw);
 	Real poreSaturationFromPcS(CellHandle cell, Real pw);
 
@@ -492,7 +492,7 @@ public:
 	std::vector<ETriplet>                                                                   tripletList;
 	Eigen::SparseLU<Eigen::SparseMatrix<Real, Eigen::ColMajor>, Eigen::COLAMDOrdering<int>> eSolver;
 
-	int getCell2(Real posX, Real posY, Real posZ)
+	int getCell2(Real posX, Real posY, Real posZ) const
 	{ //Should be fixed properly
 		RTriangulation& tri  = solver->T[solver->currentTes].Triangulation();
 		CellHandle      cell = tri.locate(CGT::Sphere(posX, posY, posZ));
@@ -539,7 +539,7 @@ public:
 		return ids;
 	}
 
-	boost::python::list getNeighbors(unsigned int id, bool withInfCell)
+	boost::python::list getNeighbors(unsigned int id, bool withInfCell) const
 	{
 		boost::python::list   ids;
 		const RTriangulation& Tri = solver->tesselation().Triangulation();
@@ -581,9 +581,9 @@ public:
 		initSolver(*solver);
 	}
 	///manipulate/get/set on pore geometry
-	bool isCellNeighbor(unsigned int cell1, unsigned int cell2);
+	bool isCellNeighbor(unsigned int cell1, unsigned int cell2) const;
 	void setPoreThroatRadius(unsigned int cell1, unsigned int cell2, Real radius);
-	Real getPoreThroatRadius(unsigned int cell1, unsigned int cell2);
+	Real getPoreThroatRadius(unsigned int cell1, unsigned int cell2) const;
 
 	CELL_SCALAR_GETTER(bool, .isWRes, cellIsWRes)
 	CELL_SCALAR_GETTER(bool, .isNWRes, cellIsNWRes)

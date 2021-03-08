@@ -173,7 +173,7 @@ void InteractionContainer::updateSortedIntrs()
 
 void InteractionContainer::preSave(InteractionContainer&)
 {
-	for (const shared_ptr<Interaction>& I : *this) {
+	for (const auto& I : *this) {
 		if (I->geom || I->phys) interaction.push_back(I);
 		// since requestErase'd interactions have no interaction physics/geom, they are not saved
 	}

@@ -136,7 +136,9 @@ public:
 	{
 		const std::lock_guard<std::mutex> lock(Omega::instance().renderMutex);
 		vector<Body::id_t>                ret;
-		FOREACH(shared_ptr<Body> & b, bb) { ret.push_back(append(b)); }
+		for (const auto& b : bb) {
+			ret.push_back(append(b));
+		}
 		return ret;
 	}
 	Body::id_t clump(vector<Body::id_t> ids, unsigned int discretization)
@@ -149,14 +151,14 @@ public:
 		clumpBody->setBounded(false);
 		proxee->insert(clumpBody);
 		// add clump members to the clump
-		FOREACH(Body::id_t id, ids)
-		{
+		for (const Body::id_t& id : ids) {
 			if (Body::byId(id, scene)->isClumpMember()) {                                                 //Check, whether the body is clumpMember
 				Clump::del(Body::byId(Body::byId(id, scene)->clumpId, scene), Body::byId(id, scene)); //If so, remove it from there
 			}
 		};
 
-		FOREACH(Body::id_t id, ids) Clump::add(clumpBody, Body::byId(id, scene));
+		for (const Body::id_t& id : ids)
+			Clump::add(clumpBody, Body::byId(id, scene));
 		Clump::updateProperties(clumpBody, discretization);
 		return clumpBody->getId();
 	}
@@ -227,8 +229,7 @@ public:
 		shared_ptr<Body> clp = Body::byId(cid, scene);              // get clump pointer
 		checkClump(clp);
 		vector<Body::id_t> eraseList;
-		FOREACH(Body::id_t bid, bids)
-		{
+		for (const Body::id_t& bid : bids) {
 			shared_ptr<Body> bp = Body::byId(bid, scene); // get body pointer
 			if (bp->isClump()) {
 				if (bp == clp) {
@@ -258,7 +259,8 @@ public:
 				Clump::add(clp, bp); // bp must be a standalone!
 		}
 		Clump::updateProperties(clp, discretization);
-		FOREACH(Body::id_t bid, eraseList) proxee->erase(bid, false); //erase old clumps
+		for (const Body::id_t& bid : eraseList)
+			proxee->erase(bid, false); //erase old clumps
 	}
 	void releaseFromClump(Body::id_t bid, Body::id_t cid, unsigned int discretization)
 	{
@@ -300,8 +302,7 @@ public:
 	{
 		py::list ret;
 		Real     checkSum = 0.0;
-		FOREACH(Real amount, amounts)
-		{
+		for (const Real& amount : amounts) {
 			if (amount < 0.0) {
 				PyErr_SetString(PyExc_ValueError, ("Error: One or more of given amounts are negative!"));
 				py::throw_error_already_set();
@@ -390,8 +391,7 @@ public:
 			vector<shared_ptr<Body>> bpListTmp(numReplaceTmp);
 			int                      a = 0, c = 0; //counters
 			vector<int>              posTmp;
-			FOREACH(const shared_ptr<Body>& b, sphereList)
-			{
+			for (const auto& b : sphereList) {
 				if (c == a * numSphereList / numReplaceTmp) {
 					bpListTmp[a] = b;
 					a++;
@@ -405,8 +405,7 @@ public:
 			}
 
 			//adapt position- and radii-informations and replace spheres from bpListTmp by clumps:
-			FOREACH(const shared_ptr<Body>& b, bpListTmp)
-			{
+			for (const auto& b : bpListTmp) {
 				//get sphere, that should be replaced:
 				const Sphere*        sphere = YADE_CAST<Sphere*>(b->shape.get());
 				shared_ptr<Material> matTmp = b->material;
@@ -530,16 +529,14 @@ public:
 	const shared_ptr<Scene> mb;
 	bool                    hasKey(const string& key)
 	{
-		FOREACH(string val, mb->tags)
-		{
+		for (const string& val : mb->tags) {
 			if (boost::algorithm::starts_with(val, key + "=")) { return true; }
 		}
 		return false;
 	}
 	string getItem(const string& key)
 	{
-		FOREACH(string & val, mb->tags)
-		{
+		for (const string& val : mb->tags) {
 			if (boost::algorithm::starts_with(val, key + "=")) {
 				string val1(val);
 				boost::algorithm::erase_head(val1, key.size() + 1);
@@ -556,8 +553,7 @@ public:
 			PyErr_SetString(PyExc_KeyError, "Key must not contain the '=' character (implementation limitation; sorry).");
 			py::throw_error_already_set();
 		}
-		FOREACH(string & val, mb->tags)
-		{
+		for (string& val : mb->tags) {
 			if (boost::algorithm::starts_with(val, key + "=")) {
 				val = key + "=" + item;
 				return;
@@ -568,8 +564,7 @@ public:
 	py::list keys()
 	{
 		py::list ret;
-		FOREACH(string val, mb->tags)
-		{
+		for (string val : mb->tags) {
 			size_t i = val.find("=");
 			if (i == string::npos) throw runtime_error("Tags must be in the key=value format (internal error?)");
 			boost::algorithm::erase_tail(val, val.size() - i);
@@ -638,8 +633,7 @@ public:
 	shared_ptr<Interaction> pyNth(long n)
 	{
 		long i = 0;
-		FOREACH(shared_ptr<Interaction> I, *proxee)
-		{
+		for (const auto& I : *proxee) {
 			if (!I->isReal()) continue;
 			if (i++ == n) return I;
 		}
@@ -654,8 +648,7 @@ public:
 	py::list withBody(long id)
 	{
 		py::list ret;
-		FOREACH(const Body::MapId2IntrT::value_type& I, Body::byId(id, scene)->intrs)
-		{
+		for (const Body::MapId2IntrT::value_type& I : Body::byId(id, scene)->intrs) {
 			if (I.second->isReal()) ret.append(I.second);
 		}
 		return ret;
@@ -663,14 +656,14 @@ public:
 	py::list withBodyAll(long id)
 	{
 		py::list ret;
-		FOREACH(const Body::MapId2IntrT::value_type& I, Body::byId(id, scene)->intrs) ret.append(I.second);
+		for (const Body::MapId2IntrT::value_type& I : Body::byId(id, scene)->intrs)
+			ret.append(I.second);
 		return ret;
 	}
 	py::list getAll(bool onlyReal)
 	{
 		py::list ret;
-		FOREACH(const shared_ptr<Interaction>& I, *proxee)
-		{
+		for (const auto& I : *proxee) {
 			if (onlyReal && !I->isReal()) continue;
 			ret.append(I);
 		}
@@ -679,8 +672,7 @@ public:
 	long countReal()
 	{
 		long ret = 0;
-		FOREACH(const shared_ptr<Interaction>& I, *proxee)
-		{
+		for (const auto& I : *proxee) {
 			if (I->isReal()) ret++;
 		}
 		return ret;
@@ -803,7 +795,8 @@ public:
 	vector<int> appendList(vector<shared_ptr<Material>> mm)
 	{
 		vector<int> ret;
-		FOREACH(shared_ptr<Material> & m, mm) ret.push_back(append(m));
+		for (const auto& m : mm)
+			ret.push_back(append(m));
 		return ret;
 	}
 	int len() { return (int)scene->materials.size(); }
@@ -848,17 +841,15 @@ public:
 // not sure if we should map materials to variables by default...
 // a call to this functions would have to be added to pyMaterialContainer::append
 #if 0
-			FOREACH(const shared_ptr<Material>& m, OMEGA.getScene()->materials){
+			for (const auto& m : OMEGA.getScene()->materials){
 				if(!m->label.empty()) { PyGILState_STATE gstate; gstate = PyGILState_Ensure(); PyRun_SimpleString(("__builtins__."+m->label+"=Omega().materials["+boost::lexical_cast<string>(m->id)+"]").c_str()); PyGILState_Release(gstate); }
 			}
 #endif
-		FOREACH(const shared_ptr<Engine>& e, OMEGA.getScene()->engines)
-		{
+		for (const auto& e : OMEGA.getScene()->engines) {
 			if (!e->label.empty()) { pyRunString("__builtins__." + e->label + "=Omega().labeledEngine('" + e->label + "')"); }
 #define _DO_FUNCTORS(functors, FunctorT)                                                                                                                       \
 	{                                                                                                                                                      \
-		FOREACH(const shared_ptr<FunctorT>& f, functors)                                                                                               \
-		{                                                                                                                                              \
+		for (const auto& f : functors) {                                                                                               \
 			if (!f->label.empty()) { pyRunString("__builtins__." + f->label + "=Omega().labeledEngine('" + f->label + "')"); }                     \
 		}                                                                                                                                              \
 	}
@@ -883,8 +874,7 @@ public:
 #undef _TRY_DISPATCHER
 			CombinedKinematicEngine* cke = dynamic_cast<CombinedKinematicEngine*>(e.get());
 			if (cke) {
-				FOREACH(const shared_ptr<KinematicEngine>& ke, cke->comb)
-				{
+				for (const auto& ke : cke->comb) {
 					if (!ke->label.empty()) { pyRunString("__builtins__." + ke->label + "=Omega().labeledEngine('" + ke->label + "')"); }
 				}
 			}
@@ -892,12 +882,10 @@ public:
 	}
 	py::object labeled_engine_get(string label)
 	{
-		FOREACH(const shared_ptr<Engine>& e, OMEGA.getScene()->engines)
-		{
+		for (const auto& e : OMEGA.getScene()->engines) {
 #define _DO_FUNCTORS(functors, FunctorT)                                                                                                                       \
 	{                                                                                                                                                      \
-		FOREACH(const shared_ptr<FunctorT>& f, functors)                                                                                               \
-		{                                                                                                                                              \
+		for (const auto& f : functors) {                                                                                               \
 			if (f->label == label) return py::object(f);                                                                                           \
 		}                                                                                                                                              \
 	}
@@ -923,8 +911,7 @@ public:
 #undef _TRY_DISPATCHER
 			CombinedKinematicEngine* cke = dynamic_cast<CombinedKinematicEngine*>(e.get());
 			if (cke) {
-				FOREACH(const shared_ptr<KinematicEngine>& ke, cke->comb)
-				{
+				for (const auto& ke : cke->comb) {
 					if (ke->label == label) return py::object(ke);
 				}
 			}
@@ -1041,10 +1028,8 @@ public:
 	void     loadTmp(string mark = "", bool quiet = false) { load(":memory:" + mark, quiet); }
 	py::list lsTmp()
 	{
-		py::list                          ret;
-		typedef pair<std::string, string> strstr;
-		FOREACH(const strstr& sim, OMEGA.memSavedSimulations)
-		{
+		py::list ret;
+		for (const auto& sim : OMEGA.memSavedSimulations) {
 			string mark = sim.first;
 			boost::algorithm::replace_first(mark, ":memory:", "");
 			ret.append(mark);
@@ -1192,7 +1177,9 @@ void save(std::string fileName, bool quiet = false)
 py::list miscParams_get()
 {
 	py::list ret;
-	FOREACH(shared_ptr<Serializable> & s, OMEGA.getScene()->miscParams) { ret.append(s); }
+	for (const auto& s : OMEGA.getScene()->miscParams) {
+		ret.append(s);
+	}
 	return ret;
 }
 
@@ -1200,7 +1187,9 @@ void miscParams_set(vector<shared_ptr<Serializable>> ss)
 {
 	vector<shared_ptr<Serializable>>& miscParams = OMEGA.getScene()->miscParams;
 	miscParams.clear();
-	FOREACH(shared_ptr<Serializable> s, ss) { miscParams.push_back(s); }
+	for (const auto& s : ss) {
+		miscParams.push_back(s);
+	}
 }
 
 
@@ -1341,13 +1330,13 @@ std::string tmpFilename() { return OMEGA.tmpFilename(); }
 
 class pyGenericPotential : public GenericPotential, public py::wrapper<GenericPotential> {
 public:
-	Real potential(Real const& u, LubricationPhys const& phys) const
+	virtual Real potential(Real const& u, LubricationPhys const& phys) const override
 	{
 		TRACE;
 		return contactForce(u, phys.a) + potentialForce(u, phys.a);
 	}
 
-	void applyPotential(Real const& u, LubricationPhys& phys, Vector3r const& n)
+	virtual void applyPotential(Real const& u, LubricationPhys& phys, Vector3r const& n) override
 	{
 		TRACE;
 		phys.normalContactForce   = contactForce(u, phys.a) * n;

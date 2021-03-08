@@ -56,13 +56,13 @@ public:
 	// function to save maximum velocity, for the verlet-distance optimization
 	void saveMaximaVelocity(const Body::id_t& id, State* state);
 	void saveMaximaDisplacement(const shared_ptr<Body>& b);
-	bool get_densityScaling();
+	bool get_densityScaling() const;
 	void set_densityScaling(bool dsc);
 
 #ifdef YADE_OPENMP
 	vector<Real> threadMaxVelocitySq;
 #endif
-	virtual void action();
+	virtual void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(NewtonIntegrator,GlobalEngine,"Engine integrating newtonian motion equations.",
 		((Real,damping,0.2,,"damping coefficient for Cundall's non viscous damping (see :ref:`NumericalDamping` and [Chareyre2005]_)"))
