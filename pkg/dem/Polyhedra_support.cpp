@@ -441,7 +441,7 @@ Vector3r SolveLinSys3x3(Matrix3r A, Vector3r y)
 Polyhedron ConvexHull(vector<CGALpoint>& planes)
 {
 	Polyhedron Int;
-	for (const auto p : planes) {
+	for (const auto& p : planes) {
 		if (math::isnan(p.x()) || math::isnan(p.y()) || math::isnan(p.z())) return Int;
 	}
 	if (planes.size() > 3) CGAL::convex_hull_3(planes.begin(), planes.end(), Int);
