@@ -61,9 +61,9 @@ boost::tuple<Vector3r, bool, double, double, double> Ig2_Sphere_PFacet_ScGridCoG
 
 	// Compute the barycentric coordinates of the projection P
 	Real invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-	Real p1       = (dot11 * dot02 - dot01 * dot12) * invDenom;
-	Real p2       = (dot00 * dot12 - dot01 * dot02) * invDenom;
-	Real p3       = 1 - p1 - p2;
+	Real p2       = (dot11 * dot02 - dot01 * dot12) * invDenom;
+	Real p3       = (dot00 * dot12 - dot01 * dot02) * invDenom;
+	Real p1       = 1 - p2 - p3;
 
 	// Check if P is in triangle
 	bool isintriangle = (p1 > 0) && (p2 > 0) && (p1 + p2 < 1);
