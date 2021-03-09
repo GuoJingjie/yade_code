@@ -435,7 +435,7 @@ public:
 	.def("savePermeabilityNetworkVTK",&PartialSatClayEngine::savePermeabilityNetworkVTK,(boost::python::arg("fileName")="./VTK"),"Save permeability network as connections between cell centers")
 	#endif
 	.def("insertMicroPores",&PartialSatClayEngine::insertMicroPores,(boost::python::arg("fracMicroPores")),"run to inscribe spheres in a desired fraction of existing pores.")
-	.def("reloadSolver",&PartialSatClayEngine::reloadSolver,(boost::python::arg("solver")=solver),"use after reloading a partialSat simulation and before running next step")
+	.def("reloadSolver",&PartialSatClayEngine::reloadSolver,"use after reloading a partialSat simulation and before running next step")
 	//.def("resetOriginalParticleValues",&PartialSatClayEngine::resetOriginalParticleValues,"reset the initial valume and radii values for particles.")
 	.def("getTotalSpecimenVolume",&PartialSatClayEngine::getTotalSpecimenVolume,"get the total specimen volume")
 	)
