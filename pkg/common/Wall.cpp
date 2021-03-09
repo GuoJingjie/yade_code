@@ -1,5 +1,5 @@
 // © 2009 Václav Šmilauer <eudoxos@arcig.cz>
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 #include <pkg/common/Wall.hpp>
 
 #ifdef YADE_OPENGL

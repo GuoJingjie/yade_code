@@ -7,7 +7,7 @@
 #ifdef YADE_OPENGL
 #include <lib/opengl/OpenGLWrapper.hpp>
 #endif
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 

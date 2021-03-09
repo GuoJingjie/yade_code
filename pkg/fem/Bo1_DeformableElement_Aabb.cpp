@@ -6,7 +6,7 @@
 *  GNU General Public License v2 or later. See file LICENSE for details. *
 *************************************************************************/
 #ifdef YADE_FEM
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 #include <pkg/fem/Bo1_DeformableElement_Aabb.hpp>
 #include <pkg/fem/DeformableElement.hpp>
 

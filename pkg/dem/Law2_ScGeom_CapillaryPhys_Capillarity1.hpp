@@ -13,7 +13,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <set>
 
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/dem/CapillaryPhys1.hpp>
 #include <fstream>
 #include <iostream>

@@ -4,7 +4,7 @@
 #pragma once
 #include <core/Body.hpp>
 #include <core/Shape.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <pkg/dem/FrictPhys.hpp>
 #ifdef YADE_OPENGL

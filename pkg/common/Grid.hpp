@@ -21,7 +21,7 @@
 #pragma once
 #include "Sphere.hpp"
 #include <core/Body.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/dem/CohesiveFrictionalContactLaw.hpp>
 #include <pkg/dem/ElasticContactLaw.hpp>
 #include <pkg/dem/FrictPhys.hpp>

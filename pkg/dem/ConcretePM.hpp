@@ -47,7 +47,7 @@ There are other classes, which are not strictly necessary:
 #pragma once
 
 #include <lib/base/AliasNamespaces.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/ElastMat.hpp>
 #include <pkg/common/NormShearPhys.hpp>
 #include <pkg/common/PeriodicEngines.hpp>

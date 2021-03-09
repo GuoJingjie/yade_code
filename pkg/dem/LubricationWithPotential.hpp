@@ -28,6 +28,14 @@ public:
 };
 REGISTER_SERIALIZABLE(GenericPotential);
 
+// This block was in yadeWrapper.cpp, which is not really a good place, if needed the same function wrappers should be added to the above class
+
+// 	py::class_<pyGenericPotential, boost::noncopyable>("GenericPotential")
+// 	        .def("contactForce", py::pure_virtual(&pyGenericPotential::contactForce), "This function should return contact force norm.")
+// 	        .def("potentialForce", py::pure_virtual(&pyGenericPotential::potentialForce), "This function should return potential force norm.")
+// 	        .def("hasContact", py::pure_virtual(&pyGenericPotential::hasContact), "This function should return true if there are contact.");
+
+
 class Law2_ScGeom_PotentialLubricationPhys : public Law2_ScGeom_ImplicitLubricationPhys {
 public:
 	bool go(shared_ptr<IGeom>& iGeom, shared_ptr<IPhys>& iPhys, Interaction* interaction);

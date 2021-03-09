@@ -7,7 +7,7 @@ Yade Technical Archive. DOI: 10.5281/zenodo.1202039 */
 
 #pragma once
 
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/ElastMat.hpp>
 #include <pkg/common/NormShearPhys.hpp>
 #include <pkg/dem/ScGeom.hpp>

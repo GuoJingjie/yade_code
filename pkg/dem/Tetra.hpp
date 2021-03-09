@@ -7,8 +7,8 @@
 #include <core/IGeom.hpp>
 #include <core/Shape.hpp>
 
-#include <pkg/common/Aabb.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Aabb.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/NormShearPhys.hpp>
 
 #ifdef YADE_CGAL

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <lib/serialization/Serializable.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/Facet.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <pkg/common/Wall.hpp>

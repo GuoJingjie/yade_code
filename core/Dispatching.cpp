@@ -1,4 +1,5 @@
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
+#include <core/InteractionLoop.hpp>
 #ifdef YADE_MPI
 #include <core/Subdomain.hpp>
 #endif

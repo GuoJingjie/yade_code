@@ -12,7 +12,7 @@
 #include <core/GlobalEngine.hpp>
 #include <core/Interaction.hpp>
 
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 

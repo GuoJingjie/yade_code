@@ -1,7 +1,7 @@
 // 2010 © Václav Šmilauer <eudoxos@arcig.cz>
 #pragma once
 #include <lib/base/openmp-accu.hpp>
-#include <pkg/common/Callbacks.hpp>
+#include <core/Callbacks.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 

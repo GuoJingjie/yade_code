@@ -14,7 +14,7 @@
 #include <core/Material.hpp>
 #include <core/Omega.hpp>
 #include <core/Shape.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/ElastMat.hpp>
 #include <pkg/common/Facet.hpp>
 #include <pkg/common/Sphere.hpp>
@@ -27,7 +27,6 @@
 #include <lib/opengl/GLUtils.hpp>
 #include <lib/opengl/OpenGLWrapper.hpp>
 #include <pkg/common/GLDrawFunctors.hpp>
-#include <pkg/dem/Shop.hpp>
 #include <GL/glu.h>
 #endif
 

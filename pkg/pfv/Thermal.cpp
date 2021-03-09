@@ -15,6 +15,7 @@ Caulk, R. and Chareyre, B. (2019) An open framework for the simulation of therma
 */
 
 //#define THERMAL
+#ifdef FLOW_ENGINE
 #ifdef THERMAL
 #ifdef YADE_OPENMP
 #include <core/Omega.hpp>
@@ -857,3 +858,4 @@ void ThermalEngine::resetFlowBoundaryTemps()
 
 #endif //YADE_OPENMP
 #endif //THERMAL
+#endif //FLOW_ENGINE

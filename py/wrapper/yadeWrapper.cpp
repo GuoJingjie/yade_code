@@ -17,12 +17,12 @@
 #include <core/ThreadRunner.hpp>
 #include <core/Timing.hpp>
 #include <pkg/common/Collider.hpp>
-#include <pkg/common/Dispatching.hpp>
-#include <pkg/common/InteractionLoop.hpp>
+#include <core/Dispatching.hpp>
+#include <core/InteractionLoop.hpp>
 #include <pkg/common/KinematicEngines.hpp>
 #include <pkg/common/ParallelEngine.hpp>
 #include <pkg/common/Sphere.hpp>
-#include <pkg/dem/LubricationWithPotential.hpp>
+// #include <pkg/dem/LubricationWithPotential.hpp>
 #include <pkg/dem/STLImporter.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/archive/codecvt_null.hpp>
@@ -1328,46 +1328,6 @@ void runEngine(const shared_ptr<Engine>& e)
 std::string tmpFilename() { return OMEGA.tmpFilename(); }
 };
 
-class pyGenericPotential : public GenericPotential, public py::wrapper<GenericPotential> {
-public:
-	virtual Real potential(Real const& u, LubricationPhys const& phys) const override
-	{
-		TRACE;
-		return contactForce(u, phys.a) + potentialForce(u, phys.a);
-	}
-
-	virtual void applyPotential(Real const& u, LubricationPhys& phys, Vector3r const& n) override
-	{
-		TRACE;
-		phys.normalContactForce   = contactForce(u, phys.a) * n;
-		phys.normalPotentialForce = potentialForce(u, phys.a) * n;
-		phys.contact              = hasContact(u, phys.a);
-	}
-
-	virtual Real contactForce(Real const& u, Real const& a) const
-	{
-		TRACE;
-		gilLock lock;
-#if PY_MAJOR_VERSION >= 3
-		LOG_TRACE("GIL State: " << PyGILState_Check());
-#endif
-		return static_cast<Real>(get_override("contactForce")(u, a));
-	}
-
-	virtual Real potentialForce(Real const& u, Real const& a) const
-	{
-		TRACE;
-		gilLock lock;
-		return static_cast<Real>(get_override("potentialForce")(u, a));
-	}
-
-	virtual bool hasContact(Real const& u, Real const& a) const
-	{
-		TRACE;
-		gilLock lock;
-		return get_override("hasContact")(u, a);
-	}
-};
 
 } // namespace yade
 
@@ -1736,12 +1696,6 @@ try {
 
 	py::class_<STLImporter>("STLImporter").def("ymport", &STLImporter::import);
 
-	py::class_<pyGenericPotential, boost::noncopyable>("GenericPotential")
-	        .def("contactForce", py::pure_virtual(&pyGenericPotential::contactForce), "This function should return contact force norm.")
-	        .def("potentialForce", py::pure_virtual(&pyGenericPotential::potentialForce), "This function should return potential force norm.")
-	        .def("hasContact", py::pure_virtual(&pyGenericPotential::hasContact), "This function should return true if there are contact.");
-
-	//////////////////////////////////////////////////////////////
 	///////////// proxyless wrappers
 	Serializable().pyRegisterClass(py::scope());
 

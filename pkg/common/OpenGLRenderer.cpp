@@ -10,7 +10,7 @@
 #include <lib/serialization/EnumSupport.hpp>
 #include <core/Scene.hpp>
 #include <core/Timing.hpp>
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 
 #include <GL/gl.h>
 #include <GL/glu.h>

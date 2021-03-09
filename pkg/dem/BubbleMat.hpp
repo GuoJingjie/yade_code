@@ -3,7 +3,7 @@
 #include <lib/base/AliasNamespaces.hpp>
 #include <core/IPhys.hpp>
 #include <core/Material.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/dem/ScGeom.hpp>
 
 namespace yade { // Cannot have #include directive inside.

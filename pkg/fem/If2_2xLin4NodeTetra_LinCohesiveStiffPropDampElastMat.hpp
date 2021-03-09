@@ -16,7 +16,7 @@
 #include <core/Scene.hpp>
 #include <core/Shape.hpp>
 #include <core/State.hpp>
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 #include <pkg/fem/CohesiveMat.hpp>
 #include <pkg/fem/FEInternalForceDispatchers.hpp>
 #include <pkg/fem/Lin4NodeTetra_Lin4NodeTetra_InteractionElement.hpp>
