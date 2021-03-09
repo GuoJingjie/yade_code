@@ -6,7 +6,7 @@
 #include <core/Interaction.hpp>
 #include <core/InteractionContainer.hpp>
 #include <core/Scene.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/Sphere.hpp>
 
 #include <boost/static_assert.hpp>

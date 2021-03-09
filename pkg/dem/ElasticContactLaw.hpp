@@ -9,7 +9,7 @@
 
 #include <lib/base/openmp-accu.hpp>
 #include <core/GlobalEngine.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/dem/FrictPhys.hpp>
 #include <pkg/dem/ScGeom.hpp>
 

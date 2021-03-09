@@ -9,7 +9,7 @@
 
 #include <lib/compatibility/LapackCompatibility.hpp>
 #include <lib/serialization/Serializable.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <pkg/dem/PotentialParticle.hpp>
 #include <Eigen/Core>

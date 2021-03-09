@@ -8,7 +8,7 @@
 #include <core/Scene.hpp>
 #include <core/Shape.hpp>
 #include <core/State.hpp>
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 
@@ -27,7 +27,6 @@ public:
 	// clang-format on
 };
 REGISTER_SERIALIZABLE(BoundFunctor);
-
 
 class IGeomFunctor : public Functor2D<
                              /*dispatch types*/ Shape,
@@ -164,5 +163,6 @@ public:
 	DECLARE_LOGGER;
 };
 REGISTER_SERIALIZABLE(LawDispatcher);
+
 
 } // namespace yade

@@ -4,7 +4,7 @@
 #include <core/Scene.hpp>
 #include <pkg/common/Box.hpp>
 #include <pkg/common/Facet.hpp>
-#include <pkg/common/InteractionLoop.hpp>
+#include <core/InteractionLoop.hpp>
 #include <pkg/common/Wall.hpp>
 #include <pkg/dem/DemXDofGeom.hpp>
 #include <pkg/dem/Shop.hpp>

@@ -7,7 +7,7 @@
 *************************************************************************/
 #pragma once
 
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/ElastMat.hpp>
 #include <pkg/common/MatchMaker.hpp>
 #include <pkg/common/NormShearPhys.hpp>

@@ -1,8 +1,8 @@
 // 2009 © Václav Šmilauer <eudoxos@arcig.cz>
 #pragma once
 #include <core/GlobalEngine.hpp>
-#include <pkg/common/Callbacks.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Callbacks.hpp>
+#include <core/Dispatching.hpp>
 
 #ifdef USE_TIMING_DELTAS
 #define TIMING_DELTAS_CHECKPOINT(cpt) timingDeltas->checkpoint(cpt)
@@ -13,6 +13,7 @@
 #endif
 
 namespace yade { // Cannot have #include directive inside.
+	
 
 class InteractionLoop : public GlobalEngine {
 	bool alreadyWarnedNoCollider;
@@ -24,9 +25,11 @@ class InteractionLoop : public GlobalEngine {
 #else
 	std::list<idPair> eraseAfterLoopIds;
 	void              eraseAfterLoop(Body::id_t id1, Body::id_t id2) { eraseAfterLoopIds.push_back(idPair(id1, id2)); }
+	//! create transientInteraction between 2 bodies, using existing Dispatcher in Omega
 #endif
 public:
 	virtual void pyHandleCustomCtorArgs(boost::python::tuple& t, boost::python::dict& d);
+	static shared_ptr<Interaction> createExplicitInteraction(Body::id_t id1, Body::id_t id2, bool force, bool virtualI);
 	virtual void action();
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(InteractionLoop,GlobalEngine,"Unified dispatcher for handling interaction loop at every step, for parallel performance reasons.\n\n.. admonition:: Special constructor\n\n\tConstructs from 3 lists of :yref:`Ig2<IGeomFunctor>`, :yref:`Ip2<IPhysFunctor>`, :yref:`Law2<LawFunctor>` functors respectively; they will be passed to internal dispatchers, which you might retrieve as :yref:`geomDispatcher<InteractionLoop.geomDispatcher>`, :yref:`physDispatcher<InteractionLoop.physDispatcher>`, :yref:`lawDispatcher<InteractionLoop.lawDispatcher>` respectively.",

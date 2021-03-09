@@ -15,24 +15,24 @@ Caulk, R. and Chareyre, B. (2019) An open framework for the simulation of therma
 */
 
 //#define THERMAL
+#ifdef FLOW_ENGINE
 #ifdef THERMAL
 #ifdef YADE_OPENMP
 #pragma once
 
 #include <core/PartialEngine.hpp>
 #include <core/State.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/dem/JointedCohesiveFrictionalPM.hpp>
 #include <pkg/dem/ScGeom.hpp>
 
-#ifdef FLOW_ENGINE
+
 //#include<pkg/pfv/FlowEngine.hpp>
 #include "FlowEngine_FlowEngineT.hpp"
 #include <lib/triangulation/FlowBoundingSphere.hpp>
 #include <lib/triangulation/Network.hpp>
 #include <lib/triangulation/Tesselation.h>
 #include <pkg/dem/TesselationWrapper.hpp>
-#endif
 
 namespace yade { // Cannot have #include directive inside.
 
@@ -156,3 +156,4 @@ REGISTER_SERIALIZABLE(ThermalEngine);
 
 #endif //THERMAL
 #endif //YADE_OPENMP
+#endif //FLOW_ENGINE

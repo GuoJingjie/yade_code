@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 #include <pkg/common/Box.hpp>
 #include <pkg/common/Facet.hpp>
 #include <pkg/common/GLDrawFunctors.hpp>

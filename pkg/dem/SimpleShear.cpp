@@ -11,10 +11,10 @@
 
 #include <core/Interaction.hpp>
 #include <core/Scene.hpp>
-#include <pkg/common/Aabb.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Aabb.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/InsertionSortCollider.hpp>
-#include <pkg/common/InteractionLoop.hpp>
+#include <core/InteractionLoop.hpp>
 #include <pkg/dem/ElasticContactLaw.hpp>
 #include <pkg/dem/FrictPhys.hpp>
 #include <pkg/dem/GlobalStiffnessTimeStepper.hpp>

@@ -1,5 +1,6 @@
 #include <lib/high-precision/Constants.hpp>
 #include <py/_utils.hpp>
+#include <core/InteractionLoop.hpp>
 // https://codeyarns.com/2014/03/11/how-to-selectively-ignore-a-gcc-warning/
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"
@@ -385,7 +386,7 @@ py::tuple spiralProject(const Vector3r& pt, Real dH_dTheta, int axis, Real perio
 
 shared_ptr<Interaction> Shop__createExplicitInteraction(Body::id_t id1, Body::id_t id2, bool virtualI)
 {
-	return Shop::createExplicitInteraction(id1, id2, /*force*/ true, virtualI);
+	return InteractionLoop::createExplicitInteraction(id1, id2, /*force*/ true, virtualI);
 }
 
 Real      Shop__unbalancedForce(bool useMaxForce /*false by default*/) { return Shop::unbalancedForce(useMaxForce); }

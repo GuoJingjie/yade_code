@@ -10,8 +10,8 @@
 // #include<core/PartialEngine.hpp>
 #include <core/MPIBodyContainer.hpp>
 #include <core/Scene.hpp>
-#include <pkg/common/Aabb.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Aabb.hpp>
+#include <core/Dispatching.hpp>
 #include <mpi.h>
 #include <mpi4py/mpi4py.h> // for passing MPI_Comm from python to c++
 namespace yade {           // Cannot have #include directive inside.

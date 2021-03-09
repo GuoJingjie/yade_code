@@ -7,7 +7,7 @@
 #include <core/Scene.hpp>
 
 #include <core/Clump.hpp>
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 #include <pkg/common/InsertionSortCollider.hpp>
 
 #include <pkg/common/Box.hpp>
@@ -24,9 +24,9 @@
 
 #include <pkg/common/ForceResetter.hpp>
 
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/GravityEngines.hpp>
-#include <pkg/common/InteractionLoop.hpp>
+#include <core/InteractionLoop.hpp>
 
 #include <pkg/dem/ElasticContactLaw.hpp>
 #include <pkg/dem/GlobalStiffnessTimeStepper.hpp>
@@ -106,53 +106,6 @@ boost::tuple<Real, Real, Real> Shop::spiralProject(const Vector3r& pt, Real dH_d
 	}
 }
 
-shared_ptr<Interaction> Shop::createExplicitInteraction(Body::id_t id1, Body::id_t id2, bool force, bool virtualI)
-{
-	IGeomDispatcher*        geomMeta = NULL;
-	IPhysDispatcher*        physMeta = NULL;
-	shared_ptr<Scene>       rb       = Omega::instance().getScene();
-	shared_ptr<Interaction> i        = rb->interactions->find(Body::id_t(id1), Body::id_t(id2));
-	if (i) {
-		if (i->isReal())
-			throw runtime_error(
-			        string("Interaction #") + boost::lexical_cast<string>(id1) + "+#" + boost::lexical_cast<string>(id2) + " already exists.");
-		else
-			rb->interactions->erase(id1, id2, i->linIx);
-	}
-	shared_ptr<Body> b1 = Body::byId(id1, rb), b2 = Body::byId(id2, rb);
-	if (!b1) throw runtime_error(("No body #" + boost::lexical_cast<string>(id1)).c_str());
-	if (!b2) throw runtime_error(("No body #" + boost::lexical_cast<string>(id2)).c_str());
-
-	if (not virtualI) { // normal case, create a statefull interaction or nothing
-		FOREACH(const shared_ptr<Engine>& e, rb->engines)
-		{
-			if (!geomMeta) {
-				geomMeta = dynamic_cast<IGeomDispatcher*>(e.get());
-				if (geomMeta) continue;
-			}
-			if (!physMeta) {
-				physMeta = dynamic_cast<IPhysDispatcher*>(e.get());
-				if (physMeta) continue;
-			}
-			InteractionLoop* id(dynamic_cast<InteractionLoop*>(e.get()));
-			if (id) {
-				geomMeta = id->geomDispatcher.get();
-				physMeta = id->physDispatcher.get();
-			}
-			if (geomMeta && physMeta) { break; }
-		}
-		if (!geomMeta) throw runtime_error("No IGeomDispatcher in engines or inside InteractionLoop.");
-		if (!physMeta) throw runtime_error("No IPhysDispatcher in engines or inside InteractionLoop.");
-		i = geomMeta->explicitAction(b1, b2, /*force*/ force);
-		assert(force && i);
-		if (!i) return i;
-		physMeta->explicitAction(b1->material, b2->material, i);
-		i->iterMadeReal = rb->iter;
-	} else
-		i = shared_ptr<Interaction>(new Interaction(id1, id2));
-	rb->interactions->insert(i);
-	return i;
-}
 
 Vector3r Shop::inscribedCircleCenter(const Vector3r& v0, const Vector3r& v1, const Vector3r& v2)
 {

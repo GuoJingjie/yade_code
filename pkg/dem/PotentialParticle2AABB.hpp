@@ -3,7 +3,7 @@
 #pragma once
 #ifdef YADE_POTENTIAL_PARTICLES
 
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/dem/PotentialParticle.hpp>
 
 namespace yade { // Cannot have #include directive inside.

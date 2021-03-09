@@ -2,7 +2,7 @@
 /*CWBoon 2015 */
 #ifdef YADE_POTENTIAL_BLOCKS
 #include "PotentialBlock2AABB.hpp"
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 #include <pkg/dem/PotentialBlock.hpp>
 
 namespace yade { // Cannot have #include directive inside.

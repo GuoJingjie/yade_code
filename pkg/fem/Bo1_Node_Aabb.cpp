@@ -7,7 +7,7 @@
 *************************************************************************/
 
 #ifdef YADE_FEM
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 #include <pkg/fem/Bo1_Node_Aabb.hpp>
 #include <pkg/fem/Node.hpp>
 

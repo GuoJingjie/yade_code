@@ -50,6 +50,7 @@
 #include <pkg/dem/Shop.hpp>
 #include <pkg/dem/WirePM.hpp>
 #include <pkg/pfv/Thermal.hpp>
+// #include <pkg/pfv/PartialSatClayEngine.hpp>
 #ifdef YADE_LIQMIGRATION
 #include <pkg/dem/ViscoelasticCapillarPM.hpp>
 #endif
@@ -746,14 +747,14 @@ void VTKRecorder::action()
 					spheresTemp->InsertNextValue(thState->temp);
 				}
 #endif
-#ifdef PARTIALSAT
-				if (recActive[REC_PARTIALSAT]) {
-					PartialSatState* state = dynamic_cast<PartialSatState*>(b->state.get());
-					spheresRadiiChange->InsertNextValue(state->radiiChange);
-					spheresSuction->InsertNextValue(state->suction);
-					spheresIncidentCells->InsertNextValue(state->lastIncidentCells);
-				}
-#endif
+// #ifdef PARTIALSAT
+// 				if (recActive[REC_PARTIALSAT]) {
+// 					PartialSatState* state = dynamic_cast<PartialSatState*>(b->state.get());
+// 					spheresRadiiChange->InsertNextValue(state->radiiChange);
+// 					spheresSuction->InsertNextValue(state->suction);
+// 					spheresIncidentCells->InsertNextValue(state->lastIncidentCells);
+// 				}
+// #endif
 				if (recActive[REC_CLUMPID]) clumpId->InsertNextValue(b->clumpId);
 				if (recActive[REC_COLORS]) {
 					const Vector3r& color = sphere->color;
