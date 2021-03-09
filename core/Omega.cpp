@@ -176,7 +176,6 @@ void Omega::buildDynlibDatabase(const vector<string>& dynlibsList)
 	and traverse it from the top. It will be done once all classes are pythonable. */
 	for (int i = 0; i < 100 && pythonables.size() > 0; i++) {
 		if (getenv("YADE_DEBUG")) cerr << endl << "[[[ Round " << i << " ]]]: ";
-		std::list<string> done;
 		for (std::list<string>::iterator I = pythonables.begin(); I != pythonables.end();) {
 			shared_ptr<Serializable> s = boost::static_pointer_cast<Serializable>(ClassFactory::instance().createShared(*I));
 			try {
