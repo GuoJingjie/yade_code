@@ -748,6 +748,7 @@ IF(ENABLE_GUI)
       SET(Used_QT_VERSION_MAJOR ${QT5_VERSION_MAJOR})
       SET(Used_QT_VERSION_MINOR ${QT5_VERSION_MINOR})
       SET(Used_QT_VERSION_PATCH ${QT5_VERSION_PATCH})
+      INCLUDE_DIRECTORIES(${Qt5_DIR})
       MESSAGE(STATUS "Found GUI-Qt5-LIBS")
       SET(CONFIGURED_FEATS "${CONFIGURED_FEATS} GUI-Qt5")
     ELSE(Qt5Widgets_FOUND AND OPENGL_FOUND AND GLUT_FOUND AND GLIB2_FOUND AND QGLVIEWER_FOUND)
@@ -1143,17 +1144,13 @@ ENDIF(ENABLE_POTENTIAL_PARTICLES OR ENABLE_POTENTIAL_BLOCKS)
 
 #===========================================================
 
-  ADD_LIBRARY(yade SHARED ${SRC_CORE} ${SRC_LIB})
-#   ADD_LIBRARY(yadePkg SHARED ${SRC_PKG})
-  
-
-  
+ADD_LIBRARY(yade SHARED ${SRC_CORE} ${SRC_LIB})
 
 #===========================================================
 
 ADD_LIBRARY(boot SHARED ${CMAKE_CURRENT_SOURCE_DIR}/core/main/pyboot.cpp)
-SET_TARGET_PROPERTIES(boot PROPERTIES PREFIX "" LINK_FLAGS "-Wl,--as-needed" )
-TARGET_LINK_LIBRARIES(yade ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${LINKLIBS} -lrt)
+SET_TARGET_PROPERTIES(boot PROPERTIES PREFIX "" LINK_FLAGS "-Wl,--no-as-needed" )
+TARGET_LINK_LIBRARIES(boot ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${LINKLIBS} ${VTK_LIBRARIES} -lrt)
 SET_TARGET_PROPERTIES(yade  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
 # TARGET_LINK_LIBRARIES(yadePkg ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${LINKLIBS} -lrt)
 # SET_TARGET_PROPERTIES(yadePkg  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
@@ -1162,19 +1159,19 @@ TARGET_LINK_LIBRARIES(boot yade)
 
 
 IF(ENABLE_MPFR)
-  TARGET_LINK_LIBRARIES(yade ${MPFR_LIBRARIES})
+  TARGET_LINK_LIBRARIES(boot ${MPFR_LIBRARIES})
 #   TARGET_LINK_LIBRARIES(yadePkg ${MPFR_LIBRARIES})
 ENDIF()
 
 IF(REAL_PRECISION_BITS EQUAL 128 OR ((REAL_MULTI_HP) AND (REAL_PRECISION_BITS LESS 128)))
   # the quadmath library is a part of g++ package, no need to check if it is installed.
-  TARGET_LINK_LIBRARIES(yade -lquadmath)
+  TARGET_LINK_LIBRARIES(boot -lquadmath)
 #   TARGET_LINK_LIBRARIES(yadePkg -lquadmath)
   MESSAGE(STATUS "linking -lquadmath")
 ENDIF()
 
 IF(ENABLE_GUI)
-  TARGET_LINK_LIBRARIES(yade _GLViewer ${GUI_LIBS})
+  TARGET_LINK_LIBRARIES(boot _GLViewer ${GUI_LIBS})
 ENDIF(ENABLE_GUI)
 
 SUBDIRLIST(SUBDIRS ${CMAKE_SOURCE_DIR}/pkg)
@@ -1185,44 +1182,11 @@ FOREACH(subdir ${SUBDIRS})
     ADD_LIBRARY(${subdir} SHARED ${files})
     TARGET_LINK_LIBRARIES(${subdir} ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${LINKLIBS} -lrt)
     SET_TARGET_PROPERTIES(${subdir}  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
-    TARGET_LINK_LIBRARIES(yade ${subdir})
+    TARGET_LINK_LIBRARIES(boot ${subdir})
+#     TARGET_LINK_LIBRARIES(yade ${subdir})
 	INSTALL(TARGETS ${subdir} DESTINATION ${YADE_LIB_PATH})
 
 ENDFOREACH()
-
-FOREACH(dynlib ${SUBDIRS} yade)
-	IF(ENABLE_MPFR)
-  TARGET_LINK_LIBRARIES(${dynlib} ${MPFR_LIBRARIES})
-#   TARGET_LINK_LIBRARIES(yadePkg ${MPFR_LIBRARIES})
-ENDIF()
-
-IF(REAL_PRECISION_BITS EQUAL 128 OR ((REAL_MULTI_HP) AND (REAL_PRECISION_BITS LESS 128)))
-  # the quadmath library is a part of g++ package, no need to check if it is installed.
-  TARGET_LINK_LIBRARIES(${dynlib} -lquadmath)
-#   TARGET_LINK_LIBRARIES(yadePkg -lquadmath)
-  MESSAGE(STATUS "linking -lquadmath" ${dynlib})
-ENDIF()
-
-IF(ENABLE_VTK)
-  TARGET_LINK_LIBRARIES(${dynlib} ${VTK_LIBRARIES})
-ENDIF(ENABLE_VTK)
-
-# IF(ENABLE_GUI)
-#   TARGET_LINK_LIBRARIES(${subdir} _GLViewer ${GUI_LIBS})
-# ENDIF(ENABLE_GUI)
-#     FILE(GLOB test2  "pkg/dem/*.cpp")
-#     MESSAGE("PKG_"${subdir}  "pkg/"${subdir}"/*.cpp")
-#     FOREACH(name ${test})
-# 		MESSAGE(${name})
-#     ENDFOREACH()
-# #     FOREACH(name ${test2})
-# # 		MESSAGE("2" ${name})
-# #     ENDFOREACH()
-    
-ENDFOREACH()
-
-
-# FILE(GLOB_RECURSE SRC_PKG  "pkg/*.cpp")
 
 #====================================
 #Back compatibility with scons
@@ -1277,8 +1241,6 @@ INSTALL(FILES ${filesHP} DESTINATION ${YADE_PY_PATH}/yade)
 
 INSTALL(TARGETS boot DESTINATION "${YADE_PY_PATH}/yade/")
 INSTALL(TARGETS yade DESTINATION ${YADE_LIB_PATH})
-# INSTALL(TARGETS yadePkg DESTINATION ${YADE_LIB_PATH})
-
 
 #===========================================================
 MESSAGE(STATUS "===========================================================")
