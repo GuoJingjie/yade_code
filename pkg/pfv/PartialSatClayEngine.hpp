@@ -9,15 +9,22 @@
 
 //#ifndef FLOW_GUARD
 //#define FLOW_GUARD
+<<<<<<< HEAD
 #pragma once
 #ifdef FLOW_ENGINE
 #ifdef LINSOLV
 #ifdef PARTIALSAT
+=======
+
+#ifdef PARTIALSAT
+#include "FlowEngine_PartialSatClayEngineT.hpp"
+>>>>>>> Revert "remove invalid default argument in function wrapper (wrapper was and is still broken)"
 #include <core/Body.hpp>
 #include <core/Omega.hpp>
 #include <core/PartialEngine.hpp>
 #include <core/Scene.hpp>
 #include <core/State.hpp>
+<<<<<<< HEAD
 #include <core/Dispatching.hpp>
 #include <pkg/common/MatchMaker.hpp>
 #include <pkg/dem/ScGeom.hpp>
@@ -25,17 +32,52 @@
 
 
 
+=======
+#include <pkg/common/Dispatching.hpp>
+#include <pkg/dem/ScGeom.hpp>
+#include <Eigen/SparseLU>
+
+#ifdef YADE_VTK
+
+//#include<vtkSmartPointer.h>
+#include <lib/compatibility/VTKCompatibility.hpp>
+#include <vtkCellArray.h>
+#include <vtkCellData.h>
+#include <vtkDoubleArray.h>
+#include <vtkLine.h>
+#include <vtkPointData.h>
+#include <vtkPoints.h>
+#include <vtkQuad.h>
+#include <vtkSmartPointer.h>
+#include <vtkXMLPolyDataWriter.h>
+#include <vtkXMLUnstructuredGridWriter.h>
+//#include<vtkDoubleArray.h>
+//#include<vtkUnstructuredGrid.h>
+#include <vtkPolyData.h>
+
+#endif
+
+#ifdef FLOW_ENGINE
+>>>>>>> Revert "remove invalid default argument in function wrapper (wrapper was and is still broken)"
 //#include<pkg/pfv/FlowEngine.hpp>
 //#include "FlowEngine_FlowEngineT.hpp"
 #include <lib/triangulation/FlowBoundingSphere.hpp>
 #include <lib/triangulation/Network.hpp>
 #include <lib/triangulation/Tesselation.h>
 #include <pkg/dem/TesselationWrapper.hpp>
+<<<<<<< HEAD
 #include "FlowEngine_PartialSatClayEngineT.hpp"
 
 
 #include <cholmod.h>
 
+=======
+#endif
+
+#ifdef LINSOLV
+#include <cholmod.h>
+#endif
+>>>>>>> Revert "remove invalid default argument in function wrapper (wrapper was and is still broken)"
 
 namespace yade { // Cannot have #include directive inside.
 
@@ -95,17 +137,28 @@ public:
 	//same here if needed
 };
 
+<<<<<<< HEAD
 typedef CGT::_Tesselation<CGT::TriangulationTypes<PartialSatVertexInfo, PartialSatCellInfo> > PartialSatTesselation;
 #ifdef LINSOLV
 // #define PartialSatBoundingSphere CGT::PartialSatLinSolv<PartialSatTesselation>
 class PartialSatBoundingSphere : public CGT::PartialSatLinSolv<PartialSatTesselation> {};
+=======
+typedef CGT::_Tesselation<CGT::TriangulationTypes<PartialSatVertexInfo, PartialSatCellInfo>> PartialSatTesselation;
+#ifdef LINSOLV
+#define PartialSatBoundingSphere CGT::PartialSatLinSolv<PartialSatTesselation>
+//class PartialSatBoundingSphere; // : public CGT::FlowBoundingSphereLinSolv<PartialSatTesselation> {};
+>>>>>>> Revert "remove invalid default argument in function wrapper (wrapper was and is still broken)"
 #endif
 
 typedef TemplateFlowEngine_PartialSatClayEngineT<PartialSatCellInfo, PartialSatVertexInfo, PartialSatTesselation, PartialSatBoundingSphere>
         PartialSatClayEngineT;
 
 REGISTER_SERIALIZABLE(PartialSatClayEngineT);
+<<<<<<< HEAD
 
+=======
+YADE_PLUGIN((PartialSatClayEngineT));
+>>>>>>> Revert "remove invalid default argument in function wrapper (wrapper was and is still broken)"
 class PartialSatClayEngine : public PartialSatClayEngineT {
 public:
 	//typedef TemplateFlowEngine_FlowEngineT<FlowCellInfo_FlowEngineT,FlowVertexInfo_FlowEngineT> FlowEngineT;
