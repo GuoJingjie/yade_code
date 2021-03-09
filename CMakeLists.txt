@@ -293,39 +293,27 @@ if(ENABLE_USEFUL_ERRORS)
   # Notes:
   #  -Wfloat-conversion warning: you have to select the int(…) conversion policy: std::floor(…), std::ceil(…), std::round(…), e.g. with int(std::ceil(11.9999999999999993))
 
-  # g++ ver < 11 ; all workarounds are for g++ < ver.11; When version 11 appears I hope that there will be fewer warnigs to disable.
-  # This 'IF' is to trigger the re-evealuation when g++ v.11 appears.
-  IF (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11.0 )
+  # g++ ver >= 7 and g++ ver < 8
+  IF( (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 7.0) AND (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0) )
+    MESSAGE(STATUS   "g++ version 7.0 <= " ${CMAKE_CXX_COMPILER_VERSION} " <8.X.X, setting -Wno-int-in-bool-context")
+    SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-int-in-bool-context")
+  ENDIF()
+  # eigen < 3.3.5
+  IF("${EIGEN3_WORLD_VERSION}.${EIGEN3_MAJOR_VERSION}.${EIGEN3_MINOR_VERSION}" VERSION_LESS 3.3.5)
+    MESSAGE(STATUS   "Eigen version ${EIGEN3_WORLD_VERSION}.${EIGEN3_MAJOR_VERSION}.${EIGEN3_MINOR_VERSION} < 3.3.5, setting -Wno-shadow")
+    SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-shadow")
+  ENDIF()
+
+  # Now, the standard procedure for disabling a single error for some external libraary is to use pragma like in Scene.hpp for #include <mpi.h>
+  # also we could report a bug in these libraries which required these pragmas. Then these pragmas could be wrapped inside an #if version.
+  MESSAGE(STATUS   "${Esc}[32mAlmost all useful errors are enabled and it is g++ version >= 11${Esc}[0m")
+  # This 'IF' is to trigger the re-evealuation when g++ v.12 appears.
+  IF (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 12.0 )
     SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-comment")
-    # g++ ver >= 8
-    IF (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 8.0) # can't use VERSION_GREATER_EQUAL here, it's not working on ubuntu 16.04
-      SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-cast-function-type")
-      # g++ ver >= 9
-      IF (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 9.0 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 9.0)
-        SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-deprecated-copy")
-      ENDIF()
-    ENDIF()
-    # g++ ver >= 7
-    IF (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0 OR CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 7.0)
-      # g++ ver < 8
-      IF (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
-        SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-int-in-bool-context")
-      ENDIF()
-      # g++ ver >= 7 and eigen > 3.3.4
-      IF(NOT ((${EIGEN3_MAJOR_VERSION} EQUAL 3) AND ( (${EIGEN3_MINOR_VERSION} LESS 4) OR (${EIGEN3_MINOR_VERSION} EQUAL 4))))
-        # eigen > 3.3.4, (newer than ubuntu 16.04 xenial or 18.04 bionic)
-        SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wshadow=compatible-local")
-      ENDIF()
-    ENDIF()
-  ELSE (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11.0 )
-    # Now, the standard procedure for disabling a single error for some external libraary is to use pragma like in Scene.hpp for #include <mpi.h>
-    # also we could report a bug in these libraries which required these pragmas. Then these pragmas could be wrapped inside an #if version.
-    MESSAGE(STATUS   "${Esc}[32mAlmost all useful errors are enabled and it is g++ version >= 11${Esc}[0m")
-    IF    (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 12.0 )
-      SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-comment")
-      MESSAGE(STATUS   "Except for this one g++ bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53431#c34 , so we add -Wno-comment")
-    ENDIF (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 12.0 )
-  ENDIF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11.0 )
+    MESSAGE(STATUS   "Except for this one g++ bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53431#c34 , so we add -Wno-comment")
+  ELSE(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 12.0 )
+    MESSAGE(STATUS   "g++ versions up to 11 have a -Wcomment bug, if in g++ higher than 11 this bug still occurs, simply increment the 12 in IF here.")
+  ENDIF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 12.0 )
 
   # mips64el architecture has different alignments for types than the other architectures. This warning is very good.
   # It warns about a potential crash, if we don't make sure that the alignment is indeed correct. !
@@ -341,7 +329,7 @@ if(ENABLE_USEFUL_ERRORS)
     # numpy 1.11.0 has unused-function, 1.13 does not. So we have to print warning only when it appears.
     SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-unused-function")
   ENDIF()
-  SET(ALL_ENABLED_USEFUL_ERRORS " -Werror -Wformat -Wformat-security -Wformat-nonliteral -Wall -Wextra -Wnarrowing -Wreturn-type -Wuninitialized -Wfloat-conversion -Wcast-align -Wdisabled-optimization -Wtrampolines -Wpointer-arith -Wswitch-bool -Wwrite-strings -Wnon-virtual-dtor -Wreturn-local-addr -Wsuggest-override")
+  SET(ALL_ENABLED_USEFUL_ERRORS " -Werror -Wformat -Wformat-security -Wformat-nonliteral -Wall -Wextra -Wnarrowing -Wreturn-type -Wuninitialized -Wfloat-conversion -Wcast-align -Wdisabled-optimization -Wtrampolines -Wpointer-arith -Wswitch-bool -Wwrite-strings -Wnon-virtual-dtor -Wreturn-local-addr -Wsuggest-override -Wshadow")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ALL_ENABLED_USEFUL_ERRORS} ${WORKAROUND_LIBRARY_WARNINGS} -Wno-error=cpp -fdce -fstack-protector-strong")
 
 #  -Wcast-qual      is useful, but too many warnings in libeigen
