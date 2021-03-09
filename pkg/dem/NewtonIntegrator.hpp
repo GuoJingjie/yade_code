@@ -9,7 +9,7 @@
 
 #include <lib/base/Math.hpp>
 #include <core/Interaction.hpp>
-#include <pkg/common/Callbacks.hpp>
+#include <core/Callbacks.hpp>
 #include <pkg/common/FieldApplier.hpp>
 #include <pkg/dem/GlobalStiffnessTimeStepper.hpp>
 

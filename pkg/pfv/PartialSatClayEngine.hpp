@@ -9,50 +9,33 @@
 
 //#ifndef FLOW_GUARD
 //#define FLOW_GUARD
-
+#pragma once
+#ifdef FLOW_ENGINE
+#ifdef LINSOLV
 #ifdef PARTIALSAT
-#include "FlowEngine_PartialSatClayEngineT.hpp"
 #include <core/Body.hpp>
 #include <core/Omega.hpp>
 #include <core/PartialEngine.hpp>
 #include <core/Scene.hpp>
 #include <core/State.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
+#include <pkg/common/MatchMaker.hpp>
 #include <pkg/dem/ScGeom.hpp>
 #include <Eigen/SparseLU>
 
-#ifdef YADE_VTK
 
-//#include<vtkSmartPointer.h>
-#include <lib/compatibility/VTKCompatibility.hpp>
-#include <vtkCellArray.h>
-#include <vtkCellData.h>
-#include <vtkDoubleArray.h>
-#include <vtkLine.h>
-#include <vtkPointData.h>
-#include <vtkPoints.h>
-#include <vtkQuad.h>
-#include <vtkSmartPointer.h>
-#include <vtkXMLPolyDataWriter.h>
-#include <vtkXMLUnstructuredGridWriter.h>
-//#include<vtkDoubleArray.h>
-//#include<vtkUnstructuredGrid.h>
-#include <vtkPolyData.h>
 
-#endif
-
-#ifdef FLOW_ENGINE
 //#include<pkg/pfv/FlowEngine.hpp>
 //#include "FlowEngine_FlowEngineT.hpp"
 #include <lib/triangulation/FlowBoundingSphere.hpp>
 #include <lib/triangulation/Network.hpp>
 #include <lib/triangulation/Tesselation.h>
 #include <pkg/dem/TesselationWrapper.hpp>
-#endif
+#include "FlowEngine_PartialSatClayEngineT.hpp"
 
-#ifdef LINSOLV
+
 #include <cholmod.h>
-#endif
+
 
 namespace yade { // Cannot have #include directive inside.
 
@@ -112,17 +95,17 @@ public:
 	//same here if needed
 };
 
-typedef CGT::_Tesselation<CGT::TriangulationTypes<PartialSatVertexInfo, PartialSatCellInfo>> PartialSatTesselation;
+typedef CGT::_Tesselation<CGT::TriangulationTypes<PartialSatVertexInfo, PartialSatCellInfo> > PartialSatTesselation;
 #ifdef LINSOLV
-#define PartialSatBoundingSphere CGT::PartialSatLinSolv<PartialSatTesselation>
-//class PartialSatBoundingSphere; // : public CGT::FlowBoundingSphereLinSolv<PartialSatTesselation> {};
+// #define PartialSatBoundingSphere CGT::PartialSatLinSolv<PartialSatTesselation>
+class PartialSatBoundingSphere : public CGT::PartialSatLinSolv<PartialSatTesselation> {};
 #endif
 
 typedef TemplateFlowEngine_PartialSatClayEngineT<PartialSatCellInfo, PartialSatVertexInfo, PartialSatTesselation, PartialSatBoundingSphere>
         PartialSatClayEngineT;
 
 REGISTER_SERIALIZABLE(PartialSatClayEngineT);
-YADE_PLUGIN((PartialSatClayEngineT));
+
 class PartialSatClayEngine : public PartialSatClayEngineT {
 public:
 	//typedef TemplateFlowEngine_FlowEngineT<FlowCellInfo_FlowEngineT,FlowVertexInfo_FlowEngineT> FlowEngineT;
@@ -403,10 +386,86 @@ public:
 	//.def("resetOriginalParticleValues",&PartialSatClayEngine::resetOriginalParticleValues,"reset the initial valume and radii values for particles.")
 	.def("getTotalSpecimenVolume",&PartialSatClayEngine::getTotalSpecimenVolume,"get the total specimen volume")
 	)
+	// clang-format on
 	DECLARE_LOGGER;
 };
 REGISTER_SERIALIZABLE(PartialSatClayEngine);
-YADE_PLUGIN((PartialSatClayEngine));
-// clang-format on
+
+
+class PartialSatState : public State {
+	// clang-format off
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR(PartialSatState,State,"Hertz mindlin state information about each body. Only active if partially saturated clay model is active.",
+
+		((Real,suctionSum,0,,"sum of suctions associated with incident cells"))
+		((Real,suction,0,,"suction computed for particle (sum(sat of inc. cells)/num inc. cells)"))
+		((Real,radiiChange,0,,"total change of particle radius due to swelling"))
+		((Real,radiiOriginal,0,,"original particle radius prior to swelling"))
+		((int,incidentCells,0,,"number of incident cells"))
+		((int,lastIncidentCells,0,,"number of incident cells"))
+		((Real,volumeOriginal,0,,"original particle volume stored for strain increments"))
+
+		,
+		createIndex();
+	);
+	// clang-format on
+	REGISTER_CLASS_INDEX(PartialSatState, State);
+};
+REGISTER_SERIALIZABLE(PartialSatState);
+
+class PartialSatMat : public FrictMat {
+public:
+	virtual shared_ptr<State> newAssocState() const { return shared_ptr<State>(new PartialSatState); }
+	virtual bool              stateTypeOk(State* s) const { return (bool)dynamic_cast<PartialSatState*>(s); }
+
+	// clang-format off
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR(PartialSatMat,FrictMat,"Material used for :yref:`PartialSatClayEngine`. Necessary for the custom PartialSatState.",
+		((int,num,0,,"Particle number"))
+		,
+		createIndex();
+	);
+	// clang-format on
+	REGISTER_CLASS_INDEX(PartialSatMat, FrictMat);
+};
+REGISTER_SERIALIZABLE(PartialSatMat);
+
+class Ip2_PartialSatMat_PartialSatMat_MindlinPhys : public IPhysFunctor {
+public:
+	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction);
+	FUNCTOR2D(PartialSatMat, PartialSatMat);
+	// clang-format off
+	YADE_CLASS_BASE_DOC_ATTRS(
+			Ip2_PartialSatMat_PartialSatMat_MindlinPhys,IPhysFunctor,"PartialSat variant of HertzMindlin \n\n \
+Calculate some physical parameters needed to obtain \
+the normal and shear stiffnesses according to the Hertz-Mindlin formulation (as implemented in PFC).\n\n\
+Viscous parameters can be specified either using coefficients of restitution ($e_n$, $e_s$) or viscous \
+damping ratio ($\\beta_n$, $\\beta_s$). The following rules apply:\n#. If the $\\beta_n$ ($\\beta_s$) \
+ratio is given, it is assigned to :yref:`MindlinPhys.betan` (:yref:`MindlinPhys.betas`) directly.\n#. \
+If $e_n$ is given, :yref:`MindlinPhys.betan` is computed using $\\beta_n=-(\\log e_n)/\\sqrt{\\pi^2+(\\log e_n)^2}$. \
+The same applies to $e_s$, :yref:`MindlinPhys.betas`.\n#. It is an error (exception) to specify both $e_n$ \
+and $\\beta_n$ ($e_s$ and $\\beta_s$).\n#. If neither $e_n$ nor $\\beta_n$ is given, zero value \
+for :yref:`MindlinPhys.betan` is used; there will be no viscous effects.\n#.If neither $e_s$ nor $\\beta_s$ \
+is given, the value of :yref:`MindlinPhys.betan` is used for :yref:`MindlinPhys.betas` as well.\n\nThe \
+$e_n$, $\\beta_n$, $e_s$, $\\beta_s$ are :yref:`MatchMaker` objects; they can be constructed from float \
+values to always return constant value.\n\nSee :ysrc:`scripts/test/shots.py` for an example of specifying \
+$e_n$ based on combination of parameters.",
+			((Real,gamma,0.0,,"Surface energy parameter [J/m^2] per each unit contact surface, to derive DMT formulation from HM"))
+			((Real,eta,0.0,,"Coefficient to determine the plastic bending moment"))
+			((Real,krot,0.0,,"Rotational stiffness for moment contact law"))
+			((Real,ktwist,0.0,,"Torsional stiffness for moment contact law"))
+			((shared_ptr<MatchMaker>,en,,,"Normal coefficient of restitution $e_n$."))
+			((shared_ptr<MatchMaker>,es,,,"Shear coefficient of restitution $e_s$."))
+			((shared_ptr<MatchMaker>,betan,,,"Normal viscous damping ratio $\\beta_n$."))
+			((shared_ptr<MatchMaker>,betas,,,"Shear viscous damping ratio $\\beta_s$."))
+			((shared_ptr<MatchMaker>,frictAngle,,,"Instance of :yref:`MatchMaker` determining how to compute the friction angle of an interaction. If ``None``, minimum value is used."))
+	);
+	// clang-format on
+	DECLARE_LOGGER;
+};
+REGISTER_SERIALIZABLE(Ip2_PartialSatMat_PartialSatMat_MindlinPhys);
+
+
+
 } //namespaceyade
 #endif
+#endif //LINSOLV
+#endif //FLOW_ENGINE

@@ -9,7 +9,7 @@
 
 #include <core/Scene.hpp>
 #include <pkg/common/Collider.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/PeriodicEngines.hpp>
 #include <string>
 #include <vector>

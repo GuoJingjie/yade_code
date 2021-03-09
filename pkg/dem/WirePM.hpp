@@ -25,7 +25,7 @@ Features of the interaction law:
 
 #pragma once
 
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/ElastMat.hpp>
 #include <pkg/dem/FrictPhys.hpp>
 #include <pkg/dem/ScGeom.hpp>

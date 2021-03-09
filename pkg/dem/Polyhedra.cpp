@@ -9,6 +9,7 @@
 #include "Polyhedra.hpp"
 #ifdef YADE_OPENGL
 #include <lib/opengl/OpenGLWrapper.hpp>
+#include <pkg/dem/Shop.hpp>
 #endif
 
 namespace yade { // Cannot have #include directive inside.

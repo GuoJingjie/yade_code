@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/fem/Node.hpp>
 
 namespace yade { // Cannot have #include directive inside.

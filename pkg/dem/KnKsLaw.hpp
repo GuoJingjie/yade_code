@@ -1,6 +1,6 @@
 #pragma once
 #ifdef YADE_POTENTIAL_PARTICLES
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/ElastMat.hpp>
 #include <pkg/common/NormShearPhys.hpp>
 #include <pkg/dem/FrictPhys.hpp>

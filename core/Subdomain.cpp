@@ -7,6 +7,7 @@
 #include <core/BodyContainer.hpp>
 #include <core/Interaction.hpp>
 #include <core/InteractionContainer.hpp>
+#include <core/InteractionLoop.hpp>
 #include <core/MPIBodyContainer.hpp>
 #include <core/State.hpp>
 #include <pkg/common/Sphere.hpp>
@@ -718,7 +719,7 @@ void Subdomain::migrateBodiesSend(const std::vector<Body::id_t>& sendIds, int de
 		const shared_ptr<Body>& bdy = (*scene->bodies)[bId];
 		if (!bdy) { LOG_ERROR("reassignBodies failed " << bId << "  is not in subdomain " << subdomainRank << std::endl); }
 		bdy->subdomain = destination;
-		yade::Shop::createExplicitInteraction(thisSubd, bId, false, true);
+		InteractionLoop::createExplicitInteraction(thisSubd, bId, false, true);
 	}
 	sendBodies(destination, sendIds);
 }

@@ -12,8 +12,8 @@
 #include <core/Omega.hpp>
 #include <core/Scene.hpp>
 #include <core/Subdomain.hpp>
-#include <pkg/common/Aabb.hpp>
-#include <pkg/common/Dispatching.hpp>
+#include <core/Aabb.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <mpi.h>
 #include <vector>

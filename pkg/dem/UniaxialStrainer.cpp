@@ -3,7 +3,7 @@
 
 #include <core/InteractionContainer.hpp>
 #include <core/Scene.hpp>
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 

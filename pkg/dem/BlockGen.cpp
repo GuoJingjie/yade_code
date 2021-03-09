@@ -11,10 +11,10 @@
 #include <core/Body.hpp>
 #include <core/Interaction.hpp>
 #include <core/Scene.hpp>
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 #include <pkg/common/ForceResetter.hpp>
 #include <pkg/common/InsertionSortCollider.hpp>
-#include <pkg/common/InteractionLoop.hpp>
+#include <core/InteractionLoop.hpp>
 #include <pkg/dem/GlobalStiffnessTimeStepper.hpp>
 #include <pkg/dem/NewtonIntegrator.hpp>
 //#include <pkg/dem/Shop.hpp>

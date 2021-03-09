@@ -9,7 +9,7 @@
 #include <pkg/dem/KnKsLaw.hpp>
 #include <pkg/dem/ScGeom.hpp>
 //#include<pkg/dem/Clump.hpp>
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 
 #ifdef YADE_VTK
 

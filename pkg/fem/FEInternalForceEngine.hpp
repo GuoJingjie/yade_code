@@ -7,7 +7,7 @@
 *************************************************************************/
 #pragma once
 #include <core/GlobalEngine.hpp>
-#include <pkg/common/Callbacks.hpp>
+#include <core/Callbacks.hpp>
 #include <pkg/fem/FEInternalForceDispatchers.hpp>
 
 namespace yade { // Cannot have #include directive inside.

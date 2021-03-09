@@ -10,7 +10,7 @@
 #include <core/State.hpp>
 #include <pkg/common/ElastMat.hpp>
 
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 
 #ifdef YADE_CGAL
 #include <CGAL/intersections.h>

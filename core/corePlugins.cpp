@@ -19,6 +19,8 @@
 #include <core/Shape.hpp>
 #include <core/State.hpp>
 #include <core/TimeStepper.hpp>
+#include <core/Aabb.hpp>
+#include <core/Callbacks.hpp>
 
 
 // these two are not accessible from python directly (though they should be in the future, perhaps)
@@ -28,8 +30,12 @@ BOOST_CLASS_EXPORT_IMPLEMENT(yade::InteractionContainer);
 
 namespace yade { // Cannot have #include directive inside.
 
-YADE_PLUGIN((Body)(Bound)(Cell)(Dispatcher)(EnergyTracker)(Engine)(FileGenerator)(Functor)(GlobalEngine)(Interaction)(IGeom)(IPhys)(Material)(PartialEngine)(
-        Shape)(State)(TimeStepper));
+YADE_PLUGIN((Body)(Bound)(Aabb)(Cell)(Dispatcher)(EnergyTracker)(Engine)(FileGenerator)(Functor)(GlobalEngine)(Interaction)(IGeom)(IPhys)(Material)(PartialEngine)(
+        Shape)(State)(TimeStepper)(IntrCallback)
+#ifdef YADE_BODY_CALLBACK
+        (BodyCallback)
+#endif
+);
 
 EnergyTracker::~EnergyTracker() { }
 

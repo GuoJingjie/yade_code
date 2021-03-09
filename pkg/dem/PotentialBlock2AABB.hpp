@@ -2,7 +2,7 @@
 #ifdef YADE_POTENTIAL_BLOCKS
 #pragma once
 
-#include <pkg/common/Dispatching.hpp>
+#include <core/Dispatching.hpp>
 #include <pkg/dem/PotentialBlock.hpp>
 
 namespace yade { // Cannot have #include directive inside.

@@ -11,9 +11,9 @@
 #endif
 
 #include <core/Body.hpp>
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 #include <pkg/common/Facet.hpp>
-#include <pkg/common/InteractionLoop.hpp>
+#include <core/InteractionLoop.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <boost/random.hpp>
 //#include<pkg/dem/BodyMacroParameters.hpp>

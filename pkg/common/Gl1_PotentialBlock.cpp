@@ -2,7 +2,7 @@
 #ifdef YADE_POTENTIAL_BLOCKS
 
 #include <core/Clump.hpp>
-#include <pkg/common/Aabb.hpp>
+#include <core/Aabb.hpp>
 #include <pkg/dem/KnKsPBLaw.hpp>
 #include <pkg/dem/ScGeom.hpp>
 
