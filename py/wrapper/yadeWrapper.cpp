@@ -1243,7 +1243,6 @@ bool isChildClassOf(const string& child, const string& base) { return (Omega::in
 py::list plugins_get()
 {
 	const std::map<std::string, DynlibDescriptor>& plugins = Omega::instance().getDynlibsDescriptor();
-	std::pair<string, DynlibDescriptor>            p;
 	py::list                                       ret;
 	for (const auto& p : plugins)
 		ret.append(p.first);

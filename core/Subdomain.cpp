@@ -161,17 +161,17 @@ shared_ptr<MPIBodyContainer> Subdomain::deSerializeMPIBodyContainer(const char* 
 }
 
 
-string Subdomain::fillContainerGetString(shared_ptr<MPIBodyContainer>& container, const std::vector<Body::id_t>& ids)
+string Subdomain::fillContainerGetString(shared_ptr<MPIBodyContainer>& container, const std::vector<Body::id_t>& ids2)
 {
-	container->insertBodyList(ids);
+	container->insertBodyList(ids2);
 	std::string containerString = serializeMPIBodyContainer(container);
 	return containerString;
 }
 
-string Subdomain::idsToSerializedMPIBodyContainer(const std::vector<Body::id_t>& ids)
+string Subdomain::idsToSerializedMPIBodyContainer(const std::vector<Body::id_t>& ids2)
 {
 	shared_ptr<MPIBodyContainer> container(shared_ptr<MPIBodyContainer>(new MPIBodyContainer()));
-	container->insertBodyList(ids);
+	container->insertBodyList(ids2);
 	return serializeMPIBodyContainer(container);
 }
 
@@ -506,27 +506,28 @@ void Subdomain::recvBuff(char* cbuf, int cbufsZ, int sourceRank, MPI_Request& re
 	MPI_Irecv(cbuf, cbufsZ, MPI_CHAR, sourceRank, TAG_STRING + subdomainRank, selfComm(), &request);
 }
 
-void Subdomain::processReqs(std::vector<MPI_Request>& mpiReqs)
+void Subdomain::processReqs(std::vector<MPI_Request>& mpiReqs2)
 {
-	if (!mpiReqs.size()) { return; }
-	for (unsigned int i = 0; i != mpiReqs.size(); ++i) {
+	// mpiReqs shadows a member yade::Subdomain::mpiReqs
+	if (!mpiReqs2.size()) { return; }
+	for (unsigned int i = 0; i != mpiReqs2.size(); ++i) {
 		MPI_Status status;
-		MPI_Wait(&mpiReqs[i], &status);
+		MPI_Wait(&mpiReqs2[i], &status);
 	}
 
-	resetReqs(mpiReqs);
+	resetReqs(mpiReqs2);
 }
 
-void Subdomain::resetReqs(std::vector<MPI_Request>& mpiReqs) { mpiReqs.clear(); }
+void Subdomain::resetReqs(std::vector<MPI_Request>& mpiReqs2) { mpiReqs2.clear(); }
 
-void Subdomain::processReqsAll(std::vector<MPI_Request>& mpiReqs, std::vector<MPI_Status>& mpiStats)
+void Subdomain::processReqsAll(std::vector<MPI_Request>& mpiReqs2, std::vector<MPI_Status>& mpiStats)
 {
-	for (unsigned int i = 0; i != mpiReqs.size(); ++i) {
+	for (unsigned int i = 0; i != mpiReqs2.size(); ++i) {
 		//MPI_Status status;
-		MPI_Waitall(1, &mpiReqs[i], &mpiStats[i]);
+		MPI_Waitall(1, &mpiReqs2[i], &mpiStats[i]);
 	}
 	mpiStats.clear();
-	resetReqs(mpiReqs);
+	resetReqs(mpiReqs2);
 }
 
 

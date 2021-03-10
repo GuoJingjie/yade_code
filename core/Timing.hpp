@@ -72,8 +72,8 @@ public:
 	boost::python::list pyData()
 	{
 		boost::python::list ret;
-		for (size_t i = 0; i < data.size(); i++) {
-			ret.append(boost::python::make_tuple(labels[i], data[i].nsec, data[i].nExec));
+		for (size_t i2 = 0; i2 < data.size(); i2++) {
+			ret.append(boost::python::make_tuple(labels[i2], data[i2].nsec, data[i2].nExec));
 		}
 		return ret;
 	}

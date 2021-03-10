@@ -118,7 +118,7 @@ public:
 	Vector3r intrShiftPos(const Vector3i& cellDist) const { return hSize * cellDist.cast<Real>(); }
 	Vector3r intrShiftVel(const Vector3i& cellDist) const { return _vGradTimesPrevH * cellDist.cast<Real>(); }
 	// return body velocity while taking away mean field velocity (coming from velGrad) if the mean field velocity is applied on velocity
-	Vector3r bodyFluctuationVel(const Vector3r& pos, const Vector3r& vel, const Matrix3r& prevVelGrad) const { return (vel - prevVelGrad * pos); }
+	Vector3r bodyFluctuationVel(const Vector3r& pos, const Vector3r& vel, const Matrix3r& prevVelGrad2) const { return (vel - prevVelGrad2 * pos); }
 
 	// get/set current shape; setting resets trsf to identity
 	Matrix3r getHSize() const { return hSize; }

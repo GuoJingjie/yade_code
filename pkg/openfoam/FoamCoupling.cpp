@@ -267,9 +267,9 @@ void FoamCoupling::getFluidDomainBbox()
 	//recv the grid minmax from fluid solver.
 
 	for (int rnk = 0; rnk != commSzdff; ++rnk) {
-		MPI_Status           status;
+		MPI_Status           status2;
 		std::vector<double>& buff = minMaxBuff[rnk];
-		MPI_Recv(&buff.front(), 6, MPI_DOUBLE, rnk + stride, TAG_GRID_BBOX, MPI_COMM_WORLD, &status);
+		MPI_Recv(&buff.front(), 6, MPI_DOUBLE, rnk + stride, TAG_GRID_BBOX, MPI_COMM_WORLD, &status2);
 	}
 
 	fluidDomains.resize(commSzdff);
@@ -537,9 +537,9 @@ void FoamCoupling::verifyParticleDetection()
 	for (auto& it : verifyTracking) {
 		std::vector<int>& vt  = it.second;
 		int               rnk = it.first;
-		MPI_Status        status;
+		MPI_Status        status2;
 		int               buffSz = vt.size();
-		MPI_Recv(&vt.front(), buffSz, MPI_INT, rnk, TAG_SEARCH_RES, MPI_COMM_WORLD, &status);
+		MPI_Recv(&vt.front(), buffSz, MPI_INT, rnk, TAG_SEARCH_RES, MPI_COMM_WORLD, &status2);
 	}
 
 
@@ -610,9 +610,9 @@ void FoamCoupling::getParticleForce()
 		std::vector<double>& tmpForce = recvForce.second;
 		int                  recvRank = recvForce.first;
 		int                  buffSz   = tmpForce.size();
-		MPI_Status           status;
+		MPI_Status           status2;
 		/* fluid procs having no particles will send 0 force, torque */
-		MPI_Recv(&tmpForce.front(), buffSz, MPI_DOUBLE, recvRank, TAG_FORCE, MPI_COMM_WORLD, &status);
+		MPI_Recv(&tmpForce.front(), buffSz, MPI_DOUBLE, recvRank, TAG_FORCE, MPI_COMM_WORLD, &status2);
 	}
 }
 
@@ -661,9 +661,9 @@ void FoamCoupling::exchangeDeltaTParallel()
 	// Recv foamdt  first and broadcast;
 
 	if (localRank == yadeMaster) {
-		MPI_Status status;
+		MPI_Status status2;
 		int        fluidMaster = stride;
-		MPI_Recv(&foamDeltaT, 1, MPI_DOUBLE, fluidMaster, TAG_FLUID_DT, MPI_COMM_WORLD, &status);
+		MPI_Recv(&foamDeltaT, 1, MPI_DOUBLE, fluidMaster, TAG_FLUID_DT, MPI_COMM_WORLD, &status2);
 	}
 
 	//bcast  the fluidDt to all yade_procs.
