@@ -48,19 +48,20 @@ The files are
 
 namespace yade { // Cannot have #include directive inside.
 
-// This declaration leads to compile errors for multiple definitions,
-// FlowEngine.cpp.in leads to several clones with same re-declaration (uncomment and see the error)
-// Another problem is that not all these derived engines necessarily use useSolver with the same meaning so currently this enum is
+// Avoid duplicate definitions.
+#ifndef USE_FLOW_SOLVER_ENUM
+#define USE_FLOW_SOLVER_ENUM
+// Problem is that not all these derived engines necessarily use useSolver with the same meaning so currently this enum is
 // a bit overdesigned 
-	
 // 0:Gauss-Seidel, 3: Cholesky factorization (via Eigen3 interface), 4:multicore CPU or GPU accelerated CHOLMOD (without Eigen3)
-// enum /* class */ UseFlowSolver {
-// 	// TODO: use `enum class` here instead, but need to replace `== 0` with `== UseFlowSolver::GaussSeidel` in all other places.
-// 	//       extra benefit of YADE_ENUM: trying to assign 1 or 2 will throw an exception :)
-// 	GaussSeidel           = 0,
-// 	CholeskyFactorization = 3,
-// 	MulticoreCPUorGPU     = 4
-// };
+enum /* class */ UseFlowSolver {
+	// TODO: use `enum class` here instead, but need to replace `== 0` with `== UseFlowSolver::GaussSeidel` in all other places.
+	//       extra benefit of YADE_ENUM: trying to assign 1 or 2 will throw an exception :)
+	GaussSeidel           = 0,
+	CholeskyFactorization = 3,
+	MulticoreCPUorGPU     = 4
+};
+#endif
 
 template<class _CellInfo, class _VertexInfo, class _Tesselation=CGT::_Tesselation<CGT::TriangulationTypes<_VertexInfo,_CellInfo> >, class solverT=DEFAULTSOLVER >
 class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
@@ -368,7 +369,7 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 		((Real,desiredPorosity,0,,"Correct the cell volumes to reflect this desired porosity (not active by default (0))."))
 		((Real,volumeCorrection,1,,"Volume correction factor (not user controlled. auto computed if :yref:`FlowEngine::desiredPorosity` != 0)"))
 		((Real,stiffness, 10000,,"equivalent contact stiffness used in the lubrication model"))
-		((unsigned, useSolver, 3,, "Solver to use. 0:Gauss-Seidel, 3: Cholesky factorization (via Eigen3 interface), 4:multicore CPU or GPU accelerated CHOLMOD (without Eigen3), 1-2: undefined."))
+		((UseFlowSolver, useSolver, UseFlowSolver::CholeskyFactorization,, "Solver to use. 0:Gauss-Seidel, 3: Cholesky factorization (via Eigen3 interface), 4:multicore CPU or GPU accelerated CHOLMOD (without Eigen3), 1-2: undefined."))
 		((int, xmin,0,(Attr::readonly),"Index of the boundary $x_{min}$. This index is not equal the the id of the corresponding body in general, it may be used to access the corresponding attributes (e.g. flow.bndCondValue[flow.xmin], flow.wallId[flow.xmin],...)."))
 		((int, xmax,1,(Attr::readonly),"See :yref:`FlowEngine::xmin`."))
 		((int, ymin,2,(Attr::readonly),"See :yref:`FlowEngine::xmin`."))

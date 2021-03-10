@@ -10,9 +10,7 @@ class TestEnum(unittest.TestCase):
 		pass # here finalize the tests, maybe close an opened file, or something else
 
 	def canTest(self):
-		print('not tested')
-		return False # please find another engine/file to test this 'FlowEngine.cpp.in' is not a good place (and it is complex enough!).
-		#return 'PFVFLOW' in yade.config.features 
+		return 'PFVFLOW' in yade.config.features
 
 	def thisTestsException1(self):
 		self.r.useSolver = -100

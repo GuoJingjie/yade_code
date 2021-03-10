@@ -17,7 +17,7 @@
 
 namespace yade { // Cannot have #include directive inside.
 
-// YADE_ENUM(yade, UseFlowSolver, (GaussSeidel)(CholeskyFactorization)(MulticoreCPUorGPU));
+YADE_ENUM(yade, UseFlowSolver, (GaussSeidel)(CholeskyFactorization)(MulticoreCPUorGPU));
 
 typedef TemplateFlowEngine_FlowEngineT<FlowCellInfo_FlowEngineT, FlowVertexInfo_FlowEngineT> FlowEngineT;
 REGISTER_SERIALIZABLE(FlowEngineT);
