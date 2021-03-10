@@ -223,7 +223,7 @@ void TwoPhaseFlowEngine::computePoreBodyRadius()
 	unsigned int i     = 0;
 	Real         dR = 0.0, tempR = 0.0;
 	bool         initialSign = false; //False = negative, true is positive
-	bool         first       = true;
+	bool         first2      = true;
 
 	MatrixXr M(6, 6);
 
@@ -303,7 +303,7 @@ void TwoPhaseFlowEngine::computePoreBodyRadius()
 		i     = 0;
 		check = false;
 		dR = Rin = 0.0 + (min(r0, min(r1, min(r2, r3))) / 50.0); //Estimate an initial dR
-		first    = true;
+		first2   = true;
 		//Iterate untill check = true, such that an accurate answer as been found
 		while (check == false) {
 			i     = i + 1;
@@ -319,8 +319,8 @@ void TwoPhaseFlowEngine::computePoreBodyRadius()
 			M(2, 4) = pow((r2 + Rin), 2);
 			M(3, 4) = pow((r3 + Rin), 2);
 
-			if (first) {
-				first = false;
+			if (first2) {
+				first2 = false;
 				if (M.determinant() < 0.0) { initialSign = false; } //Initial D is negative
 				if (M.determinant() > 0.0) { initialSign = true; }  // Initial D is positive
 			}
@@ -1631,7 +1631,7 @@ void TwoPhaseFlowEngine::assignWaterVolumesTriangulation()
 
 void TwoPhaseFlowEngine::equalizeSaturationOverMergedCells()
 {
-	Real                waterVolume = 0.0, volume = 0.0, leftOverVolume = 0.0, workVolume = 0.0;
+	Real                waterVolume2 = 0.0, volume = 0.0, leftOverVolume = 0.0, workVolume = 0.0;
 	RTriangulation&     tri     = solver->T[solver->currentTes].Triangulation();
 	FiniteCellsIterator cellEnd = tri.finite_cells_end();
 
@@ -1641,18 +1641,18 @@ void TwoPhaseFlowEngine::equalizeSaturationOverMergedCells()
 
 
 	for (unsigned int k = 1; k < maxIDMergedCells; k++) {
-		waterVolume    = 0.0;
+		waterVolume2   = 0.0;
 		leftOverVolume = 0.0;
 		for (FiniteCellsIterator cell = tri.finite_cells_begin(); cell != cellEnd; cell++) {
 			if (cell->info().mergedID == k) {
-				waterVolume += cell->info().saturation * cell->info().poreBodyVolume;
+				waterVolume2 += cell->info().saturation * cell->info().poreBodyVolume;
 				volume = cell->info().mergedVolume;
 			}
 		}
 
-		if (waterVolume > volume) {
-			leftOverVolume = waterVolume - volume;
-			waterVolume    = volume;
+		if (waterVolume2 > volume) {
+			leftOverVolume = waterVolume2 - volume;
+			waterVolume2   = volume;
 		}
 		if (leftOverVolume > 0.0) {
 			for (FiniteCellsIterator cell = tri.finite_cells_begin(); cell != cellEnd; cell++) {
@@ -1687,7 +1687,7 @@ void TwoPhaseFlowEngine::equalizeSaturationOverMergedCells()
 
 
 		for (FiniteCellsIterator cell = tri.finite_cells_begin(); cell != cellEnd; cell++) {
-			if (cell->info().mergedID == k) { cell->info().saturation = waterVolume / cell->info().mergedVolume; }
+			if (cell->info().mergedID == k) { cell->info().saturation = waterVolume2 / cell->info().mergedVolume; }
 		}
 	}
 	for (FiniteCellsIterator cell = tri.finite_cells_begin(); cell != cellEnd; cell++) {
@@ -2290,40 +2290,40 @@ void TwoPhaseFlowEngine::solvePressure()
 		// 	  stopSimulation = true;
 	}
 	// --------------------------------------find new dt -----------------------------------------------------
-	Real dt = 0.0, finalDT = 1e6;
+	Real dt2 = 0.0, finalDT = 1e6;
 	int  saveID = -1;
 	for (unsigned int i = 0; i < numberOfPores; i++) {
 		//Time step for deforming pore units
 		if (deformation) {
-			dt = -1.0 * listOfPores[i]->info().mergedVolume
+			dt2 = -1.0 * listOfPores[i]->info().mergedVolume
 			        / (listOfPores[i]->info().accumulativeDV + listOfPores[i]->info().accumulativeDVSwelling); //Residence time total pore volume
-			if (dt > deltaTimeTruncation && dt < finalDT) {
-				finalDT = dt;
+			if (dt2 > deltaTimeTruncation && dt2 < finalDT) {
+				finalDT = dt2;
 				saveID  = -1;
 			}
 
 			if (listOfPores[i]->info().accumulativeDVSwelling > 0.0
 			    || listOfPores[i]->info().accumulativeDV > 0.0) { // Residence time during increase in pore size
 				if (listOfPores[i]->info().accumulativeDVSwelling > listOfPores[i]->info().accumulativeDV) {
-					dt = listOfPores[i]->info().mergedVolume * (1.0 - saturationList[i]) / listOfPores[i]->info().accumulativeDVSwelling;
+					dt2 = listOfPores[i]->info().mergedVolume * (1.0 - saturationList[i]) / listOfPores[i]->info().accumulativeDVSwelling;
 				}
 				if (listOfPores[i]->info().accumulativeDVSwelling <= listOfPores[i]->info().accumulativeDV) {
-					dt = listOfPores[i]->info().mergedVolume * (1.0 - saturationList[i]) / listOfPores[i]->info().accumulativeDV;
+					dt2 = listOfPores[i]->info().mergedVolume * (1.0 - saturationList[i]) / listOfPores[i]->info().accumulativeDV;
 				}
-				if (dt > deltaTimeTruncation && dt < finalDT) {
-					finalDT = dt;
+				if (dt2 > deltaTimeTruncation && dt2 < finalDT) {
+					finalDT = dt2;
 					saveID  = -2;
 				}
 			}
 			if (listOfPores[i]->info().accumulativeDVSwelling < 0.0 || listOfPores[i]->info().accumulativeDV < 0.0) {
 				if (listOfPores[i]->info().accumulativeDVSwelling < listOfPores[i]->info().accumulativeDV) {
-					dt = -1.0 * listOfPores[i]->info().mergedVolume * saturationList[i] / listOfPores[i]->info().accumulativeDVSwelling;
+					dt2 = -1.0 * listOfPores[i]->info().mergedVolume * saturationList[i] / listOfPores[i]->info().accumulativeDVSwelling;
 				}
 				if (listOfPores[i]->info().accumulativeDVSwelling >= listOfPores[i]->info().accumulativeDV) {
-					dt = -1.0 * listOfPores[i]->info().mergedVolume * saturationList[i] / listOfPores[i]->info().accumulativeDV;
+					dt2 = -1.0 * listOfPores[i]->info().mergedVolume * saturationList[i] / listOfPores[i]->info().accumulativeDV;
 				}
-				if (dt > deltaTimeTruncation && dt < finalDT) {
-					finalDT = dt;
+				if (dt2 > deltaTimeTruncation && dt2 < finalDT) {
+					finalDT = dt2;
 					saveID  = -2;
 				}
 			}
@@ -2333,19 +2333,19 @@ void TwoPhaseFlowEngine::solvePressure()
 		if (hasInterfaceList[i]) {
 			//thresholdSaturation
 			if (math::abs(listOfPores[i]->info().thresholdSaturation - saturationList[i]) > truncationPrecision) {
-				dt = -1.0 * (listOfPores[i]->info().thresholdSaturation - saturationList[i]) * listOfPores[i]->info().mergedVolume
+				dt2 = -1.0 * (listOfPores[i]->info().thresholdSaturation - saturationList[i]) * listOfPores[i]->info().mergedVolume
 				        / listOfFlux[i];
-				if (dt > deltaTimeTruncation && dt < finalDT) { finalDT = dt; /*saveID = 1;*/ }
+				if (dt2 > deltaTimeTruncation && dt2 < finalDT) { finalDT = dt2; /*saveID = 1;*/ }
 			}
 			//Empty pore
 			if (math::abs(0.0 - saturationList[i]) > truncationPrecision && listOfFlux[i] > 0.0) { //only for drainage
-				dt = -1.0 * (0.0 - saturationList[i]) * listOfPores[i]->info().mergedVolume / listOfFlux[i];
-				if (dt > deltaTimeTruncation && dt < finalDT) { finalDT = dt; /*saveID = 2;*/ }
+				dt2 = -1.0 * (0.0 - saturationList[i]) * listOfPores[i]->info().mergedVolume / listOfFlux[i];
+				if (dt2 > deltaTimeTruncation && dt2 < finalDT) { finalDT = dt2; /*saveID = 2;*/ }
 			}
 			//Saturated pore
 			if (math::abs(1.0 - saturationList[i]) > truncationPrecision && listOfFlux[i] < 0.0) { //only for imbibition
-				dt = -1.0 * (1.0 - saturationList[i]) * listOfPores[i]->info().mergedVolume / listOfFlux[i];
-				if (dt > deltaTimeTruncation && dt < finalDT) { finalDT = dt; /*saveID = 3;*/ }
+				dt2 = -1.0 * (1.0 - saturationList[i]) * listOfPores[i]->info().mergedVolume / listOfFlux[i];
+				if (dt2 > deltaTimeTruncation && dt2 < finalDT) { finalDT = dt2; /*saveID = 3;*/ }
 			}
 		}
 	}
@@ -2470,12 +2470,12 @@ void TwoPhaseFlowEngine::solvePressure()
 
 void TwoPhaseFlowEngine::getQuantities()
 {
-	Real waterVolume = 0.0, pressureWaterVolume = 0.0, waterVolume_NHJ = 0.0, pressureWaterVolume_NHJ = 0.0, waterVolumeP = 0.0, YDimension = 0.0,
+	Real waterVolume2 = 0.0, pressureWaterVolume = 0.0, waterVolume_NHJ = 0.0, pressureWaterVolume_NHJ = 0.0, waterVolumeP = 0.0, YDimension = 0.0,
 	     simplePressureAverage = 0.0;
 	voidVolume                 = 0.0;
 	for (unsigned int i = 0; i < numberOfPores; i++) {
 		voidVolume += listOfPores[i]->info().mergedVolume;
-		waterVolume += listOfPores[i]->info().mergedVolume * listOfPores[i]->info().saturation;
+		waterVolume2 += listOfPores[i]->info().mergedVolume * listOfPores[i]->info().saturation;
 		YDimension += solver->cellBarycenter(listOfPores[i])[1] * listOfPores[i]->info().mergedVolume * listOfPores[i]->info().saturation;
 		simplePressureAverage += listOfPores[i]->info().mergedVolume * listOfPores[i]->info().p();
 
@@ -2514,11 +2514,11 @@ void TwoPhaseFlowEngine::getQuantities()
 	}
 
 	areaAveragedPressure           = areaAveragedPressureAcc / airWaterInterfacialArea;
-	waterSaturation                = waterVolume / voidVolume;
+	waterSaturation                = waterVolume2 / voidVolume;
 	waterPressure                  = pressureWaterVolume / waterVolumeP;
 	waterPressurePartiallySatPores = pressureWaterVolume_NHJ / waterVolume_NHJ;
 	simpleWaterPressure            = simplePressureAverage / voidVolume;
-	totalWaterVolume               = waterVolume;
+	totalWaterVolume               = waterVolume2;
 
 
 	if (!deformation) {
@@ -2545,8 +2545,8 @@ void TwoPhaseFlowEngine::getQuantities()
 		Real Pbottom = volumeWaterPressureBC / volumeWaterVBC;
 		Real z       = (((Ytop / volumeAirBC) - (Ybottom / volumeWaterBC)) / 2.0) + (Ybottom / volumeWaterBC);
 		Real gradP   = -1.0 * (Stop - Sbottom) + (Stop * Ptop - Sbottom * Pbottom);
-		Real gradZ   = -1.0 * (YDimension / waterVolume) * (Stop - Sbottom) + ((Stop * Ytop / volumeAirBC) - (Sbottom * Ybottom / volumeWaterBC));
-		centroidAverageWaterPressure = waterPressure + (1.0 / gradZ) * (z - (YDimension / waterVolume)) * gradP;
+		Real gradZ   = -1.0 * (YDimension / waterVolume2) * (Stop - Sbottom) + ((Stop * Ytop / volumeAirBC) - (Sbottom * Ybottom / volumeWaterBC));
+		centroidAverageWaterPressure = waterPressure + (1.0 / gradZ) * (z - (YDimension / waterVolume2)) * gradP;
 	}
 }
 
@@ -3020,8 +3020,8 @@ vector<int> TwoPhaseFlowEngine::clusterOutvadePore(unsigned startingId, unsigned
 
 vector<int> TwoPhaseFlowEngine::clusterInvadePore(PhaseCluster* cluster, CellHandle cell)
 {
-	//invade the pore and attach to NW reservoir, label is assigned after reset
-	int label               = cell->info().label;
+	//invade the pore and attach to NW reservoir, label2 is assigned after reset
+	int label2              = cell->info().label;
 	cell->info().saturation = 0;
 	cell->info().isNWRes    = true;
 	cell->info().isWRes     = false;
@@ -3030,10 +3030,10 @@ vector<int> TwoPhaseFlowEngine::clusterInvadePore(PhaseCluster* cluster, CellHan
 	//update the cluster(s)
 	unsigned    nPores = cluster->pores.size();
 	vector<int> newClusters; //for returning the list of possible sub-clusters, empty if we are removing the last pore of the base cluster
-	if (nPores == 0) { LOG_WARN("Invading the empty cluster id=" << label); }
+	if (nPores == 0) { LOG_WARN("Invading the empty cluster id=" << label2); }
 	if (nPores == 1) {
 		cluster->reset();
-		cluster->label = label;
+		cluster->label = label2;
 		return newClusters;
 	}
 	FOREACH(CellHandle & cell2, cluster->pores) { cell2->info().label = -1; } //mark all pores, and get them back in again below
@@ -3048,9 +3048,9 @@ vector<int> TwoPhaseFlowEngine::clusterInvadePore(PhaseCluster* cluster, CellHan
 		cerr << "This is not supposed to happen (line " << __LINE__ << ")" << endl;
 
 	auto nCell          = cell->neighbor(neighborStart); //use the remaining pore to start reconstruction of the cluster
-	nCell->info().label = label;                         //assign the label of the original cluster
+	nCell->info().label = label2;                        //assign the label of the original cluster
 	cluster->reset();                                    //reset pores, volume, entryRadius, area... but restore label again after that
-	cluster->label = label;
+	cluster->label = label2;
 	updateSingleCellLabelRecursion(nCell, cluster); //rebuild
 	newClusters.push_back(cluster->label);          //we will return the original cluster itself if not empty
 
@@ -3073,8 +3073,8 @@ bool TwoPhaseFlowEngine::connectedAroundEdge(const RTriangulation& Tri, CellHand
 	revertEdge(facet1, facet2);
 	RTriangulation::Cell_circulator cell1 = Tri.incident_cells(cell, facet1, facet2, cell);
 	RTriangulation::Cell_circulator cell0 = cell1++;
-	const int&                      label = cell1->info().label;
-	while (cell1 != cell0 and !Tri.is_infinite(cell1) and (cell1->info().label == label))
+	const int&                      label2= cell1->info().label;
+	while (cell1 != cell0 and !Tri.is_infinite(cell1) and (cell1->info().label == label2))
 		cell1++; //around edge looking for contiguous labels
 	return (cell1 == cell0);
 }
@@ -3082,11 +3082,11 @@ bool TwoPhaseFlowEngine::connectedAroundEdge(const RTriangulation& Tri, CellHand
 vector<int> TwoPhaseFlowEngine::clusterInvadePoreFast(PhaseCluster* cluster, CellHandle cell)
 {
 	//invade the pore and attach to NW reservoir, label is assigned after reset
-	int label = cell->info().label;
-	if (label != cluster->label) LOG_WARN("wrong label");
+	int label2 = cell->info().label;
+	if (label2 != cluster->label) LOG_WARN("wrong label");
 	if (cell->info().Pcondition) {
 		if (solver->debugOut) LOG_WARN("invading a Pcondition pore (ignored)");
-		return vector<int>(1, label);
+		return vector<int>(1, label2);
 	}
 	const RTriangulation& Tri = solver->T[solver->currentTes].Triangulation();
 #ifdef LINSOLV
@@ -3102,20 +3102,20 @@ vector<int> TwoPhaseFlowEngine::clusterInvadePoreFast(PhaseCluster* cluster, Cel
 	unsigned    nPores = cluster->pores.size();
 	vector<int> newClusters; //for returning the list of possible sub-clusters, empty if we are removing the last pore of the base cluster
 	if (nPores == 0) {
-		LOG_WARN("Invading an empty cluster id=" << label);
+		LOG_WARN("Invading an empty cluster id=" << label2);
 		return newClusters;
 	}
 	if (nPores == 1) {
-		LOG_WARN("Invading last pore of cluster id=" << label);
+		LOG_WARN("Invading last pore of cluster id=" << label2);
 		cluster->reset();
-		cluster->label = label;
+		cluster->label = label2;
 		return newClusters;
 	}
 	//count neighbors from the same cluster
 	vector<CellHandle> clustNeighbors;
 	vector<unsigned>   clustNIdx;
 	for (int k = 0; k < 4; k++)
-		if (not INFT(cell->neighbor(k)) and cell->neighbor(k)->info().label == label) {
+		if (not INFT(cell->neighbor(k)) and cell->neighbor(k)->info().label == label2) {
 			clustNeighbors.push_back(cell->neighbor(k));
 			clustNIdx.push_back(k);
 		}

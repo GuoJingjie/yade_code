@@ -327,7 +327,7 @@ void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
         buildTriangulation ( 0.f,flow );
 }
 template< class _CellInfo, class _VertexInfo, class _Tesselation, class solverT >
-void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,solverT>::buildTriangulation ( Real pZero, Solver& flow )
+void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,solverT>::buildTriangulation ( Real pZero2, Solver& flow )
 {
  	if (first) flow.currentTes=0;
         else {  flow.currentTes=!flow.currentTes; if (debug) cout << "--------RETRIANGULATION-----------" << endl;}
@@ -370,7 +370,7 @@ void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
         porosity = flow.vPoralPorosity/flow.vTotalPorosity;
 
         if (alphaBound<0) boundaryConditions ( flow );
-        flow.initializePressure ( pZero );
+        flow.initializePressure ( pZero2 );
 	flow.computePermeability();
 	if (thermalEngine) {
 		thermalBoundaryConditions ( flow );
@@ -381,7 +381,7 @@ void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
 
         if ( !first && !multithread && (useSolver==0 || fluidBulkModulus>0 || doInterpolate || thermalEngine)){
 		flow.interpolate ( flow.T[!flow.currentTes], flow.tesselation() );
-		if (phiZero>0) flow.adjustCavityCompressibility(pZero); // consider compressibility of air in cavity
+		if (phiZero>0) flow.adjustCavityCompressibility(pZero2); // consider compressibility of air in cavity
 	}
         if ( waveAction ) flow.applySinusoidalPressure ( flow.tesselation().Triangulation(), sineMagnitude, sineAverage, 30 );
 	else if (boundaryPressure.size()!=0) flow.applyUserDefinedPressure ( flow.tesselation().Triangulation(), boundaryXPos , boundaryPressure);
@@ -777,21 +777,21 @@ void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
 			const Real& r1 = s1->radius;
 			const Real& r2 = s2->radius;
 			Vector3r deltaV; Real deltaNormV; Vector3r deltaShearV;
-			Vector3r O1O2Vector; Real O1O2; Vector3r normal; Real surfaceDist; Vector3r O1CVector; Vector3r O2CVector;Real meanRad ;Real Rh; Vector3r deltaAngVel; Vector3r deltaShearAngVel;
+			Vector3r O1O2Vector; Real O1O2; Vector3r normal2; Real surfaceDist; Vector3r O1CVector; Vector3r O2CVector;Real meanRad ;Real Rh; Vector3r deltaAngVel; Vector3r deltaShearAngVel;
 			Vector3r shearLubF; Vector3r normaLubF; Vector3r pumpT; Vector3r deltaAngNormVel; Vector3r twistT; Vector3r angVel1; Vector3r angVel2;
 		//FIXME: if periodic and velGrad!=0, then deltaV should account for velGrad, not the case currently
 			if ( !hasFictious ){
 				O1O2Vector = sph2->state->pos + makeVector3r(vi2.ghostShift()) - sph1->state->pos - makeVector3r(vi1.ghostShift());
 				O1O2 = O1O2Vector.norm();
-				normal= (O1O2Vector/O1O2);
+				normal2= (O1O2Vector/O1O2);
 				surfaceDist = O1O2 - r2 - r1;
 				//FIXME: what is that?
-				O1CVector = (O1O2/2. + (pow(r1,2) - pow(r2,2)) / (2.*O1O2))*normal;
+				O1CVector = (O1O2/2. + (pow(r1,2) - pow(r2,2)) / (2.*O1O2))*normal2;
 				O2CVector = -(O1O2Vector - O1CVector);
 				meanRad = (r2 + r1)/2.;
 				Rh = (r1 < r2)? surfaceDist + 0.45 * r1 : surfaceDist + 0.45 * r2;
 
-				deltaV = (sph2->state->vel + sph2->state->angVel.cross(-r2 * normal)) - (sph1->state->vel+ sph1->state->angVel.cross(r1 * normal));
+				deltaV = (sph2->state->vel + sph2->state->angVel.cross(-r2 * normal2)) - (sph1->state->vel+ sph1->state->angVel.cross(r1 * normal2));
 				angVel1 = sph1->state->angVel;
 				angVel2 = sph2->state->angVel;
 				deltaAngVel = sph2->state->angVel - sph1->state->angVel;
@@ -803,10 +803,10 @@ void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
 					int coord = flow.boundary(bnd).coordinate;
 					O1O2 = v1fictious ? math::abs((sph2->state->pos + makeVector3r(Tes.vertex(id2)->info().ghostShift()))[coord] - flow.boundary(bnd).p[coord]) : math::abs((sph1->state->pos + makeVector3r(Tes.vertex(id1)->info().ghostShift()))[coord] - flow.boundary(bnd).p[coord]);
 					if(v1fictious)
-						normal = makeVector3r(flow.boundary(id1).normal);
+						normal2 = makeVector3r(flow.boundary(id1).normal);
 					else
-						normal = -makeVector3r(flow.boundary(id2).normal);
-					O1O2Vector = O1O2 * normal;
+						normal2 = -makeVector3r(flow.boundary(id2).normal);
+					O1O2Vector = O1O2 * normal2;
 					meanRad = v1fictious ? r2:r1;
 					surfaceDist = O1O2 - meanRad;
 					if (v1fictious){
@@ -817,18 +817,18 @@ void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
 						O2CVector = Vector3r::Zero();}
 
 					Rh = surfaceDist + 0.45 * meanRad;
-					Vector3r v1 = ( Tes.vertex ( id1 )->info().isFictious ) ? flow.boundary ( id1 ).velocity:sph1->state->vel + sph1->state->angVel.cross(r1 * normal);
-					Vector3r v2 = ( Tes.vertex ( id2 )->info().isFictious ) ? flow.boundary ( id2 ).velocity:sph2->state->vel + sph2->state->angVel.cross(-r2 * (normal));
+					Vector3r v1 = ( Tes.vertex ( id1 )->info().isFictious ) ? flow.boundary ( id1 ).velocity:sph1->state->vel + sph1->state->angVel.cross(r1 * normal2);
+					Vector3r v2 = ( Tes.vertex ( id2 )->info().isFictious ) ? flow.boundary ( id2 ).velocity:sph2->state->vel + sph2->state->angVel.cross(-r2 * (normal2));
 					deltaV = v2-v1;
 					angVel1 = ( Tes.vertex ( id1 )->info().isFictious ) ? Vector3r::Zero() : sph1->state->angVel;
 					angVel2 = ( Tes.vertex ( id2 )->info().isFictious ) ? Vector3r::Zero() : sph2->state->angVel;
 					deltaAngVel = angVel2 - angVel1;
 				}
 			}
-			deltaShearV = deltaV - ( normal.dot ( deltaV ) ) *normal;
-			deltaShearAngVel = deltaAngVel - ( normal.dot ( deltaAngVel ) ) *normal;
+			deltaShearV = deltaV - ( normal2.dot ( deltaV ) ) *normal2;
+			deltaShearAngVel = deltaAngVel - ( normal2.dot ( deltaAngVel ) ) *normal2;
 			flow.deltaShearVel.push_back(deltaShearV);
-			flow.normalV.push_back(normal);
+			flow.normalV.push_back(normal2);
 			flow.surfaceDistance.push_back(max(surfaceDist, 0.) + eps*meanRad);
 
 			/// Compute the  shear Lubrication force and torque on each particle
@@ -855,7 +855,7 @@ void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
 				/// Compute the  twist Lubrication torque on each particle
 
 				if (twistTorque){
-					deltaAngNormVel = (normal.dot(deltaAngVel))*normal ;
+					deltaAngNormVel = (normal2.dot(deltaAngVel))*normal2 ;
 					twistT = flow.computeTwistTorque(deltaAngNormVel, surfaceDist, i, eps, meanRad );
 					flow.twistLubricationTorques[id1]+=(-twistT);
 					flow.twistLubricationTorques[id2]+=twistT;
@@ -869,16 +869,16 @@ void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
 				flow.shearStressInteraction.push_back(shearLubF * O1O2Vector.transpose()/(4.0/3.0 *3.14* pow(r1,3)));
 				}
 
-			/// Compute the normal lubrication force applied on each particle
+			/// Compute the normal2 lubrication force applied on each particle
 
 			if (normalLubrication){
-				deltaNormV = normal.dot(deltaV);
-				flow.deltaNormVel.push_back(deltaNormV * normal);
-				normaLubF = flow.computeNormalLubricationForce (deltaNormV, surfaceDist, i,eps,stiffness,scene->dt,meanRad)*normal;
+				deltaNormV = normal2.dot(deltaV);
+				flow.deltaNormVel.push_back(deltaNormV * normal2);
+				normaLubF = flow.computeNormalLubricationForce (deltaNormV, surfaceDist, i,eps,stiffness,scene->dt,meanRad)*normal2;
 				flow.normalLubricationForce[id1]+=normaLubF;
 				flow.normalLubricationForce[id2]+=(-normaLubF);
 
-				/// Compute the normal lubrication stress on each particle
+				/// Compute the normal2 lubrication stress on each particle
 
 				if (viscousNormalBodyStress){
 					flow.normalLubricationBodyStress[id1] += normaLubF * O1CVector.transpose()/ (4.0/3.0 *3.14* pow(r1,3));

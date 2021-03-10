@@ -307,7 +307,7 @@ double UnsaturatedEngine::getCuboidSubdomainSaturation(Vector3r pos1, Vector3r p
 double UnsaturatedEngine::getCuboidSubdomainPorosity(Vector3r pos1, Vector3r pos2, bool isSideBoundaryIncluded)
 {
 	if ((!isInvadeBoundary) && (isSideBoundaryIncluded)) cerr << "In isInvadeBoundary=false drainage, isSideBoundaryIncluded can't set true." << endl;
-	double              totalCellVolume = 0.0;
+	double              totalCellVolume2= 0.0;
 	double              totalVoidVolume = 0.0;
 	RTriangulation&     tri             = solver->T[solver->currentTes].Triangulation();
 	FiniteCellsIterator cellEnd         = tri.finite_cells_end();
@@ -317,12 +317,12 @@ double UnsaturatedEngine::getCuboidSubdomainPorosity(Vector3r pos1, Vector3r pos
 		if ((cell->info().isFictious) && (!isSideBoundaryIncluded)) continue;
 		if (((pos1[0] - cell->info()[0]) * (pos2[0] - cell->info()[0]) < 0) && ((pos1[1] - cell->info()[1]) * (pos2[1] - cell->info()[1]) < 0)
 		    && ((pos1[2] - cell->info()[2]) * (pos2[2] - cell->info()[2]) < 0)) {
-			totalCellVolume = totalCellVolume + std::abs(cell->info().volume());
+			totalCellVolume2= totalCellVolume2 + std::abs(cell->info().volume());
 			totalVoidVolume = totalVoidVolume + cell->info().poreBodyVolume;
 		}
 	}
-	if (totalVoidVolume == 0 || totalCellVolume == 0) cerr << "subdomain too small!" << endl;
-	return totalVoidVolume / totalCellVolume;
+	if (totalVoidVolume == 0 || totalCellVolume2 == 0) cerr << "subdomain too small!" << endl;
+	return totalVoidVolume / totalCellVolume2;
 }
 
 double UnsaturatedEngine::getInvadeDepth()

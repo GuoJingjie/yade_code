@@ -437,8 +437,8 @@ void PartialSatClayEngine::updatePorosity(FlowSolver& flow)
 				if (poro > maxPoroClamp)
 					poro = maxPoroClamp;
 				if (!freezeSaturation and directlyModifySatFromPoro) { // updatesaturation with respect to volume change
-					Real dt         = partialSatDT == 0 ? scene->dt : solverDT;
-					Real volWater_o = (cell->info().volume() - cell->info().dv() * dt) * cell->info().porosity * cell->info().saturation;
+					Real dt2        = partialSatDT == 0 ? scene->dt : solverDT;
+					Real volWater_o = (cell->info().volume() - cell->info().dv() * dt2) * cell->info().porosity * cell->info().saturation;
 					cell->info().saturation = volWater_o / (poro * cell->info().volume()); // update the saturation with respect to new porosity and volume
 				}
 				cell->info().porosity = poro;
@@ -453,10 +453,10 @@ void PartialSatClayEngine::updatePorosity(FlowSolver& flow)
 }
 
 
-void PartialSatClayEngine::setPorosityWithImageryGrid(string imageryFilePath, FlowSolver& flow)
+void PartialSatClayEngine::setPorosityWithImageryGrid(string imageryFilePath2, FlowSolver& flow)
 {
 	std::ifstream file;
-	file.open(imageryFilePath);
+	file.open(imageryFilePath2);
 	if (!file) {
 		cerr << "Unable to open imagery grid reverting to weibull porosity distribution" << endl;
 		setInitialPorosity(flow);
@@ -465,12 +465,12 @@ void PartialSatClayEngine::setPorosityWithImageryGrid(string imageryFilePath, Fl
 	std::vector<Vector3r> gridCoords;
 	std::vector<Real>     porosities;
 	int                   l = 0;
-	Real                  x, y, z, porosity;
-	while (file >> x >> y >> z >> porosity) {
+	Real                  x, y, z, porosity2;
+	while (file >> x >> y >> z >> porosity2) {
 		gridCoords.push_back(Vector3r(x, y, z));
 		//gridCoords[l][1] = y;
 		//gridCoords[l][2] = z;
-		porosities.push_back(porosity);
+		porosities.push_back(porosity2);
 		l++;
 	}
 	cout << "finished creating coords vec and porosities" << endl;
@@ -587,7 +587,7 @@ Real PartialSatClayEngine::weibullDeviate(Real lambda, Real k)
 	return correction;
 }
 
-Real PartialSatClayEngine::exponentialDeviate(Real a, Real b)
+Real PartialSatClayEngine::exponentialDeviate(Real a2, Real b2)
 {
 	std::random_device                   dev;
 	std::mt19937                         rng(dev());
@@ -595,18 +595,18 @@ Real PartialSatClayEngine::exponentialDeviate(Real a, Real b)
 	Real                                 x = dist(rng);
 	if (x == 1.)
 		return 9.999999999999e-1; // return value to avoid undefined behavior
-	Real deviate = -(1. / b) * (log(1. - x) - log(a));
+	Real deviate = -(1. / b2) * (log(1. - x) - log(a2));
 	return exp(deviate); // linearized value, so we convert back using exp(y)
 }
 
-Real PartialSatClayEngine::laplaceDeviate(Real mu, Real b)
+Real PartialSatClayEngine::laplaceDeviate(Real mu, Real b2)
 {
 	std::random_device                   dev;
 	std::mt19937                         rng(dev());
 	std::uniform_real_distribution<Real> dist(-0.5, 0.5);
 	Real                                 x   = dist(rng);
 	Real                                 sgn = x > 0 ? 1. : -1.;
-	return mu - b * sgn * log(1. - 2. * fabs(x)); // inverse of laplace CDF
+	return mu - b2 * sgn * log(1. - 2. * fabs(x)); // inverse of laplace CDF
 	                                              //	if (x<mu) return  1./2. * exp((x-mu)/b);
 	                                              //	else return 1. - 1./2.*exp(-(x-mu)/b);
 }
@@ -789,15 +789,15 @@ void PartialSatClayEngine::updateSaturation(FlowSolver& flow)
 
 void PartialSatClayEngine::resetParticleSuctions()
 {
-	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
+	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b2, scene->bodies)
 	{
 
-		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
+		if (b2->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b2)
 			continue;
-		if (!b->isStandalone())
+		if (!b2->isStandalone())
 			continue;
 
-		PartialSatState* state = dynamic_cast<PartialSatState*>(b->state.get());
+		PartialSatState* state = dynamic_cast<PartialSatState*>(b2->state.get());
 		state->suction         = 0;
 	}
 	YADE_PARALLEL_FOREACH_BODY_END();
@@ -819,11 +819,11 @@ void PartialSatClayEngine::collectParticleSuction(FlowSolver& flow)
 			//if (cell->vertex(v)->info().isFictious) continue;
 			if (cell->vertex(v)->info().isAlpha) continue; // avoid adding alpha vertex to suction?
 			const long int          id = cell->vertex(v)->info().id();
-			const shared_ptr<Body>& b  = (*bodies)[id];
-			if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
+			const shared_ptr<Body>& b2  = (*bodies)[id];
+			if (b2->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b2)
 				continue;
-			PartialSatState* state  = dynamic_cast<PartialSatState*>(b->state.get());
-			Sphere*          sphere = dynamic_cast<Sphere*>(b->shape.get());
+			PartialSatState* state  = dynamic_cast<PartialSatState*>(b2->state.get());
+			Sphere*          sphere = dynamic_cast<Sphere*>(b2->shape.get());
 			//if (cell->info().isExposed) state->suctionSum+= pAir; // use different pressure for exposed cracks?
 			if (!fracBasedPointSuctionCalc) {
 				state->suctionSum += pAir - cell->info().p();
@@ -839,14 +839,14 @@ void PartialSatClayEngine::collectParticleSuction(FlowSolver& flow)
 
 void PartialSatClayEngine::setOriginalParticleValues()
 {
-	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
+	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b2, scene->bodies)
 	{
 
-		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
+		if (b2->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b2)
 			continue;
-		Sphere*          sphere = dynamic_cast<Sphere*>(b->shape.get());
+		Sphere*          sphere = dynamic_cast<Sphere*>(b2->shape.get());
 		const Real       volume = 4. / 3. * M_PI * pow(sphere->radius, 3.);
-		PartialSatState* state  = dynamic_cast<PartialSatState*>(b->state.get());
+		PartialSatState* state  = dynamic_cast<PartialSatState*>(b2->state.get());
 		state->volumeOriginal   = volume;
 		state->radiiOriginal    = sphere->radius;
 	}
@@ -859,13 +859,13 @@ void PartialSatClayEngine::swellParticles()
 	const Real                       suction0 = pAir - pZero;
 	totalVolChange                            = 0;
 
-	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
+	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b2, scene->bodies)
 	{
-		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-		if (!b->isStandalone()) continue;
-		Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
+		if (b2->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b2) continue;
+		if (!b2->isStandalone()) continue;
+		Sphere* sphere = dynamic_cast<Sphere*>(b2->shape.get());
 		//const Real volume = 4./3. * M_PI*pow(sphere->radius,3);
-		PartialSatState* state = dynamic_cast<PartialSatState*>(b->state.get());
+		PartialSatState* state = dynamic_cast<PartialSatState*>(b2->state.get());
 
 		if (!fracBasedPointSuctionCalc) {
 			state->lastIncidentCells = state->incidentCells;
@@ -890,13 +890,13 @@ void PartialSatClayEngine::swellParticles()
 
 void PartialSatClayEngine::artificialParticleSwell(const Real volStrain){
 
-	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
+	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b2, scene->bodies)
 	{
-		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-		if (!b->isStandalone()) continue;
-		Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
+		if (b2->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b2) continue;
+		if (!b2->isStandalone()) continue;
+		Sphere* sphere = dynamic_cast<Sphere*>(b2->shape.get());
 		//const Real volume = 4./3. * M_PI*pow(sphere->radius,3);
-		PartialSatState* state = dynamic_cast<PartialSatState*>(b->state.get());
+		PartialSatState* state = dynamic_cast<PartialSatState*>(b2->state.get());
 
 		// if (!fracBasedPointSuctionCalc) {
 		// 	state->lastIncidentCells = state->incidentCells;
@@ -1237,7 +1237,7 @@ void PartialSatClayEngine::initSolver(FlowSolver& flow)
 	flow.getGasPerm 	 = 0;
 }
 
-void PartialSatClayEngine::buildTriangulation(Real pZero, Solver& flow,bool oneTes)
+void PartialSatClayEngine::buildTriangulation(Real pZero2, Solver& flow,bool oneTes)
 {
 	//cout << "retriangulation" << endl;
 	if (first or oneTes) flow.currentTes = 0;
@@ -1298,7 +1298,7 @@ void PartialSatClayEngine::buildTriangulation(Real pZero, Solver& flow,bool oneT
 
 	if (alphaBound < 0) boundaryConditions(flow);
 	if (debug) cout << "about to initialize pressure" << endl;
-	flow.initializePressure(pZero);
+	flow.initializePressure(pZero2);
 
 	if (thermalEngine) {
 		//initializeVolumes(flow);
@@ -1813,7 +1813,8 @@ void PartialSatClayEngine::exposureRecursion(CellHandle cell, Real bndPressure)
 }
 
 
-Body::id_t PartialSatClayEngine::clump(vector<Body::id_t> ids, unsigned int discretization)
+// FIXME it is copying the entire vector ↓ better to take    const vector<Body::id_t>& ids2
+Body::id_t PartialSatClayEngine::clump(vector<Body::id_t> ids2, unsigned int discretization)
 {
 	// create and add clump itself
 	//Scene*            scene(Omega::instance().getScene().get());
@@ -1823,14 +1824,14 @@ Body::id_t PartialSatClayEngine::clump(vector<Body::id_t> ids, unsigned int disc
 	clumpBody->setBounded(false);
 	scene->bodies->insert(clumpBody);
 	// add clump members to the clump
-	FOREACH(Body::id_t id, ids)
+	FOREACH(Body::id_t id, ids2)
 	{
 		if (Body::byId(id, scene)->isClumpMember()) {                                                 //Check, whether the body is clumpMember
 			Clump::del(Body::byId(Body::byId(id, scene)->clumpId, scene), Body::byId(id, scene)); //If so, remove it from there
 		}
 	};
 
-	FOREACH(Body::id_t id, ids) Clump::add(clumpBody, Body::byId(id, scene));
+	FOREACH(Body::id_t id, ids2) Clump::add(clumpBody, Body::byId(id, scene));
 	Clump::updateProperties(clumpBody, discretization);
 	return clumpBody->getId();
 }
@@ -1841,7 +1842,7 @@ bool PartialSatClayEngine::findInscribedRadiusAndLocation(CellHandle& cell, std:
 	//cout << "using least sq to find inscribed radius " << endl;
 	const Real      prec = 1e-5;
 	Eigen::MatrixXd A(4, 3);
-	Eigen::Vector4d b;
+	Eigen::Vector4d b2;
 	Eigen::Vector3d x;
 	Eigen::Vector4d r;
 	//std::vector<Real> r(4);
@@ -1865,7 +1866,7 @@ bool PartialSatClayEngine::findInscribedRadiusAndLocation(CellHandle& cell, std:
 			cerr << "too many iterations during sphere inscription, quitting" << endl;
 			return 0;
 		}
-		// build A matrix (and part of b)
+		// build A matrix (and part of b2)
 		for (int i = 0; i < 4; i++) {
 			Real xi, yi, zi;
 			xi               = cell->vertex(i)->point().x();
@@ -1879,17 +1880,17 @@ bool PartialSatClayEngine::findInscribedRadiusAndLocation(CellHandle& cell, std:
 		}
 		rMean = r.sum() / 4.;
 
-		// build b
+		// build b2
 		for (int i = 0; i < 4; i++) {
 			Real xi, yi, zi;
 			xi   = cell->vertex(i)->point().x();
 			yi   = cell->vertex(i)->point().y();
 			zi   = cell->vertex(i)->point().z();
-			b(i) = (pow(rMean + sqrt(cell->vertex(i)->point().weight()), 2.) - (pow(xo - xi, 2.) + pow(yo - yi, 2.) + pow(zo - zi, 2.))) / 2.;
+			b2(i) = (pow(rMean + sqrt(cell->vertex(i)->point().weight()), 2.) - (pow(xo - xi, 2.) + pow(yo - yi, 2.) + pow(zo - zi, 2.))) / 2.;
 		}
 
 		// use least squares (normal equation) to minimize residuals
-		x = (A.transpose() * A).ldlt().solve(A.transpose() * b);
+		x = (A.transpose() * A).ldlt().solve(A.transpose() * b2);
 		// if the values are greater than precision, update the guess and repeat
 		if (abs(x(0)) > prec || abs(x(1)) > prec || abs(x(2)) > prec) {
 			xo += x(0);
@@ -2105,12 +2106,12 @@ void PartialSatClayEngine::simulateConfinement() // TODO: needs to be updated fo
 			CellHandle& cell = *it;
 			for (int v = 0; v < 4; v++) {
 				if (!cell->vertex(v)->info().isFictious) {
-					const long int          id = cell->vertex(v)->info().id();
-					const shared_ptr<Body>& b  = (*bodies)[id];
-					if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b)
+					const long int          id2 = cell->vertex(v)->info().id();
+					const shared_ptr<Body>& b2  = (*bodies)[id2];
+					if (b2->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b2)
 						continue;
-					//auto* state = b->state.get();
-					b->setDynamic(false);
+					//auto* state = b2->state.get();
+					b2->setDynamic(false);
 				}
 			}
 		}

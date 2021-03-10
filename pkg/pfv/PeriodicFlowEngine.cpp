@@ -526,7 +526,7 @@ void PeriodicFlowEngine::initializeVolumes(FlowSolver& flow)
 	if (debug) cout << "Volumes initialised." << endl;
 }
 
-void PeriodicFlowEngine::buildTriangulation(Real pZero, FlowSolver& flow)
+void PeriodicFlowEngine::buildTriangulation(Real pZero2, FlowSolver& flow)
 {
 	if (first) flow.currentTes = 0;
 	else {
@@ -544,7 +544,7 @@ void PeriodicFlowEngine::buildTriangulation(Real pZero, FlowSolver& flow)
 	//FIXME: this is already done in addBoundary(?)
 	boundaryConditions(flow);
 	if (debug) cout << endl << "boundaryConditions------" << endl << endl;
-	flow.initializePressure(pZero);
+	flow.initializePressure(pZero2);
 	if (debug) cout << endl << "initializePressure------" << endl << endl;
 	// Define the ghost cells and add indexes to the cells inside the period (the ones that will contain the pressure unknowns)
 	//This must be done after boundary conditions and initialize pressure, else the indexes are not good (not accounting imposedP): FIXME

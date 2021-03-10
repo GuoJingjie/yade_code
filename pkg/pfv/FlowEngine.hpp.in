@@ -166,8 +166,8 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 		std::vector<Real> getCellVelocity(Vector3r pos) const {return solver->getCellVelocity(pos[0], pos[1], pos[2]);}
 		Real getCellVolume(Vector3r pos) const {return solver->getCellVolume(pos[0], pos[1], pos[2]);}
 		Real getBoundaryFlux(unsigned int boundary) const {return solver->boundaryFlux(boundary);}
-		Real getBoundaryVolume(unsigned int boundary, Real dt) const {return -1.0*solver->boundaryFlux(boundary)*dt;}
-		Real getCellInVolumeFromId(unsigned long id, Real dt) const {return -1.0*getCellFluxFromId(id)*dt;}
+		Real getBoundaryVolume(unsigned int boundary, Real dt2) const {return -1.0*solver->boundaryFlux(boundary)*dt2;}
+		Real getCellInVolumeFromId(unsigned long id, Real dt2) const {return -1.0*getCellFluxFromId(id)*dt2;}
 		Real getBoundaryArea(unsigned int boundary) const {return solver->boundaryArea(boundary);}
 		std::vector<std::vector<Real>> getBoundaryVel(unsigned int boundary) const {return solver->boundaryVel(boundary);}
 		Vector3r fluidForce(unsigned int idSph) const {
@@ -225,13 +225,13 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 				pycsd.append(cons);}
 			return pycsd;}
 		boost::python::list getNeighbors(unsigned int id) const { // Temporary function to allow for simulations in Python, can be easily accessed in c++
-		        boost::python::list ids;
+		        boost::python::list ids2;
 		        const RTriangulation& Tri = solver->tesselation().Triangulation();
-		        if (id>=solver->tesselation().cellHandles.size()) {LOG_ERROR("id out of range, max value is "<<solver->T[solver->currentTes].cellHandles.size()); return ids;}
+		        if (id>=solver->tesselation().cellHandles.size()) {LOG_ERROR("id out of range, max value is "<<solver->T[solver->currentTes].cellHandles.size()); return ids2;}
 		        for (unsigned int i=0;i<4;i++) {
 			        const CellHandle& neighbourCell = solver->tesselation().cellHandles[id]->neighbor(i);
-			        if (!Tri.is_infinite(neighbourCell)) ids.append(neighbourCell->info().id);}
-		        return ids;}
+			        if (!Tri.is_infinite(neighbourCell)) ids2.append(neighbourCell->info().id);}
+		        return ids2;}
 
 		template<class Cellhandle>
 		Real volumeCellSingleFictious (Cellhandle cell);
@@ -272,10 +272,10 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 		CELL_SCALAR_SETTER_EXTRA(bool,.Pcondition,setCellPImposed,solver->resetLinearSystem())
 		CELL_SCALAR_SETTER(double,.Tcondition,setCellTImposed)
 		boost::python::list getVertices(unsigned int id) const {
-			boost::python::list ids;
-			if (not checkMaxId(id)) return ids;
-			for (unsigned int i=0;i<4;i++) ids.append(solver->T[solver->currentTes].cellHandles[id]->vertex(i)->info().id());
-			return ids;
+			boost::python::list ids2;
+			if (not checkMaxId(id)) return ids2;
+			for (unsigned int i=0;i<4;i++) ids2.append(solver->T[solver->currentTes].cellHandles[id]->vertex(i)->info().id());
+			return ids2;
 		}
 		void blockCell(unsigned int id, bool blockPressure){
 			if (not checkMaxId(id)) return;

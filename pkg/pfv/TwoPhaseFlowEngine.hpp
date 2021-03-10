@@ -371,21 +371,21 @@ public:
 	unsigned    markRecursively(const CellHandle& cell, int newLabel); // mark and count accessible cells with same label as 'cell' and connected to it
 	vector<int> pyClusterInvadePore(int cellId)
 	{
-		int label = solver->T[solver->currentTes].cellHandles[cellId]->info().label;
-		if (label < 1) {
-			LOG_WARN("the pore is not in a cluster, label=" << label);
+		int label2 = solver->T[solver->currentTes].cellHandles[cellId]->info().label;
+		if (label2 < 1) {
+			LOG_WARN("the pore is not in a cluster, label=" << label2);
 			return vector<int>();
 		}
-		return clusterInvadePore(clusters[label].get(), solver->tesselation().cellHandles[cellId]);
+		return clusterInvadePore(clusters[label2].get(), solver->tesselation().cellHandles[cellId]);
 	}
 	vector<int> pyClusterInvadePoreFast(int cellId)
 	{
-		int label = solver->T[solver->currentTes].cellHandles[cellId]->info().label;
-		if (label < 1) {
-			LOG_WARN("the pore is not in a cluster, label=" << label);
+		int label2 = solver->T[solver->currentTes].cellHandles[cellId]->info().label;
+		if (label2 < 1) {
+			LOG_WARN("the pore is not in a cluster, label=" << label2);
 			return vector<int>();
 		}
-		return clusterInvadePoreFast(clusters[label].get(), solver->T[solver->currentTes].cellHandles[cellId]);
+		return clusterInvadePoreFast(clusters[label2].get(), solver->T[solver->currentTes].cellHandles[cellId]);
 	}
 	boost::python::list pyClusters();
 	bool                connectedAroundEdge(const RTriangulation& Tri, CellHandle& cell, unsigned facet1, unsigned facet2);
@@ -501,26 +501,26 @@ public:
 
 	boost::python::list cellporeThroatConductivity(unsigned int id)
 	{ // Temporary function to allow for simulations in Python, can be easily accessed in c++
-		boost::python::list ids;
+		boost::python::list ids2;
 		if (id >= solver->T[solver->currentTes].cellHandles.size()) {
 			LOG_ERROR("id out of range, max value is " << solver->T[solver->currentTes].cellHandles.size());
-			return ids;
+			return ids2;
 		}
 		for (unsigned int i = 0; i < 4; i++)
-			ids.append(solver->T[solver->currentTes].cellHandles[id]->info().kNorm()[i]);
-		return ids;
+			ids2.append(solver->T[solver->currentTes].cellHandles[id]->info().kNorm()[i]);
+		return ids2;
 	}
 
 	boost::python::list solidSurfaceAreaPerParticle(unsigned int id)
 	{ // Temporary function to allow for simulations in Python, can be easily accessed in c++
-		boost::python::list ids;
+		boost::python::list ids2;
 		if (id >= solver->T[solver->currentTes].cellHandles.size()) {
 			LOG_ERROR("id out of range, max value is " << solver->T[solver->currentTes].cellHandles.size());
-			return ids;
+			return ids2;
 		}
 		for (unsigned int i = 0; i < 4; i++)
-			ids.append(solver->T[solver->currentTes].cellHandles[id]->info().particleSurfaceArea[i]);
-		return ids;
+			ids2.append(solver->T[solver->currentTes].cellHandles[id]->info().particleSurfaceArea[i]);
+		return ids2;
 	}
 
 	//post-processing
@@ -529,45 +529,45 @@ public:
 
 	boost::python::list cellporeThroatRadius(unsigned int id)
 	{
-		boost::python::list ids;
+		boost::python::list ids2;
 		if (id >= solver->T[solver->currentTes].cellHandles.size()) {
 			LOG_ERROR("id out of range, max value is " << solver->T[solver->currentTes].cellHandles.size());
-			return ids;
+			return ids2;
 		}
 		for (unsigned int i = 0; i < 4; i++)
-			ids.append(solver->T[solver->currentTes].cellHandles[id]->info().poreThroatRadius[i]);
-		return ids;
+			ids2.append(solver->T[solver->currentTes].cellHandles[id]->info().poreThroatRadius[i]);
+		return ids2;
 	}
 
 	boost::python::list getNeighbors(unsigned int id, bool withInfCell) const
 	{
-		boost::python::list   ids;
+		boost::python::list   ids2;
 		const RTriangulation& Tri = solver->tesselation().Triangulation();
 		if (id >= solver->tesselation().cellHandles.size()) {
 			LOG_ERROR("id out of range, max value is " << solver->T[solver->currentTes].cellHandles.size());
-			return ids;
+			return ids2;
 		}
 		for (unsigned int i = 0; i < 4; i++) {
 			const CellHandle& neighbourCell = solver->tesselation().cellHandles[id]->neighbor(i);
-			if (withInfCell == true) ids.append(neighbourCell->info().id);
+			if (withInfCell == true) ids2.append(neighbourCell->info().id);
 			else if (!Tri.is_infinite(neighbourCell))
-				ids.append(neighbourCell->info().id);
+				ids2.append(neighbourCell->info().id);
 		}
-		return ids;
+		return ids2;
 	}
 
 	//TODO
 	//Dynamic code
 	boost::python::list cellEntrySaturation(unsigned int id)
 	{ // Temporary function to allow for simulations in Python, can be easily accessed in c++
-		boost::python::list ids;
+		boost::python::list ids2;
 		if (id >= solver->T[solver->currentTes].cellHandles.size()) {
 			LOG_ERROR("id out of range, max value is " << solver->T[solver->currentTes].cellHandles.size());
-			return ids;
+			return ids2;
 		}
 		for (unsigned int i = 0; i < 4; i++)
-			ids.append(solver->T[solver->currentTes].cellHandles[id]->info().entrySaturation[i]);
-		return ids;
+			ids2.append(solver->T[solver->currentTes].cellHandles[id]->info().entrySaturation[i]);
+		return ids2;
 	}
 
 	//FIXME, needs to trigger initSolver() Somewhere, else changing flow.debug or other similar things after first calculation has no effect

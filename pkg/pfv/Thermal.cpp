@@ -250,9 +250,9 @@ void ThermalEngine::setConductionBoundary()
 				CellHandle& cell = *it;
 				for (int v = 0; v < 4; v++) {
 					if (!cell->vertex(v)->info().isFictious) {
-						const long int id = cell->vertex(v)->info().id();
-						if (!Body::byId(id)) continue;
-						const shared_ptr<Body>& b = (*bodies)[id];
+						const long int id2 = cell->vertex(v)->info().id();
+						if (!Body::byId(id2)) continue;
+						const shared_ptr<Body>& b = (*bodies)[id2];
 						if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
 						auto* thState       = b->state.get();
 						thState->Tcondition = true;
@@ -749,16 +749,16 @@ void ThermalEngine::updateForces()
 }
 
 // used for instantly changing temperature and observing volumetric expansion
-void ThermalEngine::applyTempDeltaToSolids(Real delT)
+void ThermalEngine::applyTempDeltaToSolids(Real delT2)
 {
 	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 	{
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
 		auto* thState = b->state.get();
-		if (!thState->Tcondition) { thState->temp += delT; }
+		if (!thState->Tcondition) { thState->temp += delT2; }
 	}
 	YADE_PARALLEL_FOREACH_BODY_END();
-	delT = 0;
+	delT2 = 0;
 }
 
 void ThermalEngine::resetFlowBoundaryTemps()
