@@ -1144,29 +1144,18 @@ ENDIF(ENABLE_POTENTIAL_PARTICLES OR ENABLE_POTENTIAL_BLOCKS)
 
 #===========================================================
 
-ADD_LIBRARY(yade SHARED ${SRC_CORE} ${SRC_LIB})
-
-#===========================================================
-
+# boot is linked to nearly evey other *.so and should be loaded first
 ADD_LIBRARY(boot SHARED ${CMAKE_CURRENT_SOURCE_DIR}/core/main/pyboot.cpp)
 SET_TARGET_PROPERTIES(boot PROPERTIES PREFIX "" LINK_FLAGS "-Wl,--no-as-needed" )
-TARGET_LINK_LIBRARIES(boot ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${LINKLIBS} ${VTK_LIBRARIES} -lrt)
-SET_TARGET_PROPERTIES(yade  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
-# TARGET_LINK_LIBRARIES(yadePkg ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${LINKLIBS} -lrt)
-# SET_TARGET_PROPERTIES(yadePkg  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
+TARGET_LINK_LIBRARIES(boot ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${LINKLIBS} ${VTK_LIBRARIES} -lrt) 
+
+# this is /core and /lib 
+ADD_LIBRARY(yade SHARED ${SRC_CORE} ${SRC_LIB})
 TARGET_LINK_LIBRARIES(boot yade)
-
-
-
-IF(ENABLE_MPFR)
-  TARGET_LINK_LIBRARIES(boot ${MPFR_LIBRARIES})
-#   TARGET_LINK_LIBRARIES(yadePkg ${MPFR_LIBRARIES})
-ENDIF()
 
 IF(REAL_PRECISION_BITS EQUAL 128 OR ((REAL_MULTI_HP) AND (REAL_PRECISION_BITS LESS 128)))
   # the quadmath library is a part of g++ package, no need to check if it is installed.
   TARGET_LINK_LIBRARIES(boot -lquadmath)
-#   TARGET_LINK_LIBRARIES(yadePkg -lquadmath)
   MESSAGE(STATUS "linking -lquadmath")
 ENDIF()
 
@@ -1174,19 +1163,22 @@ IF(ENABLE_GUI)
   TARGET_LINK_LIBRARIES(boot _GLViewer ${GUI_LIBS})
 ENDIF(ENABLE_GUI)
 
-SUBDIRLIST(SUBDIRS ${CMAKE_SOURCE_DIR}/pkg)
+# this is one shared library per /pkg subfolder, for some reason they need to link Boost_LIBRARIES, else segfault (although boot also has this link)
+SUBDIRLIST(SUBDIRS ${CMAKE_SOURCE_DIR}/pkg) 
 MESSAGE("SUBDIRS " ${SUBDIRS})
 FOREACH(subdir ${SUBDIRS})
-    #ADD_SUBDIRECTORY(${subdir})
     FILE(GLOB files "pkg/${subdir}/*.cpp")
     ADD_LIBRARY(${subdir} SHARED ${files})
-    TARGET_LINK_LIBRARIES(${subdir} ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${LINKLIBS} -lrt)
     SET_TARGET_PROPERTIES(${subdir}  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
+	TARGET_LINK_LIBRARIES(${subdir} ${Boost_LIBRARIES} )
     TARGET_LINK_LIBRARIES(boot ${subdir})
-#     TARGET_LINK_LIBRARIES(yade ${subdir})
+    
 	INSTALL(TARGETS ${subdir} DESTINATION ${YADE_LIB_PATH})
-
 ENDFOREACH()
+
+IF(ENABLE_MPFR)
+  TARGET_LINK_LIBRARIES(boot ${MPFR_LIBRARIES})
+ENDIF()
 
 #====================================
 #Back compatibility with scons
