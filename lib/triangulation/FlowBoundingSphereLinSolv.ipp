@@ -120,17 +120,18 @@ namespace CGT {
 	}
 
 
-	template <class _Tesselation, class FlowType> void FlowBoundingSphereLinSolv<_Tesselation, FlowType>::swapFwd(Real* v, int i)
+	template <class _Tesselation, class FlowType> void FlowBoundingSphereLinSolv<_Tesselation, FlowType>::swapFwd(Real* v, int i2)
 	{
-		Real temp = v[i];
-		v[i]      = v[i + 1];
-		v[i + 1]  = temp;
+		// FIXME: why not write std::swap(v[i2] , v[i2+1]); ? // it can be optimized even more than these three lines.
+		Real temp  = v[i2];
+		v[i2]      = v[i2 + 1];
+		v[i2 + 1]  = temp;
 	}
-	template <class _Tesselation, class FlowType> void FlowBoundingSphereLinSolv<_Tesselation, FlowType>::swapFwd(int* v, int i)
+	template <class _Tesselation, class FlowType> void FlowBoundingSphereLinSolv<_Tesselation, FlowType>::swapFwd(int* v, int i2)
 	{
-		Real temp = v[i];
-		v[i]      = v[i + 1];
-		v[i + 1]  = temp;
+		Real temp  = v[i2];
+		v[i2]      = v[i2 + 1];
+		v[i2 + 1]  = temp;
 	}
 
 //spatial sort traits to use with a pair of CGAL::sphere pointers and integer.
@@ -255,8 +256,8 @@ namespace CGT {
 		///Ordered cells
 		int        index = 0, nIndex = 0;
 		CellHandle neighbourCell;
-		for (int i = 0; i < n_cells; i++) {
-			FiniteCellsIterator& cell = orderedCells[i];
+		for (int i2 = 0; i2 < n_cells; i2++) {
+			FiniteCellsIterator& cell = orderedCells[i2];
 			///Non-ordered cells
 			// 	for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cell_end; cell++) {
 			if (!cell->info().Pcondition && !cell->info().blocked) {
@@ -494,8 +495,8 @@ namespace CGT {
 		///we build the full matrix + RHS here, else only the RHS in the other loop
 		if (!isFullLinearSystemGSSet)
 			///Ordered cells
-			for (int i = 0; i < n_cells; i++) {
-				FiniteCellsIterator& cell = orderedCells[i];
+			for (int i2 = 0; i2 < n_cells; i2++) {
+				FiniteCellsIterator& cell = orderedCells[i2];
 				///Non-ordered cells
 				// 	for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cell_end; cell++) {
 				if (!cell->info().Pcondition && !cell->info().blocked) {
@@ -537,8 +538,8 @@ namespace CGT {
 		///define only the new RHS, accouting for new imposed pressures
 		else
 			///Ordered cells
-			for (int i = 0; i < n_cells; i++) {
-				FiniteCellsIterator& cell = orderedCells[i];
+			for (int i2 = 0; i2 < n_cells; i2++) {
+				FiniteCellsIterator& cell = orderedCells[i2];
 				///Non-ordered cells
 				// 	for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cell_end; cell++) {
 				if (!cell->info().Pcondition && !cell->info().blocked)
@@ -766,8 +767,8 @@ namespace CGT {
 #ifdef YADE_OPENMP
 #pragma omp parallel for
 #endif
-		for (long i = 0; i < sizeCells; i++) {
-			CellHandle& cell = Tes.cellHandles[i];
+		for (long i2 = 0; i2 < sizeCells; i2++) {
+			CellHandle& cell = Tes.cellHandles[i2];
 			if (!cell->info().isFictious && !cell->info().blocked && !cell->info().isCavity) {
 				Real volume = thermalPorosity > 0 ? thermalPorosity / cell->info().invVoidVolume() : 1. / cell->info().invVoidVolume();
 				cell->info().internalEnergy = fluidCp * fluidRho * cell->info().temp() * volume;
@@ -831,8 +832,8 @@ namespace CGT {
 #ifdef YADE_OPENMP
 #pragma omp parallel for
 #endif
-		for (long i = 0; i < sizeCells; i++) {
-			CellHandle& cell = Tes.cellHandles[i];
+		for (long i2 = 0; i2 < sizeCells; i2++) {
+			CellHandle& cell = Tes.cellHandles[i2];
 			if (!cell->info().isFictious && !cell->info().blocked) {
 				Real oldTemp = cell->info().temp();
 				//cell->info().temp()=cell->info().internalEnergy/(cell->info().volume()*fluidCp*fluidRho);
@@ -860,8 +861,8 @@ namespace CGT {
 #ifdef YADE_OPENMP
 #pragma omp parallel for
 #endif
-			for (long i = 0; i < sizeCells; i++) {
-				CellHandle& cell = Tes.cellHandles[i];
+			for (long i2 = 0; i2 < sizeCells; i2++) {
+				CellHandle& cell = Tes.cellHandles[i2];
 				if (!cell->info().isCavity) continue;
 				Real oldTemp         = cell->info().temp();
 				cell->info().temp()  = cavityTemp;

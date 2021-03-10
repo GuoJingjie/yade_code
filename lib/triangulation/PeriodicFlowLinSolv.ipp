@@ -104,8 +104,8 @@ namespace CGT {
 		///Ordered cells
 		int        nIndex = 0;
 		CellHandle neighbourCell;
-		for (int i = 0; i < ncols; i++) {
-			FiniteCellsIterator& cell = orderedCells[i];
+		for (int i2 = 0; i2 < ncols; i2++) {
+			FiniteCellsIterator& cell = orderedCells[i2];
 			///Non-ordered cells
 			{
 				const int&      index = cell->info().index;
@@ -203,8 +203,8 @@ namespace CGT {
 			gsB[k] = 0;
 		if (!isFullLinearSystemGSSet) {
 			///Ordered cells
-			for (int i = 1; i <= ncols; i++) {
-				CellHandle& cell = T_cells[i];
+			for (int i2 = 1; i2 <= ncols; i2++) {
+				CellHandle& cell = T_cells[i2];
 				///Non-ordered cells
 				if (!cell->info().Pcondition && !cell->info().isGhost) {
 					//Add diagonal term
@@ -239,8 +239,8 @@ namespace CGT {
 				}
 			}
 		} else
-			for (int i = 1; i <= ncols; i++) {
-				CellHandle& cell = T_cells[i];
+			for (int i2 = 1; i2 <= ncols; i2++) {
+				CellHandle& cell = T_cells[i2];
 				///Non-ordered cells
 				if (!cell->info().Pcondition && !cell->info().isGhost) {
 					for (int j = 0; j < 4; j++) {

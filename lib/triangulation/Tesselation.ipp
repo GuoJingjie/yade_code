@@ -151,8 +151,8 @@ namespace CGT {
 		//check if the surface vector is inward or outward
 		Real dotP = surface * (S0.point() - Sin.point());
 		if (dotP < 0) surface = -surface;
-		Real area = sqrt(surface.squared_length());
-		normal    = surface / area; //unit normal
+		Real area2 = sqrt(surface.squared_length());
+		normal     = surface / area2; //unit normal
 		                            // 	p1 = setCircumCenter(cell1);//starting point of the polygon
 		Point vv  = setCircumCenter(cell);
 		Real  h1  = (S0.point() - vv) * normal; //orthogonal distance from Voronoi vertex to the plane in which the spheres lie, call the intersection V
@@ -1139,14 +1139,14 @@ namespace CGT {
 		}
 		cell0                = cell2++;
 		CellCirculator cell1 = cell2++;
-		Real           area  = 0;
+		Real           area2 = 0;
 
 		while (cell2 != cell0) {
-			area += sqrt(math::abs((Triangle(cell0->info(), cell1->info(), cell2->info())).squared_area()));
+			area2 += sqrt(math::abs((Triangle(cell0->info(), cell1->info(), cell2->info())).squared_area()));
 			++cell1;
 			++cell2;
 		}
-		return area;
+		return area2;
 	}
 
 	template <class TT> void _Tesselation<TT>::AssignPartialVolume(FiniteEdgesIterator& ed_it)

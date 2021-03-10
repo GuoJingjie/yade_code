@@ -22,9 +22,9 @@ CREATE_LOGGER(ClassFactory);
 class Factorable;
 
 bool ClassFactory::registerFactorable(
-        std::string name, CreateFactorableFnPtr create, CreateSharedFactorableFnPtr createShared, CreatePureCustomFnPtr createPureCustom)
+        std::string name, CreateFactorableFnPtr create, CreateSharedFactorableFnPtr createShared2, CreatePureCustomFnPtr createPureCustom2)
 {
-	bool tmp = map.insert(FactorableCreatorsMap::value_type(name, FactorableCreators(create, createShared, createPureCustom))).second;
+	bool tmp = map.insert(FactorableCreatorsMap::value_type(name, FactorableCreators(create, createShared2, createPureCustom2))).second;
 	return tmp;
 }
 

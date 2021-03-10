@@ -127,8 +127,8 @@ namespace CGT {
 		///Ordered cells
 		int        index = 0, nIndex = 0;
 		CellHandle neighbourCell;
-		for (int i = 0; i < n_cells; i++) {
-			FiniteCellsIterator& cell = orderedCells[i];
+		for (int i2 = 0; i2 < n_cells; i2++) {
+			FiniteCellsIterator& cell = orderedCells[i2];
 			///Non-ordered cells
 			// 	for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cell_end; cell++) {
 			if (!cell->info().Pcondition && !cell->info().blocked) {
@@ -245,9 +245,9 @@ namespace CGT {
 		//#ifdef YADE_OPENMP
 		const long size = NewTes.cellHandles.size();
 		//#pragma omp parallel for num_threads(ompThreads>0 ? ompThreads : 1)
-		for (long i = 0; i < size; i++) {
-			CellHandle& newCell = NewTes.cellHandles[i];
-			//cout << "cell i "<< i << endl;
+		for (long i2 = 0; i2 < size; i2++) {
+			CellHandle& newCell = NewTes.cellHandles[i2];
+			//cout << "cell i2 "<< i2 << endl;
 			//#else
 			//for (typename VectorCell::iterator cellIt=NewTes.cellHandles.begin(); cellIt!=NewTes.cellHandles.end(); cellIt++){
 			//	CellHandle& newCell = *cellIt;
@@ -567,9 +567,9 @@ namespace CGT {
 							} else {
 								if (SeM < 0) cerr << "negative equivalent saturation, linear system will be unstable" << endl;
 								Real kM = -kFactor * exp(bIntrinsicPerm* (avgPoro - meanInitialPorosity)); //avgPoroOrig)); consider making all perm relative to the mean instaed of the initial...
-								Real perm               = kM * pow(SeM, nUnsatPerm) * area / distance;
-								cell->info().kNorm()[j] = (permClamp > 0 and perm > permClamp) ? permClamp : perm;
-								//cout << "id " << cell->info().id <<  " perm " << cell->info().kNorm()[j] << " SeM " << SeM << " kM " << kM << " avgPoro " << avgPoro << endl;
+								Real perm2              = kM * pow(SeM, nUnsatPerm) * area / distance;
+								cell->info().kNorm()[j] = (permClamp > 0 and perm2 > permClamp) ? permClamp : perm2;
+								//cout << "id " << cell->info().id <<  " perm2 " << cell->info().kNorm()[j] << " SeM " << SeM << " kM " << kM << " avgPoro " << avgPoro << endl;
 							}
 						} else
 							cell->info().kNorm()[j] = -kFactor * area / distance;

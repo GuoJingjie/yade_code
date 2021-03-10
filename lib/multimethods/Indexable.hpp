@@ -126,8 +126,8 @@ protected:                                                                      
 		SomeClass* Indexable##SomeClass = 0;                                                                                                           \
 		Indexable##SomeClass            = dynamic_cast<SomeClass*>(this);                                                                              \
 		if (Indexable##SomeClass) { assert(Indexable##SomeClass); }                                                                                    \
-		int& max = modifyMaxCurrentlyUsedIndexStatic();                                                                                                \
-		max++;                                                                                                                                         \
+		int& maxIndex = modifyMaxCurrentlyUsedIndexStatic();                                                                                                \
+		maxIndex++;                                                                                                                                         \
 	}
 
 // macro that should be passed in the 4th argument of YADE_CLASS_BASE_ATTR_PY in the top-level indexable

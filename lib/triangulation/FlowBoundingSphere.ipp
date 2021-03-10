@@ -1513,13 +1513,14 @@ namespace CGT {
 		}
 
 		Real density   = 1;
-		Real viscosity = viscosity;
+		//  declaration of ‘viscosity’ shadows a member of ‘yade::CGT::FlowBoundingSphere<_Tesselation>’ [-Werror=shadow]
+		Real viscosity2= viscosity;
 		Real gravity   = 1;
 		Real Vdarcy    = Q1 / Section;
 		Real DeltaP    = math::abs(PInf - PSup);
 		Real DeltaH    = DeltaP / (density * gravity);
-		Real k         = viscosity * Vdarcy * DeltaY / DeltaP; /**m²**/
-		Real Ks        = k * (density * gravity) / viscosity;  /**m/s**/
+		Real k         = viscosity2 * Vdarcy * DeltaY / DeltaP; /**m²**/
+		Real Ks        = k * (density * gravity) / viscosity2;  /**m/s**/
 
 		if (debugOut) {
 			cout << "the maximum superior pressure is = " << p_out_max << " the min is = " << p_out_min << endl;
@@ -2063,10 +2064,10 @@ namespace CGT {
 	}
 
 	template <class Tesselation>
-	Real FlowBoundingSphere<Tesselation>::samplePermeability(Real& xMin, Real& xMax, Real& yMin, Real& yMax, Real& zMin, Real& zMax /*, string key*/)
+	Real FlowBoundingSphere<Tesselation>::samplePermeability(Real& xMin2, Real& xMax2, Real& yMin2, Real& yMax2, Real& zMin2, Real& zMax2 /*, string key*/)
 	{
-		Real Section                   = (xMax - xMin) * (zMax - zMin);
-		Real DeltaY                    = yMax - yMin;
+		Real Section                   = (xMax2 - xMin2) * (zMax2 - zMin2);
+		Real DeltaY                    = yMax2 - yMin2;
 		boundary(yMinId).flowCondition = 0;
 		boundary(yMaxId).flowCondition = 0;
 		boundary(yMinId).value         = 0;

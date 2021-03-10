@@ -5,8 +5,8 @@ namespace boost {
 namespace python {
 	namespace detail {
 		template <class F> struct raw_constructor_dispatcher {
-			raw_constructor_dispatcher(F f)
-			        : f(make_constructor(f))
+			raw_constructor_dispatcher(F ff)
+			        : f(make_constructor(ff))
 			{
 			}
 			PyObject* operator()(PyObject* args, PyObject* keywords)
@@ -21,10 +21,10 @@ namespace python {
 			object f;
 		};
 	}
-	template <class F> object raw_constructor(F f, std::size_t min_args = 0)
+	template <class F> object raw_constructor(F ff, std::size_t min_args = 0)
 	{
 		return detail::make_raw_function(objects::py_function(
-		        detail::raw_constructor_dispatcher<F>(f), mpl::vector2<void, object>(), min_args + 1, (std::numeric_limits<unsigned>::max)()));
+		        detail::raw_constructor_dispatcher<F>(ff), mpl::vector2<void, object>(), min_args + 1, (std::numeric_limits<unsigned>::max)()));
 	}
 }
 }

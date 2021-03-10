@@ -302,9 +302,9 @@ namespace CGT {
 			Statefile << grains[Idg].id << " " << grains[Idg].sphere.point() << " " << grains[Idg].sphere.weight() << " " << grains[Idg].translation
 			          << " " << grains[Idg].rotation << " " << grains[Idg].isSphere << endl;
 		}
-		long Nc = contacts.size();
-		Statefile << Nc << endl;
-		for (long i = 0; i < Nc; ++i) {
+		long Nc2 = contacts.size();
+		Statefile << Nc2 << endl;
+		for (long i = 0; i < Nc2; ++i) {
 			Statefile << contacts[i]->grain1->id << " " << contacts[i]->grain2->id << " " << contacts[i]->normal << " " << contacts[i]->position
 			          << " " << contacts[i]->old_fn << " " << contacts[i]->old_fs << " " << contacts[i]->fn << " " << contacts[i]->fs << " "
 			          << contacts[i]->frictional_work << " " << contacts[i]->status << endl;

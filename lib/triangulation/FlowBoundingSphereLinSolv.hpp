@@ -161,13 +161,14 @@ namespace CGT {
 		}
 #else
 #define CHOLMOD(name) cholmod_##name
-		void add_T_entry(cholmod_triplet* T, int r, int c, Real x)
+		void add_T_entry(cholmod_triplet* T2, int r, int c, Real x2)
+		// declaration of ‘T’ shadows a member of ‘yade::CGT::FlowBoundingSphereLinSolv<_Tesselation, FlowType>’ [-Werror=shadow]
 		{
-			size_t k         = T->nnz;
-			((int*)T->i)[k]  = r;
-			((int*)T->j)[k]  = c;
-			((Real*)T->x)[k] = x;
-			T->nnz++;
+			size_t k         = T2->nnz;
+			((int*)T2->i)[k]  = r;
+			((int*)T2->j)[k]  = c;
+			((Real*)T2->x)[k] = x2;
+			T2->nnz++;
 		}
 #endif
 		void CHOLMOD(wildcard)() { cout << "using cholmod in form of " << __func__ << endl; };

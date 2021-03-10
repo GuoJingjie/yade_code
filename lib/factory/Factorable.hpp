@@ -30,7 +30,7 @@ public:                                                                         
 
 #define REGISTER_BASE_CLASS_NAME(bcn)                                                                                                                          \
 public:                                                                                                                                                        \
-	string getBaseClassName(unsigned int i = 0) const override                                                                                             \
+	string getBaseClassName(unsigned int iTokenBaseClass = 0) const override                                                                               \
 	{                                                                                                                                                      \
 		string             token;                                                                                                                      \
 		vector<string>     tokens;                                                                                                                     \
@@ -40,9 +40,9 @@ public:                                                                         
 			iss >> token;                                                                                                                          \
 			tokens.push_back(token);                                                                                                               \
 		}                                                                                                                                              \
-		if (i >= token.size()) return "";                                                                                                              \
+		if (iTokenBaseClass >= token.size()) return "";                                                                                                \
 		else                                                                                                                                           \
-			return tokens[i];                                                                                                                      \
+			return tokens[iTokenBaseClass];                                                                                                        \
 	}                                                                                                                                                      \
                                                                                                                                                                \
 public:                                                                                                                                                        \
