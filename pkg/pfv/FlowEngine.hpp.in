@@ -48,7 +48,11 @@ The files are
 
 namespace yade { // Cannot have #include directive inside.
 
-// This declaration leads to compile errors for multiple definitions, since all derivatives of FlowEngines would re-declare
+// This declaration leads to compile errors for multiple definitions,
+// FlowEngine.cpp.in leads to several clones with same re-declaration (uncomment and see the error)
+// Another problem is that not all these derived engines necessarily use useSolver with the same meaning so currently this enum is
+// a bit overdesigned 
+	
 // 0:Gauss-Seidel, 3: Cholesky factorization (via Eigen3 interface), 4:multicore CPU or GPU accelerated CHOLMOD (without Eigen3)
 // enum /* class */ UseFlowSolver {
 // 	// TODO: use `enum class` here instead, but need to replace `== 0` with `== UseFlowSolver::GaussSeidel` in all other places.
