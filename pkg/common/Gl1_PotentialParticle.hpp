@@ -86,8 +86,8 @@ public:
 	double FunctionValue(double x[3])
 	{
 		// convert double arguments to Real (with loss of precision)
-		Real r[3] = { static_cast<Real>(x[0]), static_cast<Real>(x[1]), static_cast<Real>(x[2]) };
-		return static_cast<double>(FunctionValue(r));
+		Real r2[3] = { static_cast<Real>(x[0]), static_cast<Real>(x[1]), static_cast<Real>(x[2]) };
+		return static_cast<double>(FunctionValue(r2));
 	}
 #endif
 	double EvaluateFunction(double x[3]) override

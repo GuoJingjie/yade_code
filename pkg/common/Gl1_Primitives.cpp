@@ -26,16 +26,17 @@ YADE_PLUGIN((GlBoundFunctor)(GlShapeFunctor)(GlIGeomFunctor)(GlIPhysFunctor)(GlS
         GlIPhysDispatcher)(GlStateDispatcher));
 
 
-void Gl1_Aabb::go(const shared_ptr<Bound>& bv, Scene* scene)
+void Gl1_Aabb::go(const shared_ptr<Bound>& bv, Scene* scene2)
 {
+	// scene shadows a member ‘yade::Gl1_Aabb::scene’
 	Aabb* aabb = static_cast<Aabb*>(bv.get());
 	glColor3v(bv->color);
-	if (!scene->isPeriodic) {
+	if (!scene2->isPeriodic) {
 		glTranslatev(Vector3r(.5 * (aabb->min + aabb->max)));
 		glScalev(Vector3r(aabb->max - aabb->min));
 	} else {
-		glTranslatev(Vector3r(scene->cell->shearPt(scene->cell->wrapPt(.5 * (aabb->min + aabb->max)))));
-		glMultMatrixd(scene->cell->getGlShearTrsfMatrix());
+		glTranslatev(Vector3r(scene2->cell->shearPt(scene2->cell->wrapPt(.5 * (aabb->min + aabb->max)))));
+		glMultMatrixd(scene2->cell->getGlShearTrsfMatrix());
 		glScalev(Vector3r(aabb->max - aabb->min));
 	}
 	glutWireCube(1);

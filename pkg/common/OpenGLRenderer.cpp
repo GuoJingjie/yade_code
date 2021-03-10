@@ -103,28 +103,29 @@ void OpenGLRenderer::setBodiesDispInfo()
 	bool scaleDisplacements = (dispScale != Vector3r::Ones());
 	for (const auto& b : *scene->bodies) {
 		if (!b || !b->state) continue;
-		size_t             id      = b->getId();
+		// ‘id’ shadows a member of ‘yade::OpenGLRenderer::id’
+		size_t             id2     = b->getId();
 		const Vector3r&    pos     = b->state->pos;
 		const Vector3r&    refPos  = b->state->refPos;
 		const Quaternionr& ori     = b->state->ori;
 		const Quaternionr& refOri  = b->state->refOri;
 		Vector3r           cellPos = (!scene->isPeriodic ? pos : scene->cell->wrapShearedPt(pos)); // inside the cell if periodic, same as pos otherwise
-		bodyDisp[id].isDisplayed   = !pointClipped(cellPos);
+		bodyDisp[id2].isDisplayed   = !pointClipped(cellPos);
 		// if no scaling and no periodic, return quickly
 		if (!(scaleDisplacements || scaleRotations || scene->isPeriodic)) {
-			bodyDisp[id].pos = pos;
-			bodyDisp[id].ori = ori;
+			bodyDisp[id2].pos = pos;
+			bodyDisp[id2].ori = ori;
 			continue;
 		}
 		// apply scaling
-		bodyDisp[id].pos = cellPos;                                                                 // point of reference (inside the cell for periodic)
-		if (scaleDisplacements) bodyDisp[id].pos += dispScale.cwiseProduct(Vector3r(pos - refPos)); // add scaled translation to the point of reference
-		if (!scaleRotations) bodyDisp[id].ori = ori;
+		bodyDisp[id2].pos = cellPos;                                                                 // point of reference (inside the cell for periodic)
+		if (scaleDisplacements) bodyDisp[id2].pos += dispScale.cwiseProduct(Vector3r(pos - refPos)); // add scaled translation to the point of reference
+		if (!scaleRotations) bodyDisp[id2].ori = ori;
 		else {
 			Quaternionr relRot = refOri.conjugate() * ori;
 			AngleAxisr  aa(relRot);
 			aa.angle() *= rotScale;
-			bodyDisp[id].ori = refOri * Quaternionr(aa);
+			bodyDisp[id2].ori = refOri * Quaternionr(aa);
 		}
 	}
 }

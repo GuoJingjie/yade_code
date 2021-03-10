@@ -57,13 +57,13 @@ public:
 	};
 	//! display data for individual bodies
 	vector<BodyDisp> bodyDisp;
-	void             hide(Body::id_t id)
+	void             hide(Body::id_t id2)
 	{
-		if ((unsigned int)id < bodyDisp.size()) bodyDisp[id].hidden = true;
+		if ((unsigned int)id2 < bodyDisp.size()) bodyDisp[id2].hidden = true;
 	}
-	void show(Body::id_t id)
+	void show(Body::id_t id2)
 	{
-		if ((unsigned int)id < bodyDisp.size()) bodyDisp[id].hidden = false;
+		if ((unsigned int)id2 < bodyDisp.size()) bodyDisp[id2].hidden = false;
 	}
 
 	virtual ~OpenGLRenderer();

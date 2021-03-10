@@ -550,8 +550,8 @@ bool Ig2_GridConnection_PFacet_ScGeom::go(
 		oss << chaine << entier;
 		string chaine1 = oss.str();
 		if (!scene->interactions->found(id1, ids2[i])) {
-			shared_ptr<Interaction> chaine1(new Interaction(id1, ids2[i]));
-			scene->interactions->insert(chaine1);
+			shared_ptr<Interaction> chain1(new Interaction(id1, ids2[i]));
+			scene->interactions->insert(chain1);
 		}
 	}
 
@@ -762,8 +762,8 @@ bool Ig2_PFacet_PFacet_ScGeom::go(
 				std::ostringstream oss;
 				string             chaine = "scm";
 				if (!scene->interactions->found(c1, c2)) {
-					shared_ptr<Interaction> chaine(new Interaction(c1, c2));
-					scene->interactions->insert(chaine);
+					shared_ptr<Interaction> chain(new Interaction(c1, c2));
+					scene->interactions->insert(chain);
 				}
 			} else {
 				for (int i = 0; i < 3; i++) {
@@ -775,8 +775,8 @@ bool Ig2_PFacet_PFacet_ScGeom::go(
 						string chaine1 = oss.str();
 						if (!scene->interactions->found(ids1[i], ids2[j])) {
 							if ((Body::byId(ids1[i])->getGroupMask() != 0) and (Body::byId(ids2[j])->getGroupMask() != 0)) {
-								shared_ptr<Interaction> chaine1(new Interaction(ids1[i], ids2[j]));
-								scene->interactions->insert(chaine1);
+								shared_ptr<Interaction> chain1(new Interaction(ids1[i], ids2[j]));
+								scene->interactions->insert(chain1);
 							}
 						}
 					}
@@ -836,8 +836,8 @@ bool Ig2_PFacet_PFacet_ScGeom::go(
 					string chaine1 = oss.str();
 					if (!scene->interactions->found(ids1a[i], ids2a[j])) {
 						if ((Body::byId(ids1a[i])->getGroupMask() != 0) and (Body::byId(ids2a[j])->getGroupMask() != 0)) {
-							shared_ptr<Interaction> chaine1(new Interaction(ids1a[i], ids2a[j]));
-							scene->interactions->insert(chaine1);
+							shared_ptr<Interaction> chain1(new Interaction(ids1a[i], ids2a[j]));
+							scene->interactions->insert(chain1);
 						}
 					}
 				}

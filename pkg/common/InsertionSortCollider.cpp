@@ -748,12 +748,13 @@ void InsertionSortCollider::handleBoundInversionPeri(Body::id_t id1, Body::id_t 
 	where it is only plain comparisons taking place.
 */
 //! return true if bodies bb overlap in all 3 dimensions
-bool InsertionSortCollider::spatialOverlapPeri(Body::id_t id1, Body::id_t id2, Scene* scene, Vector3i& periods) const
+bool InsertionSortCollider::spatialOverlapPeri(Body::id_t id1, Body::id_t id2, Scene* scene2, Vector3i& periods) const
 {
+	// scene shadows a member ‘yade::InsertionSortCollider::scene’
 	assert(periodic);
 	assert(id1 != id2); // programming error, or weird bodies (too large?)
 	for (int axis = 0; axis < 3; axis++) {
-		Real dim = scene->cell->getSize()[axis];
+		Real dim = scene2->cell->getSize()[axis];
 		// LOG_DEBUG("dim["<<axis<<"]="<<dim);
 		// too big bodies
 		if (!allowBiggerThanPeriod) {
@@ -766,8 +767,8 @@ bool InsertionSortCollider::spatialOverlapPeri(Body::id_t id1, Body::id_t id2, S
 		Real shiftedMin = (minima[3 * id1 + axis] - maxima[3 * id1 + axis]) * invSizes[axis] + 1.;
 
 #ifdef YADE_MPI
-		bool subDoverlap      = (Body::byId(id1, scene)->getIsSubdomain() || Body::byId(id2, scene)->getIsSubdomain());
-		bool fluidBodyOverLap = (Body::byId(id1, scene)->getIsFluidDomainBbox() || Body::byId(id2, scene)->getIsFluidDomainBbox());
+		bool subDoverlap      = (Body::byId(id1, scene2)->getIsSubdomain() || Body::byId(id2, scene2)->getIsSubdomain());
+		bool fluidBodyOverLap = (Body::byId(id1, scene2)->getIsFluidDomainBbox() || Body::byId(id2, scene2)->getIsFluidDomainBbox());
 		if (((lmax - lmin) > 0.5 || shiftedMin < 0) && !(subDoverlap or fluidBodyOverLap)) {
 #else
 		if ((lmax - lmin) > 0.5 || shiftedMin < 0) {

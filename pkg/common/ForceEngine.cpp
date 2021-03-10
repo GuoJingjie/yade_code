@@ -90,9 +90,9 @@ void LinearDragEngine::action()
 
 			Vector3r dragForce = Vector3r::Zero();
 
-			Real b = 6. * Mathr::PI * nu * sphere->radius;
+			Real b2 = 6. * Mathr::PI * nu * sphere->radius;
 
-			if (velSphTemp != Vector3r::Zero()) { dragForce = -b * velSphTemp; }
+			if (velSphTemp != Vector3r::Zero()) { dragForce = -b2 * velSphTemp; }
 			scene->forces.addForce(id, dragForce);
 		}
 	}

@@ -60,16 +60,17 @@ const shared_ptr<CombinedKinematicEngine> CombinedKinematicEngine::fromTwo(const
 }
 
 
-void TranslationEngine::apply(const vector<Body::id_t>& ids)
+void TranslationEngine::apply(const vector<Body::id_t>& ids2)
 {
-	if (ids.size() > 0) {
+	// ‘ids’ shadows a member of ‘yade::TranslationEngine’ [-Werror=shadow]
+	if (ids2.size() > 0) {
 #ifdef YADE_OPENMP
-		const long size = ids.size();
+		const long size = ids2.size();
 #pragma omp parallel for schedule(static)
 		for (long i = 0; i < size; i++) {
-			const Body::id_t& id = ids[i];
+			const Body::id_t& id = ids2[i];
 #else
-		FOREACH(Body::id_t id, ids)
+		FOREACH(Body::id_t id, ids2)
 		{
 #endif
 			assert(id < (Body::id_t)scene->bodies->size());
@@ -82,14 +83,15 @@ void TranslationEngine::apply(const vector<Body::id_t>& ids)
 	}
 }
 
-void HarmonicMotionEngine::apply(const vector<Body::id_t>& ids)
+void HarmonicMotionEngine::apply(const vector<Body::id_t>& ids2)
 {
-	if (ids.size() > 0) {
+	// ‘ids’ shadows a member of ‘yade::TranslationEngine’ [-Werror=shadow]
+	if (ids2.size() > 0) {
 		Vector3r w        = f * 2.0 * Mathr::PI; //Angular frequency
 		Vector3r velocity = (((w * scene->time + fi).array().sin()) * (-1.0));
 		velocity          = velocity.cwiseProduct(A);
 		velocity          = velocity.cwiseProduct(w);
-		FOREACH(Body::id_t id, ids)
+		FOREACH(Body::id_t id, ids2)
 		{
 			assert(id < (Body::id_t)scene->bodies->size());
 			Body* b = Body::byId(id, scene).get();
@@ -102,21 +104,23 @@ void HarmonicMotionEngine::apply(const vector<Body::id_t>& ids)
 }
 
 
-void InterpolatingHelixEngine::apply(const vector<Body::id_t>& ids)
+void InterpolatingHelixEngine::apply(const vector<Body::id_t>& ids2)
 {
+	// ‘ids’ shadows a member of ‘yade::TranslationEngine’ [-Werror=shadow]
 	Real virtTime   = wrap ? Shop::periodicWrap(scene->time, *times.begin(), *times.rbegin()) : scene->time;
 	angularVelocity = linearInterpolate<Real, Real>(virtTime, times, angularVelocities, _pos);
 	linearVelocity  = angularVelocity * slope;
-	HelixEngine::apply(ids);
+	HelixEngine::apply(ids2);
 }
 
-void HelixEngine::apply(const vector<Body::id_t>& ids)
+void HelixEngine::apply(const vector<Body::id_t>& ids2)
 {
-	if (ids.size() > 0) {
+	// ‘ids’ shadows a member of ‘yade::TranslationEngine’ [-Werror=shadow]
+	if (ids2.size() > 0) {
 		const Real& dt = scene->dt;
 		angleTurned += angularVelocity * dt;
 		shared_ptr<BodyContainer> bodies = scene->bodies;
-		FOREACH(Body::id_t id, ids)
+		FOREACH(Body::id_t id, ids2)
 		{
 			assert(id < (Body::id_t)bodies->size());
 			Body* b = Body::byId(id, scene).get();
@@ -124,22 +128,23 @@ void HelixEngine::apply(const vector<Body::id_t>& ids)
 			b->state->vel += linearVelocity * rotationAxis;
 		}
 		rotateAroundZero = true;
-		RotationEngine::apply(ids);
+		RotationEngine::apply(ids2);
 	} else {
 		LOG_WARN("The list of ids is empty! Can't move any body.");
 	}
 }
 
-void RotationEngine::apply(const vector<Body::id_t>& ids)
+void RotationEngine::apply(const vector<Body::id_t>& ids2)
 {
-	if (ids.size() > 0) {
+	// ‘ids’ shadows a member of ‘yade::TranslationEngine’ [-Werror=shadow]
+	if (ids2.size() > 0) {
 #ifdef YADE_OPENMP
-		const long size = ids.size();
+		const long size = ids2.size();
 #pragma omp parallel for schedule(static)
 		for (long i = 0; i < size; i++) {
-			const Body::id_t& id = ids[i];
+			const Body::id_t& id = ids2[i];
 #else
-		FOREACH(Body::id_t id, ids)
+		FOREACH(Body::id_t id, ids2)
 		{
 #endif
 			assert(id < (Body::id_t)scene->bodies->size());
@@ -158,21 +163,23 @@ void RotationEngine::apply(const vector<Body::id_t>& ids)
 	}
 }
 
-void HarmonicRotationEngine::apply(const vector<Body::id_t>& ids)
+void HarmonicRotationEngine::apply(const vector<Body::id_t>& ids2)
 {
+	// ‘ids’ shadows a member of ‘yade::TranslationEngine’ [-Werror=shadow]
 	const Real& time = scene->time;
 	Real        w    = f * 2.0 * Mathr::PI; //Angular frequency
 	angularVelocity  = -1.0 * A * w * sin(w * time + fi);
-	RotationEngine::apply(ids);
+	RotationEngine::apply(ids2);
 }
 
-void ServoPIDController::apply(const vector<Body::id_t>& ids)
+void ServoPIDController::apply(const vector<Body::id_t>& ids2)
 {
+	// ‘ids’ shadows a member of ‘yade::TranslationEngine’ [-Werror=shadow]
 	if (iterPrevStart < 0 or ((scene->iter - iterPrevStart) >= iterPeriod)) {
 		Vector3r tmpForce = Vector3r::Zero();
 
-		if (ids.size() > 0) {
-			FOREACH(Body::id_t id, ids)
+		if (ids2.size() > 0) {
+			FOREACH(Body::id_t id, ids2)
 			{
 				assert(id < (Body::id_t)scene->bodies->size());
 				tmpForce += scene->forces.getForce(id);
@@ -202,13 +209,14 @@ void ServoPIDController::apply(const vector<Body::id_t>& ids)
 	translationAxis = axis;
 	velocity        = curVel;
 
-	TranslationEngine::apply(ids);
+	TranslationEngine::apply(ids2);
 }
 
 
-void BicyclePedalEngine::apply(const vector<Body::id_t>& ids)
+void BicyclePedalEngine::apply(const vector<Body::id_t>& ids2)
 {
-	if (ids.size() > 0) {
+	// ‘ids’ shadows a member of ‘yade::TranslationEngine’ [-Werror=shadow]
+	if (ids2.size() > 0) {
 		Quaternionr qRotateZVec(Quaternionr().setFromTwoVectors(Vector3r(0, 0, 1), rotationAxis));
 
 		Vector3r newPos = Vector3r(cos(fi + angularVelocity * scene->dt) * radius, sin(fi + angularVelocity * scene->dt) * radius, 0.0);
@@ -220,12 +228,12 @@ void BicyclePedalEngine::apply(const vector<Body::id_t>& ids)
 		newVel = qRotateZVec * newVel;
 
 #ifdef YADE_OPENMP
-		const long size = ids.size();
+		const long size = ids2.size();
 #pragma omp parallel for schedule(static)
 		for (long i = 0; i < size; i++) {
-			const Body::id_t& id = ids[i];
+			const Body::id_t& id = ids2[i];
 #else
-		FOREACH(Body::id_t id, ids)
+		FOREACH(Body::id_t id, ids2)
 		{
 #endif
 			assert(id < (Body::id_t)scene->bodies->size());
