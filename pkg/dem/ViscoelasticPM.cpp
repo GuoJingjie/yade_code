@@ -407,8 +407,8 @@ template <class T> T fkt(T R, T dR, vector<T> z)
 YADE_PLUGIN((DeformControl));
 void DeformControl::action()
 {
-	Scene*               scene = Omega::instance().getScene().get();
-	const BodyContainer& b     = *scene->bodies;
+	Scene*               scene2 = Omega::instance().getScene().get();
+	const BodyContainer& b      = *scene2->bodies;
 
 	for (size_t i = 0; i < b.size(); ++i) {
 		vector<double> dsi;

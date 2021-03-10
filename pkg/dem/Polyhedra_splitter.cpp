@@ -144,13 +144,14 @@ void PolyhedraSplitter::action()
 
 void SplitPolyTauMax::action()
 {
-	const shared_ptr<Scene>& scene = Omega::instance().getScene();
+	//  declaration of ‘scene’ shadows a member of ‘yade::SplitPolyTauMax’ [-Werror=shadow]
+	const shared_ptr<Scene>& scene2 = Omega::instance().getScene();
 
 	vector<PSplitOne> splitsV;
-	vector<Matrix3r>  bStresses(scene->bodies->size(), Matrix3r::Zero());
+	vector<Matrix3r>  bStresses(scene2->bodies->size(), Matrix3r::Zero());
 	getStressForEachBody(bStresses);
 
-	for (const auto& b : *scene->bodies) {
+	for (const auto& b : *scene2->bodies) {
 		if (!b || !b->material || !b->shape) continue;
 		shared_ptr<Polyhedra>    p = YADE_PTR_DYN_CAST<Polyhedra>(b->shape);
 		shared_ptr<PolyhedraMat> m = YADE_PTR_DYN_CAST<PolyhedraMat>(b->material);
@@ -233,9 +234,10 @@ inline bool isPolyhedraBroken(const Real& Sigma0, const Real& Sigma, const Real&
 
 void SplitPolyMohrCoulomb::action()
 {
-	const shared_ptr<Scene>& scene = Omega::instance().getScene();
+	//  declaration of ‘scene’ shadows a member of ‘yade::SplitPolyTauMax’ [-Werror=shadow]
+	const shared_ptr<Scene>& scene2 = Omega::instance().getScene();
 	vector<PSplitOne>        splitsV;
-	vector<Matrix3r>         bStresses(scene->bodies->size(), Matrix3r::Zero());
+	vector<Matrix3r>         bStresses(scene2->bodies->size(), Matrix3r::Zero());
 	getStressForEachBody(bStresses);
 
 	std::ofstream fileS;
@@ -248,7 +250,7 @@ void SplitPolyMohrCoulomb::action()
 
 	fileS.open(fileName, ios::out | ios::app);
 
-	for (const auto& b : *(scene->bodies)) {
+	for (const auto& b : *(scene2->bodies)) {
 		if (!b || !b->material || !b->shape) continue;
 		shared_ptr<Polyhedra>    p = YADE_PTR_DYN_CAST<Polyhedra>(b->shape);
 		shared_ptr<PolyhedraMat> m = YADE_PTR_DYN_CAST<PolyhedraMat>(b->material);
@@ -312,7 +314,7 @@ void SplitPolyMohrCoulomb::action()
 					SigmaV = math::abs(SigmaT);
 				}
 				//==================================
-				fileS << b->id << "\t" << scene->time << "\t" << scene->iter << "\t" << V << "\t" << b->state->mass << "\t" << S1 << "\t" << S3
+				fileS << b->id << "\t" << scene2->time << "\t" << scene2->iter << "\t" << V << "\t" << b->state->mass << "\t" << S1 << "\t" << S3
 				      << "\t" << SigmaCD << "\t" << SigmaCZ << "\t" << (S1 - SigmaCZ / SigmaCD * S3) << "\t" << SigmaV << "\t" << m->GetWeiS0()
 				      << "\t" << M << "\t" << V0 << "\t" << m->GetP() << "\t";
 				fileS << "-1\t";

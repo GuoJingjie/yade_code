@@ -19,9 +19,11 @@ void RungeKuttaCashKarp54Integrator::action()
 
 	Real time = scene->time;
 
-	error_checker_type rungekuttaerrorcontroller = error_checker_type(abs_err, rel_err, a_x, a_dxdt);
+	// declaration of ‘rungekuttaerrorcontroller’ shadows a member of ‘yade::RungeKuttaCashKarp54Integrator’ [-Werror=shadow]
+	error_checker_type rungekuttaerrorcontroller2 = error_checker_type(abs_err, rel_err, a_x, a_dxdt);
 
-	controlled_stepper_type rungekuttastepper = controlled_stepper_type(rungekuttaerrorcontroller);
+	// declaration of ‘rungekuttastepper’ shadows a member of ‘yade::RungeKuttaCashKarp54Integrator’ [-Werror=shadow]
+	controlled_stepper_type rungekuttastepper2 = controlled_stepper_type(rungekuttaerrorcontroller2);
 
 	stateVector currentstates = getCurrentStates();
 
@@ -34,7 +36,7 @@ void RungeKuttaCashKarp54Integrator::action()
 	/*Try an adaptive integration*/
 
 	integrationsteps += integrate_adaptive(
-	        rungekuttastepper, make_ode_wrapper(*((Integrator*)this), &Integrator::system), currentstates, time, time + dt, stepsize, observer(this));
+	        rungekuttastepper2, make_ode_wrapper(*((Integrator*)this), &Integrator::system), currentstates, time, time + dt, stepsize, observer(this));
 
 	scene->time = scene->time - dt; //Scene move next time step function already increments the time so we have to decrement it just before it.
 }

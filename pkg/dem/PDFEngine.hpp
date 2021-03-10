@@ -53,8 +53,8 @@ REGISTER_SERIALIZABLE(PDFEngine);
 
 template <class Phys> class PDFSpheresStressCalculator : public PDFEngine::PDFCalculator {
 public:
-	PDFSpheresStressCalculator(Vector3r Phys::*member, string name)
-	        : PDFEngine::PDFCalculator(name)
+	PDFSpheresStressCalculator(Vector3r Phys::*member, string name2)
+	        : PDFEngine::PDFCalculator(name2)
 	        , m_member(member)
 	        , m_stress(Matrix3r::Zero()) {};
 	vector<string> getSuffixes() const override { return vector<string>({ "xx", "xy", "xz", "yx", "yy", "yz", "zx", "zy", "zz" }); }

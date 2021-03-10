@@ -98,9 +98,9 @@ bool Law2_ScGeom_ViscElCapPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IP
 	const id_t id2 = I->getId2();
 
 	const ScGeom&        geom   = *static_cast<ScGeom*>(_geom.get());
-	Scene*               scene  = Omega::instance().getScene().get();
+	Scene*               scene2 = Omega::instance().getScene().get();
 	ViscElCapPhys&       phys   = *static_cast<ViscElCapPhys*>(_phys.get());
-	const BodyContainer& bodies = *scene->bodies;
+	const BodyContainer& bodies = *scene2->bodies;
 
 	/*
    * This part for implementation of the capillar model.
@@ -115,7 +115,7 @@ bool Law2_ScGeom_ViscElCapPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IP
 		phys.liqBridgeCreated = true;
 		phys.liqBridgeActive  = false;
 #ifdef YADE_LIQMIGRATION
-		if (phys.LiqMigrEnabled) { scene->addIntrs.push_back(I); }
+		if (phys.LiqMigrEnabled) { scene2->addIntrs.push_back(I); }
 #endif
 		Sphere* s1 = dynamic_cast<Sphere*>(bodies[id1]->shape.get());
 		Sphere* s2 = dynamic_cast<Sphere*>(bodies[id2]->shape.get());
@@ -149,11 +149,11 @@ bool Law2_ScGeom_ViscElCapPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IP
 				const State& de2 = *static_cast<State*>(bodies[id2]->state.get());
 
 				Vector3r& shearForce = phys.shearForce;
-				if (I->isFresh(scene)) shearForce = Vector3r(0, 0, 0);
+				if (I->isFresh(scene2)) shearForce = Vector3r(0, 0, 0);
 				shearForce = geom.rotate(shearForce);
 
-				const Vector3r shift2   = scene->isPeriodic ? scene->cell->intrShiftPos(I->cellDist) : Vector3r::Zero();
-				const Vector3r shiftVel = scene->isPeriodic ? scene->cell->intrShiftVel(I->cellDist) : Vector3r::Zero();
+				const Vector3r shift2   = scene2->isPeriodic ? scene2->cell->intrShiftPos(I->cellDist) : Vector3r::Zero();
+				const Vector3r shiftVel = scene2->isPeriodic ? scene2->cell->intrShiftVel(I->cellDist) : Vector3r::Zero();
 
 				const Vector3r c1x = (geom.contactPoint - de1.pos);
 				const Vector3r c2x = (geom.contactPoint - de2.pos - shift2);
@@ -167,8 +167,8 @@ bool Law2_ScGeom_ViscElCapPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IP
 			phys.normalForce = -(normalCapForceScalar + dampCapForceScalar) * geom.normal;
 
 			if (I->isActive) {
-				addForce(id1, -phys.normalForce, scene);
-				addForce(id2, phys.normalForce, scene);
+				addForce(id1, -phys.normalForce, scene2);
+				addForce(id2, phys.normalForce, scene2);
 			};
 			return true;
 		} else {
@@ -183,8 +183,8 @@ bool Law2_ScGeom_ViscElCapPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IP
 			}
 			const std::pair<id_t, Real> B1 = { id1, phys.Vf1 };
 			const std::pair<id_t, Real> B2 = { id2, phys.Vf2 };
-			scene->delIntrs.push_back(B1);
-			scene->delIntrs.push_back(B2);
+			scene2->delIntrs.push_back(B1);
+			scene2->delIntrs.push_back(B2);
 #endif
 			return false;
 		};
@@ -202,10 +202,10 @@ bool Law2_ScGeom_ViscElCapPhys_Basic::go(shared_ptr<IGeom>& _geom, shared_ptr<IP
 
 		TIMING_DELTAS_CHECKPOINT("force_calculation_penetr");
 		if (computeForceTorqueViscEl(_geom, _phys, I, force, torque1, torque2)) {
-			addForce(id1, -force, scene);
-			addForce(id2, force, scene);
-			addTorque(id1, torque1, scene);
-			addTorque(id2, torque2, scene);
+			addForce(id1, -force, scene2);
+			addForce(id2, force, scene2);
+			addTorque(id1, torque1, scene2);
+			addTorque(id2, torque2, scene2);
 			return true;
 		} else {
 			return false;
@@ -632,8 +632,8 @@ Real liqVolIterBody(shared_ptr<Body> b)
 
 Real LiqControl::liqVolBody(id_t id) const
 {
-	Scene*               scene  = Omega::instance().getScene().get();
-	const BodyContainer& bodies = *scene->bodies;
+	Scene*               scene2 = Omega::instance().getScene().get();
+	const BodyContainer& bodies = *scene2->bodies;
 	if (bodies[id]) {
 		if (bodies[id]->state->Vf > 0) {
 			return bodies[id]->state->Vf + liqVolIterBody(bodies[id]);
@@ -644,12 +644,12 @@ Real LiqControl::liqVolBody(id_t id) const
 		return -1;
 }
 
-Real LiqControl::totalLiqVol(int mask = 0) const
+Real LiqControl::totalLiqVol(int mask2 = 0) const
 {
-	Scene* scene       = Omega::instance().getScene().get();
+	Scene* scene2      = Omega::instance().getScene().get();
 	Real   totalLiqVol = 0.0;
-	for (const auto& b : *scene->bodies) {
-		if ((mask > 0 && (b->groupMask & mask) == 0) or (!b)) continue;
+	for (const auto& b : *scene2->bodies) {
+		if ((mask2 > 0 && (b->groupMask & mask2) == 0) or (!b)) continue;
 		totalLiqVol += liqVolIterBody(b);
 		if (b->state->Vf > 0) { totalLiqVol += b->state->Vf; }
 	}
@@ -660,8 +660,8 @@ bool LiqControl::addLiqInter(id_t id1, id_t id2, Real liq)
 {
 	if (id1 == id2 or liq <= 0) return false;
 
-	Scene*                            scene = Omega::instance().getScene().get();
-	shared_ptr<InteractionContainer>& intrs = scene->interactions;
+	Scene*                            scene2= Omega::instance().getScene().get();
+	shared_ptr<InteractionContainer>& intrs = scene2->interactions;
 	const shared_ptr<Interaction>&    I     = intrs->find(id1, id2);
 	if (I->isReal()) {
 		ViscElCapPhys* physT = dynamic_cast<ViscElCapPhys*>(I->phys.get());

@@ -104,8 +104,9 @@ void MicroMacroAnalyser::setState(unsigned int state, bool save_states, bool com
 //Copy simulation data in the triaxialState structure
 CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char* filename)
 {
-	Scene*                     scene  = Omega::instance().getScene().get();
-	shared_ptr<BodyContainer>& bodies = scene->bodies;
+	//  declaration of ‘scene’ shadows a member of ‘yade::MicroMacroAnalyser’ [-Werror=shadow]
+	Scene*                     scene2  = Omega::instance().getScene().get();
+	shared_ptr<BodyContainer>& bodies = scene2->bodies;
 	CGT::TriaxialState*        ts     = 0;
 	if (state == 1) ts = analyser->TS0;
 	else if (state == 2)
@@ -180,8 +181,8 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 	} else
 		LOG_INFO(" the number of fictious vertices should be 0 or 6 usually");
 
-	InteractionContainer::iterator ii    = scene->interactions->begin();
-	InteractionContainer::iterator iiEnd = scene->interactions->end();
+	InteractionContainer::iterator ii    = scene2->interactions->begin();
+	InteractionContainer::iterator iiEnd = scene2->interactions->end();
 	for (; ii != iiEnd; ++ii) {
 		if ((*ii)->isReal()) {
 			CGT::TriaxialState::Contact* c = new CGT::TriaxialState::Contact;
@@ -218,8 +219,8 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 	}
 	//Save various parameters if triaxialCompressionEngine is defined
 	if (!triaxialCompressionEngine) {
-		vector<shared_ptr<Engine>>::iterator itFirst = scene->engines.begin();
-		vector<shared_ptr<Engine>>::iterator itLast  = scene->engines.end();
+		vector<shared_ptr<Engine>>::iterator itFirst = scene2->engines.begin();
+		vector<shared_ptr<Engine>>::iterator itLast  = scene2->engines.end();
 		for (; itFirst != itLast; ++itFirst) {
 			if ((*itFirst)->getClassName() == "TriaxialCompressionEngine") {
 				LOG_DEBUG("stress controller engine found");
@@ -240,7 +241,7 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 		TS.larg    = triaxialCompressionEngine->width;                         //find_parameter("larg=", Statefile);
 		TS.prof    = triaxialCompressionEngine->depth;                         //find_parameter("prof=", Statefile);
 		TS.porom   = 0 /*analyser->computeMacroPorosity() crasher?*/;          //find_parameter("porom=", Statefile);
-		TS.ratio_f = triaxialCompressionEngine->ComputeUnbalancedForce(scene); //find_parameter("ratio_f=", Statefile);
+		TS.ratio_f = triaxialCompressionEngine->ComputeUnbalancedForce(scene2); //find_parameter("ratio_f=", Statefile);
 	} else
 		TS.wszzh = TS.wsxxd = TS.wsyyfa = TS.eps3 = TS.eps1 = TS.eps2 = TS.haut = TS.larg = TS.prof = TS.porom = TS.ratio_f = 0;
 	if (filename != NULL) TS.to_file(filename);

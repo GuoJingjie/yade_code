@@ -440,10 +440,10 @@ Real Shop::getVoxelPorosity(const shared_ptr<Scene>& _scene, int _resolution, Ve
 					for (int k = kk; k < KK; ++k) {
 						Vector3r a(i, j, k);
 						a = a / (Real)(S);
-						Vector3r b(a[0] * size[0], a[1] * size[1], a[2] * size[2]);
-						b = b + start;
+						Vector3r b2(a[0] * size[0], a[1] * size[1], a[2] * size[2]);
+						b2 = b2 + start;
 						Vector3r c(0, 0, 0);
-						c      = pos - b;
+						c      = pos - b2;
 						Real x = c[0];
 						Real y = c[1];
 						Real z = c[2];

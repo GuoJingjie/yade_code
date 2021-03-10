@@ -189,8 +189,9 @@ void SimpleShear::createBox(shared_ptr<Body>& body, Vector3r position, Vector3r 
 }
 
 
-void SimpleShear::createActors(shared_ptr<Scene>& scene)
+void SimpleShear::createActors(shared_ptr<Scene>& scene2)
 {
+	// declaration of ‘scene’ shadows a member of ‘yade::SimpleShear’ [-Werror=shadow]
 	shared_ptr<IGeomDispatcher> interactionGeometryDispatcher(new IGeomDispatcher);
 	interactionGeometryDispatcher->add(new Ig2_Sphere_Sphere_ScGeom);
 	interactionGeometryDispatcher->add(new Ig2_Box_Sphere_ScGeom);
@@ -224,14 +225,14 @@ void SimpleShear::createActors(shared_ptr<Scene>& scene)
 	ids->lawDispatcher->add(ldc);
 
 
-	scene->engines.clear();
-	scene->engines.push_back(shared_ptr<Engine>(new ForceResetter));
-	scene->engines.push_back(globalStiffnessTimeStepper);
-	scene->engines.push_back(collider);
-	scene->engines.push_back(ids);
-	if (gravApplied) scene->engines.push_back(gravityCondition);
-	scene->engines.push_back(shared_ptr<Engine>(new NewtonIntegrator));
-	scene->engines.push_back(kinemEngine);
+	scene2->engines.clear();
+	scene2->engines.push_back(shared_ptr<Engine>(new ForceResetter));
+	scene2->engines.push_back(globalStiffnessTimeStepper);
+	scene2->engines.push_back(collider);
+	scene2->engines.push_back(ids);
+	if (gravApplied) scene2->engines.push_back(gravityCondition);
+	scene2->engines.push_back(shared_ptr<Engine>(new NewtonIntegrator));
+	scene2->engines.push_back(kinemEngine);
 }
 
 

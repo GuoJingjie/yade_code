@@ -139,8 +139,8 @@ void PDFEngine::action()
 
 CREATE_LOGGER(PDFEngine);
 
-PDFSpheresDistanceCalculator::PDFSpheresDistanceCalculator(string name)
-        : PDFEngine::PDFCalculator(name)
+PDFSpheresDistanceCalculator::PDFSpheresDistanceCalculator(string name2)
+        : PDFEngine::PDFCalculator(name2)
         , m_h(0.)
         , m_N(0)
 {
@@ -168,8 +168,8 @@ bool PDFSpheresDistanceCalculator::addData(const shared_ptr<Interaction>& I, Rea
 	return true;
 }
 
-PDFSpheresVelocityCalculator::PDFSpheresVelocityCalculator(string name)
-        : PDFEngine::PDFCalculator(name)
+PDFSpheresVelocityCalculator::PDFSpheresVelocityCalculator(string name2)
+        : PDFEngine::PDFCalculator(name2)
         , m_vel(Vector3r::Zero())
         , m_N(0)
 {
@@ -212,8 +212,8 @@ bool PDFSpheresVelocityCalculator::addData(const shared_ptr<Interaction>& I, Rea
 	return true;
 }
 
-PDFSpheresIntrsCalculator::PDFSpheresIntrsCalculator(string name, bool (*fp)(shared_ptr<Interaction> const&))
-        : PDFEngine::PDFCalculator(name)
+PDFSpheresIntrsCalculator::PDFSpheresIntrsCalculator(string name2, bool (*fp)(shared_ptr<Interaction> const&))
+        : PDFEngine::PDFCalculator(name2)
         , m_P(0.)
         , m_accepter(fp)
 {

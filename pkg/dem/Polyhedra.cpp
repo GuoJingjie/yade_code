@@ -204,10 +204,10 @@ void Polyhedra::Initialize()
 	init = 1;
 }
 
-void Polyhedra::setVertices(const std::vector<Vector3r>& v)
+void Polyhedra::setVertices(const std::vector<Vector3r>& v2)
 {
 	init    = false;
-	this->v = v;
+	this->v = v2;
 	Initialize();
 }
 

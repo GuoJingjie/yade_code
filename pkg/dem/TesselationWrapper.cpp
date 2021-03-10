@@ -170,10 +170,11 @@ void TesselationWrapper::clear2(void) //for testing purpose
 
 void TesselationWrapper::insertSceneSpheres(bool reset)
 {
-	Scene* scene = Omega::instance().getScene().get();
+	// declaration of ‘scene’ shadows a member of ‘yade::TesselationWrapper’ [-Werror=shadow]
+	Scene* scene2 = Omega::instance().getScene().get();
 	// 	Real_timer clock;
 	//         clock.start();
-	const shared_ptr<BodyContainer>& bodies = scene->bodies;
+	const shared_ptr<BodyContainer>& bodies = scene2->bodies;
 	build_triangulation_with_ids(bodies, *this, reset);
 	// 	clock.top("Triangulation");
 }

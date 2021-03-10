@@ -356,7 +356,12 @@ bool Law2_ScGeom_CpmPhys_Cpm::go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _p
 	const Real& tanFrictionAngle(phys->tanFrictionAngle);
 	const Real& G(phys->G);
 	const Real& crossSection(phys->crossSection);
+// FIXME - remove this pragma. Fixing omegaThreshold shadow is to be done later.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wshadow"
 	const Real& omegaThreshold(this->omegaThreshold);
+#pragma GCC diagnostic pop
 	const Real& epsCrackOnset(phys->epsCrackOnset);
 	Real&       relResidualStrength(phys->relResidualStrength);
 	/*const Real& relDuctility(phys->relDuctility); */
@@ -380,8 +385,13 @@ bool Law2_ScGeom_CpmPhys_Cpm::go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _p
 	const Real& yieldEllipseShift(this->yieldEllipseShift);
 #endif
 	Real&       epsNPl(phys->epsNPl);
+// FIXME - remove this pragma. Fixing epsSoft and relKnSoft shadow is to be done later.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wshadow"
 	const Real& epsSoft(this->epsSoft);
 	const Real& relKnSoft(this->relKnSoft);
+#pragma GCC diagnostic pop
 
 	TIMING_DELTAS_CHECKPOINT("GO A");
 
@@ -506,7 +516,8 @@ void Gl1_CpmPhys::go(
 	const shared_ptr<CpmPhys>&               phys = boost::static_pointer_cast<CpmPhys>(ip);
 	const shared_ptr<GenericSpheresContact>& geom = YADE_PTR_CAST<GenericSpheresContact>(i->geom);
 	// FIXME: get the scene for periodicity; ugly!
-	Scene* scene = Omega::instance().getScene().get();
+	// declaration of ‘scene’ shadows a member of ‘yade::Gl1_CpmPhys’ [-Werror=shadow]
+	Scene* scene2 = Omega::instance().getScene().get();
 
 	//Vector3r lineColor(phys->omega,1-phys->omega,0.0); /* damaged links red, undamaged green */
 	Vector3r lineColor = Shop::scalarOnColorScale(1. - phys->relResidualStrength);
@@ -515,19 +526,19 @@ void Gl1_CpmPhys::go(
 
 	// FIXME: should be computed by the renderer; for now, use the real values
 	//Vector3r pos1=geom->se31.position, pos2=geom->se32.position;
-	Vector3r pos1 = scene->bodies->operator[](i->id1)->state->pos, pos2 = scene->bodies->operator[](i->id2)->state->pos;
-	if (scene->isPeriodic) {
+	Vector3r pos1 = scene2->bodies->operator[](i->id1)->state->pos, pos2 = scene2->bodies->operator[](i->id2)->state->pos;
+	if (scene2->isPeriodic) {
 		Vector3r dPos   = pos2 - pos1;
-		pos1            = scene->cell->wrapShearedPt(pos1);
-		Vector3r shift2 = scene->isPeriodic ? Vector3r(scene->cell->hSize * i->cellDist.cast<Real>()) : Vector3r::Zero();
+		pos1            = scene2->cell->wrapShearedPt(pos1);
+		Vector3r shift2 = scene2->isPeriodic ? Vector3r(scene2->cell->hSize * i->cellDist.cast<Real>()) : Vector3r::Zero();
 		pos2            = pos1 + dPos + shift2;
 		//phys->refLength = (pos2 - pos1 + shift2).norm();
 		//pos2=pos1+(geom->se32.position-geom->se31.position);
 	}
 	/*
-		if (scene->isPeriodic) {
+		if (scene2->isPeriodic) {
 			Vector3r temp = pos2 - pos1;
-			pos1 = scene->cell->wrapShearedPt(pos1);
+			pos1 = scene2->cell->wrapShearedPt(pos1);
 			pos2 = pos1 + temp;
 		}
 		*/
@@ -562,7 +573,7 @@ void Gl1_CpmPhys::go(
 	}
 
 	Vector3r cp = boost::static_pointer_cast<GenericSpheresContact>(i->geom)->contactPoint;
-	if (scene->isPeriodic) { cp = scene->cell->wrapShearedPt(cp); }
+	if (scene2->isPeriodic) { cp = scene2->cell->wrapShearedPt(cp); }
 	if (epsT) {
 		Real     maxShear = (phys->undamagedCohesion - phys->sigmaN * phys->tanFrictionAngle) / phys->G;
 		Real     relShear = phys->epsT.norm() / maxShear;
@@ -591,16 +602,17 @@ CREATE_LOGGER(CpmStateUpdater);
 
 void CpmStateUpdater::update(Scene* _scene)
 {
-	Scene*            scene = _scene ? _scene : Omega::instance().getScene().get();
+	// declaration of ‘scene’ shadows a member of ‘yade::CpmStateUpdater’ [-Werror=shadow]
+	Scene*            scene2 = _scene ? _scene : Omega::instance().getScene().get();
 	vector<BodyStats> bodyStats;
-	bodyStats.resize(scene->bodies->size());
+	bodyStats.resize(scene2->bodies->size());
 	assert(bodyStats[0].nCohLinks == 0); // should be initialized by dfault ctor
 	avgRelResidual           = 0;
 	Real     nAvgRelResidual = 0;
 	Matrix3r identity        = Matrix3r::Identity();
 	Real     dmg;
 	Matrix3r incr;
-	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
+	FOREACH(const shared_ptr<Interaction>& I, *scene2->interactions)
 	{
 		if (!I) continue;
 		if (!I->isReal()) continue;
@@ -639,7 +651,7 @@ void CpmStateUpdater::update(Scene* _scene)
 		}
 	}
 	// 	Real tr;
-	FOREACH(shared_ptr<Body> B, *scene->bodies)
+	FOREACH(shared_ptr<Body> B, *scene2->bodies)
 	{
 		if (!B) continue;
 		const Body::id_t& id = B->getId();

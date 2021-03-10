@@ -256,8 +256,10 @@ Real Ig2_PP_PP_ScGeom::getAreaPolygon2(
         Vector3r                 shearDir,
         Real&                    jointLength,
         const bool               twoD,
-        Real                     unitWidth2D,
-        int                      areaStep) const
+        Real                     unitWidth2D2,
+        int                      areaStep2) const
+// declaration of ‘unitWidth2D’ shadows a member of ‘yade::Ig2_PP_PP_ScGeom’ [-Werror=shadow]
+// declaration of ‘areaStep’ shadows a member of ‘yade::Ig2_PP_PP_ScGeom’ [-Werror=shadow]
 {
 	Real areaTri = 0.0;
 	//	Real bisectionStepSize = 1.0;//*math::min(s1->R, s2->R);
@@ -293,7 +295,7 @@ Real Ig2_PP_PP_ScGeom::getAreaPolygon2(
 		Vector3r newPt(0, 0, 0), secondPoint(0, 0, 0), newSearchDir, ptOnP1a, ptOnP2a, p1, p2, v;
 		Real     theta;
 
-		for (int i = 0; i <= 360; i += areaStep) {   //Here we iterate every "areaStep" degrees, to find the contact area
+		for (int i = 0; i <= 360; i += areaStep2) {   //Here we iterate every "areaStep" degrees, to find the contact area
 			theta        = i * Mathr::PI / 180.; //theta is "i" in radians
 			v            = orthogonalDir;
 			newSearchDir = v * math::cos(theta) + contactNormal.cross(v) * math::sin(theta)
@@ -388,7 +390,7 @@ Real Ig2_PP_PP_ScGeom::getAreaPolygon2(
 		}
 
 		jointLength = (ptOnBoundary1 - ptOnBoundary2).norm(); //Contact length of 2-D contact
-		areaTri     = unitWidth2D * jointLength;              //Contact area of 2-D contact
+		areaTri     = unitWidth2D2 * jointLength;              //Contact area of 2-D contact
 	}
 	return areaTri;
 }

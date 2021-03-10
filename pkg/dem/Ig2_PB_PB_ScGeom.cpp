@@ -557,9 +557,10 @@ Real Ig2_PB_PB_ScGeom::getAreaPolygon2(
         Vector3r                 shearDir,
         Real&                    jointLength,
         const bool               twoD,
-        Real                     unitWidth2D) const
+        Real                     unitWidth2D2) const
 {
-	//const Real PI = 3.14159265358979323846;
+	// declaration of ‘unitWidth2D’ shadows a member of ‘yade::Ig2_PB_PB_ScGeom’ [-Werror=shadow]
+	//const Real PI = 3.14159265358979323846; // TODO: use Constants.hpp
 	Real areaTri = 0.0;
 	//PotentialBlock *s1=static_cast<PotentialBlock*>(cm1.get());
 	//PotentialBlock *s2=static_cast<PotentialBlock*>(cm2.get());
@@ -828,7 +829,7 @@ Real Ig2_PB_PB_ScGeom::getAreaPolygon2(
 			jointLength = 1.0; /*math::min(s1->R,s2->R);*/
 		} //FIXME: It's best we output a warning if this happens. Instead of setting the jointLength equal to 1.0,  we can alternativelly set it equal to its previous value or to the distance "R" of the smallest particle, as in the comment above.
 
-		areaTri = unitWidth2D * jointLength; //Contact area of 2-D contact
+		areaTri = unitWidth2D2 * jointLength; //Contact area of 2-D contact
 	}
 	//std::cout<<"searchDir: "<<searchDir<<", calJointLength: "<<calJointLength<<", jointLength: "<<jointLength<<", ptOnBoundary1: "<<ptOnBoundary1<<", ptOnBoundary2: "<<ptOnBoundary2<<endl;
 

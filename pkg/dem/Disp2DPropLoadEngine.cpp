@@ -191,11 +191,12 @@ void Disp2DPropLoadEngine::saveData()
 
 	Vector3r F_sup = scene->forces.getForce(id_topbox);
 
+	// declaration of ‘dgamma’ shadows a member of ‘yade::Disp2DPropLoadEngine’ [-Werror=shadow]
 	Real dFn = F_sup.y() - Fn0 // OK pour le signe
 	        ,
 	     dFt = (F_sup.x() - Ft0), du = -(topbox->state->pos.y() - H0) // OK pour le signe (>0 en compression)
 	        ,
-	     dgamma = topbox->state->pos.x() - X0, SigN0 = (Fn0 / Scontact) / 1000 // en kPa, pour comparer à Fortran
+	     dgamma2 = topbox->state->pos.x() - X0, SigN0 = (Fn0 / Scontact) / 1000 // en kPa, pour comparer à Fortran
 	        ,
 	     Tau0 = -(Ft0 / Scontact) / 1000 // en kPa, pour comparer à Fortran, Ok pour le signe, cf p. Yade29
 	        ,
@@ -203,10 +204,10 @@ void Disp2DPropLoadEngine::saveData()
 	        ,
 	     dTau = -(dFt / Scontact) / 1000 // Ok pour le signe, idem que Tau0
 	        ,
-	     d2W = dSigN * du + dTau * dgamma;
+	     d2W = dSigN * du + dTau * dgamma2;
 
 	ofile << boost::lexical_cast<string>(theta) << " " << boost::lexical_cast<string>(dTau) << " " << boost::lexical_cast<string>(dSigN) << " "
-	      << boost::lexical_cast<string>(dgamma) << " " << boost::lexical_cast<string>(du) << " " << boost::lexical_cast<string>(Tau0) << " "
+	      << boost::lexical_cast<string>(dgamma2) << " " << boost::lexical_cast<string>(du) << " " << boost::lexical_cast<string>(Tau0) << " "
 	      << boost::lexical_cast<string>(SigN0) << " " << boost::lexical_cast<string>(d2W) << " " << boost::lexical_cast<string>(coordSs0) << " "
 	      << boost::lexical_cast<string>(coordTot0) << " " << boost::lexical_cast<string>(coordSs) << " " << boost::lexical_cast<string>(coordTot) << endl;
 }

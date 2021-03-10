@@ -305,8 +305,8 @@ struct Plane_equation {
 	template <class Facet> typename Facet::Plane_3 operator()(Facet& f)
 	{
 		typename Facet::Halfedge_handle h = f.halfedge();
-		typedef typename Facet::Plane_3 Plane;
-		return Plane(h->vertex()->point(), h->next()->vertex()->point(), h->next()->next()->vertex()->point());
+		typedef typename Facet::Plane_3 FacetPlane;
+		return FacetPlane(h->vertex()->point(), h->next()->vertex()->point(), h->next()->next()->vertex()->point());
 	}
 };
 //get Tetrahedron inertia

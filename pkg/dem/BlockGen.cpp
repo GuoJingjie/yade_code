@@ -1754,8 +1754,9 @@ bool BlockGen::createBlock(shared_ptr<Body>& body, struct Block block, int numbe
 //#endif
 
 
-void BlockGen::createActors(shared_ptr<Scene>& scene)
+void BlockGen::createActors(shared_ptr<Scene>& scene2)
 {
+	// declaration of ‘scene’ shadows a member of ‘yade::BlockGen’ [-Werror=shadow]
 	shared_ptr<IGeomDispatcher>  interactionGeometryDispatcher(new IGeomDispatcher);
 	shared_ptr<Ig2_PB_PB_ScGeom> cd(new Ig2_PB_PB_ScGeom);
 
@@ -1791,13 +1792,13 @@ void BlockGen::createActors(shared_ptr<Scene>& scene)
 		globalStiffnessTimeStepper->defaultDt              = defaultDt;
 	}
 
-	scene->engines.clear();
-	scene->engines.push_back(shared_ptr<Engine>(new ForceResetter));
+	scene2->engines.clear();
+	scene2->engines.push_back(shared_ptr<Engine>(new ForceResetter));
 	shared_ptr<InsertionSortCollider> collider(new InsertionSortCollider);
 	collider->verletDist = 0.1 * minSize;
 	collider->boundDispatcher->add(new PotentialBlock2AABB);
 
-	scene->engines.push_back(collider);
+	scene2->engines.push_back(collider);
 	shared_ptr<InteractionLoop> ids(new InteractionLoop);
 	ids->geomDispatcher = interactionGeometryDispatcher;
 	ids->physDispatcher = interactionPhysicsDispatcher;
@@ -1807,16 +1808,16 @@ void BlockGen::createActors(shared_ptr<Scene>& scene)
 	see->Talesnick   = Talesnick;
 	see->neverErase  = neverErase;
 	ids->lawDispatcher->add(see);
-	scene->engines.push_back(ids);
-	//scene->engines.push_back(globalStiffnessTimeStepper);
-	//scene->engines.push_back(gravityCondition);
+	scene2->engines.push_back(ids);
+	//scene2->engines.push_back(globalStiffnessTimeStepper);
+	//scene2->engines.push_back(gravityCondition);
 	shared_ptr<NewtonIntegrator> newton(new NewtonIntegrator);
 	newton->damping = dampingMomentum;
 	newton->gravity = gravity; //Vector3r(0,0,9.81);
 	// newton->damping3DEC=damp3DEC;
 	newton->exactAsphericalRot = exactRotation;
-	scene->engines.push_back(newton);
-	//scene->initializers.clear();
+	scene2->engines.push_back(newton);
+	//scene2->initializers.clear();
 }
 
 
@@ -2286,7 +2287,8 @@ bool BlockGen::checkRedundancyLPCLP(struct Discontinuity joint, struct Block blo
 }
 
 
-Real BlockGen::inscribedSphereCLP(struct Block block, Vector3r& initialPoint, bool twoDimension)
+Real BlockGen::inscribedSphereCLP(struct Block block, Vector3r& initialPoint, bool twoDimension2)
+// declaration of ‘twoDimension’ shadows a member of ‘yade::BlockGen’ [-Werror=shadow]
 {
 	/* minimise s */
 	/* s.t. Ax - s <= d*/
@@ -2295,7 +2297,7 @@ Real BlockGen::inscribedSphereCLP(struct Block block, Vector3r& initialPoint, bo
 	Real                 s        = 0.0; /* get value of x[3] after optimization */
 	int                  planeNoA = block.a.size();
 	vector<unsigned int> plane2Dno;
-	if (twoDimension == true) {
+	if (twoDimension2 == true) {
 		for (int i = 0; i < planeNoA; i++) {
 			Vector3r plane = Vector3r(block.a[i], block.b[i], block.c[i]);
 			if (fabs(plane.dot(Vector3r(0, 1, 0))) > 0.99) {
@@ -2337,7 +2339,7 @@ Real BlockGen::inscribedSphereCLP(struct Block block, Vector3r& initialPoint, bo
 
 	Real rowLower[numberRows]; //TODO: Check whether to replace C array with std::vector<>
 	Real rowUpper[numberRows]; //TODO: Check whether to replace C array with std::vector<>
-	if (twoDimension == true) {
+	if (twoDimension2 == true) {
 		model2.setColumnLower(1, 0.0);
 		model2.setColumnUpper(1, 0.0);
 	}
@@ -2346,7 +2348,7 @@ Real BlockGen::inscribedSphereCLP(struct Block block, Vector3r& initialPoint, bo
 	// Rows
 	int counter = 0;
 	for (unsigned int i = 0; i < block.a.size(); i++) {
-		if (twoDimension == true) {
+		if (twoDimension2 == true) {
 			if (i == plane2Dno[0] || i == plane2Dno[1]) { continue; }
 		}
 		rowUpper[counter]   = block.d[i] + block.r;

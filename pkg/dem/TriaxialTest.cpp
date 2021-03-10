@@ -258,8 +258,9 @@ void TriaxialTest::createBox(shared_ptr<Body>& body, Vector3r position, Vector3r
 }
 
 
-void TriaxialTest::createActors(shared_ptr<Scene>& scene)
+void TriaxialTest::createActors(shared_ptr<Scene>& scene2)
 {
+	// declaration of ‘scene’ shadows a member of ‘yade::TriaxialTest’ [-Werror=shadow]
 	shared_ptr<IGeomDispatcher> interactionGeometryDispatcher(new IGeomDispatcher);
 	interactionGeometryDispatcher->add(new Ig2_Sphere_Sphere_ScGeom);
 	interactionGeometryDispatcher->add(new Ig2_Facet_Sphere_ScGeom);
@@ -305,10 +306,10 @@ void TriaxialTest::createActors(shared_ptr<Scene>& scene)
 		triaxialStateRecorder->file       = WallStressRecordFile + Key;
 		triaxialStateRecorder->iterPeriod = recordIntervalIter;
 	}
-	scene->engines.clear();
-	scene->engines.push_back(shared_ptr<Engine>(new ForceResetter));
+	scene2->engines.clear();
+	scene2->engines.push_back(shared_ptr<Engine>(new ForceResetter));
 	shared_ptr<InsertionSortCollider> collider(new InsertionSortCollider);
-	scene->engines.push_back(collider);
+	scene2->engines.push_back(collider);
 	collider->verletDist = .5 * radiusMean;
 	collider->boundDispatcher->add(new Bo1_Sphere_Aabb);
 	collider->boundDispatcher->add(new Bo1_Box_Aabb);
@@ -321,14 +322,14 @@ void TriaxialTest::createActors(shared_ptr<Scene>& scene)
 	ids->lawDispatcher  = shared_ptr<LawDispatcher>(new LawDispatcher);
 	shared_ptr<Law2_ScGeom_FrictPhys_CundallStrack> see(new Law2_ScGeom_FrictPhys_CundallStrack);
 	ids->lawDispatcher->add(see);
-	scene->engines.push_back(ids);
-	scene->engines.push_back(globalStiffnessTimeStepper);
-	scene->engines.push_back(triaxialcompressionEngine);
-	if (recordIntervalIter > 0 && !noFiles) scene->engines.push_back(triaxialStateRecorder);
+	scene2->engines.push_back(ids);
+	scene2->engines.push_back(globalStiffnessTimeStepper);
+	scene2->engines.push_back(triaxialcompressionEngine);
+	if (recordIntervalIter > 0 && !noFiles) scene2->engines.push_back(triaxialStateRecorder);
 
 	shared_ptr<NewtonIntegrator> newton(new NewtonIntegrator);
 	newton->damping = dampingForce;
-	scene->engines.push_back(newton);
+	scene2->engines.push_back(newton);
 }
 
 void TriaxialTest::positionRootBody(shared_ptr<Scene>& /*scene*/) { }

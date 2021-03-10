@@ -101,11 +101,12 @@ Matrix3r MeasureCapStress::matLG_bridgeGlob(Real nn11, Real nn33, Vector3r vecN)
 	return globToLocRet * LG_bridgeGlob * globToLocRet.transpose();
 }
 
-Matrix3r MeasureCapStress::matBp_BodyGlob(Real alpha, Real wettAngle, Real radius, Vector3r vecN)
+Matrix3r MeasureCapStress::matBp_BodyGlob(Real alpha, Real wettAngle2, Real radius, Vector3r vecN)
+// declaration of ‘wettAngle’ shadows a member of ‘yade::MeasureCapStress’ [-Werror=shadow]
 { // matrix B prime (the surface tension coefficient excepted), defined at body scale (see (3.49) p.65), expressed in global framework
 	Matrix3r Bp_BodyGlob;
-	Bp_BodyGlob << -pow(sin(alpha), 2) * cos(alpha + wettAngle), 0, 0, 0, -pow(sin(alpha), 2) * cos(alpha + wettAngle), 0, 0, 0,
-	        sin(2 * alpha) * sin(alpha + wettAngle);
+	Bp_BodyGlob << -pow(sin(alpha), 2) * cos(alpha + wettAngle2), 0, 0, 0, -pow(sin(alpha), 2) * cos(alpha + wettAngle2), 0, 0, 0,
+	        sin(2 * alpha) * sin(alpha + wettAngle2);
 	Bp_BodyGlob *= Mathr::PI * pow(radius, 2.0);
 	Matrix3r globToLocRet = matGlobToLoc(vecN);
 	return globToLocRet * Bp_BodyGlob * globToLocRet.transpose();

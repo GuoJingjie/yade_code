@@ -59,11 +59,13 @@ CREATE_LOGGER(MortarPhys);
 
 MortarPhys::~MortarPhys() {};
 
-bool MortarPhys::failureCondition(Real sigmaN, Real sigmaT)
+bool MortarPhys::failureCondition(Real sigmaN2, Real sigmaT2)
+// declaration of ‘sigmaT’ shadows a member of ‘yade::MortarPhys’ [-Werror=shadow]
+// declaration of ‘sigmaN’ shadows a member of ‘yade::MortarPhys’ [-Werror=shadow]
 {
-	bool cond1 = sigmaN - tensileStrength > 0;
-	bool cond2 = sigmaT + sigmaN * tangensOfFrictionAngle - cohesion > 0;
-	bool cond3 = math::pow(sigmaN, 2) + math::pow(ellAspect * sigmaT, 2) - math::pow(compressiveStrength, 2) > 0;
+	bool cond1 = sigmaN2 - tensileStrength > 0;
+	bool cond2 = sigmaT2 + sigmaN2 * tangensOfFrictionAngle - cohesion > 0;
+	bool cond3 = math::pow(sigmaN2, 2) + math::pow(ellAspect * sigmaT2, 2) - math::pow(compressiveStrength, 2) > 0;
 	return cond1 || cond2 || cond3;
 }
 

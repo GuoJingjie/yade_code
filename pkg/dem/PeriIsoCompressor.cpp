@@ -49,8 +49,9 @@ void PeriIsoCompressor::action()
 	Real        minSize = min(cellSize[0], min(cellSize[1], cellSize[2])), maxSize = max(cellSize[0], max(cellSize[1], cellSize[2]));
 	if (minSize < 2.1 * maxSpan) { throw runtime_error("Minimum cell size is smaller than 2.1*span_of_the_biggest_body! (periodic collider requirement)"); }
 	if (((step % globalUpdateInt) == 0) || avgStiffness < 0 || sigma[0] < 0 || sigma[1] < 0 || sigma[2] < 0) {
-		Vector3r sumForces = Shop::totalForceInVolume(avgStiffness, scene);
-		sigma              = -Vector3r(sumForces[0] / cellArea[0], sumForces[1] / cellArea[1], sumForces[2] / cellArea[2]);
+		//  declaration of ‘sumForces’ shadows a member of ‘yade::PeriIsoCompressor’ [-Werror=shadow]
+		Vector3r sumForces2 = Shop::totalForceInVolume(avgStiffness, scene);
+		sigma               = -Vector3r(sumForces2[0] / cellArea[0], sumForces2[1] / cellArea[1], sumForces2[2] / cellArea[2]);
 		LOG_TRACE("Updated sigma=" << sigma << ", avgStiffness=" << avgStiffness);
 	}
 	Real sigmaGoal = stresses[state];
