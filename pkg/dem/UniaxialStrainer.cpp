@@ -1,9 +1,9 @@
 // 2008 © Václav Šmilauer <eudoxos@arcig.cz>
 #include "UniaxialStrainer.hpp"
 
+#include <core/Aabb.hpp>
 #include <core/InteractionContainer.hpp>
 #include <core/Scene.hpp>
-#include <core/Aabb.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 

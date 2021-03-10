@@ -8,8 +8,8 @@
 #pragma once
 
 #include <lib/base/openmp-accu.hpp>
-#include <core/GlobalEngine.hpp>
 #include <core/Dispatching.hpp>
+#include <core/GlobalEngine.hpp>
 #include <pkg/dem/FrictPhys.hpp>
 #include <pkg/dem/ScGeom.hpp>
 

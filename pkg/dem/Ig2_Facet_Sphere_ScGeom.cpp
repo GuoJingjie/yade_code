@@ -8,9 +8,9 @@
 
 #include "Ig2_Facet_Sphere_ScGeom.hpp"
 #include <lib/base/Math.hpp>
+#include <core/InteractionLoop.hpp>
 #include <core/Scene.hpp>
 #include <pkg/common/Facet.hpp>
-#include <core/InteractionLoop.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <pkg/common/Wall.hpp>
 #include <pkg/dem/ScGeom.hpp>

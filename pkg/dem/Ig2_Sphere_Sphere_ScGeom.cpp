@@ -4,9 +4,9 @@
 
 #include "Ig2_Sphere_Sphere_ScGeom.hpp"
 #include <lib/base/Math.hpp>
+#include <core/InteractionLoop.hpp>
 #include <core/Omega.hpp>
 #include <core/Scene.hpp>
-#include <core/InteractionLoop.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <pkg/dem/ScGeom.hpp>
 

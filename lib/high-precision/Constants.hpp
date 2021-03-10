@@ -49,16 +49,16 @@ struct Constants { // for ctags
 namespace yade {
 namespace math {
 	template <typename Rr>
-	const constexpr bool useConstexprConstants
-	        = (std::numeric_limits<Rr>::digits10 <=
+	const constexpr bool useConstexprConstants = (std::numeric_limits<Rr>::digits10 <=
 #ifdef BOOST_MP_FLOAT128_HPP
-	           33
+	                                              33
 #else
-	           15
+	                                              15
 #endif
-		) and
-		// 24 decimal places are used for RealHP<4> which cannot use constexpr when compiling yade with float, see lib/high-precision/RealHP.hpp:103
-		(std::numeric_limits<Rr>::digits10 != 24);
+	                                              )
+	        and
+	        // 24 decimal places are used for RealHP<4> which cannot use constexpr when compiling yade with float, see lib/high-precision/RealHP.hpp:103
+	        (std::numeric_limits<Rr>::digits10 != 24);
 
 	// constexpr whenever possible
 	template <int N> struct ConstexprConstantsHP {

@@ -11,9 +11,9 @@
 #include <pkg/dem/KnKsLaw.hpp>
 
 #include <lib/base/Math.hpp>
+#include <core/InteractionLoop.hpp>
 #include <core/Omega.hpp>
 #include <core/Scene.hpp>
-#include <core/InteractionLoop.hpp>
 
 #include <fstream>
 #include <iomanip>

@@ -5,8 +5,8 @@
 #pragma once
 
 #include <core/Dispatching.hpp>
-#include <pkg/common/ElastMat.hpp>
 #include <core/InteractionLoop.hpp>
+#include <pkg/common/ElastMat.hpp>
 #include <pkg/common/MatchMaker.hpp>
 #include <pkg/dem/DemXDofGeom.hpp>
 #include <pkg/dem/FrictPhys.hpp>

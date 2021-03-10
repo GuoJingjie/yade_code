@@ -17,9 +17,9 @@
 #include <lib/base/Math.hpp>
 #include <lib/base/openmp-accu.hpp>
 #include <lib/high-precision/ToFromPythonConverter.hpp>
-#include <core/Engine.hpp>
 #include <core/Callbacks.hpp>
 #include <core/Dispatching.hpp>
+#include <core/Engine.hpp>
 #include <pkg/common/KinematicEngines.hpp>
 #include <pkg/common/MatchMaker.hpp>
 #include <pkg/dem/SpherePack.hpp>

@@ -14,24 +14,23 @@
 #ifdef LINSOLV
 #ifdef PARTIALSAT
 #include <core/Body.hpp>
+#include <core/Dispatching.hpp>
 #include <core/Omega.hpp>
 #include <core/PartialEngine.hpp>
 #include <core/Scene.hpp>
 #include <core/State.hpp>
-#include <core/Dispatching.hpp>
 #include <pkg/common/MatchMaker.hpp>
 #include <pkg/dem/ScGeom.hpp>
 #include <Eigen/SparseLU>
 
 
-
 //#include<pkg/pfv/FlowEngine.hpp>
 //#include "FlowEngine_FlowEngineT.hpp"
+#include "FlowEngine_PartialSatClayEngineT.hpp"
 #include <lib/triangulation/FlowBoundingSphere.hpp>
 #include <lib/triangulation/Network.hpp>
 #include <lib/triangulation/Tesselation.h>
 #include <pkg/dem/TesselationWrapper.hpp>
-#include "FlowEngine_PartialSatClayEngineT.hpp"
 
 
 #include <cholmod.h>
@@ -95,10 +94,11 @@ public:
 	//same here if needed
 };
 
-typedef CGT::_Tesselation<CGT::TriangulationTypes<PartialSatVertexInfo, PartialSatCellInfo> > PartialSatTesselation;
+typedef CGT::_Tesselation<CGT::TriangulationTypes<PartialSatVertexInfo, PartialSatCellInfo>> PartialSatTesselation;
 #ifdef LINSOLV
 // #define PartialSatBoundingSphere CGT::PartialSatLinSolv<PartialSatTesselation>
-class PartialSatBoundingSphere : public CGT::PartialSatLinSolv<PartialSatTesselation> {};
+class PartialSatBoundingSphere : public CGT::PartialSatLinSolv<PartialSatTesselation> {
+};
 #endif
 
 typedef TemplateFlowEngine_PartialSatClayEngineT<PartialSatCellInfo, PartialSatVertexInfo, PartialSatTesselation, PartialSatBoundingSphere>
@@ -462,7 +462,6 @@ $e_n$ based on combination of parameters.",
 	DECLARE_LOGGER;
 };
 REGISTER_SERIALIZABLE(Ip2_PartialSatMat_PartialSatMat_MindlinPhys);
-
 
 
 } //namespaceyade

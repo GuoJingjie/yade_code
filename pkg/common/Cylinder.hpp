@@ -3,8 +3,8 @@
 
 #pragma once
 #include <core/Body.hpp>
-#include <core/Shape.hpp>
 #include <core/Dispatching.hpp>
+#include <core/Shape.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <pkg/dem/FrictPhys.hpp>
 #ifdef YADE_OPENGL

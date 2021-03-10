@@ -1,8 +1,10 @@
 #include <lib/factory/ClassFactory.hpp>
 // make core classes known to the class factory
+#include <core/Aabb.hpp>
 #include <core/Body.hpp>
 #include <core/BodyContainer.hpp>
 #include <core/Bound.hpp>
+#include <core/Callbacks.hpp>
 #include <core/Cell.hpp>
 #include <core/Dispatcher.hpp>
 #include <core/EnergyTracker.hpp>
@@ -19,8 +21,6 @@
 #include <core/Shape.hpp>
 #include <core/State.hpp>
 #include <core/TimeStepper.hpp>
-#include <core/Aabb.hpp>
-#include <core/Callbacks.hpp>
 
 
 // these two are not accessible from python directly (though they should be in the future, perhaps)
@@ -30,10 +30,10 @@ BOOST_CLASS_EXPORT_IMPLEMENT(yade::InteractionContainer);
 
 namespace yade { // Cannot have #include directive inside.
 
-YADE_PLUGIN((Body)(Bound)(Aabb)(Cell)(Dispatcher)(EnergyTracker)(Engine)(FileGenerator)(Functor)(GlobalEngine)(Interaction)(IGeom)(IPhys)(Material)(PartialEngine)(
-        Shape)(State)(TimeStepper)(IntrCallback)
+YADE_PLUGIN((Body)(Bound)(Aabb)(Cell)(Dispatcher)(EnergyTracker)(Engine)(FileGenerator)(Functor)(GlobalEngine)(Interaction)(IGeom)(IPhys)(Material)(
+        PartialEngine)(Shape)(State)(TimeStepper)(IntrCallback)
 #ifdef YADE_BODY_CALLBACK
-        (BodyCallback)
+                    (BodyCallback)
 #endif
 );
 

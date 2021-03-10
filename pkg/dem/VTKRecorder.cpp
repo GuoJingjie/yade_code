@@ -49,8 +49,8 @@
 #include <pkg/dem/Lubrication.hpp>
 #include <pkg/dem/Shop.hpp>
 #include <pkg/dem/WirePM.hpp>
-#include <pkg/pfv/Thermal.hpp>
 #include <pkg/pfv/PartialSatClayEngine.hpp>
+#include <pkg/pfv/Thermal.hpp>
 #ifdef YADE_LIQMIGRATION
 #include <pkg/dem/ViscoelasticCapillarPM.hpp>
 #endif

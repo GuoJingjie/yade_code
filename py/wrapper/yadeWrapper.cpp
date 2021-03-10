@@ -8,17 +8,17 @@
 #include <lib/pyutil/raw_constructor.hpp>
 #include <lib/serialization/ObjectIO.hpp>
 #include <core/Clump.hpp>
+#include <core/Dispatching.hpp>
 #include <core/EnergyTracker.hpp>
 #include <core/FileGenerator.hpp>
 #include <core/Functor.hpp>
 #include <core/GlobalEngine.hpp>
+#include <core/InteractionLoop.hpp>
 #include <core/Omega.hpp>
 #include <core/PartialEngine.hpp>
 #include <core/ThreadRunner.hpp>
 #include <core/Timing.hpp>
 #include <pkg/common/Collider.hpp>
-#include <core/Dispatching.hpp>
-#include <core/InteractionLoop.hpp>
 #include <pkg/common/KinematicEngines.hpp>
 #include <pkg/common/ParallelEngine.hpp>
 #include <pkg/common/Sphere.hpp>
@@ -849,7 +849,7 @@ public:
 			if (!e->label.empty()) { pyRunString("__builtins__." + e->label + "=Omega().labeledEngine('" + e->label + "')"); }
 #define _DO_FUNCTORS(functors, FunctorT)                                                                                                                       \
 	{                                                                                                                                                      \
-		for (const auto& f : functors) {                                                                                               \
+		for (const auto& f : functors) {                                                                                                               \
 			if (!f->label.empty()) { pyRunString("__builtins__." + f->label + "=Omega().labeledEngine('" + f->label + "')"); }                     \
 		}                                                                                                                                              \
 	}
@@ -885,7 +885,7 @@ public:
 		for (const auto& e : OMEGA.getScene()->engines) {
 #define _DO_FUNCTORS(functors, FunctorT)                                                                                                                       \
 	{                                                                                                                                                      \
-		for (const auto& f : functors) {                                                                                               \
+		for (const auto& f : functors) {                                                                                                               \
 			if (f->label == label) return py::object(f);                                                                                           \
 		}                                                                                                                                              \
 	}

@@ -10,11 +10,11 @@
 #undef NDEBUG
 #endif
 
+#include <core/Dispatching.hpp>
 #include <core/Interaction.hpp>
 #include <core/Material.hpp>
 #include <core/Omega.hpp>
 #include <core/Shape.hpp>
-#include <core/Dispatching.hpp>
 #include <pkg/common/ElastMat.hpp>
 #include <pkg/common/Facet.hpp>
 #include <pkg/common/Sphere.hpp>

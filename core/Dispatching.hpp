@@ -1,5 +1,6 @@
 #pragma once
 #include <lib/base/Math.hpp>
+#include <core/Aabb.hpp>
 #include <core/Dispatcher.hpp>
 #include <core/Functor.hpp>
 #include <core/IGeom.hpp>
@@ -8,7 +9,6 @@
 #include <core/Scene.hpp>
 #include <core/Shape.hpp>
 #include <core/State.hpp>
-#include <core/Aabb.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 

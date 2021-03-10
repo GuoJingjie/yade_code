@@ -8,9 +8,9 @@
 #include <lib/opengl/GLUtils.hpp>
 #include <lib/pyutil/gil.hpp>
 #include <lib/serialization/EnumSupport.hpp>
+#include <core/Aabb.hpp>
 #include <core/Scene.hpp>
 #include <core/Timing.hpp>
-#include <core/Aabb.hpp>
 
 #include <GL/gl.h>
 #include <GL/glu.h>

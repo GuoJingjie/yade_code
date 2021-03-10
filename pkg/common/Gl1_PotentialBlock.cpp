@@ -1,8 +1,8 @@
 /* CWBoon 2016 */
 #ifdef YADE_POTENTIAL_BLOCKS
 
-#include <core/Clump.hpp>
 #include <core/Aabb.hpp>
+#include <core/Clump.hpp>
 #include <pkg/dem/KnKsPBLaw.hpp>
 #include <pkg/dem/ScGeom.hpp>
 
@@ -663,7 +663,7 @@ void PotentialBlockVTKRecorder::action()
 
 		Vector3r color = particleColour;
 #if ((VTK_MAJOR_VERSION <= 8) and (VTK_MINOR_VERSION < 2)) or (VTK_MAJOR_VERSION <= 7) // unsigned char for VTK versions < 8.2
-		unsigned char c[3]; //c = {color[0],color[1],color[2]};
+		unsigned char c[3];                                                    //c = {color[0],color[1],color[2]};
 		c[0] = (unsigned char)(color[0]);
 		c[1] = (unsigned char)(color[1]);
 		c[2] = (unsigned char)(color[2]);

@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <core/GlobalEngine.hpp>
 #include <core/Dispatching.hpp>
+#include <core/GlobalEngine.hpp>
 #include <pkg/common/ElastMat.hpp>
 #include <pkg/common/MatchMaker.hpp>
 #include <pkg/common/NormShearPhys.hpp>

@@ -7,9 +7,9 @@
 *************************************************************************/
 #pragma once
 
+#include <core/Dispatching.hpp>
 #include <core/Scene.hpp>
 #include <pkg/common/Collider.hpp>
-#include <core/Dispatching.hpp>
 #include <pkg/common/PeriodicEngines.hpp>
 #include <string>
 #include <vector>

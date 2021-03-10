@@ -20,9 +20,9 @@ Caulk, R. and Chareyre, B. (2019) An open framework for the simulation of therma
 #ifdef YADE_OPENMP
 #pragma once
 
+#include <core/Dispatching.hpp>
 #include <core/PartialEngine.hpp>
 #include <core/State.hpp>
-#include <core/Dispatching.hpp>
 #include <pkg/dem/JointedCohesiveFrictionalPM.hpp>
 #include <pkg/dem/ScGeom.hpp>
 

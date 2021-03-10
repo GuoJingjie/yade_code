@@ -250,7 +250,7 @@ void Clump::updateProperties(const shared_ptr<Body>& clumpBody, unsigned int dis
 	Ic_orientG(1, 0) = Ic_orientG(0, 1);
 	Ic_orientG(2, 0) = Ic_orientG(0, 2);
 	Ic_orientG(2, 1) = Ic_orientG(1, 2); // symmetrize
-	
+
 	Matrix3r R_g2c;
 	matrixEigenDecomposition(Ic_orientG, R_g2c, Ic);
 

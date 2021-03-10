@@ -1,7 +1,7 @@
 #pragma once
 
-#include <core/Material.hpp>
 #include <core/Dispatching.hpp>
+#include <core/Material.hpp>
 #include <pkg/dem/FrictPhys.hpp>
 #include <pkg/dem/ScGeom.hpp>
 

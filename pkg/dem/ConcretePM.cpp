@@ -1,10 +1,10 @@
 // 2007,2008 © Václav Šmilauer <eudoxos@arcig.cz>
 #include "ConcretePM.hpp"
 #include <lib/high-precision/Constants.hpp>
+#include <core/InteractionLoop.hpp>
 #include <core/Scene.hpp>
 #include <pkg/common/Box.hpp>
 #include <pkg/common/Facet.hpp>
-#include <core/InteractionLoop.hpp>
 #include <pkg/common/Wall.hpp>
 #include <pkg/dem/DemXDofGeom.hpp>
 #include <pkg/dem/Shop.hpp>

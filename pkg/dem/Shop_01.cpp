@@ -7,8 +7,8 @@
 #include "core/Interaction.hpp"
 #include "core/Scene.hpp"
 
-#include "core/Clump.hpp"
 #include "core/Aabb.hpp"
+#include "core/Clump.hpp"
 #include "pkg/common/InsertionSortCollider.hpp"
 
 #include "pkg/common/Box.hpp"
@@ -26,8 +26,8 @@
 #include "pkg/common/ForceResetter.hpp"
 
 #include "core/Dispatching.hpp"
-#include "pkg/common/GravityEngines.hpp"
 #include "core/InteractionLoop.hpp"
+#include "pkg/common/GravityEngines.hpp"
 
 #include "pkg/dem/ElasticContactLaw.hpp"
 #include "pkg/dem/GlobalStiffnessTimeStepper.hpp"

@@ -9,8 +9,7 @@
 namespace yade { // Cannot have #include directive inside.
 
 YADE_PLUGIN((MindlinPhys)(Ip2_FrictMat_FrictMat_MindlinPhys)(Law2_ScGeom_MindlinPhys_MindlinDeresiewitz)(Law2_ScGeom_MindlinPhys_HertzWithLinearShear)(
-        Law2_ScGeom_MindlinPhys_Mindlin)(MindlinCapillaryPhys)(Ip2_FrictMat_FrictMat_MindlinCapillaryPhys)
-);
+        Law2_ScGeom_MindlinPhys_Mindlin)(MindlinCapillaryPhys)(Ip2_FrictMat_FrictMat_MindlinCapillaryPhys));
 
 Real Law2_ScGeom_MindlinPhys_Mindlin::getfrictionDissipation() { return (Real)frictionDissipation; }
 Real Law2_ScGeom_MindlinPhys_Mindlin::getshearEnergy() { return (Real)shearEnergy; }

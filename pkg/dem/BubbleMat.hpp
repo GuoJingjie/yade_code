@@ -1,9 +1,9 @@
 #pragma once
 
 #include <lib/base/AliasNamespaces.hpp>
+#include <core/Dispatching.hpp>
 #include <core/IPhys.hpp>
 #include <core/Material.hpp>
-#include <core/Dispatching.hpp>
 #include <pkg/dem/ScGeom.hpp>
 
 namespace yade { // Cannot have #include directive inside.

@@ -8,6 +8,7 @@
 
 #pragma once
 #include <lib/base/Math.hpp>
+#include <core/Aabb.hpp>
 #include <core/Dispatcher.hpp>
 #include <core/Functor.hpp>
 #include <core/IGeom.hpp>
@@ -16,7 +17,6 @@
 #include <core/Scene.hpp>
 #include <core/Shape.hpp>
 #include <core/State.hpp>
-#include <core/Aabb.hpp>
 #include <pkg/fem/FEInternalForceDispatchers.hpp>
 #include <pkg/fem/Lin4NodeTetra.hpp>
 #include <pkg/fem/LinElastMat.hpp>

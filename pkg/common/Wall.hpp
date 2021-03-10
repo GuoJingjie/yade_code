@@ -1,7 +1,7 @@
 // © 2009 Václav Šmilauer <eudoxos@arcig.cz>
 #pragma once
-#include <core/Shape.hpp>
 #include <core/Dispatching.hpp>
+#include <core/Shape.hpp>
 
 #ifdef YADE_OPENGL
 #include <pkg/common/GLDrawFunctors.hpp>
