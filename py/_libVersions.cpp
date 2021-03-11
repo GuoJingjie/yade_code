@@ -311,6 +311,7 @@ py::list mpiVer() { return {}; }
 #ifdef YADE_POTENTIAL_BLOCKS
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wshadow"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <ClpConfig.h>
 #include <CoinUtilsConfig.h>
