@@ -7,7 +7,7 @@ tmpDirMatplotLib = $(CURDIR)/debian/matplotlib
 	dh $@ --buildsystem=cmake --builddirectory=$(BUILDDIR) --with python3 --parallel
 
 export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
-export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--no-as-needed
 
 export MPLCONFIGDIR := $(tmpDirMatplotLib) 
 export HOME := $(tmpDirMatplotLib) 
