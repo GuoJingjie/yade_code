@@ -8,6 +8,7 @@ IF(ENABLE_GTS)
     FILE(GLOB SRC_PYGTS "${CMAKE_CURRENT_SOURCE_DIR}/3rd-party/pygts-0.3.1/*.cpp")
     ADD_LIBRARY(_gts SHARED ${SRC_PYGTS})
     SET_TARGET_PROPERTIES(_gts PROPERTIES PREFIX "")
+    SET_TARGET_PROPERTIES(_gts PROPERTIES  UNITY_BUILD OFF) # a bunch of multiple declarations there
     TARGET_LINK_LIBRARIES(_gts gts)
     INSTALL(FILES 3rd-party/pygts-0.3.1/__init__.py DESTINATION ${YADE_LIB_PATH}/py/gts)
     INSTALL(FILES 3rd-party/pygts-0.3.1/pygts.py DESTINATION ${YADE_LIB_PATH}/py/gts)
