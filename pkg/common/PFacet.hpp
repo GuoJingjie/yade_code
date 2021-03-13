@@ -146,7 +146,7 @@ REGISTER_SERIALIZABLE(Ig2_Wall_PFacet_ScGeom);
 
 class Bo1_PFacet_Aabb : public BoundFunctor {
 public:
-	virtual void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*) override;
+	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r&, const Body*) override;
 	FUNCTOR1D(PFacet);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Bo1_PFacet_Aabb,BoundFunctor,"Functor creating :yref:`Aabb` from a :yref:`PFacet`.",

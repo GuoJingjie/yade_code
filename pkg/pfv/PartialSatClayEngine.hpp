@@ -202,9 +202,9 @@ public:
 	virtual void initializeVolumes(FlowSolver& flow);
 	virtual void updateVolumes(FlowSolver& flow);
 	virtual void buildTriangulation(Real pZero, Solver& flow, bool oneTes = false);
-	virtual void initSolver(FlowSolver& flow) override;
-	virtual void action() override;
-	virtual void emulateAction() override
+	void initSolver(FlowSolver& flow) override;
+	void action() override;
+	void emulateAction() override
 	{
 		scene           = Omega::instance().getScene().get();
 		emulatingAction = true;
@@ -406,8 +406,8 @@ REGISTER_SERIALIZABLE(PartialSatState);
 
 class PartialSatMat : public FrictMat {
 public:
-	virtual shared_ptr<State> newAssocState() const override { return shared_ptr<State>(new PartialSatState); }
-	virtual bool              stateTypeOk(State* s) const override { return (bool)dynamic_cast<PartialSatState*>(s); }
+	shared_ptr<State> newAssocState() const override { return shared_ptr<State>(new PartialSatState); }
+	bool              stateTypeOk(State* s) const override { return (bool)dynamic_cast<PartialSatState*>(s); }
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(PartialSatMat,FrictMat,"Material used for :yref:`PartialSatClayEngine`. Necessary for the custom PartialSatState.",
@@ -422,7 +422,7 @@ REGISTER_SERIALIZABLE(PartialSatMat);
 
 class Ip2_PartialSatMat_PartialSatMat_MindlinPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
+	void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
 	FUNCTOR2D(PartialSatMat, PartialSatMat);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(

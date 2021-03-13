@@ -17,7 +17,7 @@ public:
 		return tp.tv_sec + tp.tv_usec / 1e6;
 	}
 	virtual ~PeriodicEngine() {}; // vtable
-	virtual bool isActivated() override
+	bool isActivated() override
 	{
 		const Real& virtNow = scene->time;
 		Real        realNow = getClock();

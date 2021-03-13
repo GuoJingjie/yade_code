@@ -84,7 +84,7 @@ public:
 	shared_ptr<capillarylaw> capillary;
 	BodiesMenisciiList       bodiesMenisciiList;
 
-	virtual void action() override;
+	void action() override;
 	void         postLoad(Law2_ScGeom_CapillaryPhys_Capillarity&);
 
 	bool hertzInitialized;

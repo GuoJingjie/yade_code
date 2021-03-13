@@ -67,7 +67,7 @@ REGISTER_SERIALIZABLE(FrictViscoPhys);
 /** 2d functor creating IPhys (Ip2) taking FrictViscoMat and FrictViscoMat of 2 bodies, returning type FrictViscoPhys */
 class Ip2_FrictViscoMat_FrictViscoMat_FrictViscoPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction) override;
+	void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction) override;
 
 	FUNCTOR2D(FrictViscoMat, FrictViscoMat);
 
@@ -85,7 +85,7 @@ REGISTER_SERIALIZABLE(Ip2_FrictViscoMat_FrictViscoMat_FrictViscoPhys);
 /** 2d functor creating IPhys (Ip2) taking FrictMat and FrictViscoMat of 2 bodies, returning type FrictViscoPhys */
 class Ip2_FrictMat_FrictViscoMat_FrictViscoPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction) override;
+	void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction) override;
 
 	FUNCTOR2D(FrictMat, FrictViscoMat);
 	DEFINE_FUNCTOR_ORDER_2D(FrictMat, FrictViscoMat);
@@ -105,7 +105,7 @@ REGISTER_SERIALIZABLE(Ip2_FrictMat_FrictViscoMat_FrictViscoPhys);
 class Law2_ScGeom_FrictViscoPhys_CundallStrackVisco : public LawFunctor {
 public:
 	OpenMPAccumulator<Real> plasticDissipation;
-	virtual bool            go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
+	bool            go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	Real                    elasticEnergy();
 	Real                    getPlasticDissipation() const;
 	void                    initPlasticDissipation(Real initVal = 0);

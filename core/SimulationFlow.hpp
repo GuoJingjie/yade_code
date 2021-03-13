@@ -15,7 +15,7 @@ namespace yade { // Cannot have #include directive inside.
 
 class SimulationFlow : public ThreadWorker {
 public:
-	virtual void singleAction() override;
+	void singleAction() override;
 	DECLARE_LOGGER;
 };
 

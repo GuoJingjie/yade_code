@@ -23,7 +23,7 @@ protected:
 
 public:
 	virtual ~Recorder() {};
-	virtual bool isActivated() override
+	bool isActivated() override
 	{
 		if (PeriodicEngine::isActivated()) {
 			if (!out.is_open()) openAndCheck();

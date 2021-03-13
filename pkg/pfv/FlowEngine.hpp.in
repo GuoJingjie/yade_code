@@ -318,7 +318,7 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 		#endif
 
 		virtual ~TemplateFlowEngine_@TEMPLATE_FLOW_NAME@();
-		virtual void action() override;
+		void action() override;
 		virtual void backgroundAction();
 
 		//commodities

@@ -29,7 +29,7 @@ public:
 	}
 
 
-	virtual void action() override;
+	void action() override;
 
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(RungeKuttaCashKarp54Integrator,Integrator,"RungeKuttaCashKarp54Integrator engine.",

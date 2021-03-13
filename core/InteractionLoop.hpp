@@ -28,9 +28,9 @@ class InteractionLoop : public GlobalEngine {
 	//! create transientInteraction between 2 bodies, using existing Dispatcher in Omega
 #endif
 public:
-	virtual void pyHandleCustomCtorArgs(boost::python::tuple& t, boost::python::dict& d) override;
+	void pyHandleCustomCtorArgs(boost::python::tuple& t, boost::python::dict& d) override;
 	static shared_ptr<Interaction> createExplicitInteraction(Body::id_t id1, Body::id_t id2, bool force, bool virtualI);
-	virtual void action() override;
+	void action() override;
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(InteractionLoop,GlobalEngine,"Unified dispatcher for handling interaction loop at every step, for parallel performance reasons.\n\n.. admonition:: Special constructor\n\n\tConstructs from 3 lists of :yref:`Ig2<IGeomFunctor>`, :yref:`Ip2<IPhysFunctor>`, :yref:`Law2<LawFunctor>` functors respectively; they will be passed to internal dispatchers, which you might retrieve as :yref:`geomDispatcher<InteractionLoop.geomDispatcher>`, :yref:`physDispatcher<InteractionLoop.physDispatcher>`, :yref:`lawDispatcher<InteractionLoop.lawDispatcher>` respectively.",
 			((shared_ptr<IGeomDispatcher>,geomDispatcher,new IGeomDispatcher,Attr::readonly,":yref:`IGeomDispatcher` object that is used for dispatch."))

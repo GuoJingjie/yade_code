@@ -8,7 +8,7 @@ namespace yade { // Cannot have #include directive inside.
 
 class StepDisplacer : public PartialEngine {
 public:
-	virtual void action() override
+	void action() override
 	{
 		FOREACH(Body::id_t id, ids)
 		{

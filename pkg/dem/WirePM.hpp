@@ -48,8 +48,8 @@ REGISTER_SERIALIZABLE(WireState);
 /** This class holds information associated with each body */
 class WireMat : public FrictMat {
 public:
-	virtual shared_ptr<State> newAssocState() const override { return shared_ptr<State>(new WireState); }
-	virtual bool              stateTypeOk(State* s) const override { return (bool)dynamic_cast<WireState*>(s); }
+	shared_ptr<State> newAssocState() const override { return shared_ptr<State>(new WireState); }
+	bool              stateTypeOk(State* s) const override { return (bool)dynamic_cast<WireState*>(s); }
 	void                      postLoad(WireMat&);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(WireMat,FrictMat,"Material for use with the Wire classes. In conjunction with the corresponding functors it can be used to model steel wire meshes [Thoeni2014]_, geotextiles [Cheng2016]_ and more.",
@@ -110,7 +110,7 @@ REGISTER_SERIALIZABLE(WirePhys);
 /** 2d functor creating IPhys (Ip2) taking WireMat and WireMat of 2 bodies, returning type WirePhys */
 class Ip2_WireMat_WireMat_WirePhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction) override;
+	void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction) override;
 
 	FUNCTOR2D(WireMat, WireMat);
 
@@ -126,7 +126,7 @@ REGISTER_SERIALIZABLE(Ip2_WireMat_WireMat_WirePhys);
 /** 2d functor creating the interaction law (Law2) based on SphereContactGeometry (ScGeom) and WirePhys of 2 bodies, returning type WirePM */
 class Law2_ScGeom_WirePhys_WirePM : public LawFunctor {
 public:
-	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
+	bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 
 	FUNCTOR2D(ScGeom, WirePhys);
 

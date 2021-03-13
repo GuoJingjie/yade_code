@@ -31,7 +31,7 @@ private:
 
 public:
 	virtual ~TriaxialStateRecorder();
-	virtual void action() override;
+	void action() override;
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(TriaxialStateRecorder,Recorder,"Engine recording triaxial variables (see the variables list in the first line of the output file). This recorder needs :yref:`TriaxialCompressionEngine` or :yref:`ThreeDTriaxialEngine` present in the simulation).",

@@ -92,7 +92,7 @@ public:
 	        Vector3r&             intersectionPt,
 	        const Vector3r        plane,
 	        const Real            planeD);
-	virtual void action(void) override;
+	void action(void) override;
 	// clang-format off
   	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(RockLiningGlobal,PeriodicEngine,"Engine recording potential blocks as surfaces into files with given periodicity.",
 		((bool,assembledKglobal,false ,,"global stiffness matrix"))

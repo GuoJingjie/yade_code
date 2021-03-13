@@ -401,7 +401,7 @@ REGISTER_SERIALIZABLE(Subdomain);
 
 class Bo1_Subdomain_Aabb : public BoundFunctor {
 public:
-	virtual void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body*) override;
+	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body*) override;
 	FUNCTOR1D(Subdomain);
 	// clang-format off
 	YADE_CLASS_BASE_DOC(Bo1_Subdomain_Aabb,BoundFunctor,"Creates/updates an :yref:`Aabb` of a :yref:`Facet`.");

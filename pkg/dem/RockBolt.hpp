@@ -86,7 +86,7 @@ public:
 	        Vector3r&             intersectionPt,
 	        const Vector3r        plane,
 	        const Real            planeD);
-	virtual void action(void) override;
+	void action(void) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(RockBolt,PeriodicEngine,"Engine recording potential blocks as surfaces into files with given periodicity.",
 		((Real,normalStiffness,0.0 ,,"EA/L"))

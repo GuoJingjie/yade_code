@@ -10,7 +10,7 @@ namespace yade { // Cannot have #include directive inside.
 
 class DomainLimiter : public PeriodicEngine {
 public:
-	virtual void action() override;
+	void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(DomainLimiter,PeriodicEngine,"Delete particles that are out of axis-aligned box given by *lo* and *hi*.",
 		((Vector3r,lo,Vector3r(0,0,0),,"Lower corner of the domain."))
@@ -28,7 +28,7 @@ class LawTester : public PartialEngine {
 	Body::id_t id1, id2; // shorthands for local use
 public:
 	void         init();
-	virtual void action() override;
+	void action() override;
 	void         postLoad(LawTester&);
 	void         warnDeprec(const string& s1, const string& s2)
 	{
@@ -103,7 +103,7 @@ REGISTER_SERIALIZABLE(LawTester);
 class GlExtra_LawTester : public GlExtraDrawer {
 public:
 	DECLARE_LOGGER;
-	virtual void render() override;
+	void render() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(GlExtra_LawTester,GlExtraDrawer,"Find an instance of :yref:`LawTester` and show visually its data.",
 		((shared_ptr<LawTester>,tester,,,"Associated :yref:`LawTester` object."))
@@ -121,7 +121,7 @@ public:
 	};
 	std::vector<OctreeBox> boxes;
 	void                   postLoad(GlExtra_OctreeCubes&);
-	virtual void           render() override;
+	void           render() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(GlExtra_OctreeCubes,GlExtraDrawer,"Render boxed read from file",
 		((string,boxesFile,,Attr::triggerPostLoad,"File to read boxes from; ascii files with ``x0 y0 z0 x1 y1 z1 c`` records, where ``c`` is an integer specifying fill (0 for wire, 1 for filled)."))

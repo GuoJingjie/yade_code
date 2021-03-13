@@ -24,7 +24,7 @@ protected:
 
 
 public:
-	virtual void action() override;
+	void action() override;
 	// clang-format off
     YADE_CLASS_BASE_DOC_ATTRS(MeasureCapStress,PeriodicEngine,"Post-processing engine giving :yref:`the capillary stress tensor<MeasureCapStress.sigmaCap>` (the fluids mixture contribution to the total stress in unsaturated, i.e. triphasic, conditions) according to the $\\mu$UNSAT expression detailled in [Duriez2017c]_. Although this expression differs in nature from the one of utils.getCapillaryStress (consideration of distributed integrals herein, vs resultant capillary force therein), both are equivalent [Duriez2016b]_, [Duriez2017]_, [Duriez2017c]_. The REV volume $V$ entering the expression is automatically measured, from the :yref:`Cell` for periodic conditions, or from utils.aabbExtrema function otherwise.",
 			      ((Matrix3r,sigmaCap,Matrix3r::Zero(),Attr::readonly,"The capillary stress tensor $\\boldsymbol{\\sigma^{cap}}$ itself, expressed as $\\boldsymbol{\\sigma^{cap}} = 1/V \\, [ u_c (\\boldsymbol{\\mu_{Vw}} + \\boldsymbol{\\mu_{Ssw}}) + \\gamma_{nw} (\\boldsymbol{\\mu_{Snw}} + \\boldsymbol{\\mu_{\\Gamma}}) ]$ where the four microstructure tensors $\\boldsymbol{\\mu_{Vw}}, \\boldsymbol{\\mu_{Ssw}}, \\boldsymbol{\\mu_{Snw}}, \\boldsymbol{\\mu_{\\Gamma}}$ correspond to :yref:`muVw<MeasureCapStress.muVw>`, :yref:`muSsw<MeasureCapStress.muSsw>`, :yref:`muSnw<MeasureCapStress.muSnw>` and :yref:`muGamma<MeasureCapStress.muGamma>` attributes. |yupdate|"))

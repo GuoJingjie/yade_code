@@ -99,8 +99,8 @@ REGISTER_SERIALIZABLE(LawFunctor);
 class BoundDispatcher : public Dispatcher1D<
                                 /* functor type*/ BoundFunctor> {
 public:
-	virtual void action() override;
-	virtual bool isActivated() override { return activated; }
+	void action() override;
+	bool isActivated() override { return activated; }
 	void         processBody(const shared_ptr<Body>&);
 	DECLARE_LOGGER;
 	YADE_DISPATCHER1D_FUNCTOR_DOC_ATTRS_CTOR_PY(
@@ -135,7 +135,7 @@ class IGeomDispatcher : public Dispatcher2D<
 	bool alreadyWarnedNoCollider;
 
 public:
-	virtual void            action() override;
+	void            action() override;
 	shared_ptr<Interaction> explicitAction(const shared_ptr<Body>& b1, const shared_ptr<Body>& b2, bool force);
 	YADE_DISPATCHER2D_FUNCTOR_DOC_ATTRS_CTOR_PY(IGeomDispatcher, IGeomFunctor, /* doc is optional*/, /*attrs*/, /*ctor*/ alreadyWarnedNoCollider = false;,
 	                                            /*py*/);
@@ -147,7 +147,7 @@ REGISTER_SERIALIZABLE(IGeomDispatcher);
 class IPhysDispatcher : public Dispatcher2D<
                                 /*functor type*/ IPhysFunctor> {
 public:
-	virtual void action() override;
+	void action() override;
 	void         explicitAction(shared_ptr<Material>& pp1, shared_ptr<Material>& pp2, shared_ptr<Interaction>& i);
 	YADE_DISPATCHER2D_FUNCTOR_DOC_ATTRS_CTOR_PY(IPhysDispatcher, IPhysFunctor, /*doc is optional*/, /*attrs*/, /*ctor*/, /*py*/);
 };
@@ -158,7 +158,7 @@ class LawDispatcher : public Dispatcher2D<
                               /*functor type*/ LawFunctor,
                               /*autosymmetry*/ false> {
 public:
-	virtual void action() override;
+	void action() override;
 	YADE_DISPATCHER2D_FUNCTOR_DOC_ATTRS_CTOR_PY(LawDispatcher, LawFunctor, /*doc is optional*/, /*attrs*/, /*ctor*/, /*py*/);
 	DECLARE_LOGGER;
 };

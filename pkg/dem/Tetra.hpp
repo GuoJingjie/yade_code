@@ -94,7 +94,7 @@ REGISTER_SERIALIZABLE(TTetraSimpleGeom);
  * Self-contained. */
 class Bo1_Tetra_Aabb : public BoundFunctor {
 public:
-	virtual void go(const shared_ptr<Shape>& ig, shared_ptr<Bound>& bv, const Se3r& se3, const Body*) override;
+	void go(const shared_ptr<Shape>& ig, shared_ptr<Bound>& bv, const Se3r& se3, const Body*) override;
 	FUNCTOR1D(Tetra);
 	// clang-format off
 	YADE_CLASS_BASE_DOC(Bo1_Tetra_Aabb,BoundFunctor,"Create/update :yref:`Aabb` of a :yref:`Tetra`");
@@ -106,7 +106,7 @@ REGISTER_SERIALIZABLE(Bo1_Tetra_Aabb);
 /*! Draw Tetra using OpenGL */
 class Gl1_Tetra : public GlShapeFunctor {
 public:
-	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
+	void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
 	// clang-format off
 		YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_Tetra,GlShapeFunctor,"Renders :yref:`Tetra` object",
 			((bool,wire,true,,"TODO"))
@@ -121,7 +121,7 @@ REGISTER_SERIALIZABLE(Gl1_Tetra);
 
 class TetraVolumetricLaw : public GlobalEngine {
 public:
-	virtual void action() override;
+	void action() override;
 	DECLARE_LOGGER;
 	// clang-format off
 	YADE_CLASS_BASE_DOC(TetraVolumetricLaw,GlobalEngine,"Calculate physical response of 2 :yref:`tetrahedra<Tetra>` in interaction, based on penetration configuration given by :yref:`TTetraGeom`.");
@@ -256,7 +256,7 @@ REGISTER_SERIALIZABLE(Ig2_Tetra_Tetra_TTetraSimpleGeom);
 
 class Law2_TTetraSimpleGeom_NormPhys_Simple : public LawFunctor {
 public:
-	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
+	bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC(Law2_TTetraSimpleGeom_NormPhys_Simple,LawFunctor,"EXPERIMENTAL. TODO");
 	// clang-format on

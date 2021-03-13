@@ -37,7 +37,7 @@ public:
 	//! is this the beginning of the simulation, after reading the scene? -> it is the first time that Yade passes trought the engine ThreeDTriaxialEngine
 	bool firstRun;
 
-	virtual void action() override;
+	void action() override;
 
 
 	///Change physical properties of interactions and/or bodies in the middle of a simulation (change only friction for the moment, complete this function to set cohesion and others before compression test)

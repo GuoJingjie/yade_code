@@ -28,7 +28,7 @@ REGISTER_SERIALIZABLE(Wall);
     from axis-aligned wall. Has no parameters. */
 class Bo1_Wall_Aabb : public BoundFunctor {
 public:
-	virtual void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body*) override;
+	void go(const shared_ptr<Shape>& cm, shared_ptr<Bound>& bv, const Se3r& se3, const Body*) override;
 	FUNCTOR1D(Wall);
 	// clang-format off
 	YADE_CLASS_BASE_DOC(Bo1_Wall_Aabb,BoundFunctor,"Creates/updates an :yref:`Aabb` of a :yref:`Wall`");
@@ -38,7 +38,7 @@ REGISTER_SERIALIZABLE(Bo1_Wall_Aabb);
 #ifdef YADE_OPENGL
 class Gl1_Wall : public GlShapeFunctor {
 public:
-	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
+	void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
 	RENDERS(Wall);
 	// clang-format off
 		YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_Wall,GlShapeFunctor,"Renders :yref:`Wall` object",

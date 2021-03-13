@@ -19,8 +19,8 @@ class Body;
 class TimeStepper : public GlobalEngine {
 public:
 	virtual void computeTimeStep(Scene*) { throw; };
-	virtual bool isActivated() override { return (active && (scene->iter % timeStepUpdateInterval == 0)); };
-	virtual void action() override { computeTimeStep(scene); };
+	bool isActivated() override { return (active && (scene->iter % timeStepUpdateInterval == 0)); };
+	void action() override { computeTimeStep(scene); };
 	void         setActive(bool a, int nb = -1)
 	{
 		active = a;

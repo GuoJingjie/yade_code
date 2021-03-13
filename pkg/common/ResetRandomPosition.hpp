@@ -20,7 +20,7 @@ namespace yade { // Cannot have #include directive inside.
 class ResetRandomPosition : public PeriodicEngine {
 public:
 	/// @brief Create one sphere per call.
-	virtual void action() override;
+	void action() override;
 
 private:
 	/// @brief Pointer to Collider.

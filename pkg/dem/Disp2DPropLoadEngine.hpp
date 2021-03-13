@@ -52,7 +52,7 @@ private:
 
 
 public:
-	virtual void action() override;
+	void action() override;
 	void         computeAlpha();
 	void         postLoad(Disp2DPropLoadEngine&);
 

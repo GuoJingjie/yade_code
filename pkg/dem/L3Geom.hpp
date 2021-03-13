@@ -85,7 +85,7 @@ REGISTER_SERIALIZABLE(L6Geom);
 #ifdef YADE_OPENGL
 struct Gl1_L3Geom : public GlIGeomFunctor {
 	RENDERS(L3Geom);
-	virtual void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool) override;
+	void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool) override;
 	void         draw(const shared_ptr<IGeom>&, bool isL6Geom = false, const Real& phiScale = 0);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_L3Geom,GlIGeomFunctor,"Render :yref:`L3Geom` geometry.",
@@ -101,7 +101,7 @@ REGISTER_SERIALIZABLE(Gl1_L3Geom);
 
 struct Gl1_L6Geom : public Gl1_L3Geom {
 	RENDERS(L6Geom);
-	virtual void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool) override;
+	void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_L6Geom,Gl1_L3Geom,"Render :yref:`L6Geom` geometry.",
 		((Real,phiScale,1.,,"Scale local rotations (:yref:`phi<L6Geom.phi>` - :yref:`phi0<L6Geom.phi0>`). The default scale is to draw $\\pi$ rotation with length equal to minimum radius."))
@@ -233,7 +233,7 @@ REGISTER_SERIALIZABLE(Ig2_Sphere_Sphere_L6Geom);
 
 
 struct Law2_L3Geom_FrictPhys_ElPerfPl : public LawFunctor {
-	virtual bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
+	bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
 	FUNCTOR2D(L3Geom, FrictPhys);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Law2_L3Geom_FrictPhys_ElPerfPl,LawFunctor,"Basic law for testing :yref:`L3Geom`; it bears no cohesion (unless *noBreak* is ``True``), and plastic slip obeys the Mohr-Coulomb criterion (unless *noSlip* is ``True``).",
@@ -247,7 +247,7 @@ struct Law2_L3Geom_FrictPhys_ElPerfPl : public LawFunctor {
 REGISTER_SERIALIZABLE(Law2_L3Geom_FrictPhys_ElPerfPl);
 
 struct Law2_L6Geom_FrictPhys_Linear : public Law2_L3Geom_FrictPhys_ElPerfPl {
-	virtual bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
+	bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
 	FUNCTOR2D(L6Geom, FrictPhys);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Law2_L6Geom_FrictPhys_Linear,Law2_L3Geom_FrictPhys_ElPerfPl,"Basic law for testing :yref:`L6Geom` -- linear in both normal and shear sense, without slip or breakage.",

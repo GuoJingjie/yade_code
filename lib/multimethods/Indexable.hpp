@@ -65,12 +65,12 @@ private:                                                                        
 	}                                                                                                                                                      \
                                                                                                                                                                \
 protected:                                                                                                                                                     \
-	virtual int& modifyClassIndex() override { return modifyClassIndexStatic(); }                                                                          \
+	int& modifyClassIndex() override { return modifyClassIndexStatic(); }                                                                                  \
                                                                                                                                                                \
 public:                                                                                                                                                        \
 	static const int&  getClassIndexStatic() { return modifyClassIndexStatic(); }                                                                          \
-	virtual const int& getClassIndex() const override { return getClassIndexStatic(); }                                                                    \
-	virtual const int& getBaseClassIndex(int depth) const override                                                                                         \
+	const int& getClassIndex() const override { return getClassIndexStatic(); }                                                                            \
+	const int& getBaseClassIndex(int depth) const override                                                                                                 \
 	{                                                                                                                                                      \
 		static boost::scoped_ptr<BaseClass> baseClass(new BaseClass);                                                                                  \
 		if (depth == 1) return baseClass->getClassIndex();                                                                                             \
@@ -91,12 +91,12 @@ private:                                                                        
 	}                                                                                                                                                      \
                                                                                                                                                                \
 protected:                                                                                                                                                     \
-	virtual int& modifyClassIndex() override { return modifyClassIndexStatic(); }                                                                          \
+	int& modifyClassIndex() override { return modifyClassIndexStatic(); }                                                                                  \
                                                                                                                                                                \
 public:                                                                                                                                                        \
 	static const int&  getClassIndexStatic() { return modifyClassIndexStatic(); }                                                                          \
-	virtual const int& getClassIndex() const override { return getClassIndexStatic(); }                                                                    \
-	virtual const int& getBaseClassIndex(int) const override                                                                                               \
+	const int& getClassIndex() const override { return getClassIndexStatic(); }                                                                            \
+	const int& getBaseClassIndex(int) const override                                                                                                       \
 	{                                                                                                                                                      \
 		throw std::logic_error("One of the following errors was detected:\n(1) Class " #SomeClass                                                      \
 		                       " called createIndex() in its ctor (but it shouldn't, being a top-level indexable; only use REGISTER_INDEX_COUNTER, "   \
@@ -112,7 +112,7 @@ private:                                                                        
 	}                                                                                                                                                      \
                                                                                                                                                                \
 public:                                                                                                                                                        \
-	virtual const int& getMaxCurrentlyUsedClassIndexOfKin() const override                                                                                 \
+	const int& getMaxCurrentlyUsedClassIndexOfKin() const override                                                                                         \
 	{                                                                                                                                                      \
 		SomeClass* Indexable##SomeClass = 0;                                                                                                           \
 		Indexable##SomeClass            = dynamic_cast<SomeClass*>(const_cast<SomeClass*>(this));                                                      \
@@ -121,7 +121,7 @@ public:                                                                         
 	}                                                                                                                                                      \
                                                                                                                                                                \
 protected:                                                                                                                                                     \
-	virtual void incrementMaxCurrentlyUsedClassIndexOfKin() override                                                                                       \
+	void incrementMaxCurrentlyUsedClassIndexOfKin() override                                                                                               \
 	{                                                                                                                                                      \
 		SomeClass* Indexable##SomeClass = 0;                                                                                                           \
 		Indexable##SomeClass            = dynamic_cast<SomeClass*>(this);                                                                              \

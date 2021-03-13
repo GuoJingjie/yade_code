@@ -93,7 +93,7 @@ REGISTER_SERIALIZABLE(ViscElPhys);
 class Ip2_ViscElMat_ViscElMat_ViscElPhys : public IPhysFunctor {
 public:
 	static Real  epsilon;
-	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
+	void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ip2_ViscElMat_ViscElMat_ViscElPhys,IPhysFunctor,"Convert 2 instances of :yref:`ViscElMat` to :yref:`ViscElPhys` using the rule of consecutive connection.",
  		((shared_ptr<MatchMaker>,tc,,,"Instance of :yref:`MatchMaker` determining contact time"))
@@ -112,7 +112,7 @@ REGISTER_SERIALIZABLE(Ip2_ViscElMat_ViscElMat_ViscElPhys);
 /// This class provides linear viscoelastic contact model
 class Law2_ScGeom_ViscElPhys_Basic : public LawFunctor {
 public:
-	virtual bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
+	bool go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
 
 public:
 	FUNCTOR2D(ScGeom, ViscElPhys);
@@ -160,7 +160,7 @@ Real find_cn_from_en(const Real& en, const Real& m, const Real& kn, const shared
 #ifdef YADE_DEFORM
 class DeformControl : public PartialEngine {
 public:
-	virtual void action() override;
+	void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(DeformControl,PartialEngine,"This engine implements particle deformation with const. volume, see [Haustein2017]_ . ",
 		// Attrs

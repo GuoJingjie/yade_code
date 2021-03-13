@@ -95,7 +95,7 @@ public:
 		}
 		PyObject* getMyComm() const {	return PyMPIComm_New(*myComm_p);}
 
-		virtual void action() override;
+		void action() override;
 		virtual ~FoamCoupling(){}; 
 		
 		std::vector<int> bodyList;  // 'global' all Ids across all procs which are in coupling. Used in serial mode  coupling. 
@@ -210,7 +210,7 @@ REGISTER_SERIALIZABLE(FluidDomainBbox);
 
 class Bo1_FluidDomainBbox_Aabb : public BoundFunctor {
 public:
-	virtual void go(const shared_ptr<Shape>&, shared_ptr<Bound>&, const Se3r& se3, const Body*) override;
+	void go(const shared_ptr<Shape>&, shared_ptr<Bound>&, const Se3r& se3, const Body*) override;
 	FUNCTOR1D(FluidDomainBbox);
 	YADE_CLASS_BASE_DOC(Bo1_FluidDomainBbox_Aabb, BoundFunctor, "creates/updates an :yref:`Aabb` of a :yref:`FluidDomainBbox`.");
 };

@@ -171,11 +171,11 @@ namespace CGT {
 		PartialSatLinSolv();
 
 		///Linear system solve
-		virtual int       setLinearSystem(Real dt = 0) override;
-		virtual void      copyCellsToLin(Real dt = 0) override;
-		virtual void      interpolate(Tesselation& Tes, Tesselation& NewTes) override;
-		virtual void      computeFacetForcesWithCache(bool onlyCache = false) override;
-		virtual void      computePermeability() override;
+		int       setLinearSystem(Real dt = 0) override;
+		void      copyCellsToLin(Real dt = 0) override;
+		void      interpolate(Tesselation& Tes, Tesselation& NewTes) override;
+		void      computeFacetForcesWithCache(bool onlyCache = false) override;
+		void      computePermeability() override;
 		Real              getCellSaturation(Real x, Real y, Real z);
 		std::vector<Real> getCellVelocity(Real x, Real y, Real z);
 		Real              getAverageSaturation();

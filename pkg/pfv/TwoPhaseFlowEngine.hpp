@@ -301,7 +301,7 @@ public:
 
 	//We can overload every functions of the base engine to make it behave differently
 	//if we overload action() like this, this engine is doing nothing in a standard timestep, it can still have useful functions
-	virtual void action() override {};
+	void action() override {};
 
 	//If a new function is specific to the derived engine, put it here, else go to the base TemplateFlowEngine if it is useful for everyone
 	void computePoreBodyVolume();

@@ -36,8 +36,8 @@ private:
 public:
 	virtual ~GlobalStiffnessTimeStepper();
 
-	virtual void computeTimeStep(Scene*) override;
-	virtual bool isActivated() override;
+	void computeTimeStep(Scene*) override;
+	bool isActivated() override;
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR(
 			GlobalStiffnessTimeStepper,TimeStepper,"An engine assigning the time-step as a fraction of the minimum eigen-period in the problem. The derivation is detailed in the chapter on :ref:`DEM formulation <DEMSimulations>`. The viscEl option enables to evaluate the timestep in a similar way for the visco-elastic contact law :yref:`Law2_ScGeom_ViscElPhys_Basic`, more detail in :yref:`GlobalStiffnessTimestepper::viscEl`. ",

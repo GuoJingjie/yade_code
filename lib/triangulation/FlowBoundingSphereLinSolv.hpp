@@ -262,7 +262,7 @@ namespace CGT {
 		void         swapFwd(int* v, int i);
 		void         sortV(int k1, int k2, int* is, Real* ds);
 
-		virtual void gaussSeidel(Real dt) override
+		void gaussSeidel(Real dt) override
 		{
 			switch (useSolver) {
 				case 0: vectorizedGaussSeidel(dt); break;
@@ -273,8 +273,8 @@ namespace CGT {
 			}
 			computedOnce = true;
 		}
-		virtual void resetLinearSystem() override;
-		virtual void resetRHS() override { updatedRHS = false; };
+		void resetLinearSystem() override;
+		void resetRHS() override { updatedRHS = false; };
 	};
 
 } //namespace CGT

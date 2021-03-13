@@ -28,7 +28,7 @@ private:
 	static Real prevQuality;
 
 public:
-	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
+	void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_Node,GlShapeFunctor,"Renders :yref:`Node` object",
 		((Real,quality,1.0,,"Change discretization level of spheres. quality>1  for better image quality, at the price of more cpu/gpu usage, 0<quality<1 for faster rendering. If mono-color spheres are displayed (:yref:`Gl1_Node::stripes` = False), quality mutiplies :yref:`Gl1_Node::glutSlices` and :yref:`Gl1_Node::glutStacks`. If striped spheres are displayed (:yref:`Gl1_Node::stripes` = True), only integer increments are meaningfull : quality=1 and quality=1.9 will give the same result, quality=2 will give finer result."))

@@ -24,13 +24,13 @@ namespace yade { // Cannot have #include directive inside.
 
 #define REGISTER_CLASS_NAME(cn)                                                                                                                                \
 public:                                                                                                                                                        \
-	virtual string getClassName() const override { return #cn; };
+	string getClassName() const override { return #cn; };
 
 // FIXME[1] - that macro below should go to another class! factorable has nothing to do with inheritance tree.
 
 #define REGISTER_BASE_CLASS_NAME(bcn)                                                                                                                          \
 public:                                                                                                                                                        \
-	virtual string getBaseClassName(unsigned int i = 0) const override                                                                                     \
+	string getBaseClassName(unsigned int i = 0) const override                                                                                             \
 	{                                                                                                                                                      \
 		string             token;                                                                                                                      \
 		vector<string>     tokens;                                                                                                                     \
@@ -46,7 +46,7 @@ public:                                                                         
 	}                                                                                                                                                      \
                                                                                                                                                                \
 public:                                                                                                                                                        \
-	virtual int getBaseClassNumber() const override                                                                                                        \
+	int getBaseClassNumber() const override                                                                                                                \
 	{                                                                                                                                                      \
 		string             token;                                                                                                                      \
 		vector<string>     tokens;                                                                                                                     \

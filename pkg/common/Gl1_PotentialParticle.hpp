@@ -90,7 +90,7 @@ public:
 		return static_cast<double>(FunctionValue(r));
 	}
 #endif
-	virtual double EvaluateFunction(double x[3]) override
+	double EvaluateFunction(double x[3]) override
 	{
 		//return this->vtkImplicitFunction::EvaluateFunction(x);
 		return FunctionValue(x);
@@ -99,14 +99,14 @@ public:
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
-	// In newer coinor version this function becomes virtual and needs override keyword. In older ones it can't have thie keyword.
+	// In newer coinor version this function becomes virtual and needs override keyword. In older ones it can't have this keyword.
 	virtual double EvaluateFunction(double x, double y, double z) { return this->vtkImplicitFunction::EvaluateFunction(x, y, z); };
 #pragma GCC diagnostic pop
 
 
 	// Description
 	// Evaluate gradient for function
-	virtual void EvaluateGradient(double /*x*/[3], double /*n*/[3]) override {};
+	void EvaluateGradient(double /*x*/[3], double /*n*/[3]) override {};
 	// FIXME - better use Vector3r here instead of Real[3] (here I only fix the unused parameter warning).
 	//         you would need to change the virtual function signature in file vtkImplicitFunction.h in VTK library. Which of course cannot be done
 	//         without sending a patch to VTK library authors. So better to use your own function instead of vtkImplicitFunction. / Janek
@@ -145,7 +145,7 @@ private:
 	static vector<scalarF> SF;
 
 public:
-	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
+	void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
 
 	// clang-format off
 		YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_PotentialParticle,GlShapeFunctor,"Renders :yref:`PotentialParticle` object",
@@ -168,7 +168,7 @@ class PotentialParticleVTKRecorder : public PeriodicEngine {
 public:
 	vtkSmartPointer<ImpFunc> function;
 
-	virtual void action(void) override;
+	void action(void) override;
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(PotentialParticleVTKRecorder,PeriodicEngine,"Engine recording potential blocks as surfaces into files with given periodicity.",
 			((string,fileName,,,"File prefix to save to"))

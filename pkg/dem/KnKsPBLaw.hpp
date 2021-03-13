@@ -146,7 +146,7 @@ REGISTER_SERIALIZABLE(KnKsPBPhys);
 
 class Ip2_FrictMat_FrictMat_KnKsPBPhys : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction) override;
+	void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction) override;
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS(Ip2_FrictMat_FrictMat_KnKsPBPhys,IPhysFunctor,"EXPERIMENTAL. Ip2 functor for :yref:`KnKsPBPhys`",
 		((Real, Knormal, ,,"Volumetric stiffness in the contact normal direction (units: stress/length)"))
@@ -209,7 +209,7 @@ public:
 	        Vector3r&          newFs,
 	        const Real         upeak);
 
-	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
+	bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	FUNCTOR2D(ScGeom, KnKsPBPhys);
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(Law2_SCG_KnKsPBPhys_KnKsPBLaw,LawFunctor,"Law for linear compression, without cohesion and Mohr-Coulomb plasticity surface.\n\n.. note::\n This law uses :yref:`ScGeom`; there is also functionally equivalent :yref:`Law2_Dem3DofGeom_FrictPhys_Basic`, which uses :yref:`Dem3DofGeom` (sphere-box interactions are not implemented for the latest).",

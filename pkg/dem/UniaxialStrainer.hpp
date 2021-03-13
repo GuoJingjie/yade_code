@@ -21,13 +21,13 @@ private:
 	void  init();
 
 public:
-	virtual bool isActivated() override { return active; }
+	bool isActivated() override { return active; }
 	Real         sumPosForces, sumNegForces;
 	Real         initAccelTime_s /* value always in s, computed from initAccelTime */;
 	/** coordinates of pos/neg bodies in the direction of axis */
 	vector<Real> posCoords, negCoords;
 
-	virtual void action() override;
+	void action() override;
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR(UniaxialStrainer,BoundaryController,"Axial displacing two groups of bodies in the opposite direction with given strain rate.",
 			((Real,strainRate,NaN,,"Rate of strain, starting at 0, linearly raising to strainRate. [-]"))

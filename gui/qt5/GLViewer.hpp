@@ -98,8 +98,8 @@ public:
 #if 0
 			virtual void paintGL();
 #endif
-	virtual void draw() override;
-	virtual void drawWithNames() override;
+	void draw() override;
+	void drawWithNames() override;
 	void         displayMessage(const std::string& s) { QGLViewer::displayMessage(QString(s.c_str())); }
 	void         centerScene(
 	                const Real&     suggestedRadius      = -1,
@@ -128,9 +128,9 @@ public:
 	std::pair<double, qglviewer::Vec> displayedSceneRadiusCenter();
 
 	//! Adds our attributes to the QGLViewer state that can be saved
-	virtual QDomElement domElement(const QString& name, QDomDocument& document) const override;
+	QDomElement domElement(const QString& name, QDomDocument& document) const override;
 	//! Adds our attributes to the QGLViewer state that can be restored
-	virtual void initFromDOMElement(const QDomElement& element) override;
+	void initFromDOMElement(const QDomElement& element) override;
 
 	// if defined, snapshot will be saved to this file right after being drawn and the string will be reset.
 	// this way the caller will be notified of the frame being saved successfully.
@@ -146,18 +146,18 @@ public:
 	DECLARE_LOGGER;
 
 protected:
-	virtual void keyPressEvent(QKeyEvent* e) override;
-	virtual void postDraw() override;
+	void keyPressEvent(QKeyEvent* e) override;
+	void postDraw() override;
 	// overridden in the player that doesn't get time from system clock but from the db
 	virtual string  getRealTimeString() const;
-	virtual void    closeEvent(QCloseEvent* e) override;
-	virtual void    postSelection(const QPoint& point) override;
-	virtual void    endSelection(const QPoint& point) override;
-	virtual void    mouseDoubleClickEvent(QMouseEvent* e) override;
-	virtual void    wheelEvent(QWheelEvent* e) override;
-	virtual void    mouseMoveEvent(QMouseEvent* e) override;
-	virtual void    mousePressEvent(QMouseEvent* e) override;
-	virtual QString helpString() const override;
+	void    closeEvent(QCloseEvent* e) override;
+	void    postSelection(const QPoint& point) override;
+	void    endSelection(const QPoint& point) override;
+	void    mouseDoubleClickEvent(QMouseEvent* e) override;
+	void    wheelEvent(QWheelEvent* e) override;
+	void    mouseMoveEvent(QMouseEvent* e) override;
+	void    mousePressEvent(QMouseEvent* e) override;
+	QString helpString() const override;
 
 	// Draws text, where each letter has a shifted background letter of opposite color.
 	void drawReadableNum(const Real& n, const Vector3r& pos, unsigned precision = 4, const Vector3r& color = Vector3r(1, 1, 1));
@@ -182,7 +182,7 @@ public:
 #else
 	using QGLCompatDouble = float;
 #endif
-	virtual QGLCompatDouble zNear() const override;
+	QGLCompatDouble zNear() const override;
 
 	virtual void setCuttingDistance(float s) { cuttingDistance = s; };
 };

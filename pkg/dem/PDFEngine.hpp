@@ -28,7 +28,7 @@ public:
 	typedef boost::multi_array<shared_ptr<PDFCalculator>, 2> PDF;
 
 	static void  getSpectrums(vector<PDF>&);
-	virtual void action() override;
+	void action() override;
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(PDFEngine, PeriodicEngine,
@@ -57,8 +57,8 @@ public:
 	        : PDFEngine::PDFCalculator(name)
 	        , m_member(member)
 	        , m_stress(Matrix3r::Zero()) {};
-	virtual vector<string> getSuffixes() const override { return vector<string>({ "xx", "xy", "xz", "yx", "yy", "yz", "zx", "zy", "zz" }); }
-	virtual vector<string> getDatas() const override
+	vector<string> getSuffixes() const override { return vector<string>({ "xx", "xy", "xz", "yx", "yy", "yz", "zx", "zy", "zz" }); }
+	vector<string> getDatas() const override
 	{
 		vector<string> out;
 		for (int i(0); i < 3; i++)
@@ -66,8 +66,8 @@ public:
 				out.push_back(math::toString(m_stress(i, j)));
 		return out;
 	}
-	virtual void cleanData() override { m_stress = Matrix3r::Zero(); }
-	virtual bool addData(const shared_ptr<Interaction>& I, Real const& dS, Real const& V, int const&, bool) override
+	void cleanData() override { m_stress = Matrix3r::Zero(); }
+	bool addData(const shared_ptr<Interaction>& I, Real const& dS, Real const& V, int const&, bool) override
 	{
 		if (!I->isReal()) return false;
 		ScGeom* geom = dynamic_cast<ScGeom*>(I->geom.get());
@@ -90,9 +90,9 @@ private:
 class PDFSpheresDistanceCalculator : public PDFEngine::PDFCalculator {
 public:
 	PDFSpheresDistanceCalculator(string name);
-	virtual vector<string> getDatas() const override;
-	virtual void           cleanData() override;
-	virtual bool           addData(const shared_ptr<Interaction>&, Real const& dS, Real const& V, int const& N, bool inversed) override;
+	vector<string> getDatas() const override;
+	void           cleanData() override;
+	bool           addData(const shared_ptr<Interaction>&, Real const& dS, Real const& V, int const& N, bool inversed) override;
 
 private:
 	Real m_h;
@@ -102,10 +102,10 @@ private:
 class PDFSpheresVelocityCalculator : public PDFEngine::PDFCalculator {
 public:
 	PDFSpheresVelocityCalculator(string name);
-	virtual vector<string> getSuffixes() const override;
-	virtual vector<string> getDatas() const override;
-	virtual void           cleanData() override;
-	virtual bool           addData(const shared_ptr<Interaction>&, Real const& dS, Real const& V, int const& N, bool inversed) override;
+	vector<string> getSuffixes() const override;
+	vector<string> getDatas() const override;
+	void           cleanData() override;
+	bool           addData(const shared_ptr<Interaction>&, Real const& dS, Real const& V, int const& N, bool inversed) override;
 
 private:
 	Vector3r m_vel;
@@ -116,9 +116,9 @@ class PDFSpheresIntrsCalculator : public PDFEngine::PDFCalculator {
 public:
 	PDFSpheresIntrsCalculator(
 	        string name, bool (*)(shared_ptr<Interaction> const&) = [](shared_ptr<Interaction> const&) { return true; });
-	virtual vector<string> getDatas() const override;
-	virtual void           cleanData() override;
-	virtual bool           addData(const shared_ptr<Interaction>&, Real const& dS, Real const& V, int const& N, bool inversed) override;
+	vector<string> getDatas() const override;
+	void           cleanData() override;
+	bool           addData(const shared_ptr<Interaction>&, Real const& dS, Real const& V, int const& N, bool inversed) override;
 
 private:
 	Real m_P;

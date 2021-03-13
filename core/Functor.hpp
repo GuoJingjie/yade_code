@@ -48,13 +48,13 @@ public:
 	typedef _ArgumentTypes ArgumentTypes;
 #define FUNCTOR1D(type1)                                                                                                                                       \
 public:                                                                                                                                                        \
-	virtual std::string get1DFunctorType1(void) const override { return string(#type1); }                                                                  \
+	std::string get1DFunctorType1(void) const override { return string(#type1); }                                                                          \
 	int                 checkArgTypes(const shared_ptr<DispatchType1>& arg1) const { return (bool)YADE_PTR_DYN_CAST<type1>(arg1) ? 1 : 0; }
 	virtual std::string get1DFunctorType1(void) const
 	{
 		throw runtime_error("Class " + this->getClassName() + " did not use FUNCTOR1D to declare its argument type?");
 	}
-	virtual vector<string> getFunctorTypes(void) const override
+	vector<string> getFunctorTypes(void) const override
 	{
 		vector<string> ret;
 		ret.push_back(get1DFunctorType1());
@@ -75,8 +75,8 @@ public:
 	typedef _ArgumentTypes ArgumentTypes;
 #define FUNCTOR2D(type1, type2)                                                                                                                                \
 public:                                                                                                                                                        \
-	virtual std::string get2DFunctorType1(void) const override { return string(#type1); };                                                                 \
-	virtual std::string get2DFunctorType2(void) const override { return string(#type2); };                                                                 \
+	std::string get2DFunctorType1(void) const override { return string(#type1); };                                                                 \
+	std::string get2DFunctorType2(void) const override { return string(#type2); };                                                                 \
 	int                 checkArgTypes(const shared_ptr<DispatchType1>& arg1, const shared_ptr<DispatchType2>& arg2) const                                  \
 	{                                                                                                                                                      \
 		if (YADE_PTR_DYN_CAST<type1>(arg1) && YADE_PTR_DYN_CAST<type2>(arg2)) return 1;                                                                \
@@ -91,7 +91,7 @@ public:                                                                         
 	{
 		throw logic_error("Class " + this->getClassName() + " did not use FUNCTOR2D to declare its argument types?");
 	}
-	virtual vector<string> getFunctorTypes() const override
+	vector<string> getFunctorTypes() const override
 	{
 		vector<string> ret;
 		ret.push_back(get2DFunctorType1());

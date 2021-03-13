@@ -118,8 +118,8 @@ namespace CGT {
 		PeriodicFlowLinSolv();
 
 		///Linear system solve
-		virtual int setLinearSystem(Real dt = 0) override;
-		virtual int setLinearSystemFullGS(Real dt = 0) override;
+		int setLinearSystem(Real dt = 0) override;
+		int setLinearSystemFullGS(Real dt = 0) override;
 	};
 
 } //namespace CGTF

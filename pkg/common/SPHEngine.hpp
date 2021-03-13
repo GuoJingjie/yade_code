@@ -17,7 +17,7 @@ enum typeKernFunctions { Norm, Grad, Lapl };
 class SPHEngine : public PartialEngine {
 public:
 	void         calculateSPHRho(const shared_ptr<Body>& b);
-	virtual void action() override;
+	void action() override;
 	// clang-format off
   YADE_CLASS_BASE_DOC_ATTRS(SPHEngine,PartialEngine,"Apply given torque (momentum) value at every subscribed particle, at every step. ",
     ((int, mask,-1,, "Bitmask for SPH-particles."))

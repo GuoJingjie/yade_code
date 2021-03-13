@@ -57,11 +57,11 @@ public:
 	vector<Real> threadMaxVelocitySq;
 #endif
 
-	virtual void action() override;
+	void action() override;
 
 	virtual void system(const stateVector&, stateVector&, Real); //System function to calculate the derivatives of states
 
-	virtual bool isActivated() override { return true; }
+	bool isActivated() override { return true; }
 	// py access
 	boost::python::list slaves_get();
 

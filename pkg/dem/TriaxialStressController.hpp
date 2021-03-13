@@ -64,7 +64,7 @@ public:
 
 	virtual ~TriaxialStressController();
 
-	virtual void action() override;
+	void action() override;
 	//! Regulate the stress applied on walls with flag wall_XXX_activated = true
 	void controlExternalStress(int wall, Vector3r resultantForce, State* p, Real wall_max_vel);
 	//! Regulate the mean stress by changing spheres size, WARNING : this function assumes that all dynamic bodies in the problem are spheres

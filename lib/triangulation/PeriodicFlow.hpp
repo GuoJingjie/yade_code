@@ -94,10 +94,10 @@ namespace CGT {
 		using _N::surfaceSolidThroatInPore;
 		using _N::tesselation;
 
-		virtual void interpolate(Tesselation& Tes, Tesselation& NewTes) override;
-		virtual void computeFacetForcesWithCache(bool onlyCache = false) override;
-		virtual void computePermeability() override;
-		virtual void gaussSeidel(Real dt = 0) override;
+		void interpolate(Tesselation& Tes, Tesselation& NewTes) override;
+		void computeFacetForcesWithCache(bool onlyCache = false) override;
+		void computePermeability() override;
+		void gaussSeidel(Real dt = 0) override;
 		void         displayStatistics();
 #ifdef EIGENSPARSE_LIB
 		//Eigen's sparse matrix for forces computation

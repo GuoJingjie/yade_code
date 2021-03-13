@@ -26,7 +26,7 @@ namespace yade { // Cannot have #include directive inside.
 
 class If2_Lin4NodeTetra_LinIsoRayleighDampElast : public InternalForceFunctor {
 public:
-	virtual void go(const shared_ptr<Shape>&, const shared_ptr<Material>&, const shared_ptr<Body>&) override;
+	void go(const shared_ptr<Shape>&, const shared_ptr<Material>&, const shared_ptr<Body>&) override;
 	virtual ~If2_Lin4NodeTetra_LinIsoRayleighDampElast();
 	FUNCTOR2D(Lin4NodeTetra, LinIsoRayleighDampElastMat);
 

@@ -18,7 +18,7 @@ namespace yade { // Cannot have #include directive inside.
 class Law2_ScGeom_FrictPhys_CundallStrack : public LawFunctor {
 public:
 	OpenMPAccumulator<Real> plasticDissipation;
-	virtual bool            go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
+	bool            go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	Real                    elasticEnergy();
 	Real                    getPlasticDissipation() const;
 	void                    initPlasticDissipation(Real initVal = 0);
@@ -42,7 +42,7 @@ REGISTER_SERIALIZABLE(Law2_ScGeom_FrictPhys_CundallStrack);
 
 class Law2_ScGeom_ViscoFrictPhys_CundallStrack : public Law2_ScGeom_FrictPhys_CundallStrack {
 public:
-	virtual bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
+	bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(Law2_ScGeom_ViscoFrictPhys_CundallStrack,Law2_ScGeom_FrictPhys_CundallStrack,"Law similar to :yref:`Law2_ScGeom_FrictPhys_CundallStrack` with the addition of shear creep at contacts.",
 		((bool,shearCreep,false,," "))
@@ -60,7 +60,7 @@ class ElasticContactLaw : public GlobalEngine {
 	shared_ptr<Law2_ScGeom_FrictPhys_CundallStrack> functor;
 
 public:
-	virtual void action() override;
+	void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(ElasticContactLaw,GlobalEngine,"[DEPRECATED] Loop over interactions applying :yref:`Law2_ScGeom_FrictPhys_CundallStrack` on all interactions.\n\n.. note::\n  Use :yref:`InteractionLoop` and :yref:`Law2_ScGeom_FrictPhys_CundallStrack` instead of this class for performance reasons.",
 		((bool,neverErase,false,,"Keep interactions even if particles go away from each other (only in case another constitutive law is in the scene, e.g. :yref:`Law2_ScGeom_CapillaryPhys_Capillarity`)"))

@@ -62,7 +62,7 @@ public:
 #ifdef YADE_OPENMP
 	vector<Real> threadMaxVelocitySq;
 #endif
-	virtual void action() override;
+	void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(NewtonIntegrator,GlobalEngine,"Engine integrating newtonian motion equations.",
 		((Real,damping,0.2,,"damping coefficient for Cundall's non viscous damping (see :ref:`NumericalDamping` and [Chareyre2005]_)"))

@@ -45,7 +45,7 @@ public:
 	virtual void invalidatePersistentData() { }
 
 	// ctor with functors for the integrated BoundDispatcher
-	virtual void pyHandleCustomCtorArgs(boost::python::tuple& t, boost::python::dict& d) override;
+	void pyHandleCustomCtorArgs(boost::python::tuple& t, boost::python::dict& d) override;
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(Collider,GlobalEngine,"Abstract class for finding spatial collisions between bodies. \n\n.. admonition:: Special constructor\n\n\tDerived colliders (unless they override ``pyHandleCustomCtorArgs``) can be given list of :yref:`BoundFunctors <BoundFunctor>` which is used to initialize the internal :yref:`boundDispatcher <Collider.boundDispatcher>` instance.",

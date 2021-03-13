@@ -69,7 +69,7 @@ namespace yade { // Cannot have #include directive inside.
 /* Draw PotentialBlocks using OpenGL */
 class Gl1_PotentialBlock : public GlShapeFunctor {
 public:
-	virtual void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
+	void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
 	// clang-format off
 			YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_PotentialBlock,GlShapeFunctor,"Renders :yref:`PotentialBlock` object",
 				((bool,wire,false,,"Only show wireframe"))
@@ -168,7 +168,7 @@ public:
 
 	// Evaluate function
 	Real         FunctionValue(Real x[3]);
-	virtual Real EvaluateFunction(Real x[3]) override
+	Real EvaluateFunction(Real x[3]) override
 	{
 		//return this->vtkImplicitFunction::EvaluateFunction(x);
 		return FunctionValue(x);
@@ -183,7 +183,7 @@ public:
 
 	// Evaluate gradient for function
 	// FIXME - better use Vector3r here instead of Real[3] (here I only fix the unused parameter warning).
-	virtual void EvaluateGradient(Real /*x*/[3], Real /*n*/[3]) override {};
+	void EvaluateGradient(Real /*x*/[3], Real /*n*/[3]) override {};
 
 	// If you need to set parameters, add methods here
 
@@ -204,7 +204,7 @@ class PotentialBlockVTKRecorder : public PeriodicEngine {
 public:
 	vtkSmartPointer<ImpFuncPB> function;
 
-	virtual void action(void) override;
+	void action(void) override;
 	// clang-format off
 	  YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(PotentialBlockVTKRecorder,PeriodicEngine,"Engine recording potential blocks as surfaces into files with given periodicity.",
 		((string,fileName,,,"File prefix to save to"))
