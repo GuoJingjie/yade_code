@@ -400,6 +400,7 @@ make_clang:
 mkHP_float:
   <<: *make_definition
   <<: *artifacts_definition
+  <<: *skip_WIP_and_Draft
   before_script:
     - export EXTRA_CMAKE_ARGS="-DREAL_DECIMAL_PLACES=6 $EXTRA_CMAKE_ARGS"
     - echo $EXTRA_CMAKE_ARGS
