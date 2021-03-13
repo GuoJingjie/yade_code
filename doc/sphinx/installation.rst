@@ -2,7 +2,7 @@
 Installation
 ###############
 
-* Linux systems
+* Linux systems:
   Yade can be installed from packages (pre-compiled binaries) or source code. The choice depends on what you need: if you don't plan to modify Yade itself, package installation is easier. In the contrary case, you must download and install the source code.
 
 * Other Operating Systems:
@@ -262,7 +262,7 @@ The following cmake options are available: (see the `source code <https://gitlab
 	* CMAKE_INSTALL_PREFIX: path where Yade should be installed (/usr/local by default)
 	* LIBRARY_OUTPUT_PATH: path to install libraries (lib by default)
 	* DEBUG: compile in debug-mode (OFF by default)
-	* ENABLE_LOGGER: use `boost::log <https://www.boost.org/doc/libs/release/libs/log/>`_ library for logging separately for each class (ON by default)
+	* ENABLE_LOGGER: use `boost::log <https://www.boost.org/doc/libs/release/libs/log/>`_ library for :ref:`logging<logging>` separately for each class (ON by default)
 	* MAX_LOG_LEVEL: :ref:`set maximum level <maximum-log-level>` for LOG_* macros compiled with ENABLE_LOGGER, (default is 5)
 	* ENABLE_USEFUL_ERRORS: enable useful compiler errors which help a lot in error-free development (ON by default)
 	* CMAKE_VERBOSE_MAKEFILE: output additional information during compiling (OFF by default)
@@ -422,13 +422,15 @@ The two tools can be combined, adding to the above exports::
 	
 Compile with cmake UNITY_BUILD
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-This option concatenates source files in batches containing several *.cpp each, in order to share the overhead of include directives (since most source files include the same boost headers, typically). It accelerates full compilation fromp scratch (quite significantly). It is activated by adding the following to cmake command, ``CMAKE_UNITY_BUILD_BATCH_SIZE`` defines the maximum number of files to be concatenated together (the higher the better, main limitation might be available RAM). 
+This option concatenates source files in batches containing several ``*.cpp`` each, in order to share the overhead of include directives (since most source files include the same boost headers, typically). It accelerates full compilation from scratch (quite significantly). It is activated by adding the following to cmake command, ``CMAKE_UNITY_BUILD_BATCH_SIZE`` defines the maximum number of files to be concatenated together (the higher the better, main limitation might be available RAM)::
 
 	-DENABLE_LOGGER=OFF -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=18
 
-This method is helpless for incremental re-compilation and might even be detrimental since a full batch has to be recompiled each time a single file is modified. If it is anticipated that specific files will need incremental compilation they can be excluded from the unity build by assigning their full path to cmake flag ``NO_UNITY`` (a single file or a comma-separated list).  
+This method is helpless for incremental re-compilation and might even be detrimental since a full batch has to be recompiled each time a single file is modified. If it is anticipated that specific files will need incremental compilation they can be excluded from the unity build by assigning their full path to cmake flag ``NO_UNITY`` (a single file or a comma-separated list)::
 
-	-DENABLE_LOGGER=OFF -DCMAKE_UNITY_BUILD=1 -DCMAKE_UNITY_BUILD_BATCH_SIZE=18 -DNO_UNITY=../trunk/pkg/dem/CohesiveFrictionalContactLaw.cpp
+	-DENABLE_LOGGER=OFF -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=18 -DNO_UNITY=../trunk/pkg/dem/CohesiveFrictionalContactLaw.cpp
+
+Note: This feature is at present incompatible with :ref:`logging<logging>`.
 
 Link time
 ^^^^^^^^^^^^^^^^^^^^^
