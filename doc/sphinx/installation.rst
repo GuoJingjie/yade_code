@@ -419,11 +419,21 @@ When spliting the compilation on many cores (``make -jN``), ``N`` is limited by 
 The two tools can be combined, adding to the above exports::
 
 	export CCACHE_PREFIX="distcc"
+	
+Compile with cmake UNITY_BUILD
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This option concatenates source files in batches containing several *.cpp each, in order to share the overhead of include directives (since most source files include the same boost headers, typically). It accelerates full compilation fromp scratch (quite significantly). It is activated by adding the following to cmake command, ``CMAKE_UNITY_BUILD_BATCH_SIZE`` defines the maximum number of files to be concatenated together (the higher the better, main limitation might be available RAM). 
+
+	-DENABLE_LOGGER=OFF -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=18
+
+This method is helpless for incremental re-compilation and might even be detrimental since a full batch has to be recompiled each time a single file is modified. If it is anticipated that specific files will need incremental compilation they can be excluded from the unity build by assigning their full path to cmake flag ``NO_UNITY`` (a single file or a comma-separated list).  
+
+	-DENABLE_LOGGER=OFF -DCMAKE_UNITY_BUILD=1 -DCMAKE_UNITY_BUILD_BATCH_SIZE=18 -DNO_UNITY=../trunk/pkg/dem/CohesiveFrictionalContactLaw.cpp
 
 Link time
 ^^^^^^^^^^^^^^^^^^^^^
 
-The link time can be reduced roughly 2 minutes by changing the default linker from ``ld`` to ``ld.gold``. They are both in the same package ``binutils`` (on opensuse15 it is package ``binutils-gold``). To perform the switch execute these commands as root::
+The link time can be reduced by changing the default linker from ``ld`` to ``ld.gold``. They are both in the same package ``binutils`` (on opensuse15 it is package ``binutils-gold``). To perform the switch execute these commands as root::
 
 	ld --version
 	update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20
@@ -432,7 +442,8 @@ The link time can be reduced roughly 2 minutes by changing the default linker fr
 
 To switch back run the commands above with reversed priorities ``10`` ↔ ``20``. Alternatively a manual selection can be performed by command: ``update-alternatives --config ld``.
 
-Note: ``ld.gold`` is incompatible with the compiler wrapper ``mpicxx`` in some distributions, which is manifested as an error in the ``cmake`` stage. We do not use ``mpicxx`` for our builds currently, if you want to use it then disable ``ld.gold``.
+Note: ``ld.gold`` is incompatible with the compiler wrapper ``mpicxx`` in some distributions, which is manifested as an error in the ``cmake`` stage.
+We do not use ``mpicxx`` for our gitlab builds currently. If you want to use it then disable ``ld.gold``. Cmake ``MPI``-related failures have also been reported without the ``mpicxx`` compiler, if it happens then the only solution is to disable either ``ld.gold`` or the ``MPI`` feature. 
 
 Cloud Computing
 ----------------
