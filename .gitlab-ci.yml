@@ -131,13 +131,13 @@ stages:
     - echo $CXXFLAGS
     - mkdir build && cd build
     - echo $EXTRA_CMAKE_ARGS
-    - cmake -DSUFFIX=-ci -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=../install  $EXTRA_CMAKE_ARGS -DPYTHON_VERSION=3 -DDISABLE_SAVE_TEMPS=1 ..
     - export LINK_GOLD=$(case    $CI_PIPELINE_SOURCE in "merge_request_event") echo "20" ;; *) echo "10";; esac)
     - export LINK_REGULAR=$(case $CI_PIPELINE_SOURCE in "merge_request_event") echo "10" ;; *) echo "20";; esac)
     - ld --version
     - update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" $LINK_GOLD
     - update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" $LINK_REGULAR
     - ld --version
+    - cmake -DSUFFIX=-ci -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=../install  $EXTRA_CMAKE_ARGS -DPYTHON_VERSION=3 -DDISABLE_SAVE_TEMPS=1 ..
     # 4pak has 64cores 256GB RAM, and has concurrent = 5 ← amount of simultaneous gitlab jobs
     # 6pak has 48cores 128GB RAM, and has concurrent = 3 , but 6pak must have a little smaller load than the maximum
     # 7pak has 48cores 128GB RAM, and has concurrent = 4
