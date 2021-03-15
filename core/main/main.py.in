@@ -235,7 +235,7 @@ def userSession(gui='none',qapp=None):
 	)
 	
 	# show python console
-	# handle ipython version (version 10 nost tested after some changes here)
+	# handle ipython version (version 10 not tested after some changes here)
 	if yade.runtime.ipython_version==10:
 		from IPython.Shell import IPShellEmbed
 		ipshell=IPShellEmbed(banner=banner,rc_override=ipconfig)
@@ -247,6 +247,7 @@ def userSession(gui='none',qapp=None):
 		from IPython.frontend.terminal.embed import InteractiveShellEmbed
 		# use the dict to set attributes
 		for k in ipconfig: setattr(InteractiveShellEmbed,k,ipconfig[k])
+		del k # leaving k as not defined (instead of ipconfig[-1]) for the user
 		InteractiveShellEmbed.banner1=banner+'\n'  # called banner1 here, not banner anymore
 		ipshell=InteractiveShellEmbed()
 	elif yade.runtime.ipython_version>=12:
@@ -267,6 +268,7 @@ def userSession(gui='none',qapp=None):
 		prompt_config.out_template = ipconfig['prompt_out']
 		import readline
 		for k in ipconfig['readline_parse_and_bind']: readline.parse_and_bind(k)
+		del k # leaving k not defined (instead of ipconfig['readline_parse_and_bind'][-1]) for the user
 		InteractiveShellEmbed.config=cfg
 		InteractiveShellEmbed.banner1=banner+'\n'
 		while True:
