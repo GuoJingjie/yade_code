@@ -618,7 +618,7 @@ void GLViewer::postSelection(const QPoint& /*point*/)
 		boost::python::object global = main.attr("__dict__");
 		// the try/catch block must be properly nested inside PyGILState_Ensure and PyGILState_Release
 		try {
-			boost::python::eval(string("onBodySelect(" + boost::lexical_cast<string>(selection) + ")").c_str(), global, global);
+			boost::python::eval(string("onBodySelect(" + boost::lexical_cast<string>(selection) + ") if 'onBodySelect' in globals() else None").c_str(), global, global);
 		} catch (boost::python::error_already_set const&) {
 			LOG_DEBUG("unable to call onBodySelect. Not defined?");
 		}
