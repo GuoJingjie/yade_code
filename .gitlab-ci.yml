@@ -92,7 +92,7 @@ stages:
     # the command 'git diff -w --shortstat' counts the number of changes. The '-w' tells it to ignore whitespace.
     - if [[ -e "/usr/bin/clang-format" ]] ; then
           export CLANG_VERSION=`clang-format --version | sed -e 's/^.*version\s\([0-9]\+\).*$/\1/g'` ;
-          if [[ ${CLANG_VERSION} -ge "10" ]] ; then
+          if [[ ${CHECK_FORMAT} == "CHECK_FORMAT" && ${CLANG_VERSION} -ge "10" ]] ; then
                   echo -e "\n\e[92m===\nclang-format version is $CLANG_VERSION \n===\e[0m\n" ;
                   scripts/clang-formatter.sh ./ ;
                   export CHANGED_LINES=`git diff -w --shortstat | sed -e 's/^.*,\s\([0-9]\+\)\sdeletion.*$/\1/g'` ;
@@ -114,7 +114,7 @@ stages:
                           echo -e "\n\e[92m===\nclang-format check OK\n===\e[0m\n" ;
                   fi;
           else
-                  echo -e "\n\e[93m===\nSkipping  clang-format check (version too old)\n===\e[0m\n" ;
+                  echo -e "\n\e[93m===\nSkipping  clang-format check (disabled or version too old)\n===\e[0m\n" ;
           fi;
       else
           echo -e "\n\e[93m===\nSkipping  clang-format check (can't find clang-format)\n===\e[0m\n" ;
@@ -354,6 +354,7 @@ make_minimal:
   before_script:
     - export EXTRA_CMAKE_ARGS="-DENABLE_VTK=OFF -DENABLE_MPI=OFF -DENABLE_GUI=OFF -DENABLE_GTS=OFF -DENABLE_TWOPHASEFLOW=OFF -DENABLE_PARTIALSAT=OFF -DENABLE_CGAL=OFF -DENABLE_FEMLIKE=OFF -DENABLE_LBMFLOW=OFF -DENABLE_POTENTIAL_BLOCKS=OFF -DENABLE_POTENTIAL_PARTICLES=OFF -DENABLE_GL2PS=OFF -DENABLE_LOGGER=OFF -DENABLE_OPENMP=OFF $EXTRA_CMAKE_ARGS"
     - echo $EXTRA_CMAKE_ARGS
+    - export CHECK_FORMAT="CHECK_FORMAT"
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
 
 # _opposite means that all non-minimal options (options that do not reduce significantly amount of compiled code) are set to the setting opposite to the default one
