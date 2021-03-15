@@ -17,7 +17,7 @@ class InteractionContainer;
 
 #ifdef YADE_OPENMP
 #define YADE_PARALLEL_FOREACH_BODY_BEGIN(b_, bodies)                                                                                                           \
-	bodies->updateShortLists();                                                                                                                            \
+	bodies->updateRealBodies();                                                                                                                            \
 	const vector<Body::id_t>& realBodies = bodies->realBodies;                                                                                             \
 	const bool                redirect   = bodies->useRedirection;                                                                                         \
 	const Body::id_t          _sz(redirect ? realBodies.size() : bodies->size());                                                                          \
@@ -27,7 +27,7 @@ class InteractionContainer;
 		b_((*bodies)[redirect ? realBodies[k] : k]);
 #else
 #define YADE_PARALLEL_FOREACH_BODY_BEGIN(b_, bodies)                                                                                                           \
-	bodies->updateShortLists();                                                                                                                            \
+	bodies->updateRealBodies();                                                                                                                            \
 	const vector<Body::id_t>& realBodies = bodies->realBodies;                                                                                             \
 	const bool                redirect   = bodies->useRedirection;                                                                                         \
 	const Body::id_t          _sz(redirect ? realBodies.size() : bodies->size());                                                                          \
@@ -71,8 +71,8 @@ public:
 	bool exists(Body::id_t id) const;
 	bool erase(Body::id_t id, bool eraseClumpMembers);
 
-	void updateShortLists();
-
+	void updateRealBodies();
+	
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(BodyContainer,Serializable,"Standard body container for a scene",
 		((ContainerT,body,,,"The underlying vector<shared_ptr<Body> >"))
@@ -87,7 +87,7 @@ public:
 		((vector<Body::id_t>,subdomainBodies,vector<Body::id_t>(),,"The list of bounded bodies in the subdomain"))
 		#endif
 		,/*ctor*/,
-		.def("updateShortLists",&BodyContainer::updateShortLists,"update lists realBodies and subdomainBodies. This function is called automatically by e.g. ForceContainer::reset(), it is safe to call multiple times from many places since if the lists are up-to-date he function will just return.")
+		.def("updateRealBodies",&BodyContainer::updateRealBodies,"update lists realBodies and subdomainBodies. This function is called automatically by e.g. ForceContainer::reset(), it is safe to call multiple times from many places since if the lists are up-to-date he function will just return.")
 		)
 	// clang-format on
 

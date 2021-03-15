@@ -123,15 +123,9 @@ bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
 	return true;
 }
 
-void BodyContainer::updateShortLists()
+void BodyContainer::updateRealBodies()
 {
-	if (not useRedirection) {
-#ifdef YADE_MPI
-		subdomainBodies.clear();
-#endif
-		realBodies.clear();
-		return;
-	}
+	if (not enableRedirection) {LOG_WARN("updateRealBodies returns because enableRedirection is false - please report bug"); return;}
 	if (not dirty) return; //already ok
 	unsigned long size1 = realBodies.size();
 	realBodies.clear();
@@ -142,7 +136,7 @@ void BodyContainer::updateShortLists()
 	subdomainBodies.reserve((long unsigned)(size2 * 1.3));
 	const int& subdomain = Omega::instance().getScene()->subdomain;
 #endif
-	for (const auto& b : *(Omega::instance().getScene()->bodies)) {
+	for (const auto& b : body) {
 		if (not b) continue;
 		realBodies.push_back(b->getId());
 #ifdef YADE_MPI

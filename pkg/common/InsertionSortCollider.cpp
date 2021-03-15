@@ -278,13 +278,22 @@ void InsertionSortCollider::action()
 
 		// ### Second approach with using body redirection: Bounds sizes match the number of real bodies in the scene
 	} else if (not scene->bodies->checkedByCollider) {
-		scene->bodies->updateShortLists(); // not needed if we use inserted bodies
+		scene->bodies->updateRealBodies();
 		vector<Body::id_t>&       insrts  = scene->bodies->insertedBodies;
 		const vector<Body::id_t>& erased  = scene->bodies->erasedBodies;
 		size_t                    nInsert = insrts.size();
 		size_t                    nErased = erased.size();
+		size_t                    nReal = scene->bodies->realBodies.size();
 		size_t                    BBsize  = BB[0].size();
-
+		
+		// if bodies are inserted before redirection is turned on (e.g. inserting followed by erasing at iteration 0, or reload+erase)
+		// the bodies will not be inside insertedBodies but the collider still needs them. We fix it here by assigning all real bodies to 
+		// scene->bodies->insertedBodies. The list is cleared at the end of this function.
+		if (BBsize != 2*(nReal - nInsert + nErased)) {
+			if (BBsize!=0) LOG_WARN("it seems a special combination of insert/erase at the same iteration left collider in inconsistent state, please consider turning O.bodies.enableRedirection=False and reporting bug "<<BBsize)
+			insrts = scene->bodies->realBodies;
+			nInsert = nReal;
+		}
 		// Handle erased bodies
 		int countNoBound = 0;
 		if (nErased > 0) {
@@ -652,6 +661,10 @@ void InsertionSortCollider::insertionSortPeri(VecBounds& v, InteractionContainer
 	assert(periodic);
 	size_t&       loIdx = v.loIdx;
 	const size_t& size  = v.size();
+	
+	// The condition in next "for" loop would segfault if size=0, escape here and warn
+	if (BB[0].size()==0) { LOG_WARN("no bounds where found, empty scene? Turn collider off if nothing to collide, else please report bug"); return; }
+	
 	/* We have to visit each bound at least once (first condition), but this is not enough. The correct ordering in the begining of the list needs a second pass to connect begin and end consistently (the second condition). Strictly the second condition should include "+ (v.norm(j+1)==loIdx ? v.cellDim : 0)" but it is ok as is since the shift is added inside the loop. */
 	for (size_t _i = 0; (_i < size) || (v[v.norm(_i)].coord < v[v.norm(_i - 1)].coord); _i++) {
 		const size_t i   = v.norm(_i); //FIXME: useless, and many others can probably be removed
