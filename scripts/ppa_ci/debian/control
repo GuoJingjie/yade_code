@@ -61,6 +61,9 @@ Depends:
  gtk2-engines-pixbuf,
  libyadedaily (= ${binary:Version}),
  python3-yadedaily (= ${binary:Version}),
+ python3-ipython,
+ python3-mpi4py,
+ python3-pyqt5.qtwebkit,
  ${python:Depends},
  ${misc:Depends}
 Description: Platform for discrete element modeling
