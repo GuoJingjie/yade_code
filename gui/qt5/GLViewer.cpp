@@ -8,7 +8,7 @@
 
 #include "GLViewer.hpp"
 #include "OpenGLManager.hpp"
-
+#include <lib/pyutil/gil.hpp>
 #include <lib/high-precision/Constants.hpp>
 #include <lib/opengl/OpenGLWrapper.hpp>
 #include <lib/serialization/ObjectIO.hpp>
@@ -22,7 +22,6 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <iomanip>
 #include <sstream>
-
 #include <boost/filesystem.hpp>
 
 #ifdef YADE_GL2PS
@@ -607,23 +606,11 @@ void GLViewer::postSelection(const QPoint& /*point*/)
 			LOG_DEBUG("Clump member #" << selection << " selected, selecting clump instead.");
 			selection = Body::byId(Body::id_t(selection))->clumpId;
 		}
-
 		setSelectedName(selection);
 		LOG_DEBUG("New selection " << selection);
 		displayMessage("Selected body #" + boost::lexical_cast<string>(selection) + (Body::byId(selection)->isClump() ? " (clump)" : ""));
 		Omega::instance().getScene()->selectedBody = selection;
-		PyGILState_STATE gstate;
-		gstate                       = PyGILState_Ensure();
-		boost::python::object main   = boost::python::import("__main__");
-		boost::python::object global = main.attr("__dict__");
-		// the try/catch block must be properly nested inside PyGILState_Ensure and PyGILState_Release
-		try {
-			boost::python::eval(string("onBodySelect(" + boost::lexical_cast<string>(selection) + ") if 'onBodySelect' in globals() else None").c_str(), global, global);
-		} catch (boost::python::error_already_set const&) {
-			LOG_DEBUG("unable to call onBodySelect. Not defined?");
-		}
-		PyGILState_Release(gstate);
-		// see https://svn.boost.org/trac/boost/ticket/2781 for exception handling
+		pyRunString(string("onBodySelect(" + boost::lexical_cast<string>(selection) + ") if 'onBodySelect' in globals() else None"), true, true);
 	}
 }
 
