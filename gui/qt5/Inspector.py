@@ -77,7 +77,7 @@ class BodyInspector(QWidget):
 		self.idGlSync=self.bodyId
 		self.bodyLinkCallback,self.intrLinkCallback=bodyLinkCallback,intrLinkCallback
 		self.bodyIdBox=QSpinBox(self)
-		self.bodyIdBox.setMinimum(0)
+		self.bodyIdBox.setMinimum(-1)
 		self.bodyIdBox.setMaximum(100000000)
 		self.bodyIdBox.setValue(self.bodyId)
 		self.intrWithCombo=QComboBox(self);
@@ -109,17 +109,13 @@ class BodyInspector(QWidget):
 		self.scroll=QScrollArea(self)
 		self.scroll.setWidgetResizable(True)
 		self.grid.addWidget(self.scroll)
-		self.tryShowBody()
 		self.bodyIdBox.valueChanged.connect(self.bodyIdSlot)
 		self.gotoBodyButton.clicked.connect(self.gotoBodySlot)
 		self.gotoIntrButton.clicked.connect(self.gotoIntrSlot)
 		self.refreshTimer=QTimer(self)
 		self.refreshTimer.timeout.connect(self.refreshEvent)
 		self.refreshTimer.start(1000)
-		self.intrWithCombo.addItems(['0']); self.intrWithCombo.setCurrentIndex(0);
 		self.intrWithCombo.setMinimumWidth(80)
-		self.setWindowTitle('Body #%d'%self.bodyId)
-		self.gotoBodySlot()
 	def displayForces(self):
 		if self.bodyId<0: return
 		try:
@@ -157,14 +153,8 @@ class BodyInspector(QWidget):
 			self.ii.show()
 		else: self.intrLinkCallback(ids)
 	def refreshEvent(self):
-		try: O.bodies[self.bodyId]
-		except: self.bodyId=-1 # invalidate deleted body
-		# no body shown yet, try to get the first one...
-		if self.bodyId<0 and len(O.bodies)>0:
-			try:
-				print('SET ZERO')
-				b=O.bodies[0]; self.bodyIdBox.setValue(0)
-			except IndexError: pass
+		if self.bodyId<0 or not O.bodies[self.bodyId]:
+				self.bodyId=-1 # invalidate deleted body
 		v=yade.qt.views()
 		if len(v)>0 and v[0].selection!=self.bodyId:
 			if self.idGlSync==self.bodyId: # changed in the viewer, reset ourselves
@@ -177,12 +167,12 @@ class BodyInspector(QWidget):
 		except IndexError: meLabel=u'…'
 		self.plusLabel.setText(' '.join(meLabel.split()[1:])+'  <b>+</b>') # do not repeat the id
 		self.bodyIdBox.setMaximum(len(O.bodies)-1)
+		self.intrWithCombo.clear()
 		if self.bodyIdBox.value()>=0:
 			others=[(i.id1 if i.id1!=meId else i.id2) for i in O.interactions.withBody(self.bodyIdBox.value())]
-			others.sort()
-		else: others=[]
-		self.intrWithCombo.clear()
-		self.intrWithCombo.addItems([makeBodyLabel(O.bodies[i]) for i in others])
+			if len(others)>0:
+				others.sort()
+				self.intrWithCombo.addItems([makeBodyLabel(O.bodies[i]) for i in others])
 		if pos>self.intrWithCombo.count() or pos<0: pos=0
 		self.intrWithCombo.setCurrentIndex(pos);
 		other=self.intrWithCombo.itemText(pos)
