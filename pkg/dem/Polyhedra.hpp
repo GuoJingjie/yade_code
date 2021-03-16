@@ -10,11 +10,11 @@
 #undef NDEBUG
 #endif
 
+#include <core/Dispatching.hpp>
 #include <core/Interaction.hpp>
 #include <core/Material.hpp>
 #include <core/Omega.hpp>
 #include <core/Shape.hpp>
-#include <core/Dispatching.hpp>
 #include <pkg/common/ElastMat.hpp>
 #include <pkg/common/Facet.hpp>
 #include <pkg/common/Sphere.hpp>
@@ -219,7 +219,7 @@ REGISTER_SERIALIZABLE(Gl1_Polyhedra);
 struct Gl1_PolyhedraGeom : public GlIGeomFunctor {
 	RENDERS(PolyhedraGeom);
 	void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool) override;
-	void         draw(const shared_ptr<IGeom>&);
+	void draw(const shared_ptr<IGeom>&);
 	// clang-format off
 		YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_PolyhedraGeom,GlIGeomFunctor,"Render :yref:`PolyhedraGeom` geometry.",
 		);
@@ -276,7 +276,7 @@ REGISTER_SERIALIZABLE(Ip2_FrictMat_PolyhedraMat_FrictPhys);
 
 class Law2_PolyhedraGeom_PolyhedraPhys_Volumetric : public LawFunctor {
 	OpenMPAccumulator<Real> plasticDissipation;
-	bool            go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
+	bool                    go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
 	Real                    elasticEnergy();
 	Real                    getPlasticDissipation() const;
 	void                    initPlasticDissipation(Real initVal = 0);

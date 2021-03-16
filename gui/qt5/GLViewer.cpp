@@ -8,9 +8,9 @@
 
 #include "GLViewer.hpp"
 #include "OpenGLManager.hpp"
-#include <lib/pyutil/gil.hpp>
 #include <lib/high-precision/Constants.hpp>
 #include <lib/opengl/OpenGLWrapper.hpp>
+#include <lib/pyutil/gil.hpp>
 #include <lib/serialization/ObjectIO.hpp>
 #include <core/Body.hpp>
 #include <core/Bound.hpp>
@@ -20,9 +20,9 @@
 #include <QtGui/qevent.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/filesystem.hpp>
 #include <iomanip>
 #include <sstream>
-#include <boost/filesystem.hpp>
 
 #ifdef YADE_GL2PS
 #include <gl2ps.h>

@@ -660,9 +660,9 @@ bool LiqControl::addLiqInter(id_t id1, id_t id2, Real liq)
 {
 	if (id1 == id2 or liq <= 0) return false;
 
-	Scene*                            scene2= Omega::instance().getScene().get();
-	shared_ptr<InteractionContainer>& intrs = scene2->interactions;
-	const shared_ptr<Interaction>&    I     = intrs->find(id1, id2);
+	Scene*                            scene2 = Omega::instance().getScene().get();
+	shared_ptr<InteractionContainer>& intrs  = scene2->interactions;
+	const shared_ptr<Interaction>&    I      = intrs->find(id1, id2);
 	if (I->isReal()) {
 		ViscElCapPhys* physT = dynamic_cast<ViscElCapPhys*>(I->phys.get());
 		if (physT and physT->Vb <= physT->Vmax and liq <= (physT->Vmax - physT->Vb)) {

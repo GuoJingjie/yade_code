@@ -45,7 +45,7 @@ void ThermalEngine::action()
 	// some initialization stuff for timestep and efficiency.
 	elapsedTime += scene->dt;
 	if (elapsedIters >= conductionIterPeriod || first) {
-		runConduction     = true;
+		runConduction = true;
 		timeStepEstimated = false;
 		if (first) thermalDT = scene->dt;
 		else
@@ -104,14 +104,14 @@ void ThermalEngine::action()
 
 void ThermalEngine::setReynoldsNumbers()
 {
-	Tesselation& Tes  = flow->solver->T[flow->solver->currentTes];
+	Tesselation& Tes = flow->solver->T[flow->solver->currentTes];
 	const long   size = Tes.cellHandles.size();
 	if (uniformReynolds != -1) { // gain efficiency if we know the flow is creep (assigning uniform low reynolds to all cells)
 		Real NussfluidK = (2. + 0.6 * pow(uniformReynolds, 0.5) * pow(Pr, 0.33333)) * fluidK;
 #pragma omp parallel for
 		for (long i = 0; i < size; i++) {
-			CellHandle& cell           = Tes.cellHandles[i];
-			cell->info().Reynolds      = uniformReynolds;
+			CellHandle& cell = Tes.cellHandles[i];
+			cell->info().Reynolds = uniformReynolds;
 			cell->info().NutimesFluidK = NussfluidK;
 		}
 		return;
@@ -130,18 +130,18 @@ void ThermalEngine::setReynoldsNumbers()
 		Real Nusselt = 2.;
 		for (int j = 0; j < 4; j++) {
 			if (!cell->neighbor(j)->info().isFictious) {
-				l          = cell->info() - cell->neighbor(j)->info();
+				l = cell->info() - cell->neighbor(j)->info();
 				charLength = sqrt(l.squared_length());
 			}
 		}
 		const Real avgCellFluidVel = sqrt(cell->info().averageVelocity().squared_length());
-		double     Reynolds        = flow->solver->fluidRho * avgCellFluidVel * charLength / flow->viscosity;
+		double     Reynolds = flow->solver->fluidRho * avgCellFluidVel * charLength / flow->viscosity;
 		if (Reynolds < 0 || math::isnan(Reynolds)) {
 			cerr << "Reynolds is negative or nan" << endl;
 			Reynolds = 0;
 		}
 		if (Reynolds > 1000 || poro < 0.35) {
-			Nusselt               = 2. + 0.6 * pow(Reynolds, 0.5) * pow(Pr, 0.33333);
+			Nusselt = 2. + 0.6 * pow(Reynolds, 0.5) * pow(Pr, 0.33333);
 			cell->info().Reynolds = Reynolds;
 		} else if (
 		        (0 <= Reynolds)
@@ -149,7 +149,7 @@ void ThermalEngine::setReynoldsNumbers()
 		            <= 1000)) { //Tavassoli, H., Peters, E.A.J.F., and Kuipers, J.A.M. (2015) Direct numerical simulation of fluid–particle heat transfer in fixed random arrays of non‐spherical particles. Chemical Engineering Science, 129, 42–48
 			Nusselt = (7. - 10. * poro + 5. * poro * poro) * (1. + 0.1 * pow(Reynolds, 0.2) * pow(Pr, 0.333))
 			        + (1.33 - 2.19 * poro + 1.15 * poro * poro) * pow(Reynolds, 0.7) * pow(Pr, 0.333);
-			NutimesFluidK         = Nu * fluidK;
+			NutimesFluidK = Nu * fluidK;
 			cell->info().Reynolds = Reynolds;
 		}
 		cell->info().NutimesFluidK = Nusselt * fluidK;
@@ -162,10 +162,10 @@ void ThermalEngine::setInitialValues()
 	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 	{
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-		auto* state  = b->state.get();
-		state->temp  = particleT0;
-		state->k     = particleK;
-		state->Cp    = particleCp;
+		auto* state = b->state.get();
+		state->temp = particleT0;
+		state->k = particleK;
+		state->Cp = particleCp;
 		state->alpha = particleAlpha;
 		if (advection) state->isCavity = true; // easiest to start by assuming cavity and flip if touching non-cavity
 	}
@@ -177,10 +177,10 @@ void ThermalEngine::timeStepEstimate()
 	//	#pragma omp parallel for
 	for (const auto& b : *scene->bodies) {
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-		auto*      thState            = b->state.get();
-		Sphere*    sphere             = dynamic_cast<Sphere*>(b->shape.get());
-		const Real mass               = (particleDensity > 0 ? particleDensity * M_PI * pow(sphere->radius, 2) : thState->mass);
-		const Real bodyTimeStep       = mass * thState->Cp / thState->stabilityCoefficient;
+		auto*      thState = b->state.get();
+		Sphere*    sphere = dynamic_cast<Sphere*>(b->shape.get());
+		const Real mass = (particleDensity > 0 ? particleDensity * M_PI * pow(sphere->radius, 2) : thState->mass);
+		const Real bodyTimeStep = mass * thState->Cp / thState->stabilityCoefficient;
 		thState->stabilityCoefficient = 0; // reset the stability coefficient
 		if (!maxTimeStep) maxTimeStep = bodyTimeStep;
 		if (bodyTimeStep < maxTimeStep) maxTimeStep = bodyTimeStep;
@@ -199,8 +199,8 @@ void ThermalEngine::timeStepEstimate()
 				poreVolume = cell->info().volume() * porosityFactor;
 			else
 				poreVolume = 1. / cell->info().invVoidVolume();
-			const Real mass                   = flow->fluidRho * poreVolume;
-			const Real poreTimeStep           = mass * flow->fluidCp / cell->info().stabilityCoefficient;
+			const Real mass = flow->fluidRho * poreVolume;
+			const Real poreTimeStep = mass * flow->fluidCp / cell->info().stabilityCoefficient;
 			cell->info().stabilityCoefficient = 0;
 			if (!maxTimeStep) maxTimeStep = poreTimeStep;
 			if (poreTimeStep < maxTimeStep) maxTimeStep = poreTimeStep;
@@ -213,10 +213,10 @@ void ThermalEngine::timeStepEstimate()
 	// estimate the conduction iterperiod based on current mechanical/fluid timestep
 	conductionIterPeriod = int(tsSafetyFactor * maxTimeStep / scene->dt);
 	if (debug) cout << "conduction iter period set" << conductionIterPeriod << endl;
-	elapsedIters      = 0;
-	elapsedTime       = 0;
+	elapsedIters = 0;
+	elapsedTime = 0;
 	timeStepEstimated = true;
-	runConduction     = false;
+	runConduction = false;
 }
 
 void ThermalEngine::resetBoundaryFluxSums()
@@ -229,10 +229,10 @@ void ThermalEngine::setConductionBoundary()
 {
 	for (int k = 0; k < 6; k++) {
 		flow->solver->conductionBoundary(flow->wallIds[k]).fluxCondition = !bndCondIsTemperature[k];
-		flow->solver->conductionBoundary(flow->wallIds[k]).value         = thermalBndCondValue[k];
+		flow->solver->conductionBoundary(flow->wallIds[k]).value = thermalBndCondValue[k];
 	}
 
-	RTriangulation&                  Tri    = flow->solver->T[flow->solver->currentTes].Triangulation();
+	RTriangulation&                  Tri = flow->solver->T[flow->solver->currentTes].Triangulation();
 	const shared_ptr<BodyContainer>& bodies = scene->bodies;
 	for (int bound = 0; bound < 6; bound++) {
 		int& id = *flow->solver->boundsIds[bound];
@@ -243,7 +243,7 @@ void ThermalEngine::setConductionBoundary()
 		if (!bi.fluxCondition) {
 			VectorCell tmpCells;
 			tmpCells.resize(10000);
-			VCellIterator cells_it  = tmpCells.begin();
+			VCellIterator cells_it = tmpCells.begin();
 			VCellIterator cells_end = Tri.incident_cells(flow->solver->T[flow->solver->currentTes].vertexHandles[id], cells_it);
 
 			for (VCellIterator it = tmpCells.begin(); it != cells_end; it++) {
@@ -254,9 +254,9 @@ void ThermalEngine::setConductionBoundary()
 						if (!Body::byId(id2)) continue;
 						const shared_ptr<Body>& b = (*bodies)[id2];
 						if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-						auto* thState       = b->state.get();
+						auto* thState = b->state.get();
 						thState->Tcondition = true;
-						thState->temp       = bi.value;
+						thState->temp = bi.value;
 						thState->boundaryId = bound;
 					}
 				}
@@ -307,7 +307,7 @@ void ThermalEngine::computeSolidFluidFluxes()
 {
 	if (!flow->solver->sphericalVertexAreaCalculated) computeVertexSphericalArea();
 	shared_ptr<BodyContainer>& bodies = scene->bodies;
-	Tesselation&               Tes    = flow->solver->T[flow->solver->currentTes];
+	Tesselation&               Tes = flow->solver->T[flow->solver->currentTes];
 	//	#ifdef YADE_OPENMP
 	const long size = Tes.cellHandles.size();
 #pragma omp parallel for
@@ -388,9 +388,9 @@ void ThermalEngine::computeVertexSphericalArea()
 
 void ThermalEngine::computeFlux(CellHandle& cell, const shared_ptr<Body>& b, const Real surfaceArea)
 {
-	const Sphere* sphere  = dynamic_cast<Sphere*>(b->shape.get());
+	const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
 	auto*         thState = b->state.get();
-	const Real    h       = cell->info().NutimesFluidK / (2. * sphere->radius);
+	const Real    h = cell->info().NutimesFluidK / (2. * sphere->radius);
 	//const Real h = cell->info().NutimesFluidK / (2.*sphere->radius); // heat transfer coeff assuming Re<<1 (stokes flow)
 	const Real flux = h * surfaceArea * (cell->info().temp() - thState->temp);
 	if (runConduction && tsSafetyFactor > 0) {
@@ -406,7 +406,7 @@ void ThermalEngine::computeSolidSolidFluxes()
 {
 	//	#ifdef YADE_OPENMP
 	const shared_ptr<InteractionContainer>& interactions = scene->interactions;
-	const long                              size         = interactions->size();
+	const long                              size = interactions->size();
 #pragma omp parallel for
 	for (long i = 0; i < size; i++) {
 		const shared_ptr<Interaction>& I = (*interactions)[i];
@@ -427,25 +427,25 @@ void ThermalEngine::computeSolidSolidFluxes()
 				continue;
 			auto*      thState1 = b1_->state.get();
 			auto*      thState2 = b2_->state.get();
-			FrictPhys* phys     = static_cast<FrictPhys*>(I->phys.get());
+			FrictPhys* phys = static_cast<FrictPhys*>(I->phys.get());
 			if (!first && (thState1->isCavity || thState2->isCavity)) continue; // avoid conduction with placeholder cavity bodies
 			Sphere* sphere1 = dynamic_cast<Sphere*>(b1_->shape.get());
 			Sphere* sphere2 = dynamic_cast<Sphere*>(b2_->shape.get());
 
 			FrictMat*  mat1 = dynamic_cast<FrictMat*>(b1_->material.get());
 			FrictMat*  mat2 = dynamic_cast<FrictMat*>(b2_->material.get());
-			const Real k1   = thState1->k;
-			const Real k2   = thState2->k;
-			const Real r1   = sphere1->radius;
-			const Real r2   = sphere2->radius;
-			const Real T1   = thState1->temp;
-			const Real T2   = thState2->temp;
-			const Real d    = r1 + r2 - pd;
-			const Real E1   = mat1->young;
-			const Real E2   = mat1->young;
-			const Real nu1  = mat1->poisson;
-			const Real nu2  = mat2->poisson;
-			const Real F    = phys->normalForce.squaredNorm();
+			const Real k1 = thState1->k;
+			const Real k2 = thState2->k;
+			const Real r1 = sphere1->radius;
+			const Real r2 = sphere2->radius;
+			const Real T1 = thState1->temp;
+			const Real T2 = thState2->temp;
+			const Real d = r1 + r2 - pd;
+			const Real E1 = mat1->young;
+			const Real E2 = mat1->young;
+			const Real nu1 = mat1->poisson;
+			const Real nu2 = mat2->poisson;
+			const Real F = phys->normalForce.squaredNorm();
 			if (d == 0) continue;
 			Real R = 0;
 			Real r = 0;
@@ -473,17 +473,17 @@ void ThermalEngine::computeSolidSolidFluxes()
 			Real thermalResist;
 			if (useKernMethod) {
 				const Real numerator = pow((-d + r - R) * (-d - r + R) * (-d + r + R) * (d + r + R), 0.5);
-				const Real rc        = numerator / (2. * d);
+				const Real rc = numerator / (2. * d);
 				//thermalResist = 4.*rc / (1./k1 + 1./k2);
 				thermalResist = 2. * (k1 + k2) * rc * rc / (r1 + r2 - pd);
 			} //thermalResist = ((k1+k2)/2.)*area/(r1+r2-pd);}
 			else if (useHertzMethod) {
-				const Real re    = 1. / r1 + 1. / r2;
-				const Real Eavg  = (E1 + E2) / 2.;
+				const Real re = 1. / r1 + 1. / r2;
+				const Real Eavg = (E1 + E2) / 2.;
 				const Real Nuavg = (nu1 + nu2) / 2.;
 				const Real Estar = Eavg / (1. - pow(Nuavg, 2));
-				const Real a     = pow(3. * F * re / (4. * Estar), 1. / 3.);
-				thermalResist    = ((k1 + k2) / 2.) / (r1 + r2) * M_PI * pow(a, 2);
+				const Real a = pow(3. * F * re / (4. * Estar), 1. / 3.);
+				thermalResist = ((k1 + k2) / 2.) / (r1 + r2) * M_PI * pow(a, 2);
 			} else {
 				thermalResist = 2. * (k1 + k2) * r1 * r2 / (r1 + r2 - pd);
 			}
@@ -510,7 +510,7 @@ void ThermalEngine::computeFluidFluidConduction()
 	// cycle through facets instead of cells to avoid duplicate math
 
 	/* Parallel version */
-	Tesselation& Tes        = flow->solver->T[flow->solver->currentTes];
+	Tesselation& Tes = flow->solver->T[flow->solver->currentTes];
 	const long   sizeFacets = Tes.facetCells.size();
 	//	#pragma omp parallel for  //FIXME: does not like running in parallel for some reason
 	for (long i = 0; i < sizeFacets; i++) {
@@ -519,8 +519,8 @@ void ThermalEngine::computeFluidFluidConduction()
 		Real                       distance;
 		Real                       area;
 		Real                       conductionEnergy;
-		std::pair<CellHandle, int> facetPair    = Tes.facetCells[i];
-		const CellHandle&          cell         = facetPair.first;
+		std::pair<CellHandle, int> facetPair = Tes.facetCells[i];
+		const CellHandle&          cell = facetPair.first;
 		const CellHandle&          neighborCell = cell->neighbor(facetPair.second);
 		if (cell->info().isFictious || neighborCell->info().isFictious || cell->info().blocked || neighborCell->info().blocked) continue;
 		delT = cell->info().temp() - neighborCell->info().temp();
@@ -533,12 +533,12 @@ void ThermalEngine::computeFluidFluidConduction()
 		//area = sqrt(fluidSurfK.squared_length());
 		//poreVector = cell->info() - neighborCell->info();
 		poreVector = cellBarycenter(cell) - cellBarycenter(neighborCell); // voronoi was breaking for hexagonal packings
-		distance   = sqrt(poreVector.squared_length());
+		distance = sqrt(poreVector.squared_length());
 		if (distance < minimumFluidCondDist) distance = minimumFluidCondDist;
 		//cout << "conduction distance" << distance << endl;
 		//if (distance < area) continue;  // hexagonal packings result in extremely small distances that blow up the simulation
 		const Real thermalResist = fluidK * area / distance;
-		conductionEnergy         = thermalResist * delT * thermalDT;
+		conductionEnergy = thermalResist * delT * thermalDT;
 		if (math::isnan(conductionEnergy)) conductionEnergy = 0;
 		cell->info().stabilityCoefficient += thermalResist;
 		//cout << "conduction distance" << distance << endl;
@@ -598,12 +598,12 @@ void ThermalEngine::computeNewParticleTemperatures()
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
 		auto* thState = b->state.get();
 		if (!first && thState->isCavity) continue;
-		Sphere*    sphere  = dynamic_cast<Sphere*>(b->shape.get());
+		Sphere*    sphere = dynamic_cast<Sphere*>(b->shape.get());
 		const Real density = (particleDensity > 0 ? particleDensity : b->material->density);
-		const Real volume  = 4. / 3. * M_PI * pow(sphere->radius, 3); // - thState->capVol;
+		const Real volume = 4. / 3. * M_PI * pow(sphere->radius, 3); // - thState->capVol;
 		if (thState->Tcondition) continue;
-		thState->oldTemp  = thState->temp;
-		thState->temp     = thState->stepFlux * thermalDT / (thState->Cp * density * volume) + thState->oldTemp; // first order forward difference
+		thState->oldTemp = thState->temp;
+		thState->temp = thState->stepFlux * thermalDT / (thState->Cp * density * volume) + thState->oldTemp; // first order forward difference
 		thState->stepFlux = 0;
 	}
 	YADE_PARALLEL_FOREACH_BODY_END();
@@ -617,7 +617,7 @@ void ThermalEngine::thermalExpansion()
 		YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 		{
 			if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-			Sphere* sphere  = dynamic_cast<Sphere*>(b->shape.get());
+			Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
 			auto*   thState = b->state.get();
 			if (!first && thState->isCavity) continue;
 			if (!thState->Tcondition) {
@@ -631,11 +631,11 @@ void ThermalEngine::thermalExpansion()
 	// adjust cell pressure
 	if (fluidBeta > 0) {
 		cavitySolidVolumeChange = 0;
-		cavityVolume            = 0;
-		cavityDtemp             = 0;
-		flow->solver->cavityDV  = 0; //setting cavity rate of volume change to 0 here, will be added to in adjustCavityVolumeChange
-		Tesselation& Tes        = flow->solver->T[flow->solver->currentTes];
-		Real         cavDens    = flow->solver->cavityFluidDensity;
+		cavityVolume = 0;
+		cavityDtemp = 0;
+		flow->solver->cavityDV = 0; //setting cavity rate of volume change to 0 here, will be added to in adjustCavityVolumeChange
+		Tesselation& Tes = flow->solver->T[flow->solver->currentTes];
+		Real         cavDens = flow->solver->cavityFluidDensity;
 		//	#ifdef YADE_OPENMP
 		const long sizeCells = Tes.cellHandles.size();
 #pragma omp parallel for
@@ -679,13 +679,13 @@ void ThermalEngine::computeCellVolumeChangeFromSolidVolumeChange(CellHandle& cel
 		if (!Body::byId(id)) continue;
 		const shared_ptr<Body>& b = (*bodies)[id];
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-		Sphere* sphere  = dynamic_cast<Sphere*>(b->shape.get());
+		Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
 		auto*   thState = b->state.get();
 		if (!first && thState->isCavity) continue; // don't consider fake cavity bodies
 		const Real surfaceArea
 		        = cell->info().sphericalVertexSurface[v]; // from last fluid engine remesh. We could store this in cell->info() if it becomes a burden
 		const Real rCubedDiff = pow(sphere->radius, 3) - pow(sphere->radius - thState->delRadius, 3);
-		const Real areaTot    = 4. * M_PI * pow(sphere->radius, 2); // We could store this in cell->info() if it becomes a burden
+		const Real areaTot = 4. * M_PI * pow(sphere->radius, 2); // We could store this in cell->info() if it becomes a burden
 		solidVolumeChange += surfaceArea / areaTot * rCubedDiff * M_PI * 4. / 3.;
 	}
 
@@ -765,7 +765,7 @@ void ThermalEngine::resetFlowBoundaryTemps()
 {
 	for (int k = 0; k < 6; k++) {
 		flow->solver->thermalBoundary(flow->wallIds[k]).fluxCondition = !flow->bndCondIsTemperature[k];
-		flow->solver->thermalBoundary(flow->wallIds[k]).value         = flow->thermalBndCondValue[k];
+		flow->solver->thermalBoundary(flow->wallIds[k]).value = flow->thermalBndCondValue[k];
 	}
 
 	RTriangulation& Tri = flow->solver->T[flow->solver->currentTes].Triangulation();
@@ -779,7 +779,7 @@ void ThermalEngine::resetFlowBoundaryTemps()
 		if (!bi.fluxCondition) {
 			VectorCell tmpCells;
 			tmpCells.resize(10000);
-			VCellIterator cells_it  = tmpCells.begin();
+			VCellIterator cells_it = tmpCells.begin();
 			VCellIterator cells_end = Tri.incident_cells(flow->solver->T[flow->solver->currentTes].vertexHandles[id], cells_it);
 			for (VCellIterator it = tmpCells.begin(); it != cells_end; it++) {
 				(*it)->info().temp() = bi.value;

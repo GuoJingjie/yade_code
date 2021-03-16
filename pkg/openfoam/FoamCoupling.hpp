@@ -6,14 +6,14 @@
 
 #include <lib/base/Logging.hpp>
 #include <lib/serialization/Serializable.hpp>
+#include <core/Aabb.hpp>
 #include <core/Body.hpp>
+#include <core/Dispatching.hpp>
 #include <core/GlobalEngine.hpp>
 #include <core/InteractionContainer.hpp>
 #include <core/Omega.hpp>
 #include <core/Scene.hpp>
 #include <core/Subdomain.hpp>
-#include <core/Aabb.hpp>
-#include <core/Dispatching.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <vector>
 #pragma GCC diagnostic push

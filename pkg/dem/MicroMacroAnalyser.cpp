@@ -105,7 +105,7 @@ void MicroMacroAnalyser::setState(unsigned int state, bool save_states, bool com
 CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char* filename)
 {
 	//  declaration of ‘scene’ shadows a member of ‘yade::MicroMacroAnalyser’ [-Werror=shadow]
-	Scene*                     scene2  = Omega::instance().getScene().get();
+	Scene*                     scene2 = Omega::instance().getScene().get();
 	shared_ptr<BodyContainer>& bodies = scene2->bodies;
 	CGT::TriaxialState*        ts     = 0;
 	if (state == 1) ts = analyser->TS0;
@@ -234,13 +234,13 @@ CGT::TriaxialState& MicroMacroAnalyser::makeState(unsigned int state, const char
 		TS.wszzh   = triaxialCompressionEngine->stress[triaxialCompressionEngine->wall_top][1];
 		TS.wsxxd   = triaxialCompressionEngine->stress[triaxialCompressionEngine->wall_right][0];
 		TS.wsyyfa  = triaxialCompressionEngine->stress[triaxialCompressionEngine->wall_front][2];
-		TS.eps3    = triaxialCompressionEngine->strain[2];                     //find_parameter("eps3=", Statefile);
-		TS.eps1    = triaxialCompressionEngine->strain[0];                     //find_parameter("eps1=", Statefile);
-		TS.eps2    = triaxialCompressionEngine->strain[1];                     //find_parameter("eps2=", Statefile);
-		TS.haut    = triaxialCompressionEngine->height;                        //find_parameter("haut=", Statefile);
-		TS.larg    = triaxialCompressionEngine->width;                         //find_parameter("larg=", Statefile);
-		TS.prof    = triaxialCompressionEngine->depth;                         //find_parameter("prof=", Statefile);
-		TS.porom   = 0 /*analyser->computeMacroPorosity() crasher?*/;          //find_parameter("porom=", Statefile);
+		TS.eps3    = triaxialCompressionEngine->strain[2];                      //find_parameter("eps3=", Statefile);
+		TS.eps1    = triaxialCompressionEngine->strain[0];                      //find_parameter("eps1=", Statefile);
+		TS.eps2    = triaxialCompressionEngine->strain[1];                      //find_parameter("eps2=", Statefile);
+		TS.haut    = triaxialCompressionEngine->height;                         //find_parameter("haut=", Statefile);
+		TS.larg    = triaxialCompressionEngine->width;                          //find_parameter("larg=", Statefile);
+		TS.prof    = triaxialCompressionEngine->depth;                          //find_parameter("prof=", Statefile);
+		TS.porom   = 0 /*analyser->computeMacroPorosity() crasher?*/;           //find_parameter("porom=", Statefile);
 		TS.ratio_f = triaxialCompressionEngine->ComputeUnbalancedForce(scene2); //find_parameter("ratio_f=", Statefile);
 	} else
 		TS.wszzh = TS.wsxxd = TS.wsyyfa = TS.eps3 = TS.eps1 = TS.eps2 = TS.haut = TS.larg = TS.prof = TS.porom = TS.ratio_f = 0;

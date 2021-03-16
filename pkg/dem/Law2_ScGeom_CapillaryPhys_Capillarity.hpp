@@ -85,7 +85,7 @@ public:
 	BodiesMenisciiList       bodiesMenisciiList;
 
 	void action() override;
-	void         postLoad(Law2_ScGeom_CapillaryPhys_Capillarity&);
+	void postLoad(Law2_ScGeom_CapillaryPhys_Capillarity&);
 
 	bool hertzInitialized;
 	bool hertzOn;

@@ -29,7 +29,7 @@ struct CombinedKinematicEngine : public PartialEngine {
 REGISTER_SERIALIZABLE(CombinedKinematicEngine);
 
 struct KinematicEngine : public PartialEngine {
-	void action() override;
+	void         action() override;
 	virtual void apply(const vector<Body::id_t>& /*ids*/)
 	{
 		LOG_ERROR("KinematicEngine::apply called, derived class (" << getClassName() << ") did not override that method?");
@@ -46,7 +46,7 @@ REGISTER_SERIALIZABLE(KinematicEngine);
 
 struct TranslationEngine : public KinematicEngine {
 	void apply(const vector<Body::id_t>& ids) override;
-	void         postLoad(TranslationEngine&) { translationAxis.normalize(); }
+	void postLoad(TranslationEngine&) { translationAxis.normalize(); }
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(TranslationEngine,KinematicEngine,"Engine applying translation motion (by setting linear velocity) to subscribed bodies.",
 		((Real,velocity,,,"Scalar value of the imposed velocity [m/s]. Imposed vector velocity is :yref:`velocity<TranslationEngine.velocity>` * :yref:`axis<TranslationEngine.translationAxis>`"))
@@ -70,7 +70,7 @@ REGISTER_SERIALIZABLE(HarmonicMotionEngine);
 
 struct RotationEngine : public KinematicEngine {
 	void apply(const vector<Body::id_t>& ids) override;
-	void         postLoad(RotationEngine&) { rotationAxis.normalize(); }
+	void postLoad(RotationEngine&) { rotationAxis.normalize(); }
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(RotationEngine,KinematicEngine,"Engine applying rotation (by setting angular velocity) to subscribed bodies. If :yref:`rotateAroundZero<RotationEngine.rotateAroundZero>` is set, then each body is also displaced around :yref:`zeroPoint<RotationEngine.zeroPoint>`.",
 		((Real,angularVelocity,0,,"Angular velocity. [rad/s]"))
@@ -147,7 +147,7 @@ REGISTER_SERIALIZABLE(ServoPIDController);
 
 struct BicyclePedalEngine : public KinematicEngine {
 	void apply(const vector<Body::id_t>& ids) override;
-	void         postLoad(BicyclePedalEngine&) { rotationAxis.normalize(); }
+	void postLoad(BicyclePedalEngine&) { rotationAxis.normalize(); }
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(BicyclePedalEngine,KinematicEngine,"Engine applying the linear motion of ``bicycle pedal`` e.g. moving points around the axis without rotation",
 		((Real,angularVelocity,0,,"Angular velocity. [rad/s]"))

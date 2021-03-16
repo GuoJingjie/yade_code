@@ -186,7 +186,8 @@ void Omega::buildDynlibDatabase(const vector<string>& dynlibsList)
 				pythonables.erase(prev);
 			} catch (...) {
 				if (getenv("YADE_DEBUG")) cerr << "[" << *I << "]";
-				if (i == numTries) PyErr_Print(); // we want to see the actual error if it still fails after 100th attempt, else we hide useful errors 
+				if (i == numTries)
+					PyErr_Print(); // we want to see the actual error if it still fails after 100th attempt, else we hide useful errors
 				boost::python::handle_exception();
 				PyErr_Clear();
 				I++;

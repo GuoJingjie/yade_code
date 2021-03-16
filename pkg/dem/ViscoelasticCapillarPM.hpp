@@ -74,7 +74,7 @@ REGISTER_SERIALIZABLE(Ip2_ViscElCapMat_ViscElCapMat_ViscElCapPhys);
 /// Constitutive law
 class Law2_ScGeom_ViscElCapPhys_Basic : public LawFunctor {
 public:
-	bool                                                             go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
+	bool                                                                     go(shared_ptr<IGeom>&, shared_ptr<IPhys>&, Interaction*) override;
 	static Real                                                              Willett_numeric_f(const ScGeom& geom, ViscElCapPhys& phys);
 	static Real                                                              Willett_analytic_f(const ScGeom& geom, ViscElCapPhys& phys);
 	static Real                                                              Weigert_f(const ScGeom& geom, ViscElCapPhys& phys);
@@ -114,13 +114,13 @@ typedef boost::unordered_map<Body::id_t, Real> mapBodyReal;
 class LiqControl : public PartialEngine {
 public:
 	void action() override;
-	void         addBodyMapInt(mapBodyInt& m, Body::id_t b);
-	void         addBodyMapReal(mapBodyReal& m, Body::id_t b, Real addV);
-	Real         vMax(shared_ptr<Body> b1, shared_ptr<Body> b2);
-	Real         totalLiqVol(int mask) const;
-	Real         liqVolBody(id_t id) const;
-	bool         addLiqInter(id_t id1, id_t id2, Real liq);
-	void         updateLiquid(shared_ptr<Body> b);
+	void addBodyMapInt(mapBodyInt& m, Body::id_t b);
+	void addBodyMapReal(mapBodyReal& m, Body::id_t b, Real addV);
+	Real vMax(shared_ptr<Body> b1, shared_ptr<Body> b2);
+	Real totalLiqVol(int mask) const;
+	Real liqVolBody(id_t id) const;
+	bool addLiqInter(id_t id1, id_t id2, Real liq);
+	void updateLiquid(shared_ptr<Body> b);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(LiqControl,PartialEngine,"This engine implements liquid migration model, introduced here [Mani2013]_ . ",
 		((int,mask,0,, "Bitmask for liquid  creation."))

@@ -20,16 +20,16 @@ namespace CGT {
 
 
 	// 	template<class Tesselation> const Real Network<Tesselation>::FAR = 50000;
-	template <class Tesselation> const Real Network<Tesselation>::ONE_THIRD           = 1.0 / 3.0;
+	template <class Tesselation> const Real Network<Tesselation>::ONE_THIRD = 1.0 / 3.0;
 	template <class Tesselation> const int  Network<Tesselation>::facetVertices[4][3] = { { 1, 2, 3 }, { 0, 2, 3 }, { 0, 1, 3 }, { 0, 1, 2 } };
-	template <class Tesselation> const int  Network<Tesselation>::permut3[3][3]       = { { 0, 1, 2 }, { 1, 2, 0 }, { 2, 0, 1 } };
-	template <class Tesselation> const int  Network<Tesselation>::permut4[4][4]       = { { 0, 1, 2, 3 }, { 1, 2, 3, 0 }, { 2, 3, 0, 1 }, { 3, 0, 1, 2 } };
+	template <class Tesselation> const int  Network<Tesselation>::permut3[3][3] = { { 0, 1, 2 }, { 1, 2, 0 }, { 2, 0, 1 } };
+	template <class Tesselation> const int  Network<Tesselation>::permut4[4][4] = { { 0, 1, 2, 3 }, { 1, 2, 3, 0 }, { 2, 3, 0, 1 }, { 3, 0, 1, 2 } };
 
 	template <class Tesselation> Network<Tesselation>::~Network() { }
 
 	template <class Tesselation> Network<Tesselation>::Network()
 	{
-		FAR     = 50000;
+		FAR = 50000;
 		facetF1 = facetF2 = facetRe1 = facetRe2 = facetRe3 = 0;
 		// 	F1=F2=Re1=Re2=0;
 	}
@@ -37,7 +37,7 @@ namespace CGT {
 	template <class Tesselation> int Network<Tesselation>::detectFacetFictiousVertices(CellHandle& cell, int& j)
 	{
 		facetNFictious = 0;
-		int nRealVtx   = 0;
+		int nRealVtx = 0;
 		for (int kk = 0; kk < 3; kk++) {
 			if (cell->vertex(facetVertices[j][kk])->info().isFictious) {
 				if (facetNFictious == 0) facetF1 = kk;
@@ -298,7 +298,7 @@ namespace CGT {
 		Point& p1 = cell->info();
 		Point& p2 = cell->neighbor(j)->info();
 
-		Real Ssolid  = 0;
+		Real Ssolid = 0;
 		Real Ssolid1 = 0, Ssolid1n = 0, Ssolid2 = 0, Ssolid2n = 0, Ssolid3 = 0, Ssolid3n = 0;
 
 		Sphere       v[3];
@@ -315,14 +315,14 @@ namespace CGT {
 				VertexHandle& SV2 = W[1];
 				VertexHandle& SV3 = W[2];
 
-				Ssolid1                          = fastSphericalTriangleArea(SV1->point(), SV2->point().point(), p1, p2);
-				Ssolid1n                         = fastSphericalTriangleArea(SV1->point(), SV3->point().point(), p1, p2);
+				Ssolid1 = fastSphericalTriangleArea(SV1->point(), SV2->point().point(), p1, p2);
+				Ssolid1n = fastSphericalTriangleArea(SV1->point(), SV3->point().point(), p1, p2);
 				cell->info().solidSurfaces[j][0] = Ssolid1 + Ssolid1n;
-				Ssolid2                          = fastSphericalTriangleArea(SV2->point(), SV1->point().point(), p1, p2);
-				Ssolid2n                         = fastSphericalTriangleArea(SV2->point(), SV3->point().point(), p1, p2);
+				Ssolid2 = fastSphericalTriangleArea(SV2->point(), SV1->point().point(), p1, p2);
+				Ssolid2n = fastSphericalTriangleArea(SV2->point(), SV3->point().point(), p1, p2);
 				cell->info().solidSurfaces[j][1] = Ssolid2 + Ssolid2n;
-				Ssolid3                          = fastSphericalTriangleArea(SV3->point(), SV2->point().point(), p1, p2);
-				Ssolid3n                         = fastSphericalTriangleArea(SV3->point(), SV1->point().point(), p1, p2);
+				Ssolid3 = fastSphericalTriangleArea(SV3->point(), SV2->point().point(), p1, p2);
+				Ssolid3n = fastSphericalTriangleArea(SV3->point(), SV1->point().point(), p1, p2);
 				cell->info().solidSurfaces[j][2] = Ssolid3 + Ssolid3n;
 
 			}; break;
@@ -332,16 +332,16 @@ namespace CGT {
 				VertexHandle SV3 = cell->vertex(facetVertices[j][facetRe2]);
 
 				Boundary& bi1 = boundary(SV1->info().id());
-				Ssolid1       = 0;
+				Ssolid1 = 0;
 				if (bi1.flowCondition && !slipBoundary) {
 					Ssolid1 = abs(0.5 * CGAL::cross_product(p1 - p2, SV2->point().point() - SV3->point().point())[bi1.coordinate]);
 					cell->info().solidSurfaces[j][facetF1] = Ssolid1;
 				}
-				Ssolid2                                 = fastSphericalTriangleArea(SV2->point(), SV1->point().point(), p1, p2);
-				Ssolid2n                                = fastSphericalTriangleArea(SV2->point(), SV3->point().point(), p1, p2);
+				Ssolid2 = fastSphericalTriangleArea(SV2->point(), SV1->point().point(), p1, p2);
+				Ssolid2n = fastSphericalTriangleArea(SV2->point(), SV3->point().point(), p1, p2);
 				cell->info().solidSurfaces[j][facetRe1] = Ssolid2 + Ssolid2n;
-				Ssolid3                                 = fastSphericalTriangleArea(SV3->point(), SV2->point().point(), p1, p2);
-				Ssolid3n                                = fastSphericalTriangleArea(SV3->point(), SV1->point().point(), p1, p2);
+				Ssolid3 = fastSphericalTriangleArea(SV3->point(), SV2->point().point(), p1, p2);
+				Ssolid3n = fastSphericalTriangleArea(SV3->point(), SV1->point().point(), p1, p2);
 				cell->info().solidSurfaces[j][facetRe2] = Ssolid3 + Ssolid3n;
 			}; break;
 			case (2): {
@@ -368,21 +368,21 @@ namespace CGT {
 				Sphere B1(BB, 0);
 				Sphere C1(CC, 0);
 				//FIXME : we are computing triangle area twice here, because its computed in volume_double_fictious already -> optimize
-				Ssolid1                                 = fastSphericalTriangleArea(SV3->point(), AA, p1, p2);
-				Ssolid1n                                = fastSphericalTriangleArea(SV3->point(), BB, p1, p2);
+				Ssolid1 = fastSphericalTriangleArea(SV3->point(), AA, p1, p2);
+				Ssolid1n = fastSphericalTriangleArea(SV3->point(), BB, p1, p2);
 				cell->info().solidSurfaces[j][facetRe1] = Ssolid1 + Ssolid1n;
 				//area vector of triangle (p1,sphere,p2)
 				CVector p1p2v1Surface = 0.5 * CGAL::cross_product(p1 - p2, SV3->point().point() - p2);
 				if (bi1.flowCondition && !slipBoundary) {
 					//projection on boundary 1
-					Ssolid2                                = abs(p1p2v1Surface[bi1.coordinate]);
+					Ssolid2 = abs(p1p2v1Surface[bi1.coordinate]);
 					cell->info().solidSurfaces[j][facetF1] = Ssolid2;
 				} else
 					cell->info().solidSurfaces[j][facetF1] = 0;
 
 				if (bi2.flowCondition && !slipBoundary) {
 					//projection on boundary 2
-					Ssolid3                                = abs(p1p2v1Surface[bi2.coordinate]);
+					Ssolid3 = abs(p1p2v1Surface[bi2.coordinate]);
 					cell->info().solidSurfaces[j][facetF2] = Ssolid3;
 				} else
 					cell->info().solidSurfaces[j][facetF2] = 0;
@@ -403,8 +403,8 @@ namespace CGT {
 	{
 		using math::abs; // inside function it does not leak.
 		if (!reuseFacetData) facetNFictious = detectFacetFictiousVertices(cell, j);
-		Point&       p1      = cell->info();
-		Point&       p2      = cell->neighbor(j)->info();
+		Point&       p1 = cell->info();
+		Point&       p2 = cell->neighbor(j)->info();
 		Real         Ssolid1 = 0, Ssolid2 = 0, Ssolid3 = 0;
 		Sphere       v[3];
 		VertexHandle W[3];
@@ -430,7 +430,7 @@ namespace CGT {
 				VertexHandle SV3 = cell->vertex(facetVertices[j][facetRe2]);
 
 				Boundary& bi1 = boundary(SV1->info().id());
-				Ssolid1       = 0;
+				Ssolid1 = 0;
 				if (bi1.flowCondition && !slipBoundary)
 					Ssolid1 = abs(
 					        0.5
@@ -476,8 +476,8 @@ namespace CGT {
 		const Boundary& bi1 = boundary(fSV1->info().id());
 		const Boundary& bi2 = boundary(fSV2->info().id());
 
-		Real area            = (bi1.p[bi1.coordinate] - SV3->point()[bi1.coordinate]) * (bi2.p[bi2.coordinate] - SV3->point()[bi2.coordinate]);
-		Real surf[3]         = { 1, 1, 1 };
+		Real area = (bi1.p[bi1.coordinate] - SV3->point()[bi1.coordinate]) * (bi2.p[bi2.coordinate] - SV3->point()[bi2.coordinate]);
+		Real surf[3] = { 1, 1, 1 };
 		surf[bi1.coordinate] = 0;
 		surf[bi2.coordinate] = 0;
 		return area * CVector(surf[0], surf[1], surf[2]);
@@ -532,7 +532,7 @@ namespace CGT {
 		Real norme13 = v13.squared_length();
 
 		Real cosA = v12 * v13 / (sqrt(norme13 * norme12));
-		Real A    = acos(cosA);
+		Real A = acos(cosA);
 
 		Area = (A / (2 * M_PI)) * (M_PI * squared_radius);
 		return Area;
@@ -542,17 +542,17 @@ namespace CGT {
 	{
 		Tesselation& Tes = T[currentTes];
 		//FIXME: Id's order in boundsIds is done according to the enumerotation of boundaries from TXStressController.hpp, line 31. DON'T CHANGE IT!
-		yMinId       = Tes.Max_id() + 2;
+		yMinId = Tes.Max_id() + 2;
 		boundsIds[0] = &yMinId;
-		yMaxId       = Tes.Max_id() + 3;
+		yMaxId = Tes.Max_id() + 3;
 		boundsIds[1] = &yMaxId;
-		xMinId       = Tes.Max_id() + 0;
+		xMinId = Tes.Max_id() + 0;
 		boundsIds[2] = &xMinId;
-		xMaxId       = Tes.Max_id() + 1;
+		xMaxId = Tes.Max_id() + 1;
 		boundsIds[3] = &xMaxId;
-		zMinId       = Tes.Max_id() + 5;
+		zMinId = Tes.Max_id() + 5;
 		boundsIds[4] = &zMaxId;
-		zMaxId       = Tes.Max_id() + 6;
+		zMaxId = Tes.Max_id() + 6;
 		boundsIds[5] = &zMinId;
 
 		cornerMin = Point(xMin, yMin, zMin);
@@ -609,12 +609,12 @@ namespace CGT {
 		        true);
 
 		Point P(center[0], center[1], center[2]);
-		boundaries[id_wall - idOffset].p          = P;
-		boundaries[id_wall - idOffset].normal     = Normal;
+		boundaries[id_wall - idOffset].p = P;
+		boundaries[id_wall - idOffset].normal = Normal;
 		boundaries[id_wall - idOffset].coordinate = Coordinate;
 
 		boundaries[id_wall - idOffset].flowCondition = 1;
-		boundaries[id_wall - idOffset].value         = 0;
+		boundaries[id_wall - idOffset].value = 0;
 
 		if (debugOut)
 			cout << "A boundary -center/thick- has been created. ID = " << id_wall << " position = "
@@ -631,7 +631,7 @@ namespace CGT {
 
 	template <class Tesselation> void Network<Tesselation>::defineFictiousCells()
 	{
-		RTriangulation&     Tri     = T[currentTes].Triangulation();
+		RTriangulation&     Tri = T[currentTes].Triangulation();
 		FiniteCellsIterator cellEnd = Tri.finite_cells_end();
 		for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
 			cell->info().fictious() = 0;
@@ -642,7 +642,7 @@ namespace CGT {
 			T[currentTes].vertexHandles[id];
 			VectorCell tmpCells;
 			tmpCells.resize(10000); // limiting if we have >10000 fictitious cells?
-			VCellIterator cells_it  = tmpCells.begin();
+			VCellIterator cells_it = tmpCells.begin();
 			VCellIterator cells_end = Tri.incident_cells(T[currentTes].vertexHandles[id], cells_it); //
 			for (VCellIterator it = tmpCells.begin(); it != cells_end; it++) {
 				CellHandle& cell = *it;
@@ -688,7 +688,7 @@ namespace CGT {
 	template <class Tesselation> void Network<Tesselation>::lineSolidPore(CellHandle cell, int j)
 	{
 		using math::abs; // when used inside function it does not leak - it is safe.
-		facetNFictious      = detectFacetFictiousVertices(cell, j);
+		facetNFictious = detectFacetFictiousVertices(cell, j);
 		Real         lSolid = 0; //total of solidLine[j][0], solidLine[j][1], solidLine[j][2].
 		Sphere       v[3];
 		VertexHandle W[3];
@@ -726,7 +726,7 @@ namespace CGT {
 				B[bi.coordinate] = bi.p[bi.coordinate];
 				Point   AA(A[0], A[1], A[2]);
 				Point   BB(B[0], B[1], B[2]);
-				CVector AB                         = AA - BB;
+				CVector AB = AA - BB;
 				cell->info().solidLine[j][facetF1] = sqrt(AB.squared_length());
 			}; break;
 			case (2): {
@@ -739,8 +739,8 @@ namespace CGT {
 				Boundary& bi1 = boundary(SV1->info().id());
 				Boundary& bi2 = boundary(SV2->info().id());
 
-				Real d13                           = bi1.p[bi1.coordinate] - (SV3->point())[bi1.coordinate];
-				Real d23                           = bi2.p[bi2.coordinate] - (SV3->point())[bi2.coordinate];
+				Real d13 = bi1.p[bi1.coordinate] - (SV3->point())[bi1.coordinate];
+				Real d23 = bi2.p[bi2.coordinate] - (SV3->point())[bi2.coordinate];
 				cell->info().solidLine[j][facetF1] = abs(d23);
 				cell->info().solidLine[j][facetF2] = abs(d13);
 			}; break;
@@ -755,14 +755,14 @@ namespace CGT {
 	{
 		Real    line;
 		Real    squaredRadius = ST1.weight();
-		CVector v12           = ST2.point() - ST1.point();
-		CVector v13           = ST3.point() - ST1.point();
+		CVector v12 = ST2.point() - ST1.point();
+		CVector v13 = ST3.point() - ST1.point();
 
 		Real norme12 = v12.squared_length();
 		Real norme13 = v13.squared_length();
 
 		Real cosA = v12 * v13 / (sqrt(norme13 * norme12));
-		line      = acos(cosA) * sqrt(squaredRadius);
+		line = acos(cosA) * sqrt(squaredRadius);
 		return line;
 	}
 
@@ -789,7 +789,7 @@ namespace CGT {
 		for (auto fp = facets.begin(); fp != facets.end(); fp++) {
 			Facet f = *fp;
 			if (as.classify(f.first) != AlphaShape::INTERIOR) {
-				f                           = as.mirror_facet(f);
+				f = as.mirror_facet(f);
 				const CellHandle& outerCell = f.first->neighbor(f.second);
 				if (as.is_infinite(outerCell) or fixed) {
 					Sphere  sph;
@@ -814,7 +814,7 @@ namespace CGT {
 				} else {
 					if (!outerCell->info().isAlpha) {
 						outerCell->info().isAlpha = true;
-						Point p                   = T[currentTes].setCircumCenter(outerCell);
+						Point p = T[currentTes].setCircumCenter(outerCell);
 						Real  weight
 						        = (p - outerCell->vertex(0)->point().point()).squared_length() - outerCell->vertex(0)->point().weight();
 						unsigned int id = T[currentTes].vertexHandles.size();

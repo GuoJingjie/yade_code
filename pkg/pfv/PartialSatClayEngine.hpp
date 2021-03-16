@@ -13,20 +13,20 @@
 #ifdef FLOW_ENGINE
 #ifdef LINSOLV
 #ifdef PARTIALSAT
+#include "FlowEngine_PartialSatClayEngineT.hpp"
+#include <lib/triangulation/FlowBoundingSphere.hpp>
+#include <lib/triangulation/Network.hpp>
+#include <lib/triangulation/Tesselation.h>
 #include <core/Body.hpp>
+#include <core/Dispatching.hpp>
 #include <core/Omega.hpp>
 #include <core/PartialEngine.hpp>
 #include <core/Scene.hpp>
 #include <core/State.hpp>
-#include <core/Dispatching.hpp>
 #include <pkg/common/MatchMaker.hpp>
 #include <pkg/dem/ScGeom.hpp>
-#include <Eigen/SparseLU>
-#include <lib/triangulation/FlowBoundingSphere.hpp>
-#include <lib/triangulation/Network.hpp>
-#include <lib/triangulation/Tesselation.h>
 #include <pkg/dem/TesselationWrapper.hpp>
-#include "FlowEngine_PartialSatClayEngineT.hpp"
+#include <Eigen/SparseLU>
 #include <cholmod.h>
 
 namespace yade { // Cannot have #include directive inside.
@@ -57,23 +57,23 @@ public:
 
 	PartialSatCellInfo(void)
 	{
-		entered           = false;
-		initialPorosity   = 0.25;
+		entered = false;
+		initialPorosity = 0.25;
 		initialSaturation = 0.01;
-		oldPressure       = 0;
-		crackArea         = 0;
-		saturation        = 0.01;
-		porosity          = 0.25;
-		dsdp              = 0;
-		vSolids           = 0;
-		crack             = false;
-		crackNum          = 0;
-		isExposed         = false; // flag for determining if a pore is exposed to atmosphere, which controls the pressure force calculations
-		Po                = 1.5;
-		lambdao           = 0.2;
-		clumped           = false;
-		blocked           = false;
-		initiallyCracked  = false;
+		oldPressure = 0;
+		crackArea = 0;
+		saturation = 0.01;
+		porosity = 0.25;
+		dsdp = 0;
+		vSolids = 0;
+		crack = false;
+		crackNum = 0;
+		isExposed = false; // flag for determining if a pore is exposed to atmosphere, which controls the pressure force calculations
+		Po = 1.5;
+		lambdao = 0.2;
+		clumped = false;
+		blocked = false;
+		initiallyCracked = false;
 		opened.resize(4, 0);
 		entry.resize(4, 0);
 		visited.resize(4, 0);
@@ -87,10 +87,11 @@ public:
 	//same here if needed
 };
 
-typedef CGT::_Tesselation<CGT::TriangulationTypes<PartialSatVertexInfo, PartialSatCellInfo> > PartialSatTesselation;
+typedef CGT::_Tesselation<CGT::TriangulationTypes<PartialSatVertexInfo, PartialSatCellInfo>> PartialSatTesselation;
 #ifdef LINSOLV
 // #define PartialSatBoundingSphere CGT::PartialSatLinSolv<PartialSatTesselation>
-class PartialSatBoundingSphere : public CGT::PartialSatLinSolv<PartialSatTesselation> {};
+class PartialSatBoundingSphere : public CGT::PartialSatLinSolv<PartialSatTesselation> {
+};
 #endif
 
 typedef TemplateFlowEngine_PartialSatClayEngineT<PartialSatCellInfo, PartialSatVertexInfo, PartialSatTesselation, PartialSatBoundingSphere>
@@ -183,30 +184,30 @@ public:
 	Real getEnteredRatio() const;
 
 	//	void setPositionsBuffer(bool current);
-	Real     leakOffRate                 = 0;
-	Real     averageAperture             = 0;
-	Real     sumOfApertures              = 0;
+	Real     leakOffRate = 0;
+	Real     averageAperture = 0;
+	Real     sumOfApertures = 0;
 	Real     averageFracturePermeability = 0;
-	Real     maxAperture                 = 0;
-	Real     crackArea                   = 0;
-	Real     crackVolume                 = 0;
-	Real     waterVolume                 = 0;
-	int      numCracks                   = 0;
-	Real     totalFractureArea           = 0;
-	Real     solverDT                    = 0;
-	bool     emulatingAction             = false;
-	Real     maxDSDPj                    = 0;
+	Real     maxAperture = 0;
+	Real     crackArea = 0;
+	Real     crackVolume = 0;
+	Real     waterVolume = 0;
+	int      numCracks = 0;
+	Real     totalFractureArea = 0;
+	Real     solverDT = 0;
+	bool     emulatingAction = false;
+	Real     maxDSDPj = 0;
 	Vector3r crack_fabric_vector;
 	Real     crack_fabric_area;
 
 	virtual void initializeVolumes(FlowSolver& flow);
 	virtual void updateVolumes(FlowSolver& flow);
 	virtual void buildTriangulation(Real pZero, Solver& flow, bool oneTes = false);
-	void initSolver(FlowSolver& flow) override;
-	void action() override;
-	void emulateAction() override
+	void         initSolver(FlowSolver& flow) override;
+	void         action() override;
+	void         emulateAction() override
 	{
-		scene           = Omega::instance().getScene().get();
+		scene = Omega::instance().getScene().get();
 		emulatingAction = true;
 		action();
 		emulatingAction = false;
@@ -454,7 +455,6 @@ $e_n$ based on combination of parameters.",
 	DECLARE_LOGGER;
 };
 REGISTER_SERIALIZABLE(Ip2_PartialSatMat_PartialSatMat_MindlinPhys);
-
 
 
 } //namespaceyade

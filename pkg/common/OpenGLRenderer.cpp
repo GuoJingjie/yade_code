@@ -8,9 +8,9 @@
 #include <lib/opengl/GLUtils.hpp>
 #include <lib/pyutil/gil.hpp>
 #include <lib/serialization/EnumSupport.hpp>
+#include <core/Aabb.hpp>
 #include <core/Scene.hpp>
 #include <core/Timing.hpp>
-#include <core/Aabb.hpp>
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -110,7 +110,7 @@ void OpenGLRenderer::setBodiesDispInfo()
 		const Quaternionr& ori     = b->state->ori;
 		const Quaternionr& refOri  = b->state->refOri;
 		Vector3r           cellPos = (!scene->isPeriodic ? pos : scene->cell->wrapShearedPt(pos)); // inside the cell if periodic, same as pos otherwise
-		bodyDisp[id2].isDisplayed   = !pointClipped(cellPos);
+		bodyDisp[id2].isDisplayed  = !pointClipped(cellPos);
 		// if no scaling and no periodic, return quickly
 		if (!(scaleDisplacements || scaleRotations || scene->isPeriodic)) {
 			bodyDisp[id2].pos = pos;
@@ -118,7 +118,7 @@ void OpenGLRenderer::setBodiesDispInfo()
 			continue;
 		}
 		// apply scaling
-		bodyDisp[id2].pos = cellPos;                                                                 // point of reference (inside the cell for periodic)
+		bodyDisp[id2].pos = cellPos; // point of reference (inside the cell for periodic)
 		if (scaleDisplacements) bodyDisp[id2].pos += dispScale.cwiseProduct(Vector3r(pos - refPos)); // add scaled translation to the point of reference
 		if (!scaleRotations) bodyDisp[id2].ori = ori;
 		else {

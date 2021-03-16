@@ -74,7 +74,7 @@ namespace CGT {
 
 		if (getCHOLMODPerfTimings) gettimeofday(&start, NULL);
 
-		RTriangulation& Tri     = T[currentTes].Triangulation();
+		RTriangulation& Tri = T[currentTes].Triangulation();
 		int             n_cells = Tri.number_of_finite_cells();
 		vector<int>     clen;
 		vector<int>     is;
@@ -97,9 +97,9 @@ namespace CGT {
 			// 		spatial_sort(orderedCells.begin(),orderedCells.end(), CellTraits_for_spatial_sort<RTriangulation>());
 			T_cells.clear();
 			//
-			T_index           = 0;
+			T_index = 0;
 			isLinearSystemSet = false;
-			areCellsOrdered   = true;
+			areCellsOrdered = true;
 		}
 		if (!isLinearSystemSet) {
 			int n = 3 * (ncols + 1); //number of non-zero in triangular matrix
@@ -154,11 +154,11 @@ namespace CGT {
 				}
 				for (int j = 0; j < 4; j++) {
 					neighbourCell = cell->neighbor(j);
-					nIndex        = neighbourCell->info().index;
+					nIndex = neighbourCell->info().index;
 					if (Tri.is_infinite(neighbourCell)) continue;
 					if (!isLinearSystemSet && !(neighbourCell->info().Pcondition || neighbourCell->info().blocked)) {
 						if (nIndex == 0) {
-							T_cells[++T_index]          = neighbourCell;
+							T_cells[++T_index] = neighbourCell;
 							neighbourCell->info().index = nIndex = T_index;
 						} else if (index > nIndex) {
 							is[T_nnz] = index;

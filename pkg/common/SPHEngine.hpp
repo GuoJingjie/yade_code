@@ -16,7 +16,7 @@ enum KernFunctions { Lucy = 1, BSpline1 = 2, BSpline2 = 3 };
 enum typeKernFunctions { Norm, Grad, Lapl };
 class SPHEngine : public PartialEngine {
 public:
-	void         calculateSPHRho(const shared_ptr<Body>& b);
+	void calculateSPHRho(const shared_ptr<Body>& b);
 	void action() override;
 	// clang-format off
   YADE_CLASS_BASE_DOC_ATTRS(SPHEngine,PartialEngine,"Apply given torque (momentum) value at every subscribed particle, at every step. ",

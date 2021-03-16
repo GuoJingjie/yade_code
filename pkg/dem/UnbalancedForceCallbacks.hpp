@@ -7,10 +7,10 @@ namespace yade { // Cannot have #include directive inside.
 
 class SumIntrForcesCb : public IntrCallback {
 public:
-	OpenMPAccumulator<int>        numIntr;
-	OpenMPAccumulator<Real>       force;
-	static void                   go(IntrCallback*, Interaction*);
-	IntrCallback::FuncPtr stepInit() override;
+	OpenMPAccumulator<int>  numIntr;
+	OpenMPAccumulator<Real> force;
+	static void             go(IntrCallback*, Interaction*);
+	IntrCallback::FuncPtr   stepInit() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC(SumIntrForcesCb,IntrCallback,"Callback summing magnitudes of forces over all interactions. :yref:`IPhys` of interactions must derive from :yref:`NormShearPhys` (responsability fo the user).");
 	// clang-format on

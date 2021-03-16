@@ -9,12 +9,12 @@
 #include "SimpleShear.hpp"
 #include <lib/high-precision/Constants.hpp>
 
-#include <core/Interaction.hpp>
-#include <core/Scene.hpp>
 #include <core/Aabb.hpp>
 #include <core/Dispatching.hpp>
-#include <pkg/common/InsertionSortCollider.hpp>
+#include <core/Interaction.hpp>
 #include <core/InteractionLoop.hpp>
+#include <core/Scene.hpp>
+#include <pkg/common/InsertionSortCollider.hpp>
 #include <pkg/dem/ElasticContactLaw.hpp>
 #include <pkg/dem/FrictPhys.hpp>
 #include <pkg/dem/GlobalStiffnessTimeStepper.hpp>

@@ -5,8 +5,8 @@
 #pragma once
 
 #include <core/Dispatching.hpp>
-#include <pkg/common/ElastMat.hpp>
 #include <core/InteractionLoop.hpp>
+#include <pkg/common/ElastMat.hpp>
 #include <pkg/common/MatchMaker.hpp>
 #include <pkg/dem/DemXDofGeom.hpp>
 #include <pkg/dem/FrictPhys.hpp>
@@ -92,8 +92,8 @@ REGISTER_SERIALIZABLE(ViscElPhys);
 // Uses the rule of consecutively connection.
 class Ip2_ViscElMat_ViscElMat_ViscElPhys : public IPhysFunctor {
 public:
-	static Real  epsilon;
-	void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
+	static Real epsilon;
+	void        go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ip2_ViscElMat_ViscElMat_ViscElPhys,IPhysFunctor,"Convert 2 instances of :yref:`ViscElMat` to :yref:`ViscElPhys` using the rule of consecutive connection.",
  		((shared_ptr<MatchMaker>,tc,,,"Instance of :yref:`MatchMaker` determining contact time"))

@@ -11,9 +11,9 @@
 #include <pkg/dem/KnKsLaw.hpp>
 
 #include <lib/base/Math.hpp>
+#include <core/InteractionLoop.hpp>
 #include <core/Omega.hpp>
 #include <core/Scene.hpp>
-#include <core/InteractionLoop.hpp>
 
 #include <fstream>
 #include <iomanip>
@@ -295,7 +295,7 @@ Real Ig2_PP_PP_ScGeom::getAreaPolygon2(
 		Vector3r newPt(0, 0, 0), secondPoint(0, 0, 0), newSearchDir, ptOnP1a, ptOnP2a, p1, p2, v;
 		Real     theta;
 
-		for (int i = 0; i <= 360; i += areaStep2) {   //Here we iterate every "areaStep" degrees, to find the contact area
+		for (int i = 0; i <= 360; i += areaStep2) {  //Here we iterate every "areaStep" degrees, to find the contact area
 			theta        = i * Mathr::PI / 180.; //theta is "i" in radians
 			v            = orthogonalDir;
 			newSearchDir = v * math::cos(theta) + contactNormal.cross(v) * math::sin(theta)
@@ -390,7 +390,7 @@ Real Ig2_PP_PP_ScGeom::getAreaPolygon2(
 		}
 
 		jointLength = (ptOnBoundary1 - ptOnBoundary2).norm(); //Contact length of 2-D contact
-		areaTri     = unitWidth2D2 * jointLength;              //Contact area of 2-D contact
+		areaTri     = unitWidth2D2 * jointLength;             //Contact area of 2-D contact
 	}
 	return areaTri;
 }

@@ -89,7 +89,7 @@ namespace CGT {
 			delete *it;
 		contacts.clear();
 		contacts.resize(0);
-		box.base   = Point(1.0e10, 1.0e10, 1.0e10);
+		box.base = Point(1.0e10, 1.0e10, 1.0e10);
 		box.sommet = Point(-1.0e10, -1.0e10, -1.0e10);
 	}
 
@@ -113,7 +113,7 @@ namespace CGT {
 	{
 		if (!tesselated) {
 			Tes.Clear();
-			GrainIterator git  = grains_begin();
+			GrainIterator git = grains_begin();
 			GrainIterator last = grains_end();
 			Tes.vertexHandles.resize(grains.size() + (NO_ZERO_ID ? 1 : 0));
 			for (; git != last; ++git) {
@@ -183,25 +183,25 @@ namespace CGT {
 		//cout << "Ngrains =" << Ng << endl;
 		if (NO_ZERO_ID) {
 			GrainIterator git = grains.begin();
-			git->id           = 0;
-			git->sphere       = Sphere(CGAL::ORIGIN, 0);
-			git->translation  = CGAL::NULL_VECTOR;
-			git->rotation     = CGAL::NULL_VECTOR;
+			git->id = 0;
+			git->sphere = Sphere(CGAL::ORIGIN, 0);
+			git->translation = CGAL::NULL_VECTOR;
+			git->rotation = CGAL::NULL_VECTOR;
 		}
 
 		long i = NO_ZERO_ID ? 1 : 0;
 
 		for (; i <= Ng; ++i) {
 			Statefile >> Idg >> pos >> rad >> trans >> rot >> isSphere;
-			grains[Idg].id          = Idg;
-			grains[Idg].sphere      = Sphere(pos, rad);
+			grains[Idg].id = Idg;
+			grains[Idg].sphere = Sphere(pos, rad);
 			grains[Idg].translation = trans;
-			grains[Idg].rotation    = rot;
-			grains[Idg].isSphere    = isSphere;
+			grains[Idg].rotation = rot;
+			grains[Idg].isSphere = isSphere;
 
 			using math::max; // when used inside function it does not leak - it is safe.
 			using math::min;
-			box.base   = Point(min(box.base.x(), pos.x() - rad), min(box.base.y(), pos.y() - rad), min(box.base.z(), pos.z() - rad));
+			box.base = Point(min(box.base.x(), pos.x() - rad), min(box.base.y(), pos.y() - rad), min(box.base.z(), pos.z() - rad));
 			box.sommet = Point(max(box.sommet.x(), pos.x() + rad), max(box.sommet.y(), pos.y() + rad), max(box.sommet.z(), pos.z() + rad));
 			if (isSphere) {
 				mean_radius += grains[Idg].sphere.weight();
@@ -223,40 +223,40 @@ namespace CGT {
 			Contact* c = new Contact;
 			Statefile >> id1 >> id2 >> normal >> c_pos >> old_fn >> old_fs >> fn >> fs >> frictional_work >> stat;
 
-			normal    = (grains[id2].sphere.point() - grains[id1].sphere.point());
-			normal    = normal / sqrt(pow(normal.x(), 2) + pow(normal.y(), 2) + pow(normal.z(), 2));
+			normal = (grains[id2].sphere.point() - grains[id1].sphere.point());
+			normal = normal / sqrt(pow(normal.x(), 2) + pow(normal.y(), 2) + pow(normal.z(), 2));
 			c->grain1 = &(grains[id1]);
 			c->grain2 = &(grains[id2]);
 			grains[id1].contacts.push_back(c);
 			grains[id2].contacts.push_back(c);
-			c->normal          = normal;
-			c->position        = c_pos;
-			c->old_fn          = old_fn;
-			c->old_fs          = old_fs;
-			c->fn              = fn;
-			c->fs              = fs;
+			c->normal = normal;
+			c->position = c_pos;
+			c->old_fn = old_fn;
+			c->old_fs = old_fs;
+			c->fn = fn;
+			c->fs = fs;
 			c->frictional_work = frictional_work;
-			c->status          = (Contact::Status)stat;
+			c->status = (Contact::Status)stat;
 			if (contacts[j]) delete contacts[j];
 			contacts[j] = c;
 		}
 
 		//cout << "c_pos=" << contacts[10]->position << " old_fn=" << contacts[10]->old_fn << " normal=" << contacts[10]->normal << endl;
 		//rfric = find_parameter("rfric=", Statefile);// � remettre quand les fichiers n'auront plus l'espace de trop...
-		Eyn     = find_parameter("Eyn", Statefile);
-		Eys     = find_parameter("Eys", Statefile);
-		wszzh   = find_parameter("wszzh", Statefile);
-		wsxxd   = find_parameter("wsxxd", Statefile);
-		wsyyfa  = find_parameter("wsyyfa", Statefile);
-		eps3    = find_parameter("eps3", Statefile);
-		eps1    = find_parameter("eps1", Statefile);
-		eps2    = find_parameter("eps2", Statefile);
-		porom   = find_parameter("porom", Statefile);
-		haut    = find_parameter("haut", Statefile);
-		larg    = find_parameter("larg", Statefile);
-		prof    = find_parameter("prof", Statefile);
+		Eyn = find_parameter("Eyn", Statefile);
+		Eys = find_parameter("Eys", Statefile);
+		wszzh = find_parameter("wszzh", Statefile);
+		wsxxd = find_parameter("wsxxd", Statefile);
+		wsyyfa = find_parameter("wsyyfa", Statefile);
+		eps3 = find_parameter("eps3", Statefile);
+		eps1 = find_parameter("eps1", Statefile);
+		eps2 = find_parameter("eps2", Statefile);
+		porom = find_parameter("porom", Statefile);
+		haut = find_parameter("haut", Statefile);
+		larg = find_parameter("larg", Statefile);
+		prof = find_parameter("prof", Statefile);
 		ratio_f = find_parameter("ratio_f", Statefile);
-		vit     = find_parameter("vit", Statefile);
+		vit = find_parameter("vit", Statefile);
 
 		// 	//Don't use bzipped files
 		// 	Statefile.close();

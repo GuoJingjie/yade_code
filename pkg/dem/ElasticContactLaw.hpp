@@ -8,8 +8,8 @@
 #pragma once
 
 #include <lib/base/openmp-accu.hpp>
-#include <core/GlobalEngine.hpp>
 #include <core/Dispatching.hpp>
+#include <core/GlobalEngine.hpp>
 #include <pkg/dem/FrictPhys.hpp>
 #include <pkg/dem/ScGeom.hpp>
 
@@ -18,7 +18,7 @@ namespace yade { // Cannot have #include directive inside.
 class Law2_ScGeom_FrictPhys_CundallStrack : public LawFunctor {
 public:
 	OpenMPAccumulator<Real> plasticDissipation;
-	bool            go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
+	bool                    go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	Real                    elasticEnergy();
 	Real                    getPlasticDissipation() const;
 	void                    initPlasticDissipation(Real initVal = 0);

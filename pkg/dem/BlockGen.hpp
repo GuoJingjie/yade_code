@@ -49,7 +49,7 @@ protected:
 
 public:
 	~BlockGen();
-	bool            generate(string&) override;
+	bool                    generate(string&) override;
 	template <class T> Real gen_normal_3(T& generator) { return generator(); }
 
 	struct Discontinuity {

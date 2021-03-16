@@ -314,9 +314,9 @@ void SplitPolyMohrCoulomb::action()
 					SigmaV = math::abs(SigmaT);
 				}
 				//==================================
-				fileS << b->id << "\t" << scene2->time << "\t" << scene2->iter << "\t" << V << "\t" << b->state->mass << "\t" << S1 << "\t" << S3
-				      << "\t" << SigmaCD << "\t" << SigmaCZ << "\t" << (S1 - SigmaCZ / SigmaCD * S3) << "\t" << SigmaV << "\t" << m->GetWeiS0()
-				      << "\t" << M << "\t" << V0 << "\t" << m->GetP() << "\t";
+				fileS << b->id << "\t" << scene2->time << "\t" << scene2->iter << "\t" << V << "\t" << b->state->mass << "\t" << S1 << "\t"
+				      << S3 << "\t" << SigmaCD << "\t" << SigmaCZ << "\t" << (S1 - SigmaCZ / SigmaCD * S3) << "\t" << SigmaV << "\t"
+				      << m->GetWeiS0() << "\t" << M << "\t" << V0 << "\t" << m->GetP() << "\t";
 				fileS << "-1\t";
 
 				fileS << BodyBroken << "\t";

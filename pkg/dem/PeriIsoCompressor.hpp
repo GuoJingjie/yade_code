@@ -52,7 +52,7 @@ See scripts/test/periodic-triax.py for a simple example.
 class PeriTriaxController : public BoundaryController {
 public:
 	void action() override;
-	void         strainStressStiffUpdate();
+	void strainStressStiffUpdate();
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_INIT_CTOR_PY(PeriTriaxController,BoundaryController,"Engine for independently controlling stress or strain in periodic simulations.\n\n :yref:`PeriTriaxController.goal` contains absolute values for the controlled quantity, and :yref:`PeriTriaxController.stressMask` determines meaning of those values (0 for strain, 1 for stress): e.g. ``( 1<<0 | 1<<2 ) = 1 | 4 = 5`` means that ``goal[0]`` and ``goal[2]`` are stress values, and ``goal[1]`` is strain. \n\nSee scripts/test/periodic-triax.py for a simple example.",
 		((bool,dynCell,false,,"Imposed stress can be controlled using the packing stiffness or by applying the laws of dynamic (dynCell=true). Don't forget to assign a :yref:`mass<PeriTriaxController.mass>` to the cell."))

@@ -83,33 +83,33 @@ namespace CGT {
 	FlowBoundingSphereLinSolv<_Tesselation, FlowType>::FlowBoundingSphereLinSolv()
 	        : FlowType()
 	{
-		useSolver               = 0;
-		isLinearSystemSet       = 0;
+		useSolver = 0;
+		isLinearSystemSet = 0;
 		isFullLinearSystemGSSet = 0;
-		areCellsOrdered         = 0; //true when orderedCells is filled, turn it false after retriangulation
-		updatedRHS              = false;
-		ZERO                    = 0;
+		areCellsOrdered = 0; //true when orderedCells is filled, turn it false after retriangulation
+		updatedRHS = false;
+		ZERO = 0;
 #ifdef TAUCS_LIB
-		T_A  = &SystemMatrix;
-		F    = NULL; //The taucs factor
+		T_A = &SystemMatrix;
+		F = NULL;    //The taucs factor
 		Fccs = NULL; //The taucs factor in CCS format
 #endif
 		pardisoInitialized = false;
-		pTimeInt           = 0;
-		pTime1N            = 0;
-		pTime2N            = 0;
-		pTime1             = 0;
-		pTime2             = 0;
+		pTimeInt = 0;
+		pTime1N = 0;
+		pTime2N = 0;
+		pTime1 = 0;
+		pTime2 = 0;
 #ifdef LINSOLV
 		factorizedEigenSolver = false;
-		numFactorizeThreads   = 1;
-		numSolveThreads       = 1;
+		numFactorizeThreads = 1;
+		numSolveThreads = 1;
 #endif
 #ifdef SUITESPARSE_VERSION_4
 		CHOLMOD(start)(&com);
 		//CHOLMOD(wildcard)();
-		factorExists           = false;
-		com.nmethods           = 1;             // nOrderingMethods; //1;
+		factorExists = false;
+		com.nmethods = 1;                       // nOrderingMethods; //1;
 		com.method[0].ordering = CHOLMOD_METIS; // orderingMethod; //CHOLMOD_METIS;
 #ifdef PFV_GPU
 		if (multithread) com.maxGpuMemFraction = 0.4; //using (less than) half of the available memory for each solver
@@ -123,15 +123,15 @@ namespace CGT {
 	template <class _Tesselation, class FlowType> void FlowBoundingSphereLinSolv<_Tesselation, FlowType>::swapFwd(Real* v, int i2)
 	{
 		// FIXME: why not write std::swap(v[i2] , v[i2+1]); ? // it can be optimized even more than these three lines.
-		Real temp  = v[i2];
-		v[i2]      = v[i2 + 1];
-		v[i2 + 1]  = temp;
+		Real temp = v[i2];
+		v[i2] = v[i2 + 1];
+		v[i2 + 1] = temp;
 	}
 	template <class _Tesselation, class FlowType> void FlowBoundingSphereLinSolv<_Tesselation, FlowType>::swapFwd(int* v, int i2)
 	{
-		Real temp  = v[i2];
-		v[i2]      = v[i2 + 1];
-		v[i2 + 1]  = temp;
+		Real temp = v[i2];
+		v[i2] = v[i2 + 1];
+		v[i2 + 1] = temp;
 	}
 
 //spatial sort traits to use with a pair of CGAL::sphere pointers and integer.
@@ -158,9 +158,9 @@ namespace CGT {
 	template <class _Tesselation, class FlowType> void FlowBoundingSphereLinSolv<_Tesselation, FlowType>::resetLinearSystem()
 	{
 		FlowType::resetLinearSystem();
-		isLinearSystemSet       = false;
+		isLinearSystemSet = false;
 		isFullLinearSystemGSSet = false;
-		areCellsOrdered         = false;
+		areCellsOrdered = false;
 #ifdef TAUCS_LIB
 		if (F) taucs_supernodal_factor_free(F);
 		F = NULL;
@@ -197,15 +197,15 @@ namespace CGT {
 				}
 				CHOLMOD(start)(&com);
 			}
-			com.nmethods           = 1;             // nOrderingMethods; //1;
+			com.nmethods = 1;                       // nOrderingMethods; //1;
 			com.method[0].ordering = CHOLMOD_METIS; // orderingMethod; //CHOLMOD_METIS;
-			factorExists           = false;
+			factorExists = false;
 		}
 #endif
 
 		if (getCHOLMODPerfTimings) gettimeofday(&start, NULL);
 
-		RTriangulation& Tri     = T[currentTes].Triangulation();
+		RTriangulation& Tri = T[currentTes].Triangulation();
 		int             n_cells = Tri.number_of_finite_cells();
 		vector<int>     clen;
 		vector<int>     is;
@@ -226,9 +226,9 @@ namespace CGT {
 			//		//Segfault on 14.10, and useless overall since SuiteSparse has preconditionners (including metis)
 			// 		spatial_sort(orderedCells.begin(),orderedCells.end(), CellTraits_for_spatial_sort<RTriangulation>());
 			T_cells.clear();
-			T_index           = 0;
+			T_index = 0;
 			isLinearSystemSet = false;
-			areCellsOrdered   = true;
+			areCellsOrdered = true;
 		}
 		if (!isLinearSystemSet) {
 #ifdef TAUCS_LIB
@@ -284,11 +284,11 @@ namespace CGT {
 				}
 				for (int j = 0; j < 4; j++) {
 					neighbourCell = cell->neighbor(j);
-					nIndex        = neighbourCell->info().index;
+					nIndex = neighbourCell->info().index;
 					if (Tri.is_infinite(neighbourCell)) continue;
 					if (!isLinearSystemSet && !(neighbourCell->info().Pcondition || neighbourCell->info().blocked)) {
 						if (nIndex == 0) {
-							T_cells[++T_index]          = neighbourCell;
+							T_cells[++T_index] = neighbourCell;
 							neighbourCell->info().index = nIndex = T_index;
 						} else if (index > nIndex) {
 							is[T_nnz] = index;
@@ -318,11 +318,11 @@ namespace CGT {
 				T_A->colptr = &T_jn[0];
 				T_ia.resize(T_nnz);
 				T_A->rowind = &T_ia[0];
-				T_A->flags  = (TAUCS_DOUBLE | TAUCS_SYMMETRIC | TAUCS_LOWER);
+				T_A->flags = (TAUCS_DOUBLE | TAUCS_SYMMETRIC | TAUCS_LOWER);
 				T_an.resize(T_nnz);
 				T_A->values.d = &T_an[0];
-				T_A->n        = ncols;
-				T_A->m        = ncols;
+				T_A->n = ncols;
+				T_A->m = ncols;
 				int i, j, k;
 				for (j = 0; j < ncols; j++)
 					clen[j] = 0;
@@ -335,7 +335,7 @@ namespace CGT {
 				k = 0;
 				for (j = 0; j < ncols; j++) {
 					int tmp;
-					tmp     = clen[j];
+					tmp = clen[j];
 					clen[j] = (T_A->colptr[j]) = k;
 					k += tmp;
 				}
@@ -348,7 +348,7 @@ namespace CGT {
 					assert(i < ncols);
 					assert(j < ncols);
 					(T_A->taucs_values)[clen[j]] = vs[k];
-					(T_A->rowind)[clen[j]]       = i;
+					(T_A->rowind)[clen[j]] = i;
 					clen[j]++;
 					// 			cerr<<"i="<< i <<" j="<< j<<" v="<<vs[k]<<" clen[j]="<<clen[j]-1<<endl;
 				}
@@ -397,7 +397,7 @@ namespace CGT {
 	template <class _Tesselation, class FlowType> void FlowBoundingSphereLinSolv<_Tesselation, FlowType>::copyCellsToGs(Real dt)
 	{
 		for (int ii = 1; ii <= ncols; ii++) {
-			gsP[ii]  = T_cells[ii]->info().p();
+			gsP[ii] = T_cells[ii]->info().p();
 			gsdV[ii] = T_cells[ii]->info().dv();
 			if (fluidBulkModulus > 0) { gsdV[ii] -= T_cells[ii]->info().p() / (fluidBulkModulus * dt * T_cells[ii]->info().invVoidVolume()); }
 		}
@@ -451,13 +451,13 @@ namespace CGT {
 	int FlowBoundingSphereLinSolv<_Tesselation, FlowType>::setLinearSystemFullGS(Real dt)
 	{
 		//WARNING : boundary conditions (Pcondition, p values) must have been set for a correct definition
-		RTriangulation& Tri     = T[currentTes].Triangulation();
+		RTriangulation& Tri = T[currentTes].Triangulation();
 		int             n_cells = Tri.number_of_finite_cells();
 		if (!areCellsOrdered) {
 			T_cells.clear();
-			T_index                           = 0;
-			T_nnz                             = 0;
-			ncols                             = 0;
+			T_index = 0;
+			T_nnz = 0;
+			ncols = 0;
 			const FiniteCellsIterator cellEnd = Tri.finite_cells_end();
 			orderedCells.clear();
 
@@ -485,8 +485,8 @@ namespace CGT {
 				// 			gsP[k]=pZero;
 			}
 			// 		_gsP[0]= &ZERO;
-			gsP[0]                  = 0;
-			areCellsOrdered         = true;
+			gsP[0] = 0;
+			areCellsOrdered = true;
 			isFullLinearSystemGSSet = false;
 		}
 		for (int k = 0; k <= ncols; k++)
@@ -515,20 +515,20 @@ namespace CGT {
 					for (int j = 0; j < 4; j++) {
 						CellHandle neighbourCell = cell->neighbor(j);
 						if (Tri.is_infinite(neighbourCell)) {
-							fullAvalues[cell->info().index][j]  = 0;
+							fullAvalues[cell->info().index][j] = 0;
 							fullAcolumns[cell->info().index][j] = &gsP[0];
 							continue;
 						}
 						if (!neighbourCell->info().Pcondition) {
 							if (neighbourCell->info().index == 0) {
-								T_cells[++T_index]          = neighbourCell;
+								T_cells[++T_index] = neighbourCell;
 								neighbourCell->info().index = T_index;
 							}
 							++T_nnz;
-							fullAvalues[cell->info().index][j]  = (cell->info().kNorm())[j];
+							fullAvalues[cell->info().index][j] = (cell->info().kNorm())[j];
 							fullAcolumns[cell->info().index][j] = &gsP[neighbourCell->info().index];
 						} else {
-							fullAvalues[cell->info().index][j]  = 0;
+							fullAvalues[cell->info().index][j] = 0;
 							fullAcolumns[cell->info().index][j] = &gsP[0];
 							gsB[cell->info().index] += cell->info().kNorm()[j] * neighbourCell->info().p();
 						}
@@ -576,19 +576,19 @@ namespace CGT {
 #endif
 		int j2 = -1;
 		dp_max = 0;
-		p_max  = 0;
-		p_moy  = 0;
+		p_max = 0;
+		p_moy = 0;
 		dp_moy = 0;
-		sum_p  = 0;
+		sum_p = 0;
 		sum_dp = 0;
 		do {
 			if (++j2 >= 10) j2 = 0; //compute max/mean only each 10 iterations
 			if (j2 == 0) {
 				dp_max = 0;
-				p_max  = 0;
-				p_moy  = 0;
+				p_max = 0;
+				p_moy = 0;
 				dp_moy = 0;
-				sum_p  = 0;
+				sum_p = 0;
 				sum_dp = 0;
 #ifdef GS_OPEN_MP
 				for (int ii = 0; ii < num_threads; ii++)
@@ -608,7 +608,7 @@ namespace CGT {
 			for (int ii = 1; ii <= ncols; ii++) {
 				double** Acols = &(fullAcolumns[ii][0]);
 				double*  Avals = &(fullAvalues[ii][0]);
-				double   dp    = (((gsB[ii] - gsdV[ii] + Avals[0] * (*Acols[0]) + Avals[1] * (*Acols[1]) + Avals[2] * (*Acols[2])
+				double   dp = (((gsB[ii] - gsdV[ii] + Avals[0] * (*Acols[0]) + Avals[1] * (*Acols[1]) + Avals[2] * (*Acols[2])
                                                + Avals[3] * (*Acols[3]))
                                               * Avals[4])
                                              - gsP[ii])
@@ -620,11 +620,11 @@ namespace CGT {
 					const int tn = omp_get_thread_num();
 					t_sum_dp[tn] += math::abs(dp);
 					t_dp_max[tn] = max(t_dp_max[tn], math::abs(dp));
-					t_p_max[tn]  = max(t_p_max[tn], gsP[ii]);
+					t_p_max[tn] = max(t_p_max[tn], gsP[ii]);
 					t_sum_p[tn] += math::abs(gsP[ii]);
 #else
 					dp_max = max(dp_max, math::abs(dp));
-					p_max  = max(p_max, math::abs(gsP[ii]));
+					p_max = max(p_max, math::abs(gsP[ii]));
 					sum_p += math::abs(gsP[ii]);
 					sum_dp += math::abs(dp);
 #endif
@@ -643,7 +643,7 @@ namespace CGT {
 			}
 #endif
 			if (j2 == 0) {
-				p_moy  = sum_p / ncols;
+				p_moy = sum_p / ncols;
 				dp_moy = sum_dp / ncols;
 				if (debugOut) cerr << "GS : j=" << j << " p_moy=" << p_moy << " dp_moy=" << dp_moy << endl;
 			}
@@ -710,7 +710,7 @@ namespace CGT {
 #ifdef SUITESPARSE_VERSION_4
 		if (!isLinearSystemSet || (isLinearSystemSet && reApplyBoundaryConditions()) || !updatedRHS) ncols = setLinearSystem(dt);
 		copyCellsToLin(dt);
-		cholmod_dense* B   = CHOLMOD(zeros)(ncols, 1, Achol->xtype, &com); //cholmod_l_zeros(ncols, 1, Achol->xtype, &com);
+		cholmod_dense* B = CHOLMOD(zeros)(ncols, 1, Achol->xtype, &com); //cholmod_l_zeros(ncols, 1, Achol->xtype, &com);
 		Real*          B_x = (Real*)B->x;
 		for (int k = 0; k < ncols; k++)
 			B_x[k] = T_bv[k];
@@ -739,13 +739,13 @@ namespace CGT {
 				cout << "CHOLMOD Time to factorize " << ((end.tv_sec * 1000000 + end.tv_usec) - (start.tv_sec * 1000000 + start.tv_usec))
 				     << endl;
 			}
-			factorExists          = true;
+			factorExists = true;
 			factorizedEigenSolver = true;
 		}
 
 		if (!factorizeOnly) {
 			openblas_set_num_threads(numSolveThreads);
-			cholmod_dense* ex  = CHOLMOD(solve)(CHOLMOD_A, L, B, &com); // cholmod_l_solve(CHOLMOD_A, L, B, &com);
+			cholmod_dense* ex = CHOLMOD(solve)(CHOLMOD_A, L, B, &com); // cholmod_l_solve(CHOLMOD_A, L, B, &com);
 			Real*          e_x = (Real*)ex->x;
 			for (int k = 0; k < ncols; k++) {
 				T_x[k] = e_x[k];
@@ -762,7 +762,7 @@ namespace CGT {
 
 	template <class _Tesselation, class FlowType> void FlowBoundingSphereLinSolv<_Tesselation, FlowType>::initializeInternalEnergy()
 	{
-		Tesselation& Tes       = T[currentTes];
+		Tesselation& Tes = T[currentTes];
 		const long   sizeCells = Tes.cellHandles.size();
 #ifdef YADE_OPENMP
 #pragma omp parallel for
@@ -807,7 +807,7 @@ namespace CGT {
 
 
 		for (FiniteFacetsIterator f_it = Tri.finite_facets_begin(); f_it != Tri.finite_facets_end(); f_it++) {
-			const CellHandle& cell         = f_it->first;
+			const CellHandle& cell = f_it->first;
 			const CellHandle& neighborCell = f_it->first->neighbor(f_it->second);
 			if (cell->info().blocked || neighborCell->info().blocked || (cell->info().Pcondition && neighborCell->info().Pcondition)) continue;
 			facetFlowRate = cell->info().kNorm()[f_it->second] * (cell->info().p() - cell->neighbor(f_it->second)->info().p());
@@ -825,10 +825,10 @@ namespace CGT {
 
 	template <class _Tesselation, class FlowType> void FlowBoundingSphereLinSolv<_Tesselation, FlowType>::setNewCellTemps(bool addToDeltaTemp)
 	{
-		Tesselation& Tes                  = T[currentTes];
-		const long   sizeCells            = Tes.cellHandles.size();
+		Tesselation& Tes = T[currentTes];
+		const long   sizeCells = Tes.cellHandles.size();
 		Real         cavityInternalEnergy = 0;
-		Real         cavityVolume         = 0;
+		Real         cavityVolume = 0;
 #ifdef YADE_OPENMP
 #pragma omp parallel for
 #endif
@@ -864,8 +864,8 @@ namespace CGT {
 			for (long i2 = 0; i2 < sizeCells; i2++) {
 				CellHandle& cell = Tes.cellHandles[i2];
 				if (!cell->info().isCavity) continue;
-				Real oldTemp         = cell->info().temp();
-				cell->info().temp()  = cavityTemp;
+				Real oldTemp = cell->info().temp();
+				cell->info().temp() = cavityTemp;
 				cell->info().dtemp() = cell->info().temp() - oldTemp;
 			}
 		}
@@ -875,7 +875,7 @@ namespace CGT {
 	{
 #ifdef TAUCS_LIB
 		if (debugOut) cerr << endl << "TAUCS solve" << endl;
-		Real t  = taucs_ctime(); //timer
+		Real t = taucs_ctime();  //timer
 		Real t2 = taucs_ctime(); //global timer
 		if (!isLinearSystemSet || (isLinearSystemSet && reApplyBoundaryConditions())) {
 			ncols = setLinearSystem(dt);
@@ -888,7 +888,7 @@ namespace CGT {
 		t = taucs_ctime();
 		//taucs_logfile("stdout");//! VERY USEFULL!!!!!!!!!!! (disable to exclude output time from taucs_ctime() measurments)
 
-		taucs_double* x   = &T_x[0]; // the unknown vector to solve Ax=b
+		taucs_double* x = &T_x[0]; // the unknown vector to solve Ax=b
 		taucs_double* bod = &bodv[0];
 		taucs_double* xod = &xodv[0];
 
@@ -1221,7 +1221,7 @@ namespace CGT {
 		cout << endl << "TAUCS solve test" << endl;
 
 		double t = taucs_ctime(); //timer
-		ncols    = setLinearSystem();
+		ncols = setLinearSystem();
 
 		//taucs_logfile("stdout");//! VERY USEFULL!!!!!!!!!!! (disable to exclude output time from taucs_ctime() measurments)
 
@@ -1244,7 +1244,7 @@ namespace CGT {
 		int*              invperm;
 		taucs_ccs_matrix* Aod;
 
-		t         = taucs_ctime();
+		t = taucs_ctime();
 		double t2 = taucs_ctime();
 		// 1) Reordering
 		taucs_ccs_order(T_A, &perm, &invperm, "metis");

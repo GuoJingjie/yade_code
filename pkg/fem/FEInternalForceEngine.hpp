@@ -6,8 +6,8 @@
 *  GNU General Public License v2 or later. See file LICENSE for details. *
 *************************************************************************/
 #pragma once
-#include <core/GlobalEngine.hpp>
 #include <core/Callbacks.hpp>
+#include <core/GlobalEngine.hpp>
 #include <pkg/fem/FEInternalForceDispatchers.hpp>
 
 namespace yade { // Cannot have #include directive inside.

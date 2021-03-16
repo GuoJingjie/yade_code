@@ -68,9 +68,9 @@ protected:                                                                      
 	int& modifyClassIndex() override { return modifyClassIndexStatic(); }                                                                                  \
                                                                                                                                                                \
 public:                                                                                                                                                        \
-	static const int&  getClassIndexStatic() { return modifyClassIndexStatic(); }                                                                          \
-	const int& getClassIndex() const override { return getClassIndexStatic(); }                                                                            \
-	const int& getBaseClassIndex(int depth) const override                                                                                                 \
+	static const int& getClassIndexStatic() { return modifyClassIndexStatic(); }                                                                           \
+	const int&        getClassIndex() const override { return getClassIndexStatic(); }                                                                     \
+	const int&        getBaseClassIndex(int depth) const override                                                                                          \
 	{                                                                                                                                                      \
 		static boost::scoped_ptr<BaseClass> baseClass(new BaseClass);                                                                                  \
 		if (depth == 1) return baseClass->getClassIndex();                                                                                             \
@@ -94,9 +94,9 @@ protected:                                                                      
 	int& modifyClassIndex() override { return modifyClassIndexStatic(); }                                                                                  \
                                                                                                                                                                \
 public:                                                                                                                                                        \
-	static const int&  getClassIndexStatic() { return modifyClassIndexStatic(); }                                                                          \
-	const int& getClassIndex() const override { return getClassIndexStatic(); }                                                                            \
-	const int& getBaseClassIndex(int) const override                                                                                                       \
+	static const int& getClassIndexStatic() { return modifyClassIndexStatic(); }                                                                           \
+	const int&        getClassIndex() const override { return getClassIndexStatic(); }                                                                     \
+	const int&        getBaseClassIndex(int) const override                                                                                                \
 	{                                                                                                                                                      \
 		throw std::logic_error("One of the following errors was detected:\n(1) Class " #SomeClass                                                      \
 		                       " called createIndex() in its ctor (but it shouldn't, being a top-level indexable; only use REGISTER_INDEX_COUNTER, "   \
@@ -126,8 +126,8 @@ protected:                                                                      
 		SomeClass* Indexable##SomeClass = 0;                                                                                                           \
 		Indexable##SomeClass            = dynamic_cast<SomeClass*>(this);                                                                              \
 		if (Indexable##SomeClass) { assert(Indexable##SomeClass); }                                                                                    \
-		int& maxIndex = modifyMaxCurrentlyUsedIndexStatic();                                                                                                \
-		maxIndex++;                                                                                                                                         \
+		int& maxIndex = modifyMaxCurrentlyUsedIndexStatic();                                                                                           \
+		maxIndex++;                                                                                                                                    \
 	}
 
 // macro that should be passed in the 4th argument of YADE_CLASS_BASE_ATTR_PY in the top-level indexable

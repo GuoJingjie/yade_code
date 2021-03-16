@@ -26,8 +26,8 @@ private:
 public:
 	// inherited from GenericSpheresContact: Vector3r& normal;
 	Real &radius1, &radius2;
-	virtual ~ScGeom() = default;
-	ScGeom(const ScGeom&) = default;
+	virtual ~ScGeom()      = default;
+	ScGeom(const ScGeom&)  = default;
 	inline ScGeom& operator=(const ScGeom& source)
 	{
 		normal           = source.normal;

@@ -3,10 +3,10 @@
 
 #include "InsertionSortCollider.hpp"
 #include <lib/high-precision/Constants.hpp>
+#include <core/Dispatching.hpp>
 #include <core/Interaction.hpp>
 #include <core/InteractionContainer.hpp>
 #include <core/Scene.hpp>
-#include <core/Dispatching.hpp>
 #include <pkg/common/Sphere.hpp>
 
 #include <boost/static_assert.hpp>

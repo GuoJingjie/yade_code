@@ -22,8 +22,8 @@ private:
 
 public:
 	bool isActivated() override { return active; }
-	Real         sumPosForces, sumNegForces;
-	Real         initAccelTime_s /* value always in s, computed from initAccelTime */;
+	Real sumPosForces, sumNegForces;
+	Real initAccelTime_s /* value always in s, computed from initAccelTime */;
 	/** coordinates of pos/neg bodies in the direction of axis */
 	vector<Real> posCoords, negCoords;
 

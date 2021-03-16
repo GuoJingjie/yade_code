@@ -9,10 +9,10 @@ namespace yade {
 namespace CGT {
 	class Tens {
 	public:
-		virtual ~Tens()                                      = default;
+		virtual ~Tens() = default;
 		virtual Real  operator()(int /*i*/, int /*j*/) const = 0;
-		virtual Real& operator()(int /*i*/, int /*j*/)       = 0;
-		virtual void  reset()                                = 0;
+		virtual Real& operator()(int /*i*/, int /*j*/) = 0;
+		virtual void  reset() = 0;
 		Real          Norme2();
 		Real          Norme();
 		Real          Trace();

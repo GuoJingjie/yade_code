@@ -83,7 +83,7 @@ public:
 	int  FinalIterationPhase1, Iteration /*, testEquilibriumInterval*/; //FIXME : what is that?
 
 	void action() override;
-	void         updateParameters();
+	void updateParameters();
 
 	///Change physical properties of interactions and/or bodies in the middle of a simulation (change only friction for the moment, complete this function to set cohesion and others before compression test)
 	void setContactProperties(Real frictionDegree);

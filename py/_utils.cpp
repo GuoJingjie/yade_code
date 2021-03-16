@@ -1,6 +1,6 @@
 #include <lib/high-precision/Constants.hpp>
-#include <py/_utils.hpp>
 #include <core/InteractionLoop.hpp>
+#include <py/_utils.hpp>
 // https://codeyarns.com/2014/03/11/how-to-selectively-ignore-a-gcc-warning/
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"

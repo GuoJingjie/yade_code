@@ -47,7 +47,7 @@ public:
 REGISTER_SERIALIZABLE(InterpolatingDirectedForceEngine);
 
 struct RadialForceEngine : public PartialEngine {
-	void action() override;
+	void         action() override;
 	virtual void postLoad(RadialForceEngine&);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(RadialForceEngine,PartialEngine,"Apply force of given magnitude directed away from spatial axis.",

@@ -20,9 +20,9 @@ Caulk, R. and Chareyre, B. (2019) An open framework for the simulation of therma
 #ifdef YADE_OPENMP
 #pragma once
 
+#include <core/Dispatching.hpp>
 #include <core/PartialEngine.hpp>
 #include <core/State.hpp>
-#include <core/Dispatching.hpp>
 #include <pkg/dem/JointedCohesiveFrictionalPM.hpp>
 #include <pkg/dem/ScGeom.hpp>
 
@@ -70,33 +70,33 @@ public:
 	Real         cavityDtemp;
 
 	virtual ~ThermalEngine();
-	void action() override;
-	void         setReynoldsNumbers();
-	void         setInitialValues();
-	void         applyTempDeltaToSolids(Real delT);
-	void         resetFlowBoundaryTemps();
-	void         resetBoundaryFluxSums();
-	void         setConductionBoundary();
-	void         thermalExpansion();
-	void         initializeInternalEnergy();
-	void         computeNewPoreTemperatures();
-	void         computeNewParticleTemperatures();
-	void         computeSolidFluidFluxes();
-	void         computeFluidFluidConduction();
-	void         updateForces();
-	void         computeVertexSphericalArea();
-	void         computeFlux(CellHandle& cell, const shared_ptr<Body>& b, const Real surfaceArea);
-	void         computeSolidSolidFluxes();
-	void         timeStepEstimate();
-	CVector      cellBarycenter(const CellHandle& cell);
-	void         computeCellVolumeChangeFromDeltaTemp(CellHandle& cell, Real cavDens);
-	void         accountForCavitySolidVolumeChange();
-	void         accountForCavityThermalVolumeChange();
-	void         unboundCavityParticles();
-	void         computeCellVolumeChangeFromSolidVolumeChange(CellHandle& cell);
-	Real         getThermalDT() const { return thermalDT; }
-	int          getConductionIterPeriod() const { return conductionIterPeriod; }
-	Real         getMaxTimeStep() const { return maxTimeStep; }
+	void    action() override;
+	void    setReynoldsNumbers();
+	void    setInitialValues();
+	void    applyTempDeltaToSolids(Real delT);
+	void    resetFlowBoundaryTemps();
+	void    resetBoundaryFluxSums();
+	void    setConductionBoundary();
+	void    thermalExpansion();
+	void    initializeInternalEnergy();
+	void    computeNewPoreTemperatures();
+	void    computeNewParticleTemperatures();
+	void    computeSolidFluidFluxes();
+	void    computeFluidFluidConduction();
+	void    updateForces();
+	void    computeVertexSphericalArea();
+	void    computeFlux(CellHandle& cell, const shared_ptr<Body>& b, const Real surfaceArea);
+	void    computeSolidSolidFluxes();
+	void    timeStepEstimate();
+	CVector cellBarycenter(const CellHandle& cell);
+	void    computeCellVolumeChangeFromDeltaTemp(CellHandle& cell, Real cavDens);
+	void    accountForCavitySolidVolumeChange();
+	void    accountForCavityThermalVolumeChange();
+	void    unboundCavityParticles();
+	void    computeCellVolumeChangeFromSolidVolumeChange(CellHandle& cell);
+	Real    getThermalDT() const { return thermalDT; }
+	int     getConductionIterPeriod() const { return conductionIterPeriod; }
+	Real    getMaxTimeStep() const { return maxTimeStep; }
 	//void         applyBoundaryHeatFluxes();
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_INIT_CTOR_PY(ThermalEngine,PartialEngine,"An engine typically used in combination with FlowEngine to simulate thermal-hydraulic-mechanical processes. Framework description and demonstration presented within the following paper [Caulk2019a]_ :Caulk, R.A. and Chareyre, B. (2019) An open framework for the simulation of thermal-hydraulic-mechanical processes in discrete element systems. Thermal Process Engineering: Proceedings of DEM8 International Conference for Discrete Element Methods, Enschede Netherlands, July 2019.",

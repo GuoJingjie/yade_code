@@ -35,8 +35,8 @@ public:
 	{
 		_pression = &pression;
 		period[0] = period[1] = period[2] = 0;
-		baseIndex                         = -1;
-		volumeSign                        = 0;
+		baseIndex = -1;
+		volumeSign = 0;
 	}
 	~PeriodicCellInfo(void) { }
 
@@ -74,10 +74,10 @@ public:
 	PeriodicVertexInfo(void)
 	{
 		isFictious = false;
-		s          = 0;
-		i          = 0;
+		s = 0;
+		i = 0;
 		period[0] = period[1] = period[2] = 0;
-		isGhost                           = false;
+		isGhost = false;
 	}
 	bool isReal(void) { return !(isFictious || isGhost); }
 };
@@ -103,11 +103,11 @@ YADE_PLUGIN((FlowEngine_PeriodicInfo));
 
 class PeriodicFlowEngine : public FlowEngine_PeriodicInfo {
 public:
-	void         triangulate(FlowSolver& flow);
+	void triangulate(FlowSolver& flow);
 	void buildTriangulation(Real pzero, FlowSolver& flow) override;
-	void         initializeVolumes(FlowSolver& flow);
-	void         updateVolumes(FlowSolver& flow);
-	Real         volumeCell(CellHandle cell);
+	void initializeVolumes(FlowSolver& flow);
+	void updateVolumes(FlowSolver& flow);
+	Real volumeCell(CellHandle cell);
 
 	Real        volumeCellSingleFictious(CellHandle cell);
 	inline void locateCell(CellHandle baseCell, unsigned int& index, int& baseIndex, FlowSolver& flow, unsigned int count = 0);
@@ -139,8 +139,8 @@ REGISTER_SERIALIZABLE(PeriodicFlowEngine);
 
 
 CVector PeriodicCellInfo::hSize[] = { CVector(), CVector(), CVector() };
-CVector PeriodicCellInfo::deltaP  = CVector();
-CVector PeriodicCellInfo::gradP   = CVector();
+CVector PeriodicCellInfo::deltaP = CVector();
+CVector PeriodicCellInfo::gradP = CVector();
 
 CREATE_LOGGER(PeriodicFlowEngine);
 
@@ -162,7 +162,7 @@ void PeriodicFlowEngine::action()
 			return;
 		}
 		initializeVolumes(*solver);
-		backgroundSolver    = solver;
+		backgroundSolver = solver;
 		backgroundCompleted = true;
 	}
 	//         if ( first ) {buildTriangulation ( pZero ); updateTriangulation = false; initializeVolumes();}
@@ -195,10 +195,10 @@ void PeriodicFlowEngine::action()
 	for (int id = 0; id <= Tes.maxId; id++) {
 		assert(Tes.vertexHandles[id] != NULL);
 		const Tesselation::VertexInfo& v_info = Tes.vertexHandles[id]->info();
-		force                                 = (pressureForce) ? Vector3r((v_info.forces)[0], v_info.forces[1], v_info.forces[2]) : Vector3r(0, 0, 0);
-		torque                                = Vector3r(0, 0, 0);
+		force = (pressureForce) ? Vector3r((v_info.forces)[0], v_info.forces[1], v_info.forces[2]) : Vector3r(0, 0, 0);
+		torque = Vector3r(0, 0, 0);
 		if (shearLubrication || viscousShear) {
-			force  = force + solver->shearLubricationForces[v_info.id()];
+			force = force + solver->shearLubricationForces[v_info.id()];
 			torque = torque + solver->shearLubricationTorques[v_info.id()];
 			if (pumpTorque) torque = torque + solver->pumpLubricationTorques[v_info.id()];
 			if (twistTorque) torque = torque + solver->twistLubricationTorques[v_info.id()];
@@ -218,17 +218,17 @@ void PeriodicFlowEngine::action()
 			if (useSolver == 0) LOG_ERROR("background calculations not available for Gauss-Seidel");
 			if (fluidBulkModulus > 0 || doInterpolate)
 				solver->interpolate(solver->T[solver->currentTes], backgroundSolver->T[backgroundSolver->currentTes]);
-			solver           = backgroundSolver;
+			solver = backgroundSolver;
 			backgroundSolver = shared_ptr<FlowSolver>(new FlowSolver);
 			//Copy imposed pressures/flow from the old solver
 			backgroundSolver->imposedP = vector<pair<CGT::Point, Real>>(solver->imposedP);
 			backgroundSolver->imposedF = vector<pair<CGT::Point, Real>>(solver->imposedF);
 			setPositionsBuffer(false);
-			cachedCell              = Cell(*(scene->cell));
-			backgroundCompleted     = false;
+			cachedCell = Cell(*(scene->cell));
+			backgroundCompleted = false;
 			retriangulationLastIter = ellapsedIter;
-			ellapsedIter            = 0;
-			epsVolCumulative        = 0;
+			ellapsedIter = 0;
+			epsVolCumulative = 0;
 			boost::thread workerThread(&PeriodicFlowEngine::backgroundAction, this);
 			workerThread.detach();
 			initializeVolumes(*solver);
@@ -243,8 +243,8 @@ void PeriodicFlowEngine::action()
 			buildTriangulation(pZero, *solver);
 			initializeVolumes(*solver);
 			computeViscousForces(*solver);
-			updateTriangulation     = false;
-			epsVolCumulative        = 0;
+			updateTriangulation = false;
+			epsVolCumulative = 0;
 			retriangulationLastIter = 0;
 			ReTrg++;
 		}
@@ -267,7 +267,7 @@ void PeriodicFlowEngine::action()
 
 void PeriodicFlowEngine::triangulate(FlowSolver& flow)
 {
-	Tesselation&     Tes    = flow.tesselation();
+	Tesselation&     Tes = flow.tesselation();
 	vector<posData>& buffer = multithread ? positionBufferParallel : positionBufferCurrent;
 	FOREACH(const posData& b, buffer)
 	{
@@ -275,12 +275,12 @@ void PeriodicFlowEngine::triangulate(FlowSolver& flow)
 		Vector3i period;
 		Vector3r wpos;
 		// FIXME: use "sheared" variant if the cell is sheared
-		wpos                  = cachedCell.wrapPt(b.pos, period);
-		const Body::id_t& id  = b.id;
+		wpos = cachedCell.wrapPt(b.pos, period);
+		const Body::id_t& id = b.id;
 		const Real&       rad = b.radius;
-		const Real&       x   = wpos[0];
-		const Real&       y   = wpos[1];
-		const Real&       z   = wpos[2];
+		const Real&       x = wpos[0];
+		const Real&       y = wpos[1];
+		const Real&       z = wpos[2];
 		VertexHandle      vh0 = Tes.insert(x, y, z, rad, id);
 		//                 VertexHandle vh0=Tes.insert ( b.pos[0], b.pos[1], b.pos[2], b.radius, b.id );
 		if (vh0 == NULL) {
@@ -332,11 +332,11 @@ void PeriodicFlowEngine::triangulate(FlowSolver& flow)
 
 Real PeriodicFlowEngine::volumeCell(CellHandle cell)
 {
-	static const Real inv6   = 1 / 6.;
-	const Vector3r    p0     = positionBufferCurrent[cell->vertex(0)->info().id()].pos + makeVector3r(cell->vertex(0)->info().ghostShift());
-	const Vector3r    p1     = positionBufferCurrent[cell->vertex(1)->info().id()].pos + makeVector3r(cell->vertex(1)->info().ghostShift());
-	const Vector3r    p2     = positionBufferCurrent[cell->vertex(2)->info().id()].pos + makeVector3r(cell->vertex(2)->info().ghostShift());
-	const Vector3r    p3     = positionBufferCurrent[cell->vertex(3)->info().id()].pos + makeVector3r(cell->vertex(3)->info().ghostShift());
+	static const Real inv6 = 1 / 6.;
+	const Vector3r    p0 = positionBufferCurrent[cell->vertex(0)->info().id()].pos + makeVector3r(cell->vertex(0)->info().ghostShift());
+	const Vector3r    p1 = positionBufferCurrent[cell->vertex(1)->info().id()].pos + makeVector3r(cell->vertex(1)->info().ghostShift());
+	const Vector3r    p2 = positionBufferCurrent[cell->vertex(2)->info().id()].pos + makeVector3r(cell->vertex(2)->info().ghostShift());
+	const Vector3r    p3 = positionBufferCurrent[cell->vertex(3)->info().id()].pos + makeVector3r(cell->vertex(3)->info().ghostShift());
 	Real              volume = inv6 * ((p0 - p1).cross(p0 - p2)).dot(p0 - p3);
 	if (!(cell->info().volumeSign)) cell->info().volumeSign = (volume > 0) ? 1 : -1;
 	return volume;
@@ -345,18 +345,18 @@ Real PeriodicFlowEngine::volumeCell(CellHandle cell)
 Real PeriodicFlowEngine::volumeCellSingleFictious(CellHandle cell)
 {
 	Vector3r V[3];
-	int      b              = 0;
-	int      w              = 0;
+	int      b = 0;
+	int      w = 0;
 	cell->info().volumeSign = 1;
-	Real Wall_coordinate    = 0;
+	Real Wall_coordinate = 0;
 
 	for (int y = 0; y < 4; y++) {
 		if (!(cell->vertex(y)->info().isFictious)) {
 			const shared_ptr<Body>& sph = Body::byId(cell->vertex(y)->info().id(), scene);
-			V[w]                        = sph->state->pos + makeVector3r(cell->vertex(y)->info().ghostShift());
+			V[w] = sph->state->pos + makeVector3r(cell->vertex(y)->info().ghostShift());
 			w++;
 		} else {
-			b                           = cell->vertex(y)->info().id();
+			b = cell->vertex(y)->info().id();
 			const shared_ptr<Body>& wll = Body::byId(b, scene);
 			if (!solver->boundary(b).useMaxMin)
 				Wall_coordinate = wll->state->pos[solver->boundary(b).coordinate]
@@ -391,11 +391,11 @@ void PeriodicFlowEngine::locateCell(CellHandle baseCell, unsigned int& index, in
 			center += 0.25 * makeVector3r(baseCell->vertex(k)->point().point());
 	else {
 		Real boundPos = 0;
-		int  coord    = 0;
+		int  coord = 0;
 		for (int k = 0; k < 4; k++) {
 			if (!baseCell->vertex(k)->info().isFictious) center += 0.3333333333 * makeVector3r(baseCell->vertex(k)->point().point());
 			else {
-				coord    = flow.boundary(baseCell->vertex(k)->info().id()).coordinate;
+				coord = flow.boundary(baseCell->vertex(k)->info().id()).coordinate;
 				boundPos = flow.boundary(baseCell->vertex(k)->info().id()).p[coord];
 			}
 		}
@@ -408,7 +408,7 @@ void PeriodicFlowEngine::locateCell(CellHandle baseCell, unsigned int& index, in
 			baseInfo.isGhost = false;
 			return;
 		}
-		CellHandle ch      = Tri.locate(CGT::Sphere(wdCenter[0], wdCenter[1], wdCenter[2]));
+		CellHandle ch = Tri.locate(CGT::Sphere(wdCenter[0], wdCenter[1], wdCenter[2]));
 		baseInfo.period[0] = period[0];
 		baseInfo.period[1] = period[1];
 		baseInfo.period[2] = period[2];
@@ -449,10 +449,10 @@ void PeriodicFlowEngine::locateCell(CellHandle baseCell, unsigned int& index, in
 			// 			}
 		}
 
-		baseInfo.isGhost    = true;
-		baseInfo._pression  = &(ch->info().p());
-		baseInfo.index      = ch->info().index;
-		baseInfo.baseIndex  = ch->info().baseIndex;
+		baseInfo.isGhost = true;
+		baseInfo._pression = &(ch->info().p());
+		baseInfo.index = ch->info().index;
+		baseInfo.baseIndex = ch->info().baseIndex;
 		baseInfo.Pcondition = ch->info().Pcondition;
 	} else {
 		baseInfo.isGhost = false;
@@ -469,8 +469,8 @@ void PeriodicFlowEngine::updateVolumes(FlowSolver& flow)
 	if (debug) cout << "Updating volumes.............." << endl;
 	Real invDeltaT = 1 / scene->dt;
 	Real newVol, dVol;
-	epsVolMax    = 0;
-	Real totVol  = 0;
+	epsVolMax = 0;
+	Real totVol = 0;
 	Real totDVol = 0;
 	Real totVol0 = 0;
 	Real totVol1 = 0;
@@ -492,7 +492,7 @@ void PeriodicFlowEngine::updateVolumes(FlowSolver& flow)
 		dVol = cell->info().volumeSign * (newVol - cell->info().volume());
 		totDVol += dVol;
 		if (newVol != 0) { epsVolMax = max(epsVolMax, math::abs(dVol / newVol)); }
-		cell->info().dv()     = dVol * invDeltaT;
+		cell->info().dv() = dVol * invDeltaT;
 		cell->info().volume() = newVol;
 	}
 	for (unsigned int n = 0; n < flow.imposedF.size(); n++) {
@@ -548,9 +548,9 @@ void PeriodicFlowEngine::buildTriangulation(Real pZero2, FlowSolver& flow)
 	if (debug) cout << endl << "initializePressure------" << endl << endl;
 	// Define the ghost cells and add indexes to the cells inside the period (the ones that will contain the pressure unknowns)
 	//This must be done after boundary conditions and initialize pressure, else the indexes are not good (not accounting imposedP): FIXME
-	unsigned int             index     = 0;
+	unsigned int             index = 0;
 	int                      baseIndex = -1;
-	FlowSolver::Tesselation& Tes       = flow.tesselation();
+	FlowSolver::Tesselation& Tes = flow.tesselation();
 	Tes.cellHandles.resize(Tes.Triangulation().number_of_finite_cells());
 	const FiniteCellsIterator cellend = Tes.Triangulation().finite_cells_end();
 	for (FiniteCellsIterator cell = Tes.Triangulation().finite_cells_begin(); cell != cellend; cell++) {
@@ -571,9 +571,9 @@ void PeriodicFlowEngine::buildTriangulation(Real pZero2, FlowSolver& flow)
 	}
 	if (debug) cout << endl << "locateCell------" << endl << endl;
 	flow.computePermeability();
-	porosity       = flow.vPoralPorosity / flow.vTotalPorosity;
+	porosity = flow.vPoralPorosity / flow.vTotalPorosity;
 	flow.tolerance = tolerance;
-	flow.relax     = relax;
+	flow.relax = relax;
 
 	flow.displayStatistics();
 	//FIXME: check interpolate() for the periodic case, at least use the mean pressure from previous step.
@@ -588,11 +588,11 @@ void PeriodicFlowEngine::buildTriangulation(Real pZero2, FlowSolver& flow)
 
 void PeriodicFlowEngine::preparePShifts()
 {
-	CellInfo::gradP    = makeCgVect(gradP);
+	CellInfo::gradP = makeCgVect(gradP);
 	CellInfo::hSize[0] = makeCgVect(scene->cell->hSize.col(0));
 	CellInfo::hSize[1] = makeCgVect(scene->cell->hSize.col(1));
 	CellInfo::hSize[2] = makeCgVect(scene->cell->hSize.col(2));
-	CellInfo::deltaP   = CGT::CVector(CellInfo::hSize[0] * CellInfo::gradP, CellInfo::hSize[1] * CellInfo::gradP, CellInfo::hSize[2] * CellInfo::gradP);
+	CellInfo::deltaP = CGT::CVector(CellInfo::hSize[0] * CellInfo::gradP, CellInfo::hSize[1] * CellInfo::gradP, CellInfo::hSize[2] * CellInfo::gradP);
 }
 
 

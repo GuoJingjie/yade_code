@@ -3,8 +3,8 @@
 
 #pragma once
 #include <core/Body.hpp>
-#include <core/Shape.hpp>
 #include <core/Dispatching.hpp>
+#include <core/Shape.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <pkg/dem/FrictPhys.hpp>
 #ifdef YADE_OPENGL
@@ -209,7 +209,7 @@ private:
 
 public:
 	void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
-	void         out(Quaternionr q);
+	void out(Quaternionr q);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_Cylinder,GlShapeFunctor,"Renders :yref:`Cylinder` object",
 		((bool,wire,false,,"Only show wireframe (controlled by ``glutSlices`` and ``glutStacks``."))

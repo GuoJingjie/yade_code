@@ -167,7 +167,7 @@ public:
 	Real              clumpMemberCentreZ;
 
 	// Evaluate function
-	Real         FunctionValue(Real x[3]);
+	Real FunctionValue(Real x[3]);
 	Real EvaluateFunction(Real x[3]) override
 	{
 		//return this->vtkImplicitFunction::EvaluateFunction(x);

@@ -9,8 +9,8 @@
 #pragma once
 
 #include <core/Aabb.hpp>
-#include <pkg/common/Box.hpp>
 #include <core/Dispatching.hpp>
+#include <pkg/common/Box.hpp>
 #include <pkg/common/Facet.hpp>
 #include <pkg/common/Sphere.hpp>
 

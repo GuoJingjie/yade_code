@@ -27,8 +27,8 @@ public:
 
 	typedef boost::multi_array<shared_ptr<PDFCalculator>, 2> PDF;
 
-	static void  getSpectrums(vector<PDF>&);
-	void action() override;
+	static void getSpectrums(vector<PDF>&);
+	void        action() override;
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(PDFEngine, PeriodicEngine,

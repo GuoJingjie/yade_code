@@ -53,7 +53,7 @@ public slots:
 	virtual void createViewSlot();
 	virtual void resizeViewSlot(int id, int wd, int ht);
 	virtual void closeViewSlot(int id = -1);
-	void timerEvent(QTimerEvent* event) override;
+	void         timerEvent(QTimerEvent* event) override;
 	virtual void startTimerSlot();
 	void         centerAllViews(const Real& suggestedRadius, const Vector3r& gridOrigin, const Vector3r& suggestedCenter, int gridDecimalPlaces);
 

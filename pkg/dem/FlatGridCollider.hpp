@@ -34,11 +34,11 @@ class FlatGridCollider : public Collider {
 	// needed for maxVelSq
 	shared_ptr<NewtonIntegrator> newton;
 	// track maximum distance of fastest body, at every step in isActivated
-	Real         fastestBodyMaxDist;
-	void         initIndices();
-	void         updateGrid();
-	void         updateBodyCells(const shared_ptr<Body>& b);
-	void         updateCollisions();
+	Real fastestBodyMaxDist;
+	void initIndices();
+	void updateGrid();
+	void updateBodyCells(const shared_ptr<Body>& b);
+	void updateCollisions();
 	void action() override;
 	bool isActivated() override;
 	DECLARE_LOGGER;

@@ -100,12 +100,12 @@ public:
 #endif
 	void draw() override;
 	void drawWithNames() override;
-	void         displayMessage(const std::string& s) { QGLViewer::displayMessage(QString(s.c_str())); }
-	void         centerScene(
-	                const Real&     suggestedRadius      = -1,
-	                const Vector3r& setGridOrigin        = Vector3r(0, 0, 0),
-	                const Vector3r& suggestedCenter      = Vector3r(0, 0, 0),
-	                int             setGridDecimalPlaces = 4);
+	void displayMessage(const std::string& s) { QGLViewer::displayMessage(QString(s.c_str())); }
+	void centerScene(
+	        const Real&     suggestedRadius      = -1,
+	        const Vector3r& setGridOrigin        = Vector3r(0, 0, 0),
+	        const Vector3r& suggestedCenter      = Vector3r(0, 0, 0),
+	        int             setGridDecimalPlaces = 4);
 	void     centerPeriodic();
 	void     mouseMovesCamera();
 	void     mouseMovesManipulatedFrame(qglviewer::Constraint* c = NULL);
@@ -149,15 +149,15 @@ protected:
 	void keyPressEvent(QKeyEvent* e) override;
 	void postDraw() override;
 	// overridden in the player that doesn't get time from system clock but from the db
-	virtual string  getRealTimeString() const;
-	void    closeEvent(QCloseEvent* e) override;
-	void    postSelection(const QPoint& point) override;
-	void    endSelection(const QPoint& point) override;
-	void    mouseDoubleClickEvent(QMouseEvent* e) override;
-	void    wheelEvent(QWheelEvent* e) override;
-	void    mouseMoveEvent(QMouseEvent* e) override;
-	void    mousePressEvent(QMouseEvent* e) override;
-	QString helpString() const override;
+	virtual string getRealTimeString() const;
+	void           closeEvent(QCloseEvent* e) override;
+	void           postSelection(const QPoint& point) override;
+	void           endSelection(const QPoint& point) override;
+	void           mouseDoubleClickEvent(QMouseEvent* e) override;
+	void           wheelEvent(QWheelEvent* e) override;
+	void           mouseMoveEvent(QMouseEvent* e) override;
+	void           mousePressEvent(QMouseEvent* e) override;
+	QString        helpString() const override;
 
 	// Draws text, where each letter has a shifted background letter of opposite color.
 	void drawReadableNum(const Real& n, const Vector3r& pos, unsigned precision = 4, const Vector3r& color = Vector3r(1, 1, 1));

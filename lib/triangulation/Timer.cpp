@@ -20,7 +20,7 @@ void Real_timer::start()
 {
 	//CGAL_precondition( ! running);
 	//started = get_real_time();
-	T1      = clock();
+	T1 = clock();
 	running = true;
 	++interv;
 }
@@ -30,24 +30,24 @@ void Real_timer::stop()
 	//CGAL_precondition( running);
 	//double t = get_real_time();
 	//elapsed += (t - started);
-	T2      = difftime(clock(), T1);
+	T2 = difftime(clock(), T1);
 	started = 0.0;
-	T1      = 0;
+	T1 = 0;
 	running = false;
 }
 
 void Real_timer::reset()
 {
-	interv  = 0;
+	interv = 0;
 	elapsed = 0.0;
-	T2      = 0;
+	T2 = 0;
 	if (running) {
 		//started = get_real_time();
 		T1 = clock();
 		++interv;
 	} else {
 		started = 0.0;
-		T1      = 0;
+		T1 = 0;
 	}
 }
 
@@ -63,7 +63,7 @@ double Real_timer::time() const
 void Real_timer::top(std::string Texte)
 {
 	clock_t T3 = clock();
-	double  r  = (double)(T3 - T1) / CLOCKS_PER_SEC;
+	double  r = (double)(T3 - T1) / CLOCKS_PER_SEC;
 	std::cout << Texte << " .......... " << r << " s" << std::endl;
 	reset();
 }

@@ -261,7 +261,7 @@ REGISTER_SERIALIZABLE(Ip2_FrictMat_CpmMat_FrictPhys);
 class Law2_ScGeom_CpmPhys_Cpm : public LawFunctor {
 public:
 	bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
-	Real         elasticEnergy();
+	Real elasticEnergy();
 
 	Real yieldSigmaTMagnitude(Real /*sigmaN*/, Real /*omega*/, Real /*undamagedCohesion*/, Real /*tanFrictionAngle*/)
 	{
@@ -349,7 +349,7 @@ class CpmStateUpdater : public PeriodicEngine {
 
 public:
 	void action() override { update(scene); }
-	void         update(Scene* rb = NULL);
+	void update(Scene* rb = NULL);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CpmStateUpdater,PeriodicEngine,"Update :yref:`CpmState` of bodies based on state variables in :yref:`CpmPhys` of interactions with this bod. In particular, bodies' colors and :yref:`CpmState::normDmg` depending on average :yref:`damage<CpmPhys::omega>` of their interactions and number of interactions that were already fully broken and have disappeared is updated. This engine contains its own loop (2 loops, more precisely) over all bodies and should be run periodically to update colors during the simulation, if desired.",
 		((Real,avgRelResidual,NaN,,"Average residual strength at last run."))

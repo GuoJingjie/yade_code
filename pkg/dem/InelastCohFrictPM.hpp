@@ -118,7 +118,7 @@ REGISTER_SERIALIZABLE(InelastCohFrictPhys);
 class Ip2_2xInelastCohFrictMat_InelastCohFrictPhys : public IPhysFunctor {
 public:
 	void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
-	int          cohesionDefinitionIteration;
+	int  cohesionDefinitionIteration;
 
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR(Ip2_2xInelastCohFrictMat_InelastCohFrictPhys,IPhysFunctor,
@@ -135,8 +135,8 @@ REGISTER_SERIALIZABLE(Ip2_2xInelastCohFrictMat_InelastCohFrictPhys);
 
 class Law2_ScGeom6D_InelastCohFrictPhys_CohesionMoment : public LawFunctor {
 public:
-	Real         normElastEnergy();
-	Real         shearElastEnergy();
+	Real normElastEnergy();
+	Real shearElastEnergy();
 	bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(Law2_ScGeom6D_InelastCohFrictPhys_CohesionMoment,LawFunctor,"This law is currently under developpement. Final version and documentation will come before the end of 2014.",

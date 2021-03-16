@@ -27,10 +27,10 @@ REGISTER_SERIALIZABLE(DomainLimiter);
 class LawTester : public PartialEngine {
 	Body::id_t id1, id2; // shorthands for local use
 public:
-	void         init();
+	void init();
 	void action() override;
-	void         postLoad(LawTester&);
-	void         warnDeprec(const string& s1, const string& s2)
+	void postLoad(LawTester&);
+	void warnDeprec(const string& s1, const string& s2)
 	{
 		if (!warnedDeprecPtRot) {
 			warnedDeprecPtRot = true;
@@ -121,7 +121,7 @@ public:
 	};
 	std::vector<OctreeBox> boxes;
 	void                   postLoad(GlExtra_OctreeCubes&);
-	void           render() override;
+	void                   render() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(GlExtra_OctreeCubes,GlExtraDrawer,"Render boxed read from file",
 		((string,boxesFile,,Attr::triggerPostLoad,"File to read boxes from; ascii files with ``x0 y0 z0 x1 y1 z1 c`` records, where ``c`` is an integer specifying fill (0 for wire, 1 for filled)."))

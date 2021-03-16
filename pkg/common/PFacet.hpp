@@ -8,10 +8,10 @@
 #pragma once
 #include <lib/base/Math.hpp>
 #include <core/Body.hpp>
-#include <core/Shape.hpp>
 #include <core/Dispatching.hpp>
-#include <pkg/common/Grid.hpp>
 #include <core/InteractionLoop.hpp>
+#include <core/Shape.hpp>
+#include <pkg/common/Grid.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <pkg/dem/ElasticContactLaw.hpp>
 #include <pkg/dem/FrictPhys.hpp>

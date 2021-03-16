@@ -91,7 +91,7 @@ namespace CGT {
 		SimpleCellInfo(void)
 		{
 			isAlpha = false, isFictious = false;
-			s              = 0;
+			s = 0;
 			Point::operator=(CGAL::ORIGIN);
 		}
 		SimpleCellInfo& setPoint(const Point& p)
@@ -144,11 +144,11 @@ namespace CGT {
 		inline const unsigned int& id(void) const { return i; }
 		SimpleVertexInfo(void)
 		{
-			isAlpha    = false;
+			isAlpha = false;
 			isFictious = false;
-			s          = 0;
-			i          = 0;
-			vol        = -1;
+			s = 0;
+			i = 0;
+			vol = -1;
 		}
 		//virtual function that will be defined for all classes, allowing shared function (e.g. for display)
 		bool isReal(void) { return !isFictious; }

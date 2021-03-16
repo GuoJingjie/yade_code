@@ -53,8 +53,8 @@ private:
 
 public:
 	void action() override;
-	void         computeAlpha();
-	void         postLoad(Disp2DPropLoadEngine&);
+	void computeAlpha();
+	void postLoad(Disp2DPropLoadEngine&);
 
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(Disp2DPropLoadEngine,BoundaryController,

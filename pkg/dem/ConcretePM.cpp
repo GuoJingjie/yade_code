@@ -1,10 +1,10 @@
 // 2007,2008 © Václav Šmilauer <eudoxos@arcig.cz>
 #include "ConcretePM.hpp"
 #include <lib/high-precision/Constants.hpp>
+#include <core/InteractionLoop.hpp>
 #include <core/Scene.hpp>
 #include <pkg/common/Box.hpp>
 #include <pkg/common/Facet.hpp>
-#include <core/InteractionLoop.hpp>
 #include <pkg/common/Wall.hpp>
 #include <pkg/dem/DemXDofGeom.hpp>
 #include <pkg/dem/Shop.hpp>
@@ -384,7 +384,7 @@ bool Law2_ScGeom_CpmPhys_Cpm::go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _p
 	const int&  yieldSurfType(this->yieldSurfType);
 	const Real& yieldEllipseShift(this->yieldEllipseShift);
 #endif
-	Real&       epsNPl(phys->epsNPl);
+	Real& epsNPl(phys->epsNPl);
 // FIXME - remove this pragma. Fixing epsSoft and relKnSoft shadow is to be done later.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"

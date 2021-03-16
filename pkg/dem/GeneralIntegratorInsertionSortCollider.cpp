@@ -1,10 +1,10 @@
 // 2009 © Václav Šmilauer <eudoxos@arcig.cz>
 
 #include "GeneralIntegratorInsertionSortCollider.hpp"
+#include <core/Dispatching.hpp>
 #include <core/Interaction.hpp>
 #include <core/InteractionContainer.hpp>
 #include <core/Scene.hpp>
-#include <core/Dispatching.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <pkg/dem/Integrator.hpp>
 

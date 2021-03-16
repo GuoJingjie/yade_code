@@ -1,5 +1,6 @@
 #pragma once
 #include <lib/base/Math.hpp>
+#include <core/Aabb.hpp>
 #include <core/Dispatcher.hpp>
 #include <core/Functor.hpp>
 #include <core/IGeom.hpp>
@@ -8,7 +9,6 @@
 #include <core/Scene.hpp>
 #include <core/Shape.hpp>
 #include <core/State.hpp>
-#include <core/Aabb.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 
@@ -101,7 +101,7 @@ class BoundDispatcher : public Dispatcher1D<
 public:
 	void action() override;
 	bool isActivated() override { return activated; }
-	void         processBody(const shared_ptr<Body>&);
+	void processBody(const shared_ptr<Body>&);
 	DECLARE_LOGGER;
 	YADE_DISPATCHER1D_FUNCTOR_DOC_ATTRS_CTOR_PY(
 	        BoundDispatcher,
@@ -135,7 +135,7 @@ class IGeomDispatcher : public Dispatcher2D<
 	bool alreadyWarnedNoCollider;
 
 public:
-	void            action() override;
+	void                    action() override;
 	shared_ptr<Interaction> explicitAction(const shared_ptr<Body>& b1, const shared_ptr<Body>& b2, bool force);
 	YADE_DISPATCHER2D_FUNCTOR_DOC_ATTRS_CTOR_PY(IGeomDispatcher, IGeomFunctor, /* doc is optional*/, /*attrs*/, /*ctor*/ alreadyWarnedNoCollider = false;,
 	                                            /*py*/);
@@ -148,7 +148,7 @@ class IPhysDispatcher : public Dispatcher2D<
                                 /*functor type*/ IPhysFunctor> {
 public:
 	void action() override;
-	void         explicitAction(shared_ptr<Material>& pp1, shared_ptr<Material>& pp2, shared_ptr<Interaction>& i);
+	void explicitAction(shared_ptr<Material>& pp1, shared_ptr<Material>& pp2, shared_ptr<Interaction>& i);
 	YADE_DISPATCHER2D_FUNCTOR_DOC_ATTRS_CTOR_PY(IPhysDispatcher, IPhysFunctor, /*doc is optional*/, /*attrs*/, /*ctor*/, /*py*/);
 };
 REGISTER_SERIALIZABLE(IPhysDispatcher);

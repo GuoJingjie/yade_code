@@ -121,7 +121,7 @@ REGISTER_SERIALIZABLE(JCFpmPhys);
 class Ip2_JCFpmMat_JCFpmMat_JCFpmPhys : public IPhysFunctor {
 public:
 	void go(const shared_ptr<Material>& pp1, const shared_ptr<Material>& pp2, const shared_ptr<Interaction>& interaction) override;
-	void         distributeCrossSectionsWeibull(shared_ptr<JCFpmPhys> contactPhysics, Real R1, Real R2);
+	void distributeCrossSectionsWeibull(shared_ptr<JCFpmPhys> contactPhysics, Real R1, Real R2);
 	FUNCTOR2D(JCFpmMat, JCFpmMat);
 	DECLARE_LOGGER;
 	// clang-format off

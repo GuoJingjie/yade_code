@@ -63,8 +63,8 @@ REGISTER_SERIALIZABLE(AxialGravityEngine);
 
 class HdapsGravityEngine : public GravityEngine {
 public:
-	Vector2i     readSysfsFile(const std::string& name);
-	void action() override;
+	Vector2i readSysfsFile(const std::string& name);
+	void     action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(HdapsGravityEngine,GravityEngine,"Read accelerometer in Thinkpad laptops (`HDAPS <http://en.wikipedia.org/wiki/Active_hard_drive_protection>`__ and accordingly set gravity within the simulation. This code draws from `hdaps-gl <https://sourceforge.net/project/showfiles.php?group_id=138242>`__ . See :ysrc:`scripts/test/hdaps.py` for an example.",
 		((string,hdapsDir,"/sys/devices/platform/hdaps",,"Hdaps directory; contains ``position`` (with accelerometer readings) and ``calibration`` (zero acceleration)."))

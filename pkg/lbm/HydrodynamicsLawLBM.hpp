@@ -151,13 +151,13 @@ public:
 	virtual ~HydrodynamicsLawLBM();
 	bool isActivated() override;
 	void action() override;
-	void         save(int iter_number, Real timestep);
-	void         saveStats(int iter_number, Real timestep);
-	void         saveEroded(int iter_number, Real timestep);
-	void         saveContacts(int iter_number, Real timestep);
-	void         saveObservedNode(int iter_number, Real timestep);
-	void         saveObservedPtc(int iter_number, Real timestep);
-	void         createNewFiles();
+	void save(int iter_number, Real timestep);
+	void saveStats(int iter_number, Real timestep);
+	void saveEroded(int iter_number, Real timestep);
+	void saveContacts(int iter_number, Real timestep);
+	void saveObservedNode(int iter_number, Real timestep);
+	void saveObservedPtc(int iter_number, Real timestep);
+	void createNewFiles();
 	//void createDirectories(); // ModLuc: to create directories only if necessary
 	void createDirectories(bool dirLBM, bool dirDem, bool dirCntct);
 	void writelogfile();

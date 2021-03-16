@@ -105,7 +105,7 @@ REGISTER_SERIALIZABLE(Ip2_FrictMat_FrictViscoMat_FrictViscoPhys);
 class Law2_ScGeom_FrictViscoPhys_CundallStrackVisco : public LawFunctor {
 public:
 	OpenMPAccumulator<Real> plasticDissipation;
-	bool            go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
+	bool                    go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
 	Real                    elasticEnergy();
 	Real                    getPlasticDissipation() const;
 	void                    initPlasticDissipation(Real initVal = 0);

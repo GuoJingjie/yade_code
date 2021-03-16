@@ -343,7 +343,7 @@ private:
 	//void initGlLists(void);
 public:
 	void go(const shared_ptr<Shape>&, const shared_ptr<State>&, bool, const GLViewInfo&) override;
-	void         out(Quaternionr q);
+	void out(Quaternionr q);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_GridConnection,GlShapeFunctor,"Renders :yref:`Cylinder` object",
 		((bool,wire,false,,"Only show wireframe (controlled by ``glutSlices`` and ``glutStacks``."))

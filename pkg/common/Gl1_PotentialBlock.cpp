@@ -1,8 +1,8 @@
 /* CWBoon 2016 */
 #ifdef YADE_POTENTIAL_BLOCKS
 
-#include <core/Clump.hpp>
 #include <core/Aabb.hpp>
+#include <core/Clump.hpp>
 #include <pkg/dem/KnKsPBLaw.hpp>
 #include <pkg/dem/ScGeom.hpp>
 

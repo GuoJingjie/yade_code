@@ -1,10 +1,10 @@
 
 #pragma once
+#include <core/Dispatching.hpp>
 #include <core/IGeom.hpp>
 #include <core/IPhys.hpp>
 #include <core/Shape.hpp>
 #include <core/State.hpp>
-#include <core/Dispatching.hpp>
 #include <pkg/common/Facet.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <pkg/common/Wall.hpp>
@@ -86,7 +86,7 @@ REGISTER_SERIALIZABLE(L6Geom);
 struct Gl1_L3Geom : public GlIGeomFunctor {
 	RENDERS(L3Geom);
 	void go(const shared_ptr<IGeom>&, const shared_ptr<Interaction>&, const shared_ptr<Body>&, const shared_ptr<Body>&, bool) override;
-	void         draw(const shared_ptr<IGeom>&, bool isL6Geom = false, const Real& phiScale = 0);
+	void draw(const shared_ptr<IGeom>&, bool isL6Geom = false, const Real& phiScale = 0);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_STATICATTRS(Gl1_L3Geom,GlIGeomFunctor,"Render :yref:`L3Geom` geometry.",
 		((bool,axesLabels,false,,"Whether to display labels for local axes (x,y,z)"))

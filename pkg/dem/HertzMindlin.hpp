@@ -143,8 +143,8 @@ REGISTER_SERIALIZABLE(Law2_ScGeom_MindlinPhys_HertzWithLinearShear);
 class Law2_ScGeom_MindlinPhys_Mindlin : public LawFunctor {
 public:
 	bool go(shared_ptr<IGeom>& _geom, shared_ptr<IPhys>& _phys, Interaction* I) override;
-	Real         normElastEnergy();
-	Real         adhesionEnergy();
+	Real normElastEnergy();
+	Real adhesionEnergy();
 
 	Real getfrictionDissipation() const;
 	Real getshearEnergy() const;
