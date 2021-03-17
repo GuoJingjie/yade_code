@@ -286,14 +286,15 @@ void InsertionSortCollider::action()
 		size_t                    nReal = scene->bodies->realBodies.size();
 		size_t                    BBsize  = BB[0].size();
 		
-		// if bodies are inserted before redirection is turned on (e.g. inserting followed by erasing at iteration 0, or reload+erase)
-		// the bodies will not be inside insertedBodies but the collider still needs them. We fix it here by assigning all real bodies to 
-		// scene->bodies->insertedBodies. The list is cleared at the end of this function.
-		if (BBsize != 2*(nReal - nInsert + nErased)) {
-			if (BBsize!=0) LOG_WARN("it seems a special combination of insert/erase at the same iteration left collider in inconsistent state, please consider turning O.bodies.enableRedirection=False and reporting bug "<<BBsize)
+		// BBsize==0 if collider runs for the first time, 1/ at iteration 0, or 2/ at iteration N after loading scene. 
+		// In both cases it should be safe to insert all real bodies from scratch, hence the copy below.
+		// It will simply ignore any sequence of insert/erase that could have happen before collider execution
+		// Next collision detections will effectively insert/erase incrementaly after this initialisation
+		if (BBsize==0) {
 			insrts = scene->bodies->realBodies;
 			nInsert = nReal;
 		}
+		
 		// Handle erased bodies
 		int countNoBound = 0;
 		if (nErased > 0) {
