@@ -1,0 +1,20 @@
+
+# 2020 © Vasileios Angelidakis <v.angelidakis2@ncl.ac.uk>
+# 2020 © Robert Caulk <rob.caulk@gmail.com>
+# 2020 © Bruno Chareyre <bruno.chareyre@grenoble-inp.fr> 
+
+
+1/ The scripts in this folder were prepared as part of a benchmark exercise inspired by discussions at DEM8 Conference.
+
+2/ They need to be ran with yade version release 01/2021 or later (version yadedaily on debian/ubuntu)
+    $ apt update
+    $ apt install yadedaily
+    $ source path/to/runAll.sh
+   The output per-job can be found in ./outputData. More synthetic outputs will be in current folder (one graph per case + a single file with timings for all jobs).
+    
+3/ Please find inspiration for other command line execution in 'runAll.sh' and in preambles of the example scripts
+
+4/ Execution time ranges from ~1h to couple days depending on the script and the number of threads. You can track
+ progress by checking the generated *.png files, they are updated continuously during simulation.
+ 
+5/ Alternatively, run with graphical interface (needs X server available) and inspect the 3D view (close it when done to not add overhead)
