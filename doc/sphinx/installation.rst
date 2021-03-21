@@ -8,6 +8,9 @@ Installation
 * Other Operating Systems:
   Jump to the `last section <https://yade-dem.org/doc/installation.html#yubuntu>`_ of this page.
 
+.. toctree::
+  :maxdepth: 2
+
 Packages
 ----------
 
@@ -99,6 +102,53 @@ at the same time.
 
 .. _install-from-source-code:
 
+
+Docker
+----------
+
+Yade can be installed using docker images, which are daily built.
+Images contain both stable and dialy versions of packages.
+Docker images are based on supported distributions:
+
+
+- Debian 9 **stretch**::
+
+	docker run -it registry.gitlab.com/yade-dev/docker-prod:debian-stretch
+
+
+- Debian 10 **buster**::
+
+	docker run -it registry.gitlab.com/yade-dev/docker-prod:debian-buster
+
+
+- Debian 11 **bullseye**::
+
+	docker run -it registry.gitlab.com/yade-dev/docker-prod:debian-bullseye
+
+
+- Ubuntu 16.04 **xenial**::
+
+	docker run -it registry.gitlab.com/yade-dev/docker-prod:ubuntu16.04
+
+
+- Ubuntu 18.04 **bionic**::
+
+	docker run -it registry.gitlab.com/yade-dev/docker-prod:ubuntu18.04
+
+
+- Ubuntu 20.04 **focal**::
+
+	docker run -it registry.gitlab.com/yade-dev/docker-prod:ubuntu20.04
+
+
+After the container is pulled and is running, Yade functionality can be checked::
+
+	yade --test
+	yade --check
+	yadedaily --test
+	yadedaily --check
+
+
 Source code
 ------------
 
@@ -178,7 +228,7 @@ The following commands have to be executed in the command line of your correspon
 distribution. Just copy&paste to the terminal. Note, to execute these commands you
 need root privileges.
 
-* **Ubuntu 18.04, 18.10**, **Debian 9, 10** and their derivatives::
+* **Ubuntu 20.04, 18.04**, **Debian 9, 10, 11** and their derivatives::
 
 		sudo apt install cmake git freeglut3-dev libloki-dev libboost-all-dev fakeroot \
 		dpkg-dev build-essential g++ python3-dev python3-ipython python3-matplotlib \
@@ -252,9 +302,9 @@ Additional options can be configured in the same line with the following
 syntax::
 
 	cmake -DOPTION1=VALUE1 -DOPTION2=VALUE2
-	
+
 For example::
-    
+
     cmake -DENABLE_POTENTIAL_BLOCKS=ON
 
 The following cmake options are available: (see the `source code <https://gitlab.com/yade-dev/trunk/blob/master/CMakeLists.txt>`_ for a most up-to-date list)
@@ -419,7 +469,7 @@ When spliting the compilation on many cores (``make -jN``), ``N`` is limited by 
 The two tools can be combined, adding to the above exports::
 
 	export CCACHE_PREFIX="distcc"
-	
+
 Compile with cmake UNITY_BUILD
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 This option concatenates source files in batches containing several ``*.cpp`` each, in order to share the overhead of include directives (since most source files include the same boost headers, typically). It accelerates full compilation from scratch (quite significantly). It is activated by adding the following to cmake command, ``CMAKE_UNITY_BUILD_BATCH_SIZE`` defines the maximum number of files to be concatenated together (the higher the better, main limitation might be available RAM)::
@@ -445,7 +495,7 @@ The link time can be reduced by changing the default linker from ``ld`` to ``ld.
 To switch back run the commands above with reversed priorities ``10`` ↔ ``20``. Alternatively a manual selection can be performed by command: ``update-alternatives --config ld``.
 
 Note: ``ld.gold`` is incompatible with the compiler wrapper ``mpicxx`` in some distributions, which is manifested as an error in the ``cmake`` stage.
-We do not use ``mpicxx`` for our gitlab builds currently. If you want to use it then disable ``ld.gold``. Cmake ``MPI``-related failures have also been reported without the ``mpicxx`` compiler, if it happens then the only solution is to disable either ``ld.gold`` or the ``MPI`` feature. 
+We do not use ``mpicxx`` for our gitlab builds currently. If you want to use it then disable ``ld.gold``. Cmake ``MPI``-related failures have also been reported without the ``mpicxx`` compiler, if it happens then the only solution is to disable either ``ld.gold`` or the ``MPI`` feature.
 
 Cloud Computing
 ----------------
