@@ -614,13 +614,12 @@ bool Ig2_PFacet_PFacet_ScGeom::go(
 	bool istriangleNodes2P1 = (isintriangle1 == true) && (isintriangle2 == true) && (isintriangle3 == true);
 	bool istriangleNodes1P2 = (isintriangle4 == true) && (isintriangle5 == true) && (isintriangle6 == true);
 
-
 	if (istriangleNodes1P2) {
 		Body::id_t idNode11 = Pfacet1->node1->getId();
 		Body::id_t idNode12 = Pfacet1->node2->getId();
 		Body::id_t idNode13 = Pfacet1->node3->getId();
 
-
+		// FIXME: if projection of some nodes is in triangle but not in contact, do we need to create interaxctions here?
 		if (!scene->interactions->found(idNode11, id2)) {
 			shared_ptr<Interaction> scm1(new Interaction(idNode11, id2));
 			scene->interactions->insert(scm1);
@@ -656,133 +655,21 @@ bool Ig2_PFacet_PFacet_ScGeom::go(
 			scene->interactions->insert(scm3);
 		}
 	} else {
-		vector<Vector3r> vertices1 = { Pfacet1->node1->state->pos, Pfacet1->node2->state->pos, Pfacet1->node3->state->pos };
-		vector<Vector3r> vertices2 = { Pfacet2->node1->state->pos, Pfacet2->node2->state->pos, Pfacet2->node3->state->pos };
-
-
-		GridConnection* gridCo1P1 = (GridConnection*)Pfacet1->conn1->shape.get();
-		GridConnection* gridCo2P1 = (GridConnection*)Pfacet1->conn2->shape.get();
-		GridConnection* gridCo3P1 = (GridConnection*)Pfacet1->conn3->shape.get();
-
-		GridConnection* gridCo1P2 = (GridConnection*)Pfacet2->conn1->shape.get();
-		GridConnection* gridCo2P2 = (GridConnection*)Pfacet2->conn2->shape.get();
-		GridConnection* gridCo3P2 = (GridConnection*)Pfacet2->conn3->shape.get();
-
-
-		State* gridNo1StgridCo1P1 = YADE_CAST<State*>(gridCo1P1->node1->state.get());
-		State* gridNo2StgridCo1P1 = YADE_CAST<State*>(gridCo1P1->node2->state.get());
-
-		State* gridNo1StgridCo2P1 = YADE_CAST<State*>(gridCo2P1->node1->state.get());
-		State* gridNo2StgridCo2P1 = YADE_CAST<State*>(gridCo2P1->node2->state.get());
-
-		State* gridNo1StgridCo3P1 = YADE_CAST<State*>(gridCo3P1->node1->state.get());
-		State* gridNo2StgridCo3P1 = YADE_CAST<State*>(gridCo3P1->node2->state.get());
-
-		State* gridNo1StgridCo1P2 = YADE_CAST<State*>(gridCo1P2->node1->state.get());
-		State* gridNo2StgridCo1P2 = YADE_CAST<State*>(gridCo1P2->node2->state.get());
-
-		State* gridNo1StgridCo2P2 = YADE_CAST<State*>(gridCo2P2->node1->state.get());
-		State* gridNo2StgridCo2P2 = YADE_CAST<State*>(gridCo2P2->node2->state.get());
-
-		State* gridNo1StgridCo3P2 = YADE_CAST<State*>(gridCo3P2->node1->state.get());
-		State* gridNo2StgridCo3P2 = YADE_CAST<State*>(gridCo3P2->node2->state.get());
-
-
-		Vector3r seg11 = (gridNo1StgridCo1P1->pos - gridNo2StgridCo1P1->pos) / (gridNo1StgridCo1P1->pos - gridNo2StgridCo1P1->pos).norm();
-		Vector3r seg12 = (gridNo1StgridCo2P1->pos - gridNo2StgridCo2P1->pos) / (gridNo1StgridCo2P1->pos - gridNo2StgridCo2P1->pos).norm();
-		Vector3r seg13 = (gridNo1StgridCo3P1->pos - gridNo2StgridCo3P1->pos) / (gridNo1StgridCo3P1->pos - gridNo2StgridCo3P1->pos).norm();
-
-
-		Vector3r seg21 = (gridNo1StgridCo1P2->pos - gridNo2StgridCo1P2->pos) / (gridNo1StgridCo1P2->pos - gridNo2StgridCo1P2->pos).norm();
-		Vector3r seg22 = (gridNo1StgridCo2P2->pos - gridNo2StgridCo2P2->pos) / (gridNo1StgridCo2P2->pos - gridNo2StgridCo2P2->pos).norm();
-		Vector3r seg23 = (gridNo1StgridCo3P2->pos - gridNo2StgridCo3P2->pos) / (gridNo1StgridCo3P2->pos - gridNo2StgridCo3P2->pos).norm();
-
-
-		Real normal1seg21seg11 = seg21.dot(seg11);
-		Real normal1seg21seg12 = seg21.dot(seg12);
-		Real normal1seg21seg13 = seg21.dot(seg13);
-
-		Real normal1seg22seg11 = seg22.dot(seg11);
-		Real normal1seg22seg12 = seg22.dot(seg12);
-		Real normal1seg22seg13 = seg22.dot(seg13);
-
-		Real normal1seg23seg11 = seg23.dot(seg11);
-		Real normal1seg23seg12 = seg23.dot(seg12);
-		Real normal1seg23seg13 = seg23.dot(seg13);
-
 		Body::id_t ids1[3] = { Pfacet1->conn1->getId(), Pfacet1->conn2->getId(), Pfacet1->conn3->getId() };
 		Body::id_t ids2[3] = { Pfacet2->conn1->getId(), Pfacet2->conn2->getId(), Pfacet2->conn3->getId() };
 
-		Body::id_t c1 = -1;
-		Body::id_t c2 = -1;
-
-
-		if (math::abs(normal1seg21seg11) == 1) {
-			c1 = ids2[0];
-			c2 = ids1[0];
-		}
-		if (math::abs(normal1seg21seg12) == 1) {
-			c1 = ids2[0];
-			c2 = ids1[1];
-		}
-		if (math::abs(normal1seg21seg13) == 1) {
-			c1 = ids2[0];
-			c2 = ids1[2];
-		}
-
-		if (math::abs(normal1seg22seg11) == 1) {
-			c1 = ids2[1];
-			c2 = ids1[0];
-		}
-		if (math::abs(normal1seg22seg12) == 1) {
-			c1 = ids2[1];
-			c2 = ids1[1];
-		}
-		if (math::abs(normal1seg22seg13) == 1) {
-			c1 = ids2[1];
-			c2 = ids1[2];
-		}
-
-		if (math::abs(normal1seg23seg11) == 1) {
-			c1 = ids2[2];
-			c2 = ids1[0];
-		}
-		if (math::abs(normal1seg23seg12) == 1) {
-			c1 = ids2[2];
-			c2 = ids1[1];
-		}
-		if (math::abs(normal1seg23seg13) == 1) {
-			c1 = ids2[2];
-			c2 = ids1[2];
-		}
-
 		if ((isintriangle1 == false) && (isintriangle2 == false) && (isintriangle3 == false) && (isintriangle4 == false) && (isintriangle5 == false)
 		    && (isintriangle6 == false)) {
-			if ((c1 != -1) and (c2 != -1) and (Body::byId(c1)->getGroupMask() != 0) and (Body::byId(c2)->getGroupMask() != 0)) {
-				std::ostringstream oss;
-				string             chaine = "scm";
-				if (!scene->interactions->found(c1, c2)) {
-					shared_ptr<Interaction> chain(new Interaction(c1, c2));
-					scene->interactions->insert(chain);
-				}
-			} else {
-				for (int i = 0; i < 3; i++) {
-					for (int j = 0; j < 3; j++) {
-						int                entier = j + i * 3;
-						std::ostringstream oss;
-						string             chaine = "scm";
-						oss << chaine << entier;
-						string chaine1 = oss.str();
-						if (!scene->interactions->found(ids1[i], ids2[j])) {
-							if ((Body::byId(ids1[i])->getGroupMask() != 0) and (Body::byId(ids2[j])->getGroupMask() != 0)) {
-								shared_ptr<Interaction> chain1(new Interaction(ids1[i], ids2[j]));
-								scene->interactions->insert(chain1);
-							}
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					if (!scene->interactions->found(ids1[i], ids2[j])) {
+						if ((Body::byId(ids1[i])->getGroupMask() != 0) and (Body::byId(ids2[j])->getGroupMask() != 0)) {
+							shared_ptr<Interaction> chain1(new Interaction(ids1[i], ids2[j]));
+							scene->interactions->insert(chain1);
 						}
 					}
 				}
 			}
-
 		} else {
 			Body::id_t idNode11 = Pfacet1->node1->getId();
 			Body::id_t idNode12 = Pfacet1->node2->getId();
@@ -844,7 +731,6 @@ bool Ig2_PFacet_PFacet_ScGeom::go(
 			}
 		}
 	}
-
 	return (false);
 }
 
