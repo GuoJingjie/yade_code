@@ -25,8 +25,8 @@ public:
 	virtual ~CohFrictMat() {};
 	/// Serialization
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CohFrictMat,FrictMat,"",
-		((bool,isCohesive,true,,""))
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CohFrictMat,FrictMat,"Material description extending :yref:`FrictMat` with cohesive properties and rotational stiffnesses. For use e.g. with :yref:`Law2_ScGeom6D_CohFrictPhys_CohesionMoment`.",
+		((bool,isCohesive,true,,"Whether this body can form possibly cohesive interactions (if true and depending on other parameters such as :yref:`Ip2_CohFrictMat_CohFrictMat_CohFrictPhys.setCohesionNow`)."))
 		((Real,alphaKr,2.0,,"Dimensionless rolling stiffness."))
 		((Real,alphaKtw,2.0,,"Dimensionless twist stiffness."))
 		((Real,etaRoll,-1.,,"Dimensionless rolling (aka 'bending') strength. If negative, rolling moment will be elastic."))
@@ -57,7 +57,7 @@ public:
 	};
 
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CohFrictPhys,RotStiffFrictPhys,"",
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CohFrictPhys,RotStiffFrictPhys,"An :yref:`interaction physics<IPhys>` that extends :yref:`RotStiffFrictPhys` adding a breakable cohesive nature. Used e.g. by :yref:`Law2_ScGeom6D_CohFrictPhys_CohesionMoment`.",
 		((bool,cohesionDisablesFriction,false,,"is shear strength the sum of friction and adhesion or only adhesion?"))
 		((bool,cohesionBroken,true,,"is cohesion active? Set to false at the creation of a cohesive contact, and set to true when a fragile contact is broken"))
 		((bool,fragile,true,,"do cohesion disappear when contact strength is exceeded?"))

@@ -25,7 +25,7 @@ public:
 	virtual ~NormShearPhys() = default;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(NormShearPhys,NormPhys,
-		"Abstract class for interactions that have shear stiffnesses, in addition to normal stiffness. This class is used in the PFC3d-style stiffness timestepper.",
+		"Abstract class for interactions that have shear stiffnesses, in addition to normal stiffness. This class is used in the PFC3d-style :yref:`stiffness timestepper<GlobalStiffnessTimeStepper>`.",
 		((Real,ks,0,,"Shear stiffness"))
 		((Vector3r,shearForce,Vector3r::Zero(),,"Shear force after previous step (in global coordinates), as sustained by particle #2 (from particle #1).")),
 		createIndex();
