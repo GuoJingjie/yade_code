@@ -9,9 +9,17 @@
 #include <lib/base/Logging.hpp>
 #include <lib/base/Timer.hpp>
 
+/*
+ * LoggingUtils provide at the moment two additional families of macros:
+ * 1. LOG_TIMED_*
+ * 2. LOG_ONCE_*
+ */
+
 namespace yade { // Cannot have #include directive inside.
 
 /*
+ * 1. LOG_TIMED_*
+ *
  * This header provides macros LOG_TIMED_* very similar to the regular LOG_* macros, with one extra functionality:
  * the log messages are printed not more often than the first macro argument 'howOften'.
  *
@@ -85,7 +93,7 @@ namespace units { // C++ standard uses int64_t because ↓ it supports ±292.5 y
 	{                                                                                                                                                      \
 		using namespace std::chrono_literals;                                                                                                          \
 		static_assert(units::isSecOrMilliSec<decltype(howOften)>, "LOG_TIMED_* Bad first argument, see testTimedLevels(); in file py/_log.cpp.");      \
-		thread_local static auto t = Timer(true);                                                                                                          \
+		thread_local static auto t = Timer(true);                                                                                                      \
 		if (t.check(howOften)) { MSG }                                                                                                                 \
 	}
 
@@ -134,5 +142,66 @@ namespace units { // C++ standard uses int64_t because ↓ it supports ±292.5 y
 
 // this one prints arbitrary number of variables, but they must be a boost preprocessor sequence like (var1)(var2)(var3), see py/_log.cpp for example usage.
 #define TIMED_TRVARn(WAIT, ALL_VARS) BOOST_PP_SEQ_FOR_EACH(TIMED_TRVARn_PRINT_ONE, WAIT, ALL_VARS)
+
+/*
+ * 2. LOG_ONCE_*
+ *
+ * Very similar in construction to LOG_TIMED_*, just a bit simpler.
+ */
+
+#define LOG_ONCE(MSG)                                                                                                                                          \
+	{                                                                                                                                                      \
+		static bool printed = false;                                                                                                                   \
+		if (not printed) {                                                                                                                             \
+			printed = true;                                                                                                                        \
+			MSG                                                                                                                                    \
+		}                                                                                                                                              \
+	}
+
+#define LOG_ONCE_NOFILTER(msg) LOG_ONCE(LOG_NOFILTER(msg))
+#define LOG_ONCE_FATAL(msg) LOG_ONCE(LOG_FATAL(msg))
+#define LOG_ONCE_ERROR(msg) LOG_ONCE(LOG_ERROR(msg))
+#define LOG_ONCE_WARN(msg) LOG_ONCE(LOG_WARN(msg))
+#define LOG_ONCE_INFO(msg) LOG_ONCE(LOG_INFO(msg))
+#define LOG_ONCE_DEBUG(msg) LOG_ONCE(LOG_DEBUG(msg))
+#define LOG_ONCE_TRACE(msg) LOG_ONCE(LOG_TRACE(msg))
+
+// Logger aliases:
+#define LOG_ONCE_6_TRACE(msg) LOG_ONCE_TRACE(msg)
+#define LOG_ONCE_5_DEBUG(msg) LOG_ONCE_DEBUG(msg)
+#define LOG_ONCE_4_INFO(msg) LOG_ONCE_INFO(msg)
+#define LOG_ONCE_3_WARN(msg) LOG_ONCE_WARN(msg)
+#define LOG_ONCE_2_ERROR(msg) LOG_ONCE_ERROR(msg)
+#define LOG_ONCE_1_FATAL(msg) LOG_ONCE_FATAL(msg)
+#define LOG_ONCE_0_NOFILTER(msg) LOG_ONCE_NOFILTER(msg)
+
+#define LOG_TRACE_ONCE(msg) LOG_ONCE_TRACE(msg)
+#define LOG_DEBUG_ONCE(msg) LOG_ONCE_DEBUG(msg)
+#define LOG_INFO_ONCE(msg) LOG_ONCE_INFO(msg)
+#define LOG_WARN_ONCE(msg) LOG_ONCE_WARN(msg)
+#define LOG_ERROR_ONCE(msg) LOG_ONCE_ERROR(msg)
+#define LOG_FATAL_ONCE(msg) LOG_ONCE_FATAL(msg)
+#define LOG_NOFILTER_ONCE(msg) LOG_ONCE_NOFILTER(msg)
+
+#define LOG_ONCE_6(msg) LOG_ONCE_TRACE(msg)
+#define LOG_ONCE_5(msg) LOG_ONCE_DEBUG(msg)
+#define LOG_ONCE_4(msg) LOG_ONCE_INFO(msg)
+#define LOG_ONCE_3(msg) LOG_ONCE_WARN(msg)
+#define LOG_ONCE_2(msg) LOG_ONCE_ERROR(msg)
+#define LOG_ONCE_1(msg) LOG_ONCE_FATAL(msg)
+#define LOG_ONCE_0(msg) LOG_ONCE_NOFILTER(msg)
+
+// macros for quick debugging without spamming terminal:
+#define ONCE_TRVAR1(a) LOG_ONCE_TRACE(_TRV(a))
+#define ONCE_TRVAR2(a, b) LOG_ONCE_TRACE(_TRV(a) << _TRV(b))
+#define ONCE_TRVAR3(a, b, c) LOG_ONCE_TRACE(_TRV(a) << _TRV(b) << _TRV(c))
+#define ONCE_TRVAR4(a, b, c, d) LOG_ONCE_TRACE(_TRV(a) << _TRV(b) << _TRV(c) << _TRV(d))
+#define ONCE_TRVAR5(a, b, c, d, e) LOG_ONCE_TRACE(_TRV(a) << _TRV(b) << _TRV(c) << _TRV(d) << _TRV(e))
+#define ONCE_TRVAR6(a, b, c, d, e, f) LOG_ONCE_TRACE(_TRV(a) << _TRV(b) << _TRV(c) << _TRV(d) << _TRV(e) << _TRV(f))
+
+#define ONCE_TRVARn_PRINT_ONE(r, WAIT, VARn) ONCE_TRVAR1(VARn)
+
+// this one prints arbitrary number of variables, but they must be a boost preprocessor sequence like (var1)(var2)(var3), see py/_log.cpp for example usage.
+#define ONCE_TRVARn(ALL_VARS) BOOST_PP_SEQ_FOR_EACH(ONCE_TRVARn_PRINT_ONE, ~, ALL_VARS)
 
 } // namespace yade
