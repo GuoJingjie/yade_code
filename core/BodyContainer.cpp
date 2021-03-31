@@ -1,6 +1,6 @@
 // 2010 © Václav Šmilauer <eudoxos@arcig.cz>
 
-#include <lib/base/TimedLogging.hpp>
+#include <lib/base/LoggingUtils.hpp>
 #include "BodyContainer.hpp"
 #include "Body.hpp"
 #include "Clump.hpp"

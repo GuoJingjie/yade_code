@@ -10,8 +10,7 @@
 // hint: follow changes in d067b0696a8 to add new modules.
 
 #include <lib/base/AliasNamespaces.hpp>
-#include <lib/base/Logging.hpp>
-#include <lib/base/TimedLogging.hpp>
+#include <lib/base/LoggingUtils.hpp>
 #include <lib/pyutil/doc_opts.hpp>
 #include <core/Omega.hpp>
 #include <boost/core/demangle.hpp>

@@ -17,7 +17,7 @@
  * For example usage see file py/_log.cpp function testTimedLevels();
  *
  * See also:
- * - https://en.cppreference.com/w/cpp/header/chrono#Literals , note: by default LOG_TIMED_* in lib/base/TimedLogging.hpp only accepts seconds and milliseconds (we can change that if necessary)
+ * - https://en.cppreference.com/w/cpp/header/chrono#Literals , note: by default LOG_TIMED_* in lib/base/LoggingUtils.hpp only accepts seconds and milliseconds (we can change that if necessary)
  * - https://en.cppreference.com/w/cpp/thread/sleep_for
  * - https://en.cppreference.com/w/cpp/chrono/duration
  */
