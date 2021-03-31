@@ -306,7 +306,7 @@ if(ENABLE_USEFUL_ERRORS)
 
   # Now, the standard procedure for disabling a single error for some external libraary is to use pragma like in Scene.hpp for #include <mpi.h>
   # also we could report a bug in these libraries which required these pragmas. Then these pragmas could be wrapped inside an #if version.
-  MESSAGE(STATUS   "${Esc}[32mAlmost all useful errors are enabled and it is g++ version >= 11${Esc}[0m")
+  MESSAGE(STATUS   "${Esc}[32mAlmost all useful errors are enabled and it is g++ version ${CMAKE_CXX_COMPILER_VERSION} ${Esc}[0m")
   # This 'IF' is to trigger the re-evealuation when g++ v.12 appears.
   IF (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 12.0 )
     SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-comment")
@@ -323,10 +323,12 @@ if(ENABLE_USEFUL_ERRORS)
 
   IF((${EIGEN3_MAJOR_VERSION} LESS 2) OR (${EIGEN3_MAJOR_VERSION} EQUAL 2))
     # eigen <= 3.2, ubuntu 16.04 xenial
+    MESSAGE(STATUS   "Eigen version ${EIGEN3_WORLD_VERSION}.${EIGEN3_MAJOR_VERSION}.${EIGEN3_MINOR_VERSION} <= 3.2 (e.g. ubuntu 16.04), setting -Wno-error=float-conversion")
     SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-error=float-conversion")
   ENDIF()
   IF((${NUMPY_VERSION_MAJOR} EQUAL 1) AND (${NUMPY_VERSION_MINOR} LESS 13))
     # numpy 1.11.0 has unused-function, 1.13 does not. So we have to print warning only when it appears.
+    MESSAGE(STATUS   "Numpy version ${NUMPY_VERSION_MAJOR}.${NUMPY_VERSION_MINOR} < 1.13, setting -Wno-unused-function")
     SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-unused-function")
   ENDIF()
   SET(ALL_ENABLED_USEFUL_ERRORS " -Werror -Wformat -Wformat-security -Wformat-nonliteral -Wall -Wextra -Wnarrowing -Wreturn-type -Wuninitialized -Wfloat-conversion -Wcast-align -Wdisabled-optimization -Wtrampolines -Wpointer-arith -Wswitch-bool -Wwrite-strings -Wnon-virtual-dtor -Wreturn-local-addr -Wsuggest-override -Wshadow")
