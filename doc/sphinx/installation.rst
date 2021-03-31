@@ -474,13 +474,11 @@ Compile with cmake UNITY_BUILD
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 This option concatenates source files in batches containing several ``*.cpp`` each, in order to share the overhead of include directives (since most source files include the same boost headers, typically). It accelerates full compilation from scratch (quite significantly). It is activated by adding the following to cmake command, ``CMAKE_UNITY_BUILD_BATCH_SIZE`` defines the maximum number of files to be concatenated together (the higher the better, main limitation might be available RAM)::
 
-	-DENABLE_LOGGER=OFF -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=18
+	-DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=18
 
 This method is helpless for incremental re-compilation and might even be detrimental since a full batch has to be recompiled each time a single file is modified. If it is anticipated that specific files will need incremental compilation they can be excluded from the unity build by assigning their full path to cmake flag ``NO_UNITY`` (a single file or a comma-separated list)::
 
-	-DENABLE_LOGGER=OFF -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=18 -DNO_UNITY=../trunk/pkg/dem/CohesiveFrictionalContactLaw.cpp
-
-Note: This feature is at present incompatible with :ref:`logging<logging>`.
+	-DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=18 -DNO_UNITY=../trunk/pkg/dem/CohesiveFrictionalContactLaw.cpp
 
 Link time
 ^^^^^^^^^^^^^^^^^^^^^
