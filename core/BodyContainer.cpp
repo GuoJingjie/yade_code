@@ -126,7 +126,7 @@ bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
 
 void BodyContainer::updateRealBodies()
 {
-	if (not enableRedirection) {LOG_TIMED_WARN(10s, "updateRealBodies returns because enableRedirection is false - please report bug"); return;}
+	if (not enableRedirection) {LOG_ONCE_WARN("updateRealBodies returns because enableRedirection is false - please report bug"); return;}
 	if (not dirty) return; //already ok
 	unsigned long size1 = realBodies.size();
 	realBodies.clear();
