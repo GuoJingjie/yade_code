@@ -175,6 +175,42 @@ void testAllLevels()
 	}
 }
 
+void testOnceLevels()
+{
+	int                testInt = 0;
+	std::string        testStr = "test string";
+	Real               testReal(11);
+	Vector3r           testVec(1, 2, 3);
+	Matrix3r           testMat = (Matrix3r() << 1, 2, 3, 4, 5, 6, 7, 8, 9).finished();
+	std::complex<Real> testComplex(-1, 1);
+
+	LOG_ONCE_TRACE("\n\nTest print of ONCE_TRVARn macro family:\n\n");
+	for (int i = 0; i < 10; ++i) {
+		ONCE_TRVAR1(testInt);
+		ONCE_TRVAR2(testInt, testStr);
+		ONCE_TRVAR3(testInt, testStr, testReal);
+		ONCE_TRVAR4(testInt, testStr, testReal, testVec);
+		ONCE_TRVAR5(testInt, testStr, testReal, testVec, testMat);
+		ONCE_TRVAR6(testInt, testStr, testReal, testVec, testMat, testComplex);
+
+		LOG_ONCE_TRACE("\n\nTest print of arbitrary number of variables (one argument):");
+
+		ONCE_TRVARn((testInt));
+
+		LOG_ONCE_TRACE("\n\nTest print of arbitrary number of variables (8 arguments):");
+
+		ONCE_TRVARn((testInt)(testStr)(testReal)(testVec)(testMat)(testComplex)(7)(8));
+
+		LOG_ONCE_0_NOFILTER("Test log level: LOG_ONCE_0_NOFILTER, test int: " << testInt++);
+		LOG_ONCE_1_FATAL("Test log level: LOG_ONCE_1_FATAL, test int: " << testInt++);
+		LOG_ONCE_2_ERROR("Test log level: LOG_ONCE_2_ERROR, test int: " << testInt++);
+		LOG_ONCE_3_WARN("Test log level: LOG_ONCE_3_WARN, test int: " << testInt++);
+		LOG_ONCE_4_INFO("Test log level: LOG_ONCE_4_INFO, test int: " << testInt++);
+		LOG_ONCE_5_DEBUG("Test log level: LOG_ONCE_5_DEBUG, test int: " << testInt++ << "\n");
+		LOG_ONCE_6_TRACE("Test log level: LOG_ONCE_6_TRACE, test int: " << testInt++ << "\n");
+	}
+}
+
 void testTimedLevels()
 {
 	unsigned long long int testInt = 0;
@@ -239,6 +275,10 @@ try {
 
 	py::def("testAllLevels", testAllLevels, R"""(
 This function prints test messages on all log levels. Can be used to see how filtering works and to what streams the logs are written.
+	)""");
+
+	py::def("testOnceLevels", testOnceLevels, R"""(
+This function prints test messages on all log levels using LOG_ONCE_* macro family.
 	)""");
 
 	py::def("testTimedLevels", testTimedLevels, R"""(
