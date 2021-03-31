@@ -85,7 +85,7 @@ namespace units { // C++ standard uses int64_t because ↓ it supports ±292.5 y
 	{                                                                                                                                                      \
 		using namespace std::chrono_literals;                                                                                                          \
 		static_assert(units::isSecOrMilliSec<decltype(howOften)>, "LOG_TIMED_* Bad first argument, see testTimedLevels(); in file py/_log.cpp.");      \
-		thread_local static auto t = Timer();                                                                                                          \
+		thread_local static auto t = Timer(true);                                                                                                          \
 		if (t.check(howOften)) { MSG }                                                                                                                 \
 	}
 
