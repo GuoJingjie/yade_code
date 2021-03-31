@@ -83,6 +83,7 @@ _deprecated={
 	'Ig2_Sphere_Sphere_L3Geom_Inc':'Ig2_Sphere_Sphere_L3Geom', # Sun Dec 26 11:11:05 2010, vaclav@flux
 	'Ig2_Wall_Sphere_L3Geom_Inc':'Ig2_Wall_Sphere_L3Geom', # Sun Dec 26 11:11:30 2010, vaclav@flux
 	'Ig2_Sphere_Sphere_L6Geom_Inc':'Ig2_Sphere_Sphere_L6Geom', # Sun Dec 26 11:11:53 2010, vaclav@flux
+	'CentralGravityEngine':'CentralConstantAccelerationEngine', # Wed, 31 mar 2021, 23:08:16, Janek
 	### END_RENAMED_CLASSES_LIST ### (do not delete this line; scripts/rename-class.py uses it
 }
 

@@ -29,11 +29,11 @@ REGISTER_SERIALIZABLE(GravityEngine);
  *
  * @todo This code has not been yet tested at all.
  */
-class CentralGravityEngine : public FieldApplier {
+class CentralConstantAccelerationEngine : public FieldApplier {
 public:
 	void action() override;
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(CentralGravityEngine,FieldApplier,"Engine applying acceleration to all bodies, towards a central body.",
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(CentralConstantAccelerationEngine,FieldApplier,"Engine applying constant acceleration to all bodies, towards a central body. Ignoring the distance between them.",
 		((Body::id_t,centralBody,Body::ID_NONE,,"The :yref:`body<Body>` towards which all other bodies are attracted."))
 		((Real,accel,0,,"Acceleration magnitude [kgms⁻²]"))
 		((bool,reciprocal,false,,"If true, acceleration will be applied on the central body as well."))
@@ -42,7 +42,7 @@ public:
 	);
 	// clang-format on
 };
-REGISTER_SERIALIZABLE(CentralGravityEngine);
+REGISTER_SERIALIZABLE(CentralConstantAccelerationEngine);
 
 /*! Apply acceleration (independent of distance) directed towards an axis.
  *

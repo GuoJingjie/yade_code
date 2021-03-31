@@ -14,7 +14,7 @@
 
 namespace yade { // Cannot have #include directive inside.
 
-YADE_PLUGIN((GravityEngine)(CentralGravityEngine)(AxialGravityEngine)(HdapsGravityEngine));
+YADE_PLUGIN((GravityEngine)(CentralConstantAccelerationEngine)(AxialGravityEngine)(HdapsGravityEngine));
 CREATE_LOGGER(GravityEngine);
 
 void GravityEngine::action()
@@ -37,7 +37,7 @@ void GravityEngine::action()
 	YADE_PARALLEL_FOREACH_BODY_END();
 }
 
-void CentralGravityEngine::action()
+void CentralConstantAccelerationEngine::action()
 {
 	const Vector3r& centralPos = Body::byId(centralBody)->state->pos;
 	for (const auto& b : *scene->bodies) {
