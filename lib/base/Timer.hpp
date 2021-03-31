@@ -29,21 +29,29 @@
 namespace yade {
 struct Timer {
 	std::chrono::time_point<std::chrono::high_resolution_clock> start;
+	bool                                                        first { true };
 
-	// start Timer in constructor
-	Timer() { restart(); };
+	// the Timer starts in constructor
+	// firstAlwaysTrue == true means that the first call of check() always returns true; even if the howOften is much shorter than the time since construction of Timer.
+	// this flag ↓ is useful when we want to see the first log message
+	Timer(bool firstAlwaysTrue)
+	{
+		first = firstAlwaysTrue;
+		restart();
+	};
 
 	// restart stopwatch to current time.
 	inline void restart(std::chrono::time_point<std::chrono::high_resolution_clock> now = std::chrono::high_resolution_clock::now()) { start = now; }
 
-	// check if howOften has passed. If yes, then restart and return true. Otherwise return false. Example call:
+	// check if howOften has passed. If yes, then restart() and return true. Otherwise return false. Example call:
 	//    using namespace std::chrono_literals;
 	//    if(t.check(10ms)) // 10 milliseconds.
 	// The 10ms is a compile-time rational constant from namespace std::chrono_literals, so the compiler optimizes it into a single integer comparison.
 	template <typename A, typename B> inline bool check(const std::chrono::duration<A, B>& howOften)
 	{
 		auto now = std::chrono::high_resolution_clock::now();
-		if ((now - start) > howOften) {
+		if (first or ((now - start) > howOften)) {
+			first = false;
 			restart(now);
 			return true;
 		} else
