@@ -313,15 +313,17 @@ Additionally seven macros for printing variables at ``LOG_TRACE`` level are avai
 
 The macro ``TRACE;`` prints a ``"Been here"`` message at ``TRACE`` log filter level, and can be used for quick debugging.
 
-Timed debug macros
+Utility debug macros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``LOG_TIMED_*`` family of macros:
 
 In some situations it is useful to debug variables inside a **very fast**, or maybe a **multithreaded**, loop. In such situations it would be useful to:
 
    1. Avoid spamming console with very fast printed messages and add some print timeout to them, preferably specified with units of seconds or milliseconds.
    2. Make sure that each separate thread has opportunity to print message, without interleaving such messages with other threads.
 
-To use above :ysrc:`functionality</lib/base/TimedLogging.hpp>` one must ``#include <lib/base/TimedLogging.hpp>`` in the ``.cpp`` file which provides the ``LOG_TIMED_*`` and ``TIMED_TRVAR*`` macro family. Example usage can be found in :ysrccommit:`function testTimedLevels<cc2e0c2038411ce845c/py/_log.cpp#L181>`.
+To use above :ysrc:`functionality</lib/base/LoggingUtils.hpp>` one must ``#include <lib/base/LoggingUtils.hpp>`` in the ``.cpp`` file which provides the ``LOG_TIMED_*`` and ``TIMED_TRVAR*`` macro family. Example usage can be found in :ysrccommit:`function testTimedLevels<cc2e0c2038411ce845c/py/_log.cpp#L181>`.
 
 To satisfy the first requirement all ``LOG_TIMED_*`` macros accept **two arguments**, where the first argument is the wait timeout, using `standard C++14 / C++20 time units <https://en.cppreference.com/w/cpp/header/chrono#Literals>`__, example use is ``LOG_TIMED_INFO( 2s , "test int: " << testInt++);`` to print every 2 seconds. But only seconds and milliseconds are accepted (this :ysrccommit:`can be changed<d4195d3571a76/lib/base/TimedLogging.hpp#L87>` if necessary).
 
@@ -329,59 +331,62 @@ To satisfy the second requirement a `thread_local static <https://en.cppreferenc
 
 .. note:: The ``*_TRACE`` family of macros are removed by compiler during the release builds, because the default ``-DMAX_LOG_LEVEL`` is 5. So those are very safe to use, but to have them working locally make sure to compile yade with ``cmake -DMAX_LOG_LEVEL=6`` option.
 
+The ``LOG_ONCE_*`` family of macros:
+
+In a similar manner a ``LOG_ONCE_*`` and ``ONCE_TRVAR*`` family of macros is provided inside file :ysrc:`LoggingUtils.hpp</lib/base/LoggingUtils.hpp>`. Then the message is printed only once.
 
 All debug macros are summarized in the table below:
 
 
 .. table:: Yade debug macros.
 
-	+-----------------------------------------------------------+------------------------------------------------------------------------------------+
-	| macro name                                                | explanation                                                                        |
-	+===========================================================+====================================================================================+
-	| ``DECLARE_LOGGER;``                                       | Declares logger variable inside class definition in ``.hpp`` file.                 |
-	+-----------------------------------------------------------+------------------------------------------------------------------------------------+
-	| ``CREATE_LOGGER(ClassName);``                             | Creates logger static variable (with name ``"ClassName"``) inside class            |
-	|                                                           | implementation in ``.cpp`` file.                                                   |
-	+-----------------------------------------------------------+------------------------------------------------------------------------------------+
-	| ``TEMPLATE_CREATE_LOGGER(ClassName<OtherClass>);``        | Creates logger static variable (with name ``"ClassName<OtherClass>"``) inside class|
-	|                                                           | implementation in a ``.cpp`` file. Use this for templated classes.                 |
-	+-----------------------------------------------------------+------------------------------------------------------------------------------------+
-	| ``CREATE_CPP_LOCAL_LOGGER("filename.cpp");``              | Creates logger static variable outside of any class (with name ``"filename.cpp"``) |
-	|                                                           | inside the ``filename.cpp`` file.                                                  |
-	+-----------------------------------------------------------+------------------------------------------------------------------------------------+
-	| | ``LOG_TRACE``,    ``LOG_TIMED_TRACE``,                  | | Prints message using ``std::ostream`` syntax, like:                              |
-	| | ``LOG_DEBUG``,    ``LOG_TIMED_DEBUG``,                  | | ``LOG_TRACE( a << b << " text" )``                                               |
-	| | ``LOG_INFO``,     ``LOG_TIMED_INFO``,                   | | ``LOG_TIMED_TRACE( 5s ,  a << b << " text" );`` , prints every 5 seconds         |
-	| | ``LOG_WARN``,     ``LOG_TIMED_WARN``,                   | | ``LOG_TIMED_DEBUG( 500ms , a );``, prints every 500 milliseconds                 |
-	| | ``LOG_ERROR``,    ``LOG_TIMED_ERROR``,                  |                                                                                    |
-	| | ``LOG_FATAL``,    ``LOG_TIMED_FATAL``,                  |                                                                                    |
-	| | ``LOG_NOFILTER``, ``LOG_TIMED_NOFILTER``                |                                                                                    |
-	+-----------------------------------------------------------+------------------------------------------------------------------------------------+
-	| | ``TRVAR1``,  ``TIMED_TRVAR1``,                          | | Prints provided variables like:                                                  |
-	| | ``TRVAR2``,  ``TIMED_TRVAR2``,                          | | ``TRVAR3(testInt,testStr,testReal);``                                            |
-	| | ``TRVAR3``,  ``TIMED_TRVAR3``,                          | | ``TRVARn((testInt)(testStr)(testReal));``                                        |
-	| | ``TRVAR4``,  ``TIMED_TRVAR4``,                          | | ``TIMED_TRVAR3(  10s  , testInt , testStr , testReal);``                         |
-	| | ``TRVAR5``,  ``TIMED_TRVAR5``,                          | | ``TIMED_TRVARn( 500ms , (testInt)(testStr)(testReal));``                         |
-	| | ``TRVAR6``,  ``TIMED_TRVAR6``,                          | | See file :ysrc:`py/_log.cpp` for example use.                                    |
-	| | ``TRVARn``,  ``TIMED_TRVARn``                           |                                                                                    |
-	+-----------------------------------------------------------+------------------------------------------------------------------------------------+
-	| ``TRACE;``                                                | Prints a ``"Been here"`` message at ``TRACE`` log filter level.                    |
-	+-----------------------------------------------------------+------------------------------------------------------------------------------------+
-	| | ``LOG_TIMED_6``, ``LOG_6_TRACE``,                       | Additional macro aliases for easier use in editors with tab completion.            |
-	| | ``LOG_TIMED_5``, ``LOG_5_DEBUG``,                       | They have have a filter level number in their name.                                |
-	| | ``LOG_TIMED_4``, ``LOG_4_INFO``,                        |                                                                                    |
-	| | ``LOG_TIMED_3``, ``LOG_3_WARN``,                        |                                                                                    |
-	| | ``LOG_TIMED_2``, ``LOG_2_ERROR``,                       |                                                                                    |
-	| | ``LOG_TIMED_1``, ``LOG_1_FATAL``,                       |                                                                                    |
-	| | ``LOG_TIMED_0``, ``LOG_0_NOFILTER``,                    |                                                                                    |
-	| | ``LOG_TIMED_6_TRACE``,    ``LOG_6``,                    |                                                                                    |
-	| | ``LOG_TIMED_5_DEBUG``,    ``LOG_5``,                    |                                                                                    |
-	| | ``LOG_TIMED_4_INFO``,     ``LOG_4``,                    |                                                                                    |
-	| | ``LOG_TIMED_3_WARN``,     ``LOG_3``,                    |                                                                                    |
-	| | ``LOG_TIMED_2_ERROR``,    ``LOG_2``,                    |                                                                                    |
-	| | ``LOG_TIMED_1_FATAL``,    ``LOG_1``,                    |                                                                                    |
-	| | ``LOG_TIMED_0_NOFILTER``, ``LOG_0``                     |                                                                                    |
-	+-----------------------------------------------------------+------------------------------------------------------------------------------------+
+	+---------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+	| macro name                                                                | explanation                                                                        |
+	+===========================================================================+====================================================================================+
+	| ``DECLARE_LOGGER;``                                                       | Declares logger variable inside class definition in ``.hpp`` file.                 |
+	+---------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+	| ``CREATE_LOGGER(ClassName);``                                             | Creates logger static variable (with name ``"ClassName"``) inside class            |
+	|                                                                           | implementation in ``.cpp`` file.                                                   |
+	+---------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+	| ``TEMPLATE_CREATE_LOGGER(ClassName<OtherClass>);``                        | Creates logger static variable (with name ``"ClassName<OtherClass>"``) inside class|
+	|                                                                           | implementation in a ``.cpp`` file. Use this for templated classes.                 |
+	+---------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+	| ``CREATE_CPP_LOCAL_LOGGER("filename.cpp");``                              | Creates logger static variable outside of any class (with name ``"filename.cpp"``) |
+	|                                                                           | inside the ``filename.cpp`` file.                                                  |
+	+---------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+	| | ``LOG_TRACE``,    ``LOG_TIMED_TRACE``,    ``LOG_ONCE_TRACE``,           | | Prints message using ``std::ostream`` syntax, like:                              |
+	| | ``LOG_DEBUG``,    ``LOG_TIMED_DEBUG``,    ``LOG_ONCE_DEBUG``,           | | ``LOG_TRACE( a << b << " text" )``                                               |
+	| | ``LOG_INFO``,     ``LOG_TIMED_INFO``,     ``LOG_ONCE_INFO``,            | | ``LOG_TIMED_TRACE( 5s ,  a << b << " text" );`` , prints every 5 seconds         |
+	| | ``LOG_WARN``,     ``LOG_TIMED_WARN``,     ``LOG_ONCE_WARN``,            | | ``LOG_TIMED_DEBUG( 500ms , a );``, prints every 500 milliseconds                 |
+	| | ``LOG_ERROR``,    ``LOG_TIMED_ERROR``,    ``LOG_ONCE_ERROR``,           | | ``LOG_ONCE_TRACE( a << b << " text" );`` , prints just once                      |
+	| | ``LOG_FATAL``,    ``LOG_TIMED_FATAL``,    ``LOG_ONCE_FATAL``,           | | ``LOG_ONCE_DEBUG( a );``, prints only once                                       |
+	| | ``LOG_NOFILTER``, ``LOG_TIMED_NOFILTER``, ``LOG_ONCE_NOFILTER``         |                                                                                    |
+	+---------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+	| | ``TRVAR1``,  ``TIMED_TRVAR1``,  ``ONCE_TRVAR1``,                        | | Prints provided variables like:                                                  |
+	| | ``TRVAR2``,  ``TIMED_TRVAR2``,  ``ONCE_TRVAR2``,                        | | ``TRVAR3(testInt,testStr,testReal);``                                            |
+	| | ``TRVAR3``,  ``TIMED_TRVAR3``,  ``ONCE_TRVAR3``,                        | | ``TRVARn((testInt)(testStr)(testReal));``                                        |
+	| | ``TRVAR4``,  ``TIMED_TRVAR4``,  ``ONCE_TRVAR4``,                        | | ``TIMED_TRVAR3(  10s  , testInt , testStr , testReal);``                         |
+	| | ``TRVAR5``,  ``TIMED_TRVAR5``,  ``ONCE_TRVAR5``,                        | | ``ONCE_TRVARn( (testInt)(testStr)(testReal));``                                  |
+	| | ``TRVAR6``,  ``TIMED_TRVAR6``,  ``ONCE_TRVAR6``,                        | | See file :ysrc:`py/_log.cpp` for example use.                                    |
+	| | ``TRVARn``,  ``TIMED_TRVARn``,  ``ONCE_TRVARn``                         |                                                                                    |
+	+---------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+	| ``TRACE;``                                                                | Prints a ``"Been here"`` message at ``TRACE`` log filter level.                    |
+	+---------------------------------------------------------------------------+------------------------------------------------------------------------------------+
+	| | ``LOG_TIMED_6``,          ``LOG_6_TRACE``,     ``LOG_ONCE_6``,          | Additional macro aliases for easier use in editors with tab completion.            |
+	| | ``LOG_TIMED_5``,          ``LOG_5_DEBUG``,     ``LOG_ONCE_5``,          | They have have a filter level number in their name.                                |
+	| | ``LOG_TIMED_4``,          ``LOG_4_INFO``,      ``LOG_ONCE_4``,          |                                                                                    |
+	| | ``LOG_TIMED_3``,          ``LOG_3_WARN``,      ``LOG_ONCE_3``,          |                                                                                    |
+	| | ``LOG_TIMED_2``,          ``LOG_2_ERROR``,     ``LOG_ONCE_2``,          |                                                                                    |
+	| | ``LOG_TIMED_1``,          ``LOG_1_FATAL``,     ``LOG_ONCE_1``,          |                                                                                    |
+	| | ``LOG_TIMED_0``,          ``LOG_0_NOFILTER``,  ``LOG_ONCE_0``,          |                                                                                    |
+	| | ``LOG_TIMED_6_TRACE``,    ``LOG_6``,           ``LOG_ONCE_6_TRACE``,    |                                                                                    |
+	| | ``LOG_TIMED_5_DEBUG``,    ``LOG_5``,           ``LOG_ONCE_5_DEBUG``,    |                                                                                    |
+	| | ``LOG_TIMED_4_INFO``,     ``LOG_4``,           ``LOG_ONCE_4_INFO``,     |                                                                                    |
+	| | ``LOG_TIMED_3_WARN``,     ``LOG_3``,           ``LOG_ONCE_3_WARN``,     |                                                                                    |
+	| | ``LOG_TIMED_2_ERROR``,    ``LOG_2``,           ``LOG_ONCE_2_ERROR``,    |                                                                                    |
+	| | ``LOG_TIMED_1_FATAL``,    ``LOG_1``,           ``LOG_ONCE_1_FATAL``,    |                                                                                    |
+	| | ``LOG_TIMED_0_NOFILTER``, ``LOG_0``            ``LOG_ONCE_0_NOFILTER``, |                                                                                    |
+	+---------------------------------------------------------------------------+------------------------------------------------------------------------------------+
 
 
 .. _maximum-log-level:
