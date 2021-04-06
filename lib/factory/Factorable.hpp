@@ -1,8 +1,6 @@
 /*************************************************************************
 *  Copyright (C) 2004 by Olivier Galizzi                                 *
-*  olivier.galizzi@imag.fr                                               *
-*  Copyright (C) 2004 by Janek Kozicki                                   *
-*  cosurgi@berlios.de                                                    *
+*  Copyright (C) 2004-2021 by Janek Kozicki                              *
 *                                                                        *
 *  This program is free software; it is licensed under the terms of the  *
 *  GNU General Public License v2 or later. See file LICENSE for details. *
@@ -12,6 +10,7 @@
 
 #include "ClassFactory.hpp"
 
+#include <boost/enable_shared_from_this.hpp>
 #include <sstream>
 #include <string>
 
@@ -60,7 +59,7 @@ public:                                                                         
 	}
 
 
-class Factorable {
+class Factorable : public boost::enable_shared_from_this<Factorable> {
 public:
 	Factorable() { }
 	virtual ~Factorable() { }
