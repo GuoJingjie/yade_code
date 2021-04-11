@@ -212,7 +212,6 @@ O.saveTmp()
 
 if(opts.nogui==False):
     from yade import qt
-    O.bodies[0].dynamic = False  # set a fixed upper node
     qt.View()                    # create a GUI view
     Gl1_Sphere.stripes = True    # mark spheres with stripes
     rr = qt.Renderer()           # get instance of the renderer
