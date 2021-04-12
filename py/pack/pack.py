@@ -86,11 +86,9 @@ if (True):
     True
     >>> O.cell.refSize
     Vector3(5,5,5)
-    """
-  #The following 2 lines do not work, because of accuaracy
-  #>>> O.cell.hSize
-  #Matrix3(3.53553,-3.53553,0, 3.53553,3.53553,0, 0,0,5)
-    """
+    >>> O.cell.hSize # doctest: +SKIP
+    Matrix3(3.53553,-3.53553,0, 3.53553,3.53553,0, 0,0,5)
+    
   The current state (even if rotated) is taken as mechanically undeformed, i.e. with identity transformation:
   
     >>> O.cell.trsf
