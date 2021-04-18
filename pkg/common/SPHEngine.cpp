@@ -12,21 +12,13 @@ namespace yade { // Cannot have #include directive inside.
 void SPHEngine::action()
 {
 	{
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpragmas"
-#pragma GCC diagnostic ignored "-Wshadow"
 		YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 		{
 			if (mask > 0 && (b->groupMask & mask) == 0) continue;
 			this->calculateSPHRho(b);
-// error FIXME
-#warning "declaration of 'k' shadows a member of 'yade::SPHEngine' [-Werror=shadow]"
-			// this is really ERROR. You want to use this->k, but instead you use YADE_PARALLEL_FOREACH_BODY_END::k
-			// macros really shouldn't declare one-letter variables. They break other code.
 			b->state->press = math::max(0.0, k * (b->state->rho - b->state->rho0));
 		}
 		YADE_PARALLEL_FOREACH_BODY_END();
-#pragma GCC diagnostic pop
 	}
 }
 

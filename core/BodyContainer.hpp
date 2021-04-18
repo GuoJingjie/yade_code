@@ -21,19 +21,19 @@ class InteractionContainer;
 	const vector<Body::id_t>& realBodies = bodies->realBodies;                                                                                             \
 	const bool                redirect   = bodies->useRedirection;                                                                                         \
 	const Body::id_t          _sz(redirect ? realBodies.size() : bodies->size());                                                                          \
-	_Pragma("omp parallel for") for (int k = 0; k < _sz; k++)                                                                                              \
+	_Pragma("omp parallel for") for (int kParallelForeachIndexCounter = 0; kParallelForeachIndexCounter < _sz; kParallelForeachIndexCounter++)             \
 	{                                                                                                                                                      \
-		if (not redirect and not(*bodies)[k]) continue;                                                                                                \
-		b_((*bodies)[redirect ? realBodies[k] : k]);
+		if (not redirect and not(*bodies)[kParallelForeachIndexCounter]) continue;                                                                     \
+		b_((*bodies)[redirect ? realBodies[kParallelForeachIndexCounter] : kParallelForeachIndexCounter]);
 #else
 #define YADE_PARALLEL_FOREACH_BODY_BEGIN(b_, bodies)                                                                                                           \
 	bodies->updateRealBodies();                                                                                                                            \
 	const vector<Body::id_t>& realBodies = bodies->realBodies;                                                                                             \
 	const bool                redirect   = bodies->useRedirection;                                                                                         \
 	const Body::id_t          _sz(redirect ? realBodies.size() : bodies->size());                                                                          \
-	for (int k = 0; k < _sz; k++) {                                                                                                                        \
-		if (not redirect and not(*bodies)[k]) continue;                                                                                                \
-		b_((*bodies)[redirect ? realBodies[k] : k]);
+	for (int kParallelForeachIndexCounter = 0; kParallelForeachIndexCounter < _sz; kParallelForeachIndexCounter++) {                                       \
+		if (not redirect and not(*bodies)[kParallelForeachIndexCounter]) continue;                                                                     \
+		b_((*bodies)[redirect ? realBodies[kParallelForeachIndexCounter] : kParallelForeachIndexCounter]);
 #endif
 #define YADE_PARALLEL_FOREACH_BODY_END() }
 
