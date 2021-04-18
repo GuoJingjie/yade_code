@@ -6,7 +6,7 @@
 *************************************************************************/
 
 #include "_RealHPDiagnostics.hpp"
-#include <lib/base/Logging.hpp>
+#include <lib/base/LoggingUtils.hpp>
 #include <lib/high-precision/Real.hpp>
 #include <lib/high-precision/RealHPConfig.hpp>
 #include <lib/high-precision/RealIO.hpp>
@@ -55,16 +55,11 @@ private:
 			// TODO: check if latest MPFR version fixed bug in frexp for arguments such as:
 			// -0.999999999999999999999999778370088952043740344504867972909872539207515981285392968364222963125347205961928119872988781594713043198125331291
 			// and if not then file a bug report.
-			static bool warnOnce = true;
-			if (warnOnce) {
-				LOG_WARN(
-				        "frexp(…) documentation says that the result is always >= 0.5 and < 1.0. But here frexp("
-				        << math::toStringHP(x) << ",&ex) == " << math::toStringHP(norm) << ", please file a bug report against the "
-				        << demangledType << "\n Not sure if this bug is in multiprecision or in MPFR, or somewhere else.");
-				LOG_WARN("Trying to fix this.");
-				LOG_WARN("Will warn about this problem only once.");
-				warnOnce = false;
-			}
+			LOG_ONCE_WARN(
+			        "frexp(…) documentation says that the result is always >= 0.5 and < 1.0. But here frexp("
+			        << math::toStringHP(x) << ",&ex) == " << math::toStringHP(norm) << ", please file a bug report against the "
+			        << demangledType << "\n Not sure if this bug is in multiprecision or in MPFR, or somewhere else.");
+			LOG_ONCE_WARN("Trying to fix this. Will warn about this problem only once.");
 			if ((norm > 0.25) and (norm < 0.5)) { // if this bug becomes more annoying this fix might need to get moved into MathFunctions.hpp
 				norm *= 2;
 				ex -= 1;
