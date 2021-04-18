@@ -41,7 +41,7 @@ o.engines = [
     [Ip2_ViscElMat_ViscElMat_ViscElPhys()],
     [Law2_ScGeom_ViscElPhys_Basic()],
   ),
-  CentralGravityEngine(accel=50.0, label='gr', centralBody=idCentralBody),
+  CentralConstantAccelerationEngine(accel=50.0, label='gr', centralBody=idCentralBody),
   NewtonIntegrator(damping=0.1),
   SPHEngine(mask=1, k=k, rho0 = rho, h=h, KernFunctionDensity= 1),
   VTKRecorder(iterPeriod=1000, mask=1, fileName='./cpt/spheres-', recorders=['spheres','velocity','colors','intr','ids','mask','materialId','stress']),
