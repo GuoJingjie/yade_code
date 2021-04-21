@@ -82,19 +82,30 @@ public:
 	FUNCTOR2D(FrictMat, FrictMat);
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(
-			Ip2_FrictMat_FrictMat_MindlinPhys,IPhysFunctor,"Calculate some physical parameters needed to obtain \
-the normal and shear stiffnesses according to the Hertz-Mindlin formulation (as implemented in PFC).\n\n\
-Viscous parameters can be specified either using coefficients of restitution ($e_n$, $e_s$) or viscous \
-damping ratio ($\\beta_n$, $\\beta_s$). The following rules apply:\n#. If the $\\beta_n$ ($\\beta_s$) \
-ratio is given, it is assigned to :yref:`MindlinPhys.betan` (:yref:`MindlinPhys.betas`) directly.\n#. \
-If $e_n$ is given, :yref:`MindlinPhys.betan` is computed using $\\beta_n=-(\\log e_n)/\\sqrt{\\pi^2+(\\log e_n)^2}$. \
-The same applies to $e_s$, :yref:`MindlinPhys.betas`.\n#. It is an error (exception) to specify both $e_n$ \
-and $\\beta_n$ ($e_s$ and $\\beta_s$).\n#. If neither $e_n$ nor $\\beta_n$ is given, zero value \
-for :yref:`MindlinPhys.betan` is used; there will be no viscous effects.\n#.If neither $e_s$ nor $\\beta_s$ \
-is given, the value of :yref:`MindlinPhys.betan` is used for :yref:`MindlinPhys.betas` as well.\n\nThe \
-$e_n$, $\\beta_n$, $e_s$, $\\beta_s$ are :yref:`MatchMaker` objects; they can be constructed from float \
-values to always return constant value.\n\nSee :ysrc:`scripts/test/shots.py` for an example of specifying \
-$e_n$ based on combination of parameters.",
+			Ip2_FrictMat_FrictMat_MindlinPhys,IPhysFunctor, 
+				R"""(Calculate some physical parameters needed to obtain the normal and shear stiffnesses according to the Hertz-Mindlin formulation (as implemented in PFC).
+The viscous damping coefficients $c_n$, $c_s$ can be specified either using viscous damping ratios ($\beta_n$, $\beta_s$) or coefficients of restitution ($e_n$, $e_s$).
+
+# If the viscous damping ratio $\beta_n$ ($\beta_s$) is given, it is assigned directly to :yref:`MindlinPhys.betan` (:yref:`MindlinPhys.betas`) and the viscous damping coefficient is calculated as $c_n=2 \cdot \beta_n \cdot \sqrt{m_{bar} \cdot k_n}$ ($c_s=2 \cdot \beta_s \cdot \sqrt{m_{bar} \cdot k_s}$), where $k_n$ ($k_s$) the tangential normal (shear) stiffness. Replacing $k_n=3/2 \cdot k_{no} \cdot {u_{N}}^{0.5}$ ($k_s=k_{so} \cdot {u_{N}}^{0.5}$) and $k_{no}=4/3 \cdot E \cdot \sqrt{R}$ ($k_{so}=2 \cdot \sqrt{4 \cdot R} \cdot G/(2-\nu)$), we get $c_n=2 \cdot \beta_n \cdot \sqrt{m_{bar}} \cdot \sqrt{2 \cdot E \cdot \sqrt{R}}\cdot {u_{N}}^{0.25}$ ($c_s=2 \cdot \beta_s  \cdot \sqrt{m_{bar}} \cdot \sqrt{4 \cdot \sqrt{R} \cdot G/(2-\nu)} \cdot {u_N}^{0.25}$), where $m_{bar}$, $R$, $E$, $G$ the effective mass and mean radius, elastic and shear moduli of the interacting particles.
+
+# If the coefficient of restitution $e_n$ is given instead, the normal viscous damping ratio is computed using $\beta_n=-(\log e_n)/\sqrt{\pi^2+(\log e_n)^2}$. The shear coefficient of restitution is considered as $e_s=e_n$ and the viscous damping coefficient is calculated as $c_n=c_s=\alpha \cdot \sqrt{m_{bar}} \cdot {u_{N}}^{0.25}$, where $\alpha=2 \cdot \sqrt{5/6} \cdot \beta_n \cdot \sqrt{2 \cdot E \cdot \sqrt{R}}$, i.e. $c_n=c_s=2 \cdot \sqrt{5/6} \cdot \beta_n \cdot \sqrt{m_{bar}} \cdot \sqrt{2 \cdot E \cdot \sqrt{R}} \cdot {u_{N}}^{0.25}$.
+
+In both cases, the viscous forces are calculated as $F_{n,viscous}=c_n \cdot v_n$ ($F_{s,viscous}=c_s \cdot v_s$), where $v_n$ ($v_s$) the normal (shear) component of the relative velocity.
+The following rules apply:
+
+# If $\beta_n$ and $\beta_s$ are used, then :yref:`MindlinPhys.alpha` =0; if $e_n$ is defined instead, then :yref:`MindlinPhys.betan` = :yref:`MindlinPhys.betan` =0.0.
+
+# It is an error (exception) to specify both $e_n$ and $\beta_n$ ($e_s$ and $\beta_s$).
+
+# If neither $e_n$ nor $\beta_n$ is given, zero value for :yref:`MindlinPhys.betan` is used; there will be no viscous effects.
+
+# If neither $e_s$ nor $\beta_s$ is given, the value of :yref:`MindlinPhys.betan` is used for :yref:`MindlinPhys.betas` as well.
+
+# To consider different viscous coefficients in the normal and shear contact directions, use $\beta_n$, $\beta_s$, instead of $e_n$.
+
+The $e_n$, $\beta_n$, $e_s$, $\beta_s$ are :yref:`MatchMaker` objects; they can be constructed from float values to always return constant values. See :ysrc:`scripts/examples/spheresFactory.py` for an example of specifying $e_n$ based on combination of parameters, for different materials in contact.
+
+)""",
 			((Real,gamma,0.0,,"Surface energy parameter [J/m^2] per each unit contact surface, to derive DMT formulation from HM"))
 			((Real,eta,0.0,,"Coefficient to determine the plastic bending moment"))
 			((Real,krot,0.0,,"Rotational stiffness for moment contact law"))
@@ -130,7 +141,7 @@ public:
 	FUNCTOR2D(ScGeom, MindlinPhys);
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS(Law2_ScGeom_MindlinPhys_HertzWithLinearShear,LawFunctor,
-			"Constitutive law for the Hertz formulation (using :yref:`MindlinPhys.kno`) and linear beahvior in shear (using :yref:`MindlinPhys.kso` for stiffness and :yref:`FrictPhys.tangensOfFrictionAngle`). \n\n.. note:: No viscosity or damping. If you need those, look at  :yref:`Law2_ScGeom_MindlinPhys_Mindlin`, which also includes non-linear Mindlin shear.",
+			"Constitutive law for the Hertz formulation (using :yref:`MindlinPhys.kno`) and linear behavior in shear (using :yref:`MindlinPhys.kso` for stiffness and :yref:`FrictPhys.tangensOfFrictionAngle`). \n\n.. note:: No viscosity or damping. If you need those, look at  :yref:`Law2_ScGeom_MindlinPhys_Mindlin`, which also includes non-linear Mindlin shear.",
 				((bool,neverErase,false,,"Keep interactions even if particles go away from each other (only in case another constitutive law is in the scene, e.g. :yref:`Law2_ScGeom_CapillaryPhys_Capillarity`)"))
 				((int,nonLin,0,,"Shear force nonlinearity (the value determines how many features of the non-linearity are taken in account). 1: ks as in HM 2: shearElastic increment computed as in HM 3. granular ratcheting disabled."))
 		);
