@@ -754,7 +754,7 @@ Arbitrary spatial predicates introduced above can be expoited here as well::
 	from yade import pack
 	pred=pack.inAlignedBox(lowerCorner,upperCorner)
 	for b in O.bodies:
-	   if not instance(b.shape,Sphere): continue # skip non-spheres
+	   if not isinstance(b.shape,Sphere): continue # skip non-spheres
 	   # ask the predicate if we are inside
 	   if pred(b.state.pos,b.shape.radius): b.dynamic=False
 
