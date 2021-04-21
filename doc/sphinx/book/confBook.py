@@ -734,7 +734,7 @@ V\'{a}clav \v{S}milauer, Emanuele Catalano, Bruno Chareyre, Sergei Dorofeenko, J
 
 \text{\sffamily\bfseries\large Citing this document:}\\
 \v{S}milauer V. et al. (2015). Yade Documentation 2nd ed. doi:10.5281/zenodo.34073. http://yade-dem.org\\
-See also http://yade-dem/doc/citing.html.
+See also http://yade-dem.org/doc/citing.html.
 
 '''
 

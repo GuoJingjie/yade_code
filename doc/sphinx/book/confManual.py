@@ -695,7 +695,7 @@ V\'{a}clav \v{S}milauer, Bruno Chareyre, J\'er\^ome Duriez, Alexander Eulitz, An
 
 \text{\sffamily\bfseries\large Citing this document:}\\
 \v{S}milauer V. et al. (2015). Using and Programming. In:\textit{Yade Documentation 2nd ed.} doi:10.5281/zenodo.34043. http://yade-dem.org\\
-See also http://yade-dem/doc/citing.html.
+See also http://yade-dem.org/doc/citing.html.
 
 '''
 

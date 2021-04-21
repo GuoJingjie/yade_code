@@ -770,7 +770,7 @@ V\'{a}clav \v{S}milauer, Emanuele Catalano, Bruno Chareyre, Sergei Dorofeenko, J
 %\end{multicols}
 
 \text{\sffamily\bfseries\large Citing this document}\\
-In order to let users cite Yade consistently in publications, we provide a list of bibliographic references for the different parts of the documentation. We therefore kindly ask users to cite Yade as accurately as possible in their papers, as explained at http://yade-dem/doc/citing.html.
+In order to let users cite Yade consistently in publications, we provide a list of bibliographic references for the different parts of the documentation. We therefore kindly ask users to cite Yade as accurately as possible in their papers, as explained at http://yade-dem.org/doc/citing.html.
 
 '''
 
