@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Yade documentation build configuration file, created by
-# sphinx-quickstart on Mon Nov 16 21:49:34 2009.
+# sphinx-quickstart on Mon Nov 16 21:49:34 2009 and updated many times since.
 #
 # This file is execfile()d with the current directory set to its containing dir.
 #
@@ -709,7 +709,7 @@ V\'{a}clav \v{S}milauer, Emanuele Catalano, Bruno Chareyre, Sergei Dorofeenko, J
  \item \text{\sffamily\bfseries\normalsize Emanuele Catalano}\\ \text{\sffamily\small Grenoble INP, UJF, CNRS, lab. 3SR}
  \item \text{\sffamily\bfseries\normalsize Bruno Chareyre}\\ \text{\sffamily\small Grenoble INP, UJF, CNRS, lab. 3SR}
  \item \text{\sffamily\bfseries\normalsize Sergei Dorofeenko}\\ \text{\sffamily\small IPCP RAS, Chernogolovka}
- \item \text{\sffamily\bfseries\normalsize J\'er\^ome Duriez}\\ \text{\sffamily\small Irstea, RECOVER}
+ \item \text{\sffamily\bfseries\normalsize J\'er\^ome Duriez}\\ \text{\sffamily\small INRAE, Aix Marseille Univ, RECOVER, Aix-en-Provence, France}
  \item \text{\sffamily\bfseries\normalsize Nolan Dyck}\\ \text{\sffamily\small Univ. of Western Ontario}
  \item \text{\sffamily\bfseries\normalsize Eli\'{a}\v{s}}\\ \text{\sffamily\small Brno University of Technology}
  \item \text{\sffamily\bfseries\normalsize Burak Er}\\ \text{\sffamily\small Bursa Technical University}
