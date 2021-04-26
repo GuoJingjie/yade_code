@@ -54,10 +54,6 @@ TriaxialTest::~TriaxialTest() { }
 bool TriaxialTest::generate(string& message)
 {
 	message = "";
-	if (biaxial2dTest && (8.0 * (upperCorner[2] - lowerCorner[2])) > (upperCorner[0] - lowerCorner[0])) {
-		message = "Biaxial test can be generated only if Z size is more than 8 times smaller than X size";
-		return false;
-	}
 	if (facetWalls && wallWalls) { LOG_WARN("Turning TriaxialTest::facetWalls off, since wallWalls were selected as well."); }
 
 	shared_ptr<Body> body;
@@ -167,7 +163,6 @@ bool TriaxialTest::generate(string& message)
 		const SpherePack::Sph& sp(sphere_pack.pack[i]);
 		LOG_DEBUG("sphere (" << sp.c << " " << sp.r << ")");
 		createSphere(body, sp.c, sp.r, false, true);
-		if (biaxial2dTest) { body->state->blockedDOFs = State::DOF_Z; }
 		scene->bodies->insert(body);
 	}
 	if (defaultDt < 0) {

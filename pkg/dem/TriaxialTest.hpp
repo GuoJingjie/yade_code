@@ -74,7 +74,6 @@ public:
 		((string,fixedBoxDims,"",,"string that contains some subset (max. 2) of {'x','y','z'} ; contains axes will have box dimension hardcoded, even if box is scaled as mean_radius is prescribed: scaling will be applied on the rest."))
 		((string,WallStressRecordFile,"./WallStresses"+Key,,""))					
 		((bool,internalCompaction,false,,"flag for choosing between moving boundaries or increasing particles sizes during the compaction stage."))
-		((bool,biaxial2dTest,false,,"FIXME : what is that?"))
 		((bool,autoCompressionActivation,true,,"Do we just want to generate a stable packing under isotropic pressure (false) or do we want the triaxial loading to start automatically right after compaction stage (true)?"))
 		((bool,autoUnload,true,,"auto adjust the isotropic stress state from :yref:`TriaxialTest::sigmaIsoCompaction` to :yref:`TriaxialTest::sigmaLateralConfinement` if they have different values. See docs for :yref:`TriaxialCompressionEngine::autoUnload`"))
 		((bool,autoStopSimulation,false,,"freeze the simulation when conditions are reached (don't activate this if you want to be able to run/stop from Qt GUI)"))
