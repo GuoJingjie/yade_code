@@ -315,6 +315,7 @@ The following cmake options are available: (see the `source code <https://gitlab
 	* ENABLE_LOGGER: use `boost::log <https://www.boost.org/doc/libs/release/libs/log/>`_ library for :ref:`logging<logging>` separately for each class (ON by default)
 	* MAX_LOG_LEVEL: :ref:`set maximum level <maximum-log-level>` for LOG_* macros compiled with ENABLE_LOGGER, (default is 5)
 	* ENABLE_USEFUL_ERRORS: enable useful compiler errors which help a lot in error-free development (ON by default)
+	* ENABLE_ASAN: use adress sanitizer (super-slow debug mode) 
 	* CMAKE_VERBOSE_MAKEFILE: output additional information during compiling (OFF by default)
 	* SUFFIX: suffix, added after binary-names (version number by default)
 	* NOSUFFIX: do not add a suffix after binary-name (OFF by default)
