@@ -338,6 +338,7 @@ The following cmake options are available: (see the `source code <https://gitlab
 	* ENABLE_POTENTIAL_PARTICLES: enable potential particles option (ON by default)
 	* ENABLE_DEFORM: enable constant volume deformation engine (OFF by default)
 	* ENABLE_OAR: generate a script for oar-based task scheduler (OFF by default)
+	* ENABLE_REAL_HP: high precision for real numbers. See :ref:`high precision documentation<highPrecisionReal>` for additional details (ON by default).
 	* ENABLE_MPFR: use `mpfr <https://www.mpfr.org/>`_ in ``C++`` and `mpmath <http://mpmath.org/>`_ in ``python``. It can be used for higher precision ``Real`` or for CGAL exact predicates (OFF by default)
 	* REAL_PRECISION_BITS, REAL_DECIMAL_PLACES: specify either of them to use a custom calculation precision. By default double (64 bits, 15 decimal places) precision is used as ``Real`` type. See :ref:`high precision documentation<highPrecisionReal>` for additional details.
 	* runtimePREFIX: used for packaging, when install directory is not the same as runtime directory (/usr/local by default)
