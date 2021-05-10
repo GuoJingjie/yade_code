@@ -1447,7 +1447,7 @@ At the end, the batch system knows about all gnuplot files and tries to merge th
 
 HTTP overview
 --------------
-While job is running, the batch system presents progress via simple HTTP server running at port 9080, which can be acessed from regular web browser by requesting the ``http://localhost:9080`` URL. This page can be accessed remotely over network as well. 
+While job is running, the batch system presents progress via simple HTTP server running at port 9080, which can be acessed from a regular web browser (or e.g. ``lynx`` for a terminal usage) by requesting the ``http://localhost:9080`` URL. This page can be accessed remotely over network as well.
 
 .. _img-yade-multi-summary:
 .. figure:: fig/yade-multi-summary.*
