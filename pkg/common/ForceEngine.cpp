@@ -13,7 +13,7 @@
 
 namespace yade { // Cannot have #include directive inside.
 
-YADE_PLUGIN((ForceEngine)(InterpolatingDirectedForceEngine)(RadialForceEngine)(DragEngine)(LinearDragEngine));
+YADE_PLUGIN((ForceEngine)(InterpolatingDirectedForceEngine)(RadialForceEngine)(DragEngine)(LinearDragEngine)(HarmonicForceEngine));
 
 void ForceEngine::action()
 {
@@ -95,6 +95,28 @@ void LinearDragEngine::action()
 			if (velSphTemp != Vector3r::Zero()) { dragForce = -b2 * velSphTemp; }
 			scene->forces.addForce(id, dragForce);
 		}
+	}
+}
+
+void HarmonicForceEngine::action()
+{
+	if (ids.size() > 0) {
+		Vector3r w = f * 2.0 * Mathr::PI; //Angular frequency
+
+		Vector3r force = (((w * scene->time + fi).array().sin()));
+
+		force = force.cwiseProduct(A);
+
+		FOREACH(Body::id_t id, ids)
+		{
+			assert(id < (Body::id_t)scene->bodies->size());
+			Body* b = Body::byId(id, scene).get();
+			if (!b) continue;
+			if (!(scene->bodies->exists(id))) continue;
+			scene->forces.addForce(id, force);
+		}
+	} else {
+		LOG_WARN("The list of ids is empty! Can't apply any forces.");
 	}
 }
 

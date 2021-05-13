@@ -59,7 +59,7 @@ REGISTER_SERIALIZABLE(TranslationEngine);
 struct HarmonicMotionEngine : public KinematicEngine {
 	void apply(const vector<Body::id_t>& ids) override;
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS(HarmonicMotionEngine,KinematicEngine,"This engine implements the harmonic oscillation of bodies. http://en.wikipedia.org/wiki/Simple_harmonic_motion#Dynamics_of_simple_harmonic_motion",
+	YADE_CLASS_BASE_DOC_ATTRS(HarmonicMotionEngine,KinematicEngine,"This engine implements the harmonic oscillation of bodies. See also :yref:`HarmonicForceEngine` that applies a harmonic force, see also the `dynamics of harmonic motion <http://en.wikipedia.org/wiki/Simple_harmonic_motion#Dynamics_of_simple_harmonic_motion>`__",
 		((Vector3r,A,Vector3r::Zero(),,"Amplitude [m]"))
 		((Vector3r,f,Vector3r::Zero(),,"Frequency [hertz]"))
 		((Vector3r,fi,Vector3r(Mathr::PI/2.0, Mathr::PI/2.0, Mathr::PI/2.0),,"Initial phase [radians]. By default, the body oscillates around initial position."))
@@ -110,7 +110,7 @@ REGISTER_SERIALIZABLE(InterpolatingHelixEngine);
 struct HarmonicRotationEngine : public RotationEngine {
 	void apply(const vector<Body::id_t>& ids) override;
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS(HarmonicRotationEngine,RotationEngine,"This engine implements the harmonic-rotation oscillation of bodies. http://en.wikipedia.org/wiki/Simple_harmonic_motion#Dynamics_of_simple_harmonic_motion ; please, set dynamic=False for bodies, droven by this engine, otherwise amplitude will be 2x more, than awaited.",
+	YADE_CLASS_BASE_DOC_ATTRS(HarmonicRotationEngine,RotationEngine,"This engine implements the harmonic-rotation oscillation of bodies, see also the `dynamics of harmonic motion <http://en.wikipedia.org/wiki/Simple_harmonic_motion#Dynamics_of_simple_harmonic_motion>`__ ; please, set dynamic=False for bodies, droven by this engine, otherwise amplitude will be 2x more, than awaited.",
 		((Real,A,0,,"Amplitude [rad]"))
 		((Real,f,0,,"Frequency [hertz]"))
 		((Real,fi,Mathr::PI/2.0,,"Initial phase [radians]. By default, the body oscillates around initial position."))
