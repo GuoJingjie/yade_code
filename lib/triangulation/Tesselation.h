@@ -154,7 +154,7 @@ namespace CGT {
 		inline const VertexHandle& vertex(unsigned int id) const { return vertexHandles[id]; }
 
 // Alpha Shapes
-#ifdef ALPHASHAPE
+#ifdef ALPHASHAPES
 		void testAlphaShape(Real alpha = 0);
 		struct AlphaFace {
 			unsigned int ids[3];
@@ -163,6 +163,7 @@ namespace CGT {
 		struct AlphaCap {
 			unsigned int id;
 			CVector      normal;
+			CVector      centroid;
 		};
 		void                  setAlphaFaces(std::vector<AlphaFace>& faces, Real alpha = 0);
 		void                  setExtendedAlphaCaps(std::vector<AlphaCap>& caps, Real alpha, Real shrinkedAlpha, bool fixedAlpha);

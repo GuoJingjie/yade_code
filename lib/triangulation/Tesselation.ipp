@@ -200,7 +200,7 @@ namespace CGT {
 		return (Point)cell->info();
 	}
 
-#ifdef ALPHASHAPE
+#ifdef ALPHASHAPES
 	template <class TT> std::vector<int> _Tesselation<TT>::getAlphaVertices(Real alpha)
 	{
 		cerr << "Warning: this is extremely slow - only for experiments" << endl;
@@ -304,23 +304,23 @@ namespace CGT {
 			//check if the surface vector is inward or outward
 			Real dotP = surface * (f->first->vertex(facetVertices[f->second][0])->point().point() - pp);
 			if (dotP < 0) surface = -surface;
-			Real    area = sqrt(surface.squared_length());
-			CVector normal = surface / area; //unit normal
+			Real    area2 = sqrt(surface.squared_length());
+			CVector normal = surface / area2; //unit normal
 			                                 // 		std::cerr <<"dotP="<<dotP<<std::endl<<"surface: "<<surface<<std::endl;
 
 			Real h1 = (f->first->vertex(facetVertices[idx][0])->point().point() - vv) * surface
-			        / area; //orthogonal distance from Voronoi vertex to the plane in which the spheres lie, call the intersection V
+			        / area2; //orthogonal distance from Voronoi vertex to the plane in which the spheres lie, call the intersection V
 			Point V = vv + h1 * normal;
 			Real  distLiu = sqrt((V - Point(0, 0, 0)).squared_length());
 			Real  sqR = (V - f->first->vertex(facetVertices[idx][0])->point().point())
 			                   .squared_length(); //squared distance between V and the center of sphere 0
-			Real temp = alpha + f->first->vertex(facetVertices[idx][0])->point().weight() - sqR;
-			if (temp < 0) {
-				temp = 0;
+			Real temp2 = alpha + f->first->vertex(facetVertices[idx][0])->point().weight() - sqR;
+			if (temp2 < 0) {
+				temp2 = 0;
 				std::cerr << "NEGATIVE TEMP!" << std::endl;
 			}
-			if (temp > maxWeight) temp = maxWeight; //if alpha vertex is too far, crop
-			Real h2 = sqrt(temp);                   // this is now the distance from Voronoi vertex to "alpha" vertex (after cropping if needed)
+			if (temp2 > maxWeight) temp2 = maxWeight; //if alpha vertex is too far, crop
+			Real h2 = sqrt(temp2);                   // this is now the distance from Voronoi vertex to "alpha" vertex (after cropping if needed)
 			V = V + h2 * normal;
 			std::cerr << "dist alpha center:" << sqrt((V - Point(0, 0, 0)).squared_length()) << "(vs. Liu:" << distLiu << ")" << std::endl;
 		}
@@ -440,11 +440,17 @@ namespace CGT {
 	}
 
 
-	template <class TT> void _Tesselation<TT>::setExtendedAlphaCaps(std::vector<AlphaCap>& faces, Real alpha, Real shrinkedAlpha, bool fixedAlpha)
+	template <class TT> void _Tesselation<TT>::setExtendedAlphaCaps(std::vector<AlphaCap>& caps, Real alpha, Real shrinkedAlpha, bool fixedAlpha)
 	{
 		std::vector<CVector> areas;
-		//initialize area vectors in a list accessed via ids (hence the size), later refactored into a shorter list in "faces"
+		std::vector<CVector> centroids;
+		std::vector<CVector> areaMoments;
+		std::vector<double> areaNormSums;
+		//initialize area vectors in a list accessed via ids (hence the size), later refactored into a shorter list in "caps"
 		areas.resize(maxId + 1, CVector(0, 0, 0)); // from 0 to maxId
+		centroids.resize(maxId + 1, CVector(0, 0, 0)); // from 0 to maxId
+		areaMoments.resize(maxId + 1, CVector(0, 0, 0)); // from 0 to maxId
+		areaNormSums.resize(maxId + 1, 0.); // from 0 to maxId
 
 		RTriangulation temp(*Tri);
 		AlphaShape     as(temp);
@@ -509,22 +515,38 @@ namespace CGT {
 				const int&   id2 = e->first->vertex(facetVertices[e->second][ftx < 2 ? ftx + 1 : 0])->info().id();
 				const Point& p1 = e->first->vertex(facetVertices[e->second][ftx > 0 ? ftx - 1 : 2])->point().point();
 				const Point& p2 = e->first->vertex(facetVertices[e->second][ftx < 2 ? ftx + 1 : 0])->point().point();
-				CVector      u = setCircumCenter(e->first) - setCircumCenter(e->first->neighbor(e->second));
+				const Point& cc1 = setCircumCenter(e->first);
+				const Point& cc2 = setCircumCenter(e->first->neighbor(e->second));
+				CVector u = cc1 - cc2;
 				int          makeClockWise = u * cross_product(p2 - p1, fictV - p1) > 0 ? 1 : -1;
-				areas[id1] = areas[id1] + (makeClockWise * 0.5) * cross_product(u, setCircumCenter(e->first) - p1);
-				areas[id2] = areas[id2] - (makeClockWise * 0.5) * cross_product(u, setCircumCenter(e->first) - p2);
+				CVector area1 = (makeClockWise * 0.5) * cross_product(u, cc1 - p1);
+				CVector area2 = -(makeClockWise * 0.5) * cross_product(u, cc1 - p2);
+				double area1Norm = sqrt(area1.squared_length());
+				double area2Norm = sqrt(area2.squared_length());						
+				areas[id1] = areas[id1] + area1;
+				areas[id2]=areas[id2] + area2;			
+				areaNormSums[id1] += area1Norm;
+				areaNormSums[id2] += area2Norm;			
+				CVector cTri1 = CGAL::centroid(Triangle(cc1, cc2, p1)) - p1;
+				CVector cTri2 = CGAL::centroid(Triangle(cc1, cc2, p2)) - p2;			
+				areaMoments[id1] = areaMoments[id1] + area1Norm * cTri1;
+				areaMoments[id2] = areaMoments[id2] + area2Norm * cTri2;			
+				centroids[id1] = p1 - CGAL::ORIGIN;
+				centroids[id2] = p2 - CGAL::ORIGIN;
 			}
 		}
 
-		faces.clear();
-		faces.reserve(1.5 * 6 * pow(as.number_of_vertices(), 0.6666));
-		for (short id = 0; id <= maxId; id++) {
+		caps.clear();
+		caps.reserve((long unsigned)(1.5 * 6 * pow(as.number_of_vertices(), 0.6666)));
+		for (long id = 0; id <= maxId; id++) {
 			if (areas[id] != CVector(0, 0, 0)) {
+				centroids[id] = centroids[id] + 1.5 / areaNormSums[id] * areaMoments[id];
 				AlphaCap cap;
 				cap.id = id;
 				cap.normal = areas[id];
+				cap.centroid = centroids[id];
 				// 			cerr << "cap: "<<cap.id<<" "<<cap.normal<<endl;
-				faces.push_back(cap);
+				caps.push_back(cap);
 			}
 		}
 	}
@@ -593,20 +615,20 @@ namespace CGT {
 				//check if the surface vector is inward or outward
 				Real dotP = surface * (baseCell->vertex(facetVertices[idx][0])->point().point() - baseCell->vertex(idx)->point().point());
 				if (dotP < 0) surface = -surface;
-				Real area = sqrt(surface.squared_length());
-				normal = surface / area; //unit normal
+				Real area2 = sqrt(surface.squared_length());
+				normal = surface / area2; //unit normal
 				Real h1 = (baseCell->vertex(facetVertices[idx][0])->point().point() - vv)
 				        * normal; //orthogonal distance from Voronoi vertex to the plane in which the spheres lie, call the intersection V
 				p2 = vv + h1 * normal;
 				Real sqR = (p2 - baseCell->vertex(facetVertices[idx][0])->point().point())
 				                   .squared_length(); //squared distance between V and the center of sphere 0
-				Real temp = alpha + baseCell->vertex(facetVertices[idx][0])->point().weight() - sqR;
-				if (temp < 0) {
-					temp = 0;
+				Real temp2 = alpha + baseCell->vertex(facetVertices[idx][0])->point().weight() - sqR;
+				if (temp2 < 0) {
+					temp2 = 0;
 					std::cerr << "NEGATIVE TEMP!" << std::endl;
 				}
-				if (temp > maxWeight) temp = maxWeight; //if alpha vertex is too far, crop
-				Real h2 = sqrt(temp); // this is now the distance from Voronoi vertex to "alpha" vertex (after cropping if needed)
+				if (temp2 > maxWeight) temp2 = maxWeight; //if alpha vertex is too far, crop
+				Real h2 = sqrt(temp2); // this is now the distance from Voronoi vertex to "alpha" vertex (after cropping if needed)
 				p2 = p2 + h2 * normal;
 
 				bool coplanar = false;
@@ -1119,7 +1141,7 @@ namespace CGT {
 		return CVector(0, 0, 0);
 	}
 
-#endif //ALPHASHAPE
+#endif //ALPHASHAPES
 
 	template <class TT> Segment _Tesselation<TT>::Dual(FiniteFacetsIterator& f_it)
 	{

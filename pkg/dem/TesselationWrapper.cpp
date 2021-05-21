@@ -391,7 +391,7 @@ boost::python::dict TesselationWrapper::getVolPoroDef(bool deformation)
 	return ret;
 }
 
-#ifdef ALPHASHAPE
+#ifdef ALPHASHAPES
 boost::python::list TesselationWrapper::getAlphaFaces(double alpha)
 {
 	vector<AlphaFace> faces;
@@ -408,19 +408,59 @@ boost::python::list TesselationWrapper::getAlphaCaps(double alpha, double shrink
 	Tes->setExtendedAlphaCaps(caps, alpha, shrinkedAlpha, fixedAlpha);
 	boost::python::list ret;
 	for (auto f = caps.begin(); f != caps.end(); f++)
-		ret.append(boost::python::make_tuple(f->id, makeVector3r(f->normal)));
+		ret.append(boost::python::make_tuple(f->id, makeVector3r(f->normal), makeVector3r(f->centroid)));
 	//    cerr<<"number of caps="<<caps.size()<<endl;
 	return ret;
 }
 
 void TesselationWrapper::applyAlphaForces(Matrix3r stress, double alpha, double shrinkedAlpha, bool fixedAlpha)
 {
-	Scene* scene = Omega::instance().getScene().get();
-	if (Tes->Triangulation().number_of_vertices() <= 0) build_triangulation_with_ids(scene->bodies, *this, true); //if not already triangulated do it now
+	// Scene* scene = Omega::instance().getScene().get();
+	build_triangulation_with_ids(scene->bodies, *this, true); //triangulation needed
 	vector<AlphaCap> caps;
 	Tes->setExtendedAlphaCaps(caps, alpha, shrinkedAlpha, fixedAlpha);
+	FOREACH(const shared_ptr<Body>& b, *scene->bodies)
+		scene->forces.setPermForce(b->id,Vector3r::Zero());
 	for (auto f = caps.begin(); f != caps.end(); f++)
 		scene->forces.setPermForce(f->id, stress * makeVector3r(f->normal));
+}
+
+void TesselationWrapper::applyAlphaVel(Matrix3r velGrad, double alpha, double shrinkedAlpha, bool fixedAlpha)
+{
+	// Scene* scene = Omega::instance().getScene().get();
+	build_triangulation_with_ids(scene->bodies,*this,true);//triangulation needed
+	vector<AlphaCap> caps;
+	Tes->setExtendedAlphaCaps(caps,alpha,shrinkedAlpha,fixedAlpha);
+	FOREACH(const shared_ptr<Body>& b, *scene->bodies)
+		b->state->blockedDOFs=State::DOF_NONE;
+	const auto aabb = Shop::aabbExtrema();
+	Vector3r bbCenter = 0.5 * (aabb.first + aabb.second);
+	for (auto f=caps.begin();f!=caps.end();f++)  {
+		Body* b=Body::byId(f->id,scene).get();
+		b->state->blockedDOFs=State::DOF_ALL;
+		b->state->vel = velGrad * ( makeVector3r(f->centroid) - bbCenter );
+		b->state->angVel = Vector3r::Zero();
+	}
+}
+
+Matrix3r TesselationWrapper::getAlphaStress(double alpha, double shrinkedAlpha, bool fixedAlpha)
+{
+	// Scene* scene = Omega::instance().getScene().get();
+	build_triangulation_with_ids(scene->bodies, *this, true); //triangulation needed
+	vector<AlphaCap> caps;
+	Tes->setExtendedAlphaCaps(caps, alpha, shrinkedAlpha, fixedAlpha);
+	Matrix3r cauchyLWS(Matrix3r::Zero()); 
+	scene->forces.sync();	// needed to make resultants predictable
+	alphaCapsVol = 0.;
+	for (auto f=caps.begin(); f!=caps.end(); f++)  {
+		Vector3r areaV = makeVector3r(f->normal);
+		Vector3r resultant = scene->forces.getPermForce(f->id) - scene->forces.getForce(f->id);
+		Vector3r centroid = makeVector3r(f->centroid);
+		cauchyLWS += resultant*(centroid.transpose());
+		alphaCapsVol += areaV.norm()/3. * centroid.dot(areaV.normalized());
+	}
+	cauchyLWS /= alphaCapsVol;
+	return cauchyLWS;
 }
 
 boost::python::list TesselationWrapper::getAlphaGraph(double alpha, double shrinkedAlpha, bool fixedAlpha)
@@ -440,7 +480,7 @@ boost::python::list TesselationWrapper::getAlphaVertices(double alpha)
 		ret.append(*f);
 	return ret;
 }
-#endif //ALPHASHAPE
+#endif //ALPHASHAPES
 
 } // namespace yade
 
