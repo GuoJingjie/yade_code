@@ -10,7 +10,7 @@ class TestEnum(unittest.TestCase):
 		pass # here finalize the tests, maybe close an opened file, or something else
 
 	def canTest(self):
-		return 'GUI-Qt5' in yade.config.features
+		return 'QT5' in yade.config.features
 
 	def thisTestsException1(self):
 		self.r.blinkHighlight = -100

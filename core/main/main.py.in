@@ -369,8 +369,7 @@ def userSession(gui='none',qapp=None):
 ## run userSession in a way corresponding to the features we use:
 gui=None
 yade.runtime.hasDisplay=False # this is the default initialized in the module, anyway
-if 'GUI' in features: gui='qt4'
-if 'GUI-Qt5' in features: gui='qt5'
+if 'QT5' in features: gui='qt5'
 if opts.nogui or opts.mpi_mode: gui=None
 if gui:
 	import Xlib.display

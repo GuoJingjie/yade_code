@@ -161,7 +161,7 @@ targetMin) +" , "+str(targetMax) +"\n" )
 	#TODO: We need to check the correct definition of a PotentialParticle which is not defined centered to its centroid or aligned to its principal axes, once an automatic calculation is developed
 	#TODO: We need to create a similar script for 2D contacts as well, with calContactArea=True
 
-	if ('GUI' in features) or ('GUI-Qt5' in features): #refine visualisation of particle shape if gui is enabled
+	if ('QT5' in features): #refine visualisation of particle shape if gui is enabled
 		Gl1_PotentialParticle.sizeX=50
 		Gl1_PotentialParticle.sizeY=50
 		Gl1_PotentialParticle.sizeZ=50
