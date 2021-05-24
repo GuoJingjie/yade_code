@@ -135,7 +135,7 @@ void build_triangulation_with_ids(const shared_ptr<BodyContainer>& bodies, Tesse
 	//cerr << " loaded : " << Ng<<", triangulated : "<<TW.n_spheres<<", mean radius = " << TW.mean_radius<<endl;
 }
 
-double thickness = 0;
+Real thickness = 0;
 
 TesselationWrapper::~TesselationWrapper()
 {
@@ -181,7 +181,7 @@ void TesselationWrapper::insertSceneSpheres(bool reset)
 
 Real TesselationWrapper::Volume(unsigned int id) { return ((unsigned int)Tes->Max_id() >= id) ? Tes->Volume(id) : -1; }
 
-bool TesselationWrapper::insert(double x, double y, double z, double rad, unsigned int id)
+bool TesselationWrapper::insert(Real x, Real y, Real z, Real rad, unsigned int id)
 {
 	checkMinMax(x, y, z, rad);
 	mean_radius += rad;
@@ -189,14 +189,14 @@ bool TesselationWrapper::insert(double x, double y, double z, double rad, unsign
 	return (Tes->insert(x, y, z, rad, id) != NULL);
 }
 
-void TesselationWrapper::checkMinMax(double x, double y, double z, double rad)
+void TesselationWrapper::checkMinMax(Real x, Real y, Real z, Real rad)
 {
 	Pmin = CGT::Point(min(Pmin.x(), x - rad), min(Pmin.y(), y - rad), min(Pmin.z(), z - rad));
 	Pmax = CGT::Point(max(Pmax.x(), x + rad), max(Pmax.y(), y + rad), max(Pmax.z(), z + rad));
 }
 
 
-bool TesselationWrapper::move(double x, double y, double z, double rad, unsigned int id)
+bool TesselationWrapper::move(Real x, Real y, Real z, Real rad, unsigned int id)
 {
 	checkMinMax(x, y, z, rad);
 	if (Tes->move(x, y, z, rad, id) != NULL) return true;
@@ -216,7 +216,7 @@ void TesselationWrapper::computeTesselation(void)
 	Tes->compute();
 }
 
-void TesselationWrapper::computeTesselation(double pminx, double pmaxx, double pminy, double pmaxy, double pminz, double pmaxz)
+void TesselationWrapper::computeTesselation(Real pminx, Real pmaxx, Real pminy, Real pmaxy, Real pminz, Real pmaxz)
 {
 	if (not(Tes->vertexHandles.size() > 0)) insertSceneSpheres();
 	addBoundingPlanes(pminx, pmaxx, pminy, pmaxy, pminz, pmaxz);
@@ -392,7 +392,7 @@ boost::python::dict TesselationWrapper::getVolPoroDef(bool deformation)
 }
 
 #ifdef ALPHASHAPES
-boost::python::list TesselationWrapper::getAlphaFaces(double alpha)
+boost::python::list TesselationWrapper::getAlphaFaces(Real alpha)
 {
 	vector<AlphaFace> faces;
 	Tes->setAlphaFaces(faces, alpha);
@@ -402,7 +402,7 @@ boost::python::list TesselationWrapper::getAlphaFaces(double alpha)
 	return ret;
 }
 
-boost::python::list TesselationWrapper::getAlphaCaps(double alpha, double shrinkedAlpha, bool fixedAlpha)
+boost::python::list TesselationWrapper::getAlphaCaps(Real alpha, Real shrinkedAlpha, bool fixedAlpha)
 {
 	vector<AlphaCap> caps;
 	Tes->setExtendedAlphaCaps(caps, alpha, shrinkedAlpha, fixedAlpha);
@@ -413,7 +413,7 @@ boost::python::list TesselationWrapper::getAlphaCaps(double alpha, double shrink
 	return ret;
 }
 
-void TesselationWrapper::applyAlphaForces(Matrix3r stress, double alpha, double shrinkedAlpha, bool fixedAlpha)
+void TesselationWrapper::applyAlphaForces(Matrix3r stress, Real alpha, Real shrinkedAlpha, bool fixedAlpha)
 {
 	// Scene* scene = Omega::instance().getScene().get();
 	build_triangulation_with_ids(scene->bodies, *this, true); //triangulation needed
@@ -425,7 +425,7 @@ void TesselationWrapper::applyAlphaForces(Matrix3r stress, double alpha, double 
 		scene->forces.setPermForce(f->id, stress * makeVector3r(f->normal));
 }
 
-void TesselationWrapper::applyAlphaVel(Matrix3r velGrad, double alpha, double shrinkedAlpha, bool fixedAlpha)
+void TesselationWrapper::applyAlphaVel(Matrix3r velGrad, Real alpha, Real shrinkedAlpha, bool fixedAlpha)
 {
 	// Scene* scene = Omega::instance().getScene().get();
 	build_triangulation_with_ids(scene->bodies,*this,true);//triangulation needed
@@ -443,7 +443,7 @@ void TesselationWrapper::applyAlphaVel(Matrix3r velGrad, double alpha, double sh
 	}
 }
 
-Matrix3r TesselationWrapper::getAlphaStress(double alpha, double shrinkedAlpha, bool fixedAlpha)
+Matrix3r TesselationWrapper::getAlphaStress(Real alpha, Real shrinkedAlpha, bool fixedAlpha)
 {
 	// Scene* scene = Omega::instance().getScene().get();
 	build_triangulation_with_ids(scene->bodies, *this, true); //triangulation needed
@@ -463,7 +463,7 @@ Matrix3r TesselationWrapper::getAlphaStress(double alpha, double shrinkedAlpha, 
 	return cauchyLWS;
 }
 
-boost::python::list TesselationWrapper::getAlphaGraph(double alpha, double shrinkedAlpha, bool fixedAlpha)
+boost::python::list TesselationWrapper::getAlphaGraph(Real alpha, Real shrinkedAlpha, bool fixedAlpha)
 {
 	vector<Vector3r>    segments = Tes->getExtendedAlphaGraph(alpha, shrinkedAlpha, fixedAlpha);
 	boost::python::list ret;
@@ -472,7 +472,7 @@ boost::python::list TesselationWrapper::getAlphaGraph(double alpha, double shrin
 	return ret;
 }
 
-boost::python::list TesselationWrapper::getAlphaVertices(double alpha)
+boost::python::list TesselationWrapper::getAlphaVertices(Real alpha)
 {
 	vector<int>         vertices = Tes->getAlphaVertices(alpha);
 	boost::python::list ret;

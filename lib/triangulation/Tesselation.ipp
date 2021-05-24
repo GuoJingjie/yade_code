@@ -445,7 +445,7 @@ namespace CGT {
 		std::vector<CVector> areas;
 		std::vector<CVector> centroids;
 		std::vector<CVector> areaMoments;
-		std::vector<double> areaNormSums;
+		std::vector<Real> areaNormSums;
 		//initialize area vectors in a list accessed via ids (hence the size), later refactored into a shorter list in "caps"
 		areas.resize(maxId + 1, CVector(0, 0, 0)); // from 0 to maxId
 		centroids.resize(maxId + 1, CVector(0, 0, 0)); // from 0 to maxId
@@ -521,8 +521,8 @@ namespace CGT {
 				int          makeClockWise = u * cross_product(p2 - p1, fictV - p1) > 0 ? 1 : -1;
 				CVector area1 = (makeClockWise * 0.5) * cross_product(u, cc1 - p1);
 				CVector area2 = -(makeClockWise * 0.5) * cross_product(u, cc1 - p2);
-				double area1Norm = sqrt(area1.squared_length());
-				double area2Norm = sqrt(area2.squared_length());						
+				Real area1Norm = sqrt(area1.squared_length());
+				Real area2Norm = sqrt(area2.squared_length());						
 				areas[id1] = areas[id1] + area1;
 				areas[id2]=areas[id2] + area2;			
 				areaNormSums[id1] += area1Norm;

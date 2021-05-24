@@ -14,7 +14,7 @@
 #if CGAL_VERSION_NR < CGAL_VERSION_NUMBER(4, 11, 0)
 #include <CGAL/Regular_triangulation_euclidean_traits_3.h>
 #endif
-#define ALPHASHAPES
+#define ALPHASHAPES // FIXME - should this go to CMakeLists.txt ?
 #ifdef ALPHASHAPES
 #include <CGAL/Alpha_shape_3.h>
 #include <CGAL/Alpha_shape_cell_base_3.h>

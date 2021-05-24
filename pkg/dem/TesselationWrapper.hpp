@@ -57,13 +57,13 @@ public:
 	~TesselationWrapper();
 
 	/// Insert a sphere, "id" will be used by some getters to retrieve spheres
-	bool insert(double x, double y, double z, double rad, unsigned int id);
+	bool insert(Real x, Real y, Real z, Real rad, unsigned int id);
 	/// A faster version of insert, inserting all spheres in scene (first erasing current triangulation  if reset=true)
 	void insertSceneSpheres(bool reset = true);
 	/// Move one sphere to the new position (x,y,z) and maintain triangulation (invalidates the tesselation)
-	bool move(double x, double y, double z, double rad, unsigned int id);
+	bool move(Real x, Real y, Real z, Real rad, unsigned int id);
 
-	void checkMinMax(double x, double y, double z, double rad); //for experimentation purpose
+	void checkMinMax(Real x, Real y, Real z, Real rad); //for experimentation purpose
 	                                                            /// Reset the triangulation
 	void clear(void);
 	void clear2(void);
@@ -74,17 +74,17 @@ public:
 	void addBoundingPlanes(Real pminx, Real pmaxx, Real pminy, Real pmaxy, Real pminz, Real pmaxz);
 	///compute voronoi centers then stop (don't compute anything else)
 	void computeTesselation(void);
-	void computeTesselation(double pminx, double pmaxx, double pminy, double pmaxy, double pminz, double pmaxz);
+	void computeTesselation(Real pminx, Real pmaxx, Real pminy, Real pmaxy, Real pminz, Real pmaxz);
 
 #ifdef ALPHASHAPES
-	void                testAlphaShape(double alpha) { Tes->testAlphaShape(alpha); }
-	boost::python::list getAlphaFaces(double alpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
-	boost::python::list getAlphaCaps(double alpha, double shrinkedAlpha, bool fixedAlpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
-	boost::python::list getAlphaVertices(double alpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
-	boost::python::list getAlphaGraph(double alpha, double shrinkedAlpha, bool fixedAlpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
-	void                applyAlphaForces(Matrix3r stress, double alpha, double shrinkedAlpha, bool fixedAlpha);
-	void                applyAlphaVel(Matrix3r velGrad, double alpha, double shrinkedAlpha, bool fixedAlpha);
-	Matrix3r            getAlphaStress(double alpha, double shrinkedAlpha, bool fixedAlpha);
+	void                testAlphaShape(Real alpha) { Tes->testAlphaShape(alpha); }
+	boost::python::list getAlphaFaces(Real alpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
+	boost::python::list getAlphaCaps(Real alpha, Real shrinkedAlpha, bool fixedAlpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
+	boost::python::list getAlphaVertices(Real alpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
+	boost::python::list getAlphaGraph(Real alpha, Real shrinkedAlpha, bool fixedAlpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
+	void                applyAlphaForces(Matrix3r stress, Real alpha, Real shrinkedAlpha, bool fixedAlpha);
+	void                applyAlphaVel(Matrix3r velGrad, Real alpha, Real shrinkedAlpha, bool fixedAlpha);
+	Matrix3r            getAlphaStress(Real alpha, Real shrinkedAlpha, bool fixedAlpha);
 #endif
 
 	///compute Voronoi vertices + volumes of all cells
@@ -143,7 +143,7 @@ public:
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(TesselationWrapper,GlobalEngine,"Handle the triangulation of spheres in a scene, build tesselation on request, and give access to computed quantities (see also the :ref:`dedicated section in user manual <MicroStressAndMicroStrain>`). The calculation of microstrain is explained in [Catalano2014a]_ \n\nSee example usage in script example/tesselationWrapper/tesselationWrapper.py.\n\nBelow is an output of the :yref:`defToVtk<TesselationWrapper::defToVtk>` function visualized with paraview (in this case Yade's TesselationWrapper was used to process experimental data obtained on sand by Edward Ando at Grenoble University, 3SR lab.)\n\n.. figure:: fig/localstrain.*\n\t:width: 9cm",
 	((unsigned int,n_spheres,0,,"|ycomp|"))
 	((Real,far,10000.,,"Defines the radius of the large virtual spheres used to define nearly flat boundaries around the assembly. The radius will be the (scene's) bounding box size multiplied by 'far'. Higher values will minimize the error theoretically (since the infinite sphere really defines a plane), but it may increase numerical errors at some point. The default should give a resonable compromize."))
-	((double,alphaCapsVol,0.,,"The volume of the packing as defined by the boundary alpha cap polygons"))
+	((Real,alphaCapsVol,0.,,"The volume of the packing as defined by the boundary alpha cap polygons"))
 	((Matrix3r,grad_u,Matrix3r::Zero(),,"The Displacement Gradient Tensor"))
 	,/*ctor*/
   	Tes = new Tesselation;
