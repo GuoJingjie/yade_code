@@ -6,7 +6,7 @@
 # CW Boon, GT Houlsby, S Utili (2012).  A new algorithm for contact detection between convex polygonal and polyhedral particles in the discrete element method.  Computers and Geotechnics 44, 73-82. 
 # CW Boon, GT Houlsby, S Utili (2015).  A new rock slicing method based on linear programming.  Computers and Geotechnics 65, 12-29. 
 
-if ('PotentialBlocks' in features):
+if ('POTENTIALBLOCKS' in features):
 
 	errors=0
 	errMsg=""
