@@ -13,7 +13,6 @@ namespace yade { // Cannot have #include directive inside.
 namespace CGT {
 
 //Since template inheritance does not automatically give access to the members of the base class, this macro can be used to declare all members at once.
-#ifdef ALPHASHAPES
 
 #define DECLARE_TESSELATION_TYPES(baseType)                                                                                                                    \
 	typedef typename baseType::RTriangulation         RTriangulation;                                                                                      \
@@ -40,32 +39,6 @@ namespace CGT {
 	typedef typename baseType::ListPoint              ListPoint;                                                                                           \
 	typedef typename baseType::VCellIterator          VCellIterator;
 
-#else
-
-#define DECLARE_TESSELATION_TYPES(baseType)                                                                                                                    \
-	typedef typename baseType::RTriangulation         RTriangulation;                                                                                      \
-	typedef typename baseType::VertexInfo             VertexInfo;                                                                                          \
-	typedef typename baseType::CellInfo               CellInfo;                                                                                            \
-	typedef typename baseType::VertexIterator         VertexIterator;                                                                                      \
-	typedef typename baseType::VertexHandle           VertexHandle;                                                                                        \
-	typedef typename baseType::FiniteVerticesIterator FiniteVerticesIterator;                                                                              \
-	typedef typename baseType::CellIterator           CellIterator;                                                                                        \
-	typedef typename baseType::FiniteCellsIterator    FiniteCellsIterator;                                                                                 \
-	typedef typename baseType::CellCirculator         CellCirculator;                                                                                      \
-	typedef typename baseType::CellHandle             CellHandle;                                                                                          \
-	typedef typename baseType::Facet                  Facet;                                                                                               \
-	typedef typename baseType::FacetIterator          FacetIterator;                                                                                       \
-	typedef typename baseType::FacetCirculator        FacetCirculator;                                                                                     \
-	typedef typename baseType::FiniteFacetsIterator   FiniteFacetsIterator;                                                                                \
-	typedef typename baseType::LocateType             LocateType;                                                                                          \
-	typedef typename baseType::EdgeIterator           EdgeIterator;                                                                                        \
-	typedef typename baseType::FiniteEdgesIterator    FiniteEdgesIterator;                                                                                 \
-	typedef typename baseType::VectorVertex           VectorVertex;                                                                                        \
-	typedef typename baseType::VectorCell             VectorCell;                                                                                          \
-	typedef typename baseType::ListPoint              ListPoint;                                                                                           \
-	typedef typename baseType::VCellIterator          VCellIterator;
-
-#endif
 
 	// Classe Tesselation, contient les fonctions permettant de calculer la Tessalisation
 	// d'une RTriangulation et de stocker les centres dans chacune de ses cellules
@@ -74,10 +47,8 @@ namespace CGT {
 	template <class TT> class _Tesselation {
 	public:
 		typedef typename TT::RTriangulation RTriangulation;
-#ifdef ALPHASHAPES
 		typedef typename TT::AlphaShape     AlphaShape;
 		typedef typename TT::Alpha_iterator Alpha_iterator;
-#endif
 		typedef typename TT::Vertex_Info                          VertexInfo;
 		typedef typename TT::Cell_Info                            CellInfo;
 		typedef typename RTriangulation::Vertex_iterator          VertexIterator;
@@ -153,8 +124,7 @@ namespace CGT {
 		inline Real&               Volume(unsigned int id) { return vertexHandles[id]->info().v(); }
 		inline const VertexHandle& vertex(unsigned int id) const { return vertexHandles[id]; }
 
-// Alpha Shapes
-#ifdef ALPHASHAPES
+		// Alpha Shapes
 		void testAlphaShape(Real alpha = 0);
 		struct AlphaFace {
 			unsigned int ids[3];
@@ -172,7 +142,6 @@ namespace CGT {
 		CVector               alphaVoronoiPartialCapArea(const Edge& ed_it, const AlphaShape& as, std::vector<Vector3r>& vEdges);
 		CVector               alphaVoronoiPartialCapArea(Facet facet, const AlphaShape& as, Real shrinkedAlpha, std::vector<Vector3r>& vEdges);
 		std::vector<int>      getAlphaVertices(Real alpha = 0);
-#endif
 
 		void            voisins(VertexHandle v, VectorVertex& Output_vector); // {Tri->incident_vertices(v, back_inserter(Output_vector));}
 		RTriangulation& Triangulation(void);                                  // {return *Tri;}

@@ -200,7 +200,6 @@ namespace CGT {
 		return (Point)cell->info();
 	}
 
-#ifdef ALPHASHAPES
 	template <class TT> std::vector<int> _Tesselation<TT>::getAlphaVertices(Real alpha)
 	{
 		cerr << "Warning: this is extremely slow - only for experiments" << endl;
@@ -1140,8 +1139,6 @@ namespace CGT {
 		}
 		return CVector(0, 0, 0);
 	}
-
-#endif //ALPHASHAPES
 
 	template <class TT> Segment _Tesselation<TT>::Dual(FiniteFacetsIterator& f_it)
 	{

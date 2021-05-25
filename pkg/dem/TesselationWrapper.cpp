@@ -391,7 +391,6 @@ boost::python::dict TesselationWrapper::getVolPoroDef(bool deformation)
 	return ret;
 }
 
-#ifdef ALPHASHAPES
 boost::python::list TesselationWrapper::getAlphaFaces(Real alpha)
 {
 	vector<AlphaFace> faces;
@@ -419,7 +418,7 @@ void TesselationWrapper::applyAlphaForces(Matrix3r stress, Real alpha, Real shri
 	build_triangulation_with_ids(scene->bodies, *this, true); //triangulation needed
 	vector<AlphaCap> caps;
 	Tes->setExtendedAlphaCaps(caps, alpha, shrinkedAlpha, fixedAlpha);
-	FOREACH(const shared_ptr<Body>& b, *scene->bodies)
+	for (const auto& b : *scene->bodies)
 		scene->forces.setPermForce(b->id,Vector3r::Zero());
 	for (auto f = caps.begin(); f != caps.end(); f++)
 		scene->forces.setPermForce(f->id, stress * makeVector3r(f->normal));
@@ -431,7 +430,7 @@ void TesselationWrapper::applyAlphaVel(Matrix3r velGrad, Real alpha, Real shrink
 	build_triangulation_with_ids(scene->bodies,*this,true);//triangulation needed
 	vector<AlphaCap> caps;
 	Tes->setExtendedAlphaCaps(caps,alpha,shrinkedAlpha,fixedAlpha);
-	FOREACH(const shared_ptr<Body>& b, *scene->bodies)
+	for (const auto& b : *scene->bodies)
 		b->state->blockedDOFs=State::DOF_NONE;
 	const auto aabb = Shop::aabbExtrema();
 	Vector3r bbCenter = 0.5 * (aabb.first + aabb.second);
@@ -480,7 +479,6 @@ boost::python::list TesselationWrapper::getAlphaVertices(Real alpha)
 		ret.append(*f);
 	return ret;
 }
-#endif //ALPHASHAPES
 
 } // namespace yade
 

@@ -14,12 +14,10 @@
 #if CGAL_VERSION_NR < CGAL_VERSION_NUMBER(4, 11, 0)
 #include <CGAL/Regular_triangulation_euclidean_traits_3.h>
 #endif
-#define ALPHASHAPES // FIXME - should this go to CMakeLists.txt ?
-#ifdef ALPHASHAPES
+
 #include <CGAL/Alpha_shape_3.h>
 #include <CGAL/Alpha_shape_cell_base_3.h>
 #include <CGAL/Alpha_shape_vertex_base_3.h>
-#endif
 #include <CGAL/Delaunay_triangulation_3.h>
 #include <CGAL/Triangulation_cell_base_with_info_3.h>
 #include <CGAL/Triangulation_vertex_base_with_info_3.h>
@@ -168,20 +166,15 @@ namespace CGT {
 		typedef CGAL::Triangulation_vertex_base_with_info_3<Vertex_Info, Traits, Vb0> Vb_info;
 		typedef CGAL::Triangulation_cell_base_with_info_3<Cell_Info, Traits, Rcb>     Cb_info;
 #endif
-#ifdef ALPHASHAPES
 		typedef CGAL::Alpha_shape_vertex_base_3<Traits, Vb_info> Vb;
 		typedef CGAL::Alpha_shape_cell_base_3<Traits, Cb_info>   Fb;
 		typedef CGAL::Triangulation_data_structure_3<Vb, Fb>     Tds;
-#else
-		typedef CGAL::Triangulation_data_structure_3<Vb_info, Cb_info>                Tds;
-#endif
 
 		typedef CGAL::Triangulation_3<K>                   Triangulation;
 		typedef CGAL::Regular_triangulation_3<Traits, Tds> RTriangulation;
-#ifdef ALPHASHAPES
 		typedef CGAL::Alpha_shape_3<RTriangulation> AlphaShape;
 		typedef typename AlphaShape::Alpha_iterator Alpha_iterator;
-#endif
+
 		typedef typename RTriangulation::Vertex_iterator          VertexIterator;
 		typedef typename RTriangulation::Vertex_handle            VertexHandle;
 		typedef typename RTriangulation::Finite_vertices_iterator FiniteVerticesIterator;

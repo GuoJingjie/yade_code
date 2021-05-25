@@ -42,10 +42,8 @@ public:
 	typedef Tesselation::VertexInfo                          VertexInfo;
 	typedef Tesselation::CellInfo                            CellInfo;
 	typedef RTriangulation::Finite_edges_iterator            FiniteEdgesIterator;
-#ifdef ALPHASHAPES
 	typedef Tesselation::AlphaFace AlphaFace;
 	typedef Tesselation::AlphaCap  AlphaCap;
-#endif
 
 	Tesselation* Tes;
 	Real         mean_radius, inf;
@@ -76,7 +74,6 @@ public:
 	void computeTesselation(void);
 	void computeTesselation(Real pminx, Real pmaxx, Real pminy, Real pmaxy, Real pminz, Real pmaxz);
 
-#ifdef ALPHASHAPES
 	void                testAlphaShape(Real alpha) { Tes->testAlphaShape(alpha); }
 	boost::python::list getAlphaFaces(Real alpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
 	boost::python::list getAlphaCaps(Real alpha, Real shrinkedAlpha, bool fixedAlpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
@@ -85,7 +82,6 @@ public:
 	void                applyAlphaForces(Matrix3r stress, Real alpha, Real shrinkedAlpha, bool fixedAlpha);
 	void                applyAlphaVel(Matrix3r velGrad, Real alpha, Real shrinkedAlpha, bool fixedAlpha);
 	Matrix3r            getAlphaStress(Real alpha, Real shrinkedAlpha, bool fixedAlpha);
-#endif
 
 	///compute Voronoi vertices + volumes of all cells
 	///use computeTesselation to force update, e.g. after spheres positions have been updated
@@ -166,7 +162,6 @@ public:
 	.def("getVolPoroDef",&TesselationWrapper::getVolPoroDef,(boost::python::arg("deformation")=false),"Return a table with per-sphere computed quantities. Include deformations on the increment defined by states 0 and 1 if deformation=True (make sure to define states 0 and 1 consistently).")
 	.def("computeDeformations",&TesselationWrapper::computeDeformations,"compute per-particle deformation. Get it with :yref:`TesselationWrapper::deformation` (id,i,j).")
 	.def("deformation",&TesselationWrapper::deformation,(boost::python::arg("id"),boost::python::arg("i"),boost::python::arg("j")),"Get particle deformation")
-	#ifdef ALPHASHAPES
 	.def("testAlphaShape",&TesselationWrapper::testAlphaShape,(boost::python::arg("alpha")=0),"transitory function, testing AlphaShape feature")
 	.def("getAlphaFaces",&TesselationWrapper::getAlphaFaces,(boost::python::arg("alpha")=0),"Get the list of alpha faces for a given alpha. If alpha is not specified or null the minimum alpha resulting in a unique connected domain is used")
         .def("getAlphaCaps",&TesselationWrapper::getAlphaCaps,(boost::python::arg("alpha")=0,boost::python::arg("shrinkedAlpha")=0,boost::python::arg("fixedAlpha")=false),"Get the list of area vectors for the polyhedral caps associated to boundary particles ('extended' alpha-contour). If alpha is not specified or null the minimum alpha resulting in a unique connected domain is used. Taking a smaller 'shrinked' alpha for placing the virtual spheres moves the enveloppe outside the packing, It should be ~(alpha-refRad) typically.")
@@ -175,7 +170,6 @@ public:
 	.def("getAlphaStress",&TesselationWrapper::getAlphaStress,(boost::python::arg("alpha")=0,boost::python::arg("shrinkedAlpha")=0,boost::python::arg("fixedAlpha")=false),"get the Love-Weber average of the Cauchy stress on the polyhedral caps associated to boundary particles")
         .def("getAlphaGraph",&TesselationWrapper::getAlphaGraph,(boost::python::arg("alpha")=0,boost::python::arg("shrinkedAlpha")=0,boost::python::arg("fixedAlpha")=false),"Get the list of area vectors for the polyhedral caps associated to boundary particles ('extended' alpha-contour). If alpha is not specified or null the minimum alpha resulting in a unique connected domain is used")
 	.def("getAlphaVertices",&TesselationWrapper::getAlphaVertices,(boost::python::arg("alpha")=0),"Get the list of 'alpha' bounding spheres for a given alpha. If alpha is not specified or null the minimum alpha resulting in a unique connected domain is used. This function is generating a new alpha shape for each call, not to be used intensively.")
-	#endif
 	);
 	// clang-format on
 	DECLARE_LOGGER;
