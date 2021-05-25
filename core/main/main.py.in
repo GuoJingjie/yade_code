@@ -60,7 +60,7 @@ par.add_argument('--update',help='Update deprecated class names in given script(
 par.add_argument('--nice',help='Increase nice level (i.e. decrease priority) by given number.',dest='nice',type=int)
 par.add_argument('-x',help='Exit when the script finishes',dest='exitAfter',action='store_true')
 par.add_argument('-f',help=('Set "Default" filter for logging https://yade-dem.org/doc/prog.html#logging, default is -f3 for all classes.'+
-                ('' if 'BoostLog' in features else " (Since this build doesn't use boost::log this option is unavailable, use cmake option -DENABLE_LOGGER=ON to enable)")),dest='verbosity',type=int)
+                ('' if 'LOGGER' in features else " (Since this build doesn't use boost::log this option is unavailable, use cmake option -DENABLE_LOGGER=ON to enable)")),dest='verbosity',type=int)
 par.add_argument('-n',help="Run without graphical interface (equivalent to unsetting the DISPLAY environment variable)",dest='nogui',action='store_true')
 par.add_argument('--test',help="Run regression test suite and exit; the exists status is 0 if all tests pass, 1 if a test fails and 2 for an unspecified exception.",dest="test",action='store_true')
 par.add_argument('--check',help='Run a quick series of user-defined check tests as described in /yade/scripts/checks-and-tests/checks/README and https://yade-dem.org/doc/prog.html#regression-tests',dest='check',action='store_true')

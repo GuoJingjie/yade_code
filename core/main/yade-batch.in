@@ -359,7 +359,7 @@ def getNumCores():
 	if "OMP_NUM_THREADS" in os.environ: return min(int(os.environ['OMP_NUM_THREADS']),nCpu)
 	return nCpu
 numCores=getNumCores()
-maxOmpThreads=numCores if 'OpenMP' in yade.config.features else 1
+maxOmpThreads=numCores if 'OPENMP' in yade.config.features else 1
 features,version='${CONFIGURED_FEATS}'.split(','),'${realVersion}'
 if (features[0]==''): features=features[1:]
 
@@ -502,7 +502,7 @@ for i,l in enumerate(useLines):
 			nCores=maxJobs
 		else:
 			logging.warning('WARNING: job #%d will use %d cores but only %d are available'%(i,nCores,maxJobs))
-		if 'OpenMP' not in yade.config.features and nCores>1:
+		if 'OPENMP' not in yade.config.features and nCores>1:
 			logging.warning('Job #%d will be uselessly run with %d threads (compiled without OpenMP support).'%(i,nCores))
 	executables.add(jobExecutable)
 	# compose command-line: build the hyper-linked variant, then strip HTML tags (ugly, but ensures consistency)
