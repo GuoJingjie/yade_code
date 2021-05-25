@@ -75,10 +75,10 @@ public:
 	void computeTesselation(Real pminx, Real pmaxx, Real pminy, Real pmaxy, Real pminz, Real pmaxz);
 
 	void                testAlphaShape(Real alpha) { Tes->testAlphaShape(alpha); }
-	boost::python::list getAlphaFaces(Real alpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
-	boost::python::list getAlphaCaps(Real alpha, Real shrinkedAlpha, bool fixedAlpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
-	boost::python::list getAlphaVertices(Real alpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
-	boost::python::list getAlphaGraph(Real alpha, Real shrinkedAlpha, bool fixedAlpha) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
+	boost::python::list getAlphaFaces(Real alpha);
+	boost::python::list getAlphaCaps(Real alpha, Real shrinkedAlpha, bool fixedAlpha);
+	boost::python::list getAlphaVertices(Real alpha);
+	boost::python::list getAlphaGraph(Real alpha, Real shrinkedAlpha, bool fixedAlpha);
 	void                applyAlphaForces(Matrix3r stress, Real alpha, Real shrinkedAlpha, bool fixedAlpha);
 	void                applyAlphaVel(Matrix3r velGrad, Real alpha, Real shrinkedAlpha, bool fixedAlpha);
 	Matrix3r            getAlphaStress(Real alpha, Real shrinkedAlpha, bool fixedAlpha);
@@ -123,9 +123,7 @@ public:
 	void defToVtk(string outputFile = "def.vtk");
 
 	/// return python array containing voronoi volumes, per-particle porosity, and optionaly per-particle deformation, if states 0 and 1 have been assigned
-#warning "All getter functions should be marked with a const, but ↓ this won't compile. Likely this is the cause of the crash here."
-	boost::python::dict
-	getVolPoroDef(bool deformation) /* const ←←← FIXME - getter should be const, but can't compile */; //FIXME ; unexplained crash for now
+	boost::python::dict getVolPoroDef(bool deformation);
 
 
 public:
