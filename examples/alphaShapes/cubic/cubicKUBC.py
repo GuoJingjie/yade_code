@@ -1,7 +1,7 @@
 # -*- encoding=utf-8 -*-
 ################################################################################
-# Load the saved confined cubic aggregate using a SUBC (Static Uniform 
-# Boundary Condition) applied as a Cauchy stress tensor on the aggregate
+# Load the saved confined cubic aggregate using a KUBC (Kinematic Uniform 
+# Boundary Condition) applied as a velocity gradient tensor on the aggregate
 # power diagram described by the alpha shape surface reconstruction algorithm
 ################################################################################
 import os, sys, gts
@@ -17,49 +17,47 @@ def averageDefGrad(xq,Aq,vol0): # Can be used for Deformation/Velocity Gradient 
     defGrad = defGrad + Vector3.outer(xq[i],Aq[i]) / vol0
   return defGrad
 
-def triStressMicro(stressPt,stabThresh,triThresh,creepThresh):
-  global stressM, currF
-  deltaSigma = stressPt - stressM
-  sigmaDot = 5.e3 * deltaSigma.normalized() / \
-                    deltaSigma.normalized().maxAbsCoeff()
-  count = int(deltaSigma.norm() / sigmaDot.norm())
-  print('Incremental Loading Steps: ', count)
-  stage = 1 # Loading stages 1) Increment Stress 2) Creep
-  t0 = O.time
-  while 1:
-    for j in range(20):
-      TW.triangulate()
-      caps=TW.getAlphaCaps(alpha,alphaShrinked,True)
-      velArr = [O.bodies[cap[0]].state.vel for cap in caps]
-      areaArr = [cap[1] for cap in caps]
-      lbar = averageDefGrad(velArr,areaArr,TW.alphaCapsVol)
-      currF = currF + (lbar * currF) * (O.time - t0)
-      currStrain = currF - Matrix3.Identity
+def triVelMicro(strainPt,triThresh):
+  global rate_v, currF
+  currStrain = currF - Matrix3.Identity
+  deltaStrain = strainPt - currStrain #strainPath[ptNum]
+  strainPtSum, startSum, deltaSum = strainPt.sum(), currStrain.sum(), deltaStrain.sum()
+  print(startSum, deltaSum, strainPtSum)
+  rate_v = (deltaStrain * currF.inverse()).normalized() * boundVel
+  stage = 1  # Loading stages 1) Increment Strain 2) Relaxation
+  appCoeff = 20. # Approach Coefficient for decreasing Velocity Gradient near target strain
+  meanStress = TW.calcAlphaStress(alpha,alphaShrinked,True)
+  while 1:	
+    oldStress = meanStress
+    for j in range(40):
+      TW.applyAlphaVel(rate_v,alpha,alphaShrinked,True)
       t0 = O.time
-      meanBVel = 0.5 * lbar.spectralDecomposition()[1].maxAbsCoeff()
-      integrator.damping=max(0.2,min(0.999,(meanBVel/boundVel)**4))
-      stressM = (stressM + sigmaDot) if stage == 1 else stressPt
-      count = (count - 1) if stage == 1 else 0
-      if count <= 0 and stage == 1:
-        stage = 2
-      TW.applyAlphaForces(stressM,alpha,alphaShrinked,True)
-      O.run(10, True) 
-    TW.triangulate()
-    caps=TW.getAlphaCaps(alpha,alphaShrinked,True)
-    unb = unbalancedForce()
-    meanStress = TW.calcAlphaStress(alpha,alphaShrinked,True)
-    print('unb:',unb,' Boundary Velocity:',meanBVel)
-    print('Stress Tensor\n',np.asarray(meanStress))
-    print('Velocity Gradient Tensor\n',np.asarray(lbar))
+      O.run(5, True) 
+      if stage == 1:
+        Fdot = rate_v * currF
+        currF += (Fdot) * (O.time - t0)
+        currStrain = currF - Matrix3.Identity
+        currSum = currStrain.sum()
+      unb = unbalancedForce()
+      meanStress = TW.calcAlphaStress(alpha,alphaShrinked,True)
+      triRatio = 1. - abs(currSum - startSum) / abs(deltaSum)
+      vMag = boundVel * max(0.005,min(1.0,triRatio * appCoeff))
+      rate_tmp = deltaStrain * currF.inverse()
+      rate_v = rate_tmp.normalized() * vMag if stage == 1 else Matrix3.Zero
     sflag = 0
     for i in range(0,3):
       for j in range(0,3):
-        triDiff = abs(meanStress[i][j]-stressPt[i][j]) / \
-                   max( abs(meanStress[i][j]) , abs(meanStress.trace()/3.) )
+        triDiff = abs( (meanStress[i][j]-oldStress[i][j]) / max( abs(meanStress[i][j]),0.2*meanStress.norm()) )
         if triDiff > triThresh:
           sflag += 1
-    if unb < stabThresh and stage == 2 and sflag == 0 and meanBVel < abs(creepThresh * boundVel):
-        break
+    print('unb:',unb,' stress flags',sflag)
+    print('Percent of Strain Target',100. * abs(currSum - startSum)/abs(deltaSum))
+    print('Stress Tensor\n',np.asarray(meanStress))
+    sys.stdout.flush()
+    if sflag == 0 and stage == 2:
+      break
+    if abs(currSum - startSum) >= abs(deltaSum) and stage == 1:
+      stage = 2
 
 def cart2sph(cartX, cartY, cartZ):
   point = Vector3(cartX,cartY,cartZ)
@@ -122,18 +120,18 @@ def sepath(alpha,alphaShrinked,isFix):
   axStrain = eGreen[0][0]
   pStrain = eGreen.spectralDecomposition()[1]
   deviatorStrain = pStrain.maxCoeff() - pStrain.minCoeff()
-  with open('resultsSUBC/cauchygreen.txt', 'a') as f:
+  with open('resultsKUBC/cauchygreen.txt', 'a') as f:
     f.write('%f %f %f %f %f\n'% (hydroStress,deviatorStress,volStrain,axStrain,deviatorStrain) )
 
 def vtkOut(suffix,alpha,alphaShrinked,isFix):
-  vtkExporter = yade.export.VTKExporter('resultsSUBC/spheres'+suffix)
+  vtkExporter = yade.export.VTKExporter('resultsKUBC/spheres'+suffix)
   vtkExporter.exportSpheres()
 
   TW.triangulate()
   segments=TW.getAlphaGraph(alpha,alphaShrinked,True)
   caps=TW.getAlphaCaps(alpha,alphaShrinked,True)
 
-  f=open('resultsSUBC/LVdiagram'+suffix+'.vtk','w')
+  f=open('resultsKUBC/LVdiagram'+suffix+'.vtk','w')
   f.write("# vtk DataFile Version 2.0\nGenerated from YADE\n")
   f.write("ASCII\nDATASET POLYDATA\n")
   f.write("POINTS %d float \n" %(len(segments)))
@@ -142,14 +140,14 @@ def vtkOut(suffix,alpha,alphaShrinked,isFix):
   [f.write("2 %d %d\n" %(2*k,2*k+1)) for k in range(int(len(segments)/2))]
   f.close()
 
-  f=open('resultsSUBC/gtsSurface'+suffix+'.vtk','w')
+  f=open('resultsKUBC/gtsSurface'+suffix+'.vtk','w')
   unitCube.write_vtk(f)
   f.close()
 ############################################
 ###     LOAD REFERENCE CONFIGURATION     ###
 ############################################
-if not(os.path.isdir('resultsSUBC')):
-  os.mkdir('resultsSUBC')
+if not(os.path.isdir('resultsKUBC')):
+  os.mkdir('resultsKUBC')
 
 O.load('confinedState.yade.gz')
 O.resetTime()
@@ -174,8 +172,8 @@ Sbar = [TW.calcAlphaStress(alpha,alphaShrinked,True)]
 print("Initial Stress Tensor \n",np.asarray(Sbar[0]))
 currF = Matrix3.Identity
 Fbar = [currF]
-with open('resultsSUBC/cauchygreen.txt', 'w') as f:
-  f.write('pStress qStress vStrain aStrain dStrain')
+with open('resultsKUBC/cauchygreen.txt', 'w') as f:
+  f.write('pStress qStress vStrain aStrain dStrain\n')
 ###########################################
 ###      ANCILLARY GRID AT REF. STATE   ###
 ###########################################
@@ -202,28 +200,28 @@ print('Quasistatic Strain Rate', boundVel)
 ###########################################
 ###             LOADING PATH            ###
 ###########################################
-stressInc = -1.0e6
-stressPath = [stressM]
-# Load by an isotropic stress increment
-stressPath.append(stressPath[-1] + Matrix3.Identity * stressInc)
-# # Load by a uniaxial stress increment
-# stressPath.append(stressPath[-1] + Matrix3(Vector3(stressInc,0.,0.),Vector3.Zero, Vector3.Zero))
-# # Load by a deviatoric stress increment
-# stressPath.append(stressPath[-1] + Matrix3(Vector3(0.,0.,0.5*stressInc),
+strainInc = -0.001
+strainPath = [Matrix3.Zero]
+# Load by an isotropic strain increment
+strainPath.append(strainPath[-1] + Matrix3.Identity * strainInc)
+# # Load by a uniaxial strain increment
+# strainPath.append(strainPath[-1] + Matrix3(Vector3(strainInc,0.,0.),Vector3.Zero, Vector3.Zero))
+# # Load by a deviatoric strain increment
+# strainPath.append(strainPath[-1] + Matrix3(Vector3(0.,0.,0.5*strainInc),
 #                                     Vector3.Zero,
-#                                     Vector3(0.5*stressInc,0.,0.)))
+#                                     Vector3(0.5*strainInc,0.,0.)))
 ###########################################
 ###            BOUNDARY CONDITION       ###
 ###########################################
-print('APPLY SUBC')
-for ptNum,stressPt in enumerate(stressPath[1:]):
-  print('Load to \n', np.asarray(stressPt) / 1.e6,' MPa')
+print('APPLY KUBC')
+for ptNum,strainPt in enumerate(strainPath[1:]):
+  print('Apply a strain of \n', np.asarray(strainPt))
   stepper.timestepSafetyCoefficient = 0.6
-  unbTol, triTol, creepTol = 0.01,0.01,0.1
-  loader.iterPeriod = 0 # Loading is done in function triStressMicro()
-  triStressMicro(stressPt,unbTol,triTol,creepTol)
+  unbTol, stressTol = 0.01,0.005
+  loader.iterPeriod = 0 # Loading is done in function triVelMicro()
+  triVelMicro(strainPt,stressTol)
   sepath(alpha,alphaShrinked,True)
 ######################################
 ###             VTK EXPORTS        ###
 ######################################
-vtkOut("SUBC",alpha,alphaShrinked,isFix)
+vtkOut("KUBC",alpha,alphaShrinked,isFix)

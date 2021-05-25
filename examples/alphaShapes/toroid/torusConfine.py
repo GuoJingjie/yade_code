@@ -1,15 +1,27 @@
 # -*- encoding=utf-8 -*-
 ################################################################################
-# 1) Generate a packing of particles inside an axis-aligned bounding box using 
-# makeCloud(). 2) Use triaxialStressController() with internal confinement to
-# achieve an average isotropic stress on the aabb. 3) Finally, confine the
+# Pack particles inside of a torus imported as an STL file. Then, confine the
 # aggregate by applying an isotropic Cauchy stress tensor on the model's
 # power diagram described by the alpha shape surface reconstruction algorithm 
 ################################################################################
-from yade import pack
+import gts
+from yade import ymport,pack
 #######################################
 ###       FUNCTION DEFINITIONS      ###
 #######################################
+def predStl(stlF): 
+    facets = ymport.stl(stlF)
+    s = gts.Surface()
+    for facet in facets: # creates fts.Face for each facet. The vertices and edges are duplicated
+        vs = [facet.state.pos + facet.state.ori*v for v in facet.shape.vertices]
+        vs = [gts.Vertex(v[0],v[1],v[2]) for v in vs]
+        es = [gts.Edge(vs[i],vs[j]) for i,j in ((0,1),(1,2),(2,0))]
+        f = gts.Face(es[0],es[1],es[2])
+        s.add(f)
+    s.cleanup(1e-4) # removes duplicated vertices and edges
+    assert s.is_closed()
+    return inGtsSurface(s)
+
 def averageVelGrad(xq,Aq,vol0): # Compute Velocity Gradient of the Aggregate
   velGrad = Matrix3.Zero
   for i, el in enumerate(Aq):
@@ -35,15 +47,6 @@ def triStressMicro(stressPt,triThresh,creepThresh): # Apply Uniform Stress Tenso
       break
     print('damping = ',integrator.damping)
 
-def isoLoad(stabThresh,triThresh): # Use TriaxialStressController for Initial Confinement
-  while 1:	
-    O.run(1000, True) 
-    unb=unbalancedForce()
-    triDiff=abs((triax.goal1-triax.meanStress)/(triax.goal1))
-    print('unb:',unb,' triDiff: ',triDiff,' meanS: ',triax.meanStress, \
-  				' porosity: ',triax.porosity)
-    if unb<stabThresh and triDiff<triThresh:
-      break
 ############################################
 ###   DEFINING VARIABLES AND MATERIALS   ###
 ############################################
@@ -59,28 +62,23 @@ sphereMat=FrictMat( young=young,
                     frictionAngle=radians(fricDegree),
                     density=2720,
                     label='spheres')
-
-wallMat=FrictMat( young=young,
-                  poisson=poisson,
-                  frictionAngle=0,
-                  density=0,
-                  label='walls')
 #######################################
 ###            MAKE THE PACK       ###
 #######################################
-num_spheres=1000   # number of spheres
-mn,mx=Vector3(0,0,0),Vector3.Ones # corners of the packing
+os.system("wget -nc https://yade-dem.org/publi/data/AlphaS/torout.stl") 
+predOut = predStl('torout.stl')
+os.system("wget -nc https://yade-dem.org/publi/data/AlphaS/torin.stl") 
+predIn = predStl('torin.stl')
 
+# sphs = regularHexa(predDiff,r,0)
 sp=pack.SpherePack()
-sp.makeCloud(mn,mx,num=num_spheres,rMean = 0.04,rRelFuzz=0.5,
-				distributeMass=True,seed=1)
+sp=pack.randomDensePack(predOut-predIn,radius=0.04,useOBB=True,rRelFuzz=0.5,returnSpherePack=True)
 #######################################
 ###          DEFINE THE ENGINES     ###
 #######################################
 engineList = [
   ForceResetter(),
-  InsertionSortCollider([ Bo1_Sphere_Aabb(),
-                          Bo1_Box_Aabb()],
+  InsertionSortCollider([ Bo1_Sphere_Aabb() ],
                           label="sorter"),
   InteractionLoop(
     [ Ig2_Sphere_Sphere_ScGeom(),
@@ -91,39 +89,23 @@ engineList = [
   GlobalStiffnessTimeStepper( active=1,timeStepUpdateInterval=100,
                               timestepSafetyCoefficient=0.2, label='stepper'),
   NewtonIntegrator(damping=damp, label='integrator'),
-  TriaxialStressController(label='triax'),
   PyRunner(iterPeriod=0,
             command="TW.applyAlphaForces(stressM,alpha,alphaShrinked,True)",
             label='loader')]
-##########################################
-### INTERNAL COMPACTION TO CONFINEMENT ###
-##########################################
-O.materials.append(sphereMat)
-O.materials.append(wallMat)
-walls=aabbWalls([mn,mx],thickness=0,material='walls')
-wallIds=O.bodies.append(walls)
-sp.toSimulation(material='spheres')
-O.engines=engineList
-triax.goal1=triax.goal2=triax.goal3=confinement_p
-isoLoad(0.01,0.01)
 #######################################
 ###   APPLY UNIFORM STRESS TENSOR   ###
 #######################################
-sp.fromSimulation()
-O.resetThisScene()
 O.materials.append(sphereMat)
 sp.toSimulation(material='spheres')
-
-engineList.remove(triax)
 O.engines=engineList
 
 stepper.timestepSafetyCoefficient=0.6
 stressM = Matrix3.Identity * (confinement_p)
 minRad = min(b.shape.radius for b in O.bodies)
 meanDia = 2. * sum([b.shape.radius for b in O.bodies]) / len(O.bodies)
-alpha = (22. * minRad) ** 2
-alphaShrinked = (21. * minRad) ** 2
-loader.iterPeriod=2
+alpha = (15. * minRad) ** 2
+alphaShrinked = (13.5 * minRad) ** 2
+loader.iterPeriod=1
 TW=TesselationWrapper()
 integrator.damping=0.5
 iNum = 7.9e-5       # Inertial Number Target

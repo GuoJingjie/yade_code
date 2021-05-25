@@ -1,12 +1,12 @@
 # -*- encoding=utf-8 -*-
 ################################################################################
-# Load the saved confined cubic aggregate using a SUBC (Static Uniform 
+# Load the saved confined toroidal aggregate using a SUBC (Static Uniform 
 # Boundary Condition) applied as a Cauchy stress tensor on the aggregate
 # power diagram described by the alpha shape surface reconstruction algorithm
 ################################################################################
 import os, sys, gts
-from scipy.interpolate import griddata
-from yade import pack, export
+from scipy.interpolate import interp1d,griddata
+from yade import ymport,pack, export
 import numpy as np
 #######################################
 ###       FUNCTION DEFINITIONS      ###
@@ -61,6 +61,19 @@ def triStressMicro(stressPt,stabThresh,triThresh,creepThresh):
     if unb < stabThresh and stage == 2 and sflag == 0 and meanBVel < abs(creepThresh * boundVel):
         break
 
+def stlToGts(stlF): 
+    facets = ymport.stl(stlF)
+    s = gts.Surface()
+    for facet in facets: # creates fts.Face for each facet. The vertices and edges are duplicated
+        vs = [facet.state.pos + facet.state.ori*v for v in facet.shape.vertices]
+        vs = [gts.Vertex(v[0],v[1],v[2]) for v in vs]
+        es = [gts.Edge(vs[i],vs[j]) for i,j in ((0,1),(1,2),(2,0))]
+        f = gts.Face(es[0],es[1],es[2])
+        s.add(f)
+    s.cleanup(1e-4) # removes duplicated vertices and edges
+    assert s.is_closed()
+    return inGtsSurface(s)
+
 def cart2sph(cartX, cartY, cartZ):
   point = Vector3(cartX,cartY,cartZ)
   sphR = np.sqrt(point.dot(point))
@@ -74,26 +87,58 @@ def sph2cart(theta, phi, r):
   z = r * np.cos(phi)
   return x, y, z
   
-def ancillaryGrid(alpha,alphaShrinked,isFix,s,newBound):
+def ancillaryTorusGrid(alpha,alphaShrinked,isFix,s,newBound):
   TW=TesselationWrapper()
   TW.triangulate()
   segments=TW.getAlphaGraph(alpha,alphaShrinked,isFix)
   caps=TW.getAlphaCaps(alpha,alphaShrinked,isFix)
-  # aaBB Center and Size
-  center, length = np.mean(aabbExtrema(),axis=0), np.mean(aabbDim(),axis=0)
+  # torus Center
+  center = s.center_of_mass()
+  # torus surface grid points
+  numTh, numPh = 42, 24
+  thetas = np.linspace(-np.pi, np.pi, num=numTh, endpoint=False)
+  phis = np.linspace(-np.pi, np.pi, num=numPh, endpoint=False)
+  # Convert unit torus to spherical coordinates
+  gridGts = np.asarray([cart2sph(*vert - center) for vert in newBound])
+  # Find average "collapsed" toroid polygon
+  collPoly = np.asarray([ Vector3.Zero for theta in thetas])
+  for i, vert in enumerate(gridGts):
+    collPoly[ int(round( (vert[0] + np.pi) / (2 * np.pi/ numTh) ) %numTh ) ] += vert
+  for coord in collPoly:
+    coord /= numPh
+  # Mirror points to create a continuous curve in polar coords
+  collPoly = np.vstack([[-2.*np.pi + collPoly[-1,0],collPoly[-1,1],collPoly[-1,2]],
+                        collPoly,
+                        [2.*np.pi + collPoly[0,0],collPoly[0,1],collPoly[0,2]]])
   # Use alphaGraph and alphaCaps to build a boundary grid 
   polygons = np.asarray([cart2sph(*vertex-center) for vertex in segments])
   polygons = np.vstack([tuple(row) for row in polygons])
-  boundGrid1 = np.vstack([polygons])
+  boundGrid1 = np.asarray([ Vector3.Zero for row in polygons])
+  locOrig = np.asarray([ [row[0],0.,0.] for row in polygons])
+  locOrig[:,1] = interp1d(collPoly[:,0],collPoly[:,1])(locOrig[:,0])
+  locOrig[:,2] = interp1d(collPoly[:,0],collPoly[:,2])(locOrig[:,0])
+  for i, row in enumerate(polygons):  # Convert alpha graph to toroidal coords
+    locCart = np.asarray(sph2cart(*row)) - np.asarray(sph2cart(*locOrig[i]))
+    locPol = cart2sph( locCart[0],locCart[1],locCart[2] )
+    torPhi, torR = np.sign(cos(locPol[0])) * np.sign(cos(row[0])) * locPol[1], locPol[2]
+    boundGrid1[i] = Vector3( row[0], torPhi, torR )
+  for i, row in enumerate(gridGts):  # Convert unit torus to toroidal coords
+    locOrig1 = collPoly[ int(round( (row[0] + np.pi) / (2 * np.pi/ numTh) ) ) + 1]
+    locCart = np.asarray(sph2cart(*row)) - np.asarray(sph2cart(*locOrig1))
+    locPol = cart2sph( locCart[0],locCart[1],locCart[2] )
+    torPhi = np.sign(cos(locPol[0])) * np.sign(cos(row[0])) * locPol[1]
+    row[1] = torPhi 
   # Mirror points to create a continuous surface in spherical coords
   boundGrid = np.vstack([boundGrid1+[revTh,revPh,0.]
                             for revTh in [-2*np.pi,0,2*np.pi] 
-                            for revPh in [-np.pi,0,np.pi]])
-  # Convert unit cube to spherical coordinates and interpolate surface
-  gridGts = np.asarray([cart2sph(*vert) for vert in newBound])
-  gridGts[:,2] = griddata(boundGrid[:,0:2], boundGrid[:,2], gridGts[:,0:2])
-  for index, vertex in enumerate(s.vertices()):
-      vertex.x, vertex.y, vertex.z = (sph2cart(*gridGts[index]) + center)
+                            for revPh in [-2*np.pi,0,2*np.pi]])
+  # Interpolate torus surface
+  gridGts[:,2] = griddata(boundGrid[:,0:2], boundGrid[:,2], gridGts[:,0:2],method='linear')
+  for i, vertex in enumerate(s.vertices()):
+    locOrig1 = collPoly[ int(round( (gridGts[i,0] + np.pi) / (2 * np.pi/ numTh) ) ) + 1]
+    locOrig1 = np.asarray(sph2cart(*locOrig1))
+    locCart = sph2cart(gridGts[i,0],gridGts[i,1],gridGts[i,2])
+    vertex.x, vertex.y, vertex.z = locOrig1 + center + locCart
   return [[Vector3(np.mean([vertex.coords() for vertex in face.vertices()],axis=0)) 
                                                   for face in s.faces()],
           [Vector3(face.normal())/2. for face in s.faces()],
@@ -103,7 +148,7 @@ def sepath(alpha,alphaShrinked,isFix):
   global currF
   print('********** Saving State Variables ***************')
   newBound = [ogPt * currF for ogPt in ogBound]
-  bSurf.append(ancillaryGrid(alpha,alphaShrinked,isFix,unitCube,newBound))
+  bSurf.append(ancillaryTorusGrid(alpha,alphaShrinked,isFix,unitTorus,newBound))
   print('currF\n',np.asarray(currF))
   Fbar.append(averageDefGrad(bSurf[-1][0],bSurf[0][1],bSurf[0][2]))
   print('Fbar\n',np.asarray(Fbar[-1]))
@@ -143,7 +188,7 @@ def vtkOut(suffix,alpha,alphaShrinked,isFix):
   f.close()
 
   f=open('resultsSUBC/gtsSurface'+suffix+'.vtk','w')
-  unitCube.write_vtk(f)
+  unitTorus.write_vtk(f)
   f.close()
 ############################################
 ###     LOAD REFERENCE CONFIGURATION     ###
@@ -158,8 +203,8 @@ O.resetTime()
 ############################################
 minRad = min(b.shape.radius for b in O.bodies)
 meanDia = 2. * sum([b.shape.radius for b in O.bodies]) / len(O.bodies)
-alpha = (22. * minRad) ** 2
-alphaShrinked = (21. * minRad) ** 2
+alpha = (15. * minRad) ** 2
+alphaShrinked = (13.5 * minRad) ** 2
 isFix = True
 
 TW=TesselationWrapper()
@@ -179,16 +224,11 @@ with open('resultsSUBC/cauchygreen.txt', 'w') as f:
 ###########################################
 ###      ANCILLARY GRID AT REF. STATE   ###
 ###########################################
-# Build a unit gts cube and subdivide it 'subs' times
-subs = 5
-unitCube = gts.cube()
-for i in range(subs):
-  unitCube.tessellate()
-  ogBound = [Vector3(vertex.coords()) for vertex in unitCube.vertices()]
-  for i, vertex in enumerate(unitCube.vertices()):
-    vertex.x, vertex.y, vertex.z = ( ogBound[i] / ogBound[i].maxAbsCoeff() )
-# Use the unit gts cube to interpolate ancillary surface grid
-ogBound = [Vector3(vertex.coords()) for vertex in unitCube.vertices()]
+# Use the stl file to build a unit gts torus
+os.system("wget -nc https://yade-dem.org/publi/data/AlphaS/torus.stl") 
+unitTorus = stlToGts('torus.stl').surf
+# # Use the unit gts torus to interpolate ancillary surface grid
+ogBound = [Vector3(vertex.coords()) for vertex in unitTorus.vertices()]
 bSurf = []
 sepath(alpha,alphaShrinked,True)
 ###########################################
@@ -217,7 +257,7 @@ stressPath.append(stressPath[-1] + Matrix3.Identity * stressInc)
 ###########################################
 print('APPLY SUBC')
 for ptNum,stressPt in enumerate(stressPath[1:]):
-  print('Load to \n', np.asarray(stressPt) / 1.e6,' MPa')
+  print('Apply a stress of \n', np.asarray(stressPt) / 1.e6,' MPa')
   stepper.timestepSafetyCoefficient = 0.6
   unbTol, triTol, creepTol = 0.01,0.01,0.1
   loader.iterPeriod = 0 # Loading is done in function triStressMicro()
