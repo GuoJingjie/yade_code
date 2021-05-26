@@ -33,8 +33,8 @@
 #  ENABLE_ASAN: AddressSanitizer build, please see documentation (OFF by default)
 #  ENABLE_MPFR: use https://www.mpfr.org/ library, can be used for higher precision calculations or for CGAL exact predicates (OFF by default)
 #  ENABLE_PARTIALSAT: enable the partially saturated clay engine, under construction (OFF by default)
-#  ENABLE_REAL_HP: high precision for real numbers
 #  REAL_PRECISION_BITS , REAL_DECIMAL_PLACES: specify either of them to use a custom calculation precision. By default double (64 bits, 15 decimal places) precision is used.
+#  ENABLE_REAL_HP: allow using twice, quadruple or higher precisions of Real
 #  runtimePREFIX: used for packaging, when install directory is not the same is runtime directory (/usr/local by default)
 #  VECTORIZE: enables vectorization and alignment in Eigen3 library, experimental (OFF by default)
 #  USE_QT5: use QT5 for GUI (ON by default)
@@ -92,7 +92,7 @@ OPTION(ENABLE_MASK_ARBITRARY "Enable arbitrary precision of bitmask variables (o
 OPTION(ENABLE_PROFILING "Enable profiling, e.g. shows some more metrics, which can define bottlenecks of the code (OFF by default)" OFF)
 OPTION(ENABLE_POTENTIAL_PARTICLES "Enable potential particles" ON)
 OPTION(ENABLE_OAR "Generate script for oar-based task scheduler" OFF)
-OPTION(ENABLE_REAL_HP "high precision for real numbers" ON)
+OPTION(ENABLE_REAL_HP "allow using twice, quadruple or higher precisions of Real" ON)
 OPTION(ENABLE_MPFR "Use mpfr library (higher precision calculations or CGAL exact predicates)" OFF)
 OPTION(USE_QT5 "USE Qt5 for GUI" ON)
 OPTION(ENABLE_POTENTIAL_BLOCKS "Enable PotentialBlocks" ON)

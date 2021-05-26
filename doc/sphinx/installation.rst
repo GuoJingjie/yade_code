@@ -315,7 +315,7 @@ The following cmake options are available: (see the `source code <https://gitlab
 	* ENABLE_LOGGER: use `boost::log <https://www.boost.org/doc/libs/release/libs/log/>`_ library for :ref:`logging<logging>` separately for each class (ON by default)
 	* MAX_LOG_LEVEL: :ref:`set maximum level <maximum-log-level>` for LOG_* macros compiled with ENABLE_LOGGER, (default is 5)
 	* ENABLE_USEFUL_ERRORS: enable useful compiler errors which help a lot in error-free development (ON by default)
-	* ENABLE_ASAN: use adress sanitizer (super-slow debug mode) 
+	* ENABLE_ASAN: AddressSanitizer allows detection of memory errors, memory leaks, heap corruption errors and out-of-bounds accesses (but it is slow) 
 	* CMAKE_VERBOSE_MAKEFILE: output additional information during compiling (OFF by default)
 	* SUFFIX: suffix, added after binary-names (version number by default)
 	* NOSUFFIX: do not add a suffix after binary-name (OFF by default)
@@ -339,9 +339,9 @@ The following cmake options are available: (see the `source code <https://gitlab
 	* ENABLE_POTENTIAL_PARTICLES: enable potential particles option (ON by default)
 	* ENABLE_DEFORM: enable constant volume deformation engine (OFF by default)
 	* ENABLE_OAR: generate a script for oar-based task scheduler (OFF by default)
-	* ENABLE_REAL_HP: high precision for real numbers. See :ref:`high precision documentation<highPrecisionReal>` for additional details (ON by default).
 	* ENABLE_MPFR: use `mpfr <https://www.mpfr.org/>`_ in ``C++`` and `mpmath <http://mpmath.org/>`_ in ``python``. It can be used for higher precision ``Real`` or for CGAL exact predicates (OFF by default)
-	* REAL_PRECISION_BITS, REAL_DECIMAL_PLACES: specify either of them to use a custom calculation precision. By default double (64 bits, 15 decimal places) precision is used as ``Real`` type. See :ref:`high precision documentation<highPrecisionReal>` for additional details.
+	* REAL_PRECISION_BITS, REAL_DECIMAL_PLACES: specify either of them to use a custom calculation precision of ``Real`` type. By default ``double`` (64 bits, 15 decimal places) precision is used as the ``Real`` type. See :ref:`high precision documentation<highPrecisionReal>` for additional details.
+	* ENABLE_REAL_HP: allow using twice, quadruple or higher precisions of ``Real`` as ``RealHP<2>``, ``RealHP<4>`` or ``RealHP<N>`` in computationally demanding sections of ``C++`` code. See :ref:`high precision documentation<highPrecisionReal>` for additional details (ON by default).
 	* runtimePREFIX: used for packaging, when install directory is not the same as runtime directory (/usr/local by default)
 	* VECTORIZE: enables vectorization and alignment in Eigen3 library, experimental (OFF by default)
 	* USE_QT5: use QT5 for GUI (ON by default)

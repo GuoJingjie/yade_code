@@ -5,6 +5,11 @@
 #include <boost/python/tuple.hpp>
 #include <string>
 
+namespace forCtags {
+struct libVersions {
+}; // for ctags
+}
+
 namespace py = boost::python;
 
 CREATE_CPP_LOCAL_LOGGER("_libVersions.cpp")

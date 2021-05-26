@@ -28,6 +28,11 @@
 #include <pkg/common/OpenGLRenderer.hpp>
 #endif
 
+namespace forCtags {
+struct customConverters {
+}; // for ctags
+}
+
 CREATE_CPP_LOCAL_LOGGER("customConverters.cpp");
 
 namespace yade { // Cannot have #include directive inside.
