@@ -45,7 +45,7 @@ public:
 	typedef Tesselation::AlphaFace AlphaFace;
 	typedef Tesselation::AlphaCap  AlphaCap;
 
-	Tesselation* Tes;
+	mutable Tesselation* Tes; // Modifying internal state of Tesselation in read-only functions is allowed.
 	Real         mean_radius, inf;
 	bool         rad_divided;
 	bool         bounded;
@@ -75,10 +75,10 @@ public:
 	void computeTesselation(Real pminx, Real pmaxx, Real pminy, Real pmaxy, Real pminz, Real pmaxz);
 
 	void                testAlphaShape(Real alpha) { Tes->testAlphaShape(alpha); }
-	boost::python::list getAlphaFaces(Real alpha);
-	boost::python::list getAlphaCaps(Real alpha, Real shrinkedAlpha, bool fixedAlpha);
-	boost::python::list getAlphaVertices(Real alpha);
-	boost::python::list getAlphaGraph(Real alpha, Real shrinkedAlpha, bool fixedAlpha);
+	boost::python::list getAlphaFaces(Real alpha) const;
+	boost::python::list getAlphaCaps(Real alpha, Real shrinkedAlpha, bool fixedAlpha) const;
+	boost::python::list getAlphaVertices(Real alpha) const;
+	boost::python::list getAlphaGraph(Real alpha, Real shrinkedAlpha, bool fixedAlpha) const;
 	void                applyAlphaForces(Matrix3r stress, Real alpha, Real shrinkedAlpha, bool fixedAlpha);
 	void                applyAlphaVel(Matrix3r velGrad, Real alpha, Real shrinkedAlpha, bool fixedAlpha);
 	Matrix3r            getAlphaStress(Real alpha, Real shrinkedAlpha, bool fixedAlpha);

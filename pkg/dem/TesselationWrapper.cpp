@@ -391,7 +391,7 @@ boost::python::dict TesselationWrapper::getVolPoroDef(bool deformation)
 	return ret;
 }
 
-boost::python::list TesselationWrapper::getAlphaFaces(Real alpha)
+boost::python::list TesselationWrapper::getAlphaFaces(Real alpha) const
 {
 	vector<AlphaFace> faces;
 	Tes->setAlphaFaces(faces, alpha);
@@ -401,7 +401,7 @@ boost::python::list TesselationWrapper::getAlphaFaces(Real alpha)
 	return ret;
 }
 
-boost::python::list TesselationWrapper::getAlphaCaps(Real alpha, Real shrinkedAlpha, bool fixedAlpha)
+boost::python::list TesselationWrapper::getAlphaCaps(Real alpha, Real shrinkedAlpha, bool fixedAlpha) const
 {
 	vector<AlphaCap> caps;
 	Tes->setExtendedAlphaCaps(caps, alpha, shrinkedAlpha, fixedAlpha);
@@ -462,7 +462,7 @@ Matrix3r TesselationWrapper::getAlphaStress(Real alpha, Real shrinkedAlpha, bool
 	return cauchyLWS;
 }
 
-boost::python::list TesselationWrapper::getAlphaGraph(Real alpha, Real shrinkedAlpha, bool fixedAlpha)
+boost::python::list TesselationWrapper::getAlphaGraph(Real alpha, Real shrinkedAlpha, bool fixedAlpha) const
 {
 	vector<Vector3r>    segments = Tes->getExtendedAlphaGraph(alpha, shrinkedAlpha, fixedAlpha);
 	boost::python::list ret;
@@ -471,7 +471,7 @@ boost::python::list TesselationWrapper::getAlphaGraph(Real alpha, Real shrinkedA
 	return ret;
 }
 
-boost::python::list TesselationWrapper::getAlphaVertices(Real alpha)
+boost::python::list TesselationWrapper::getAlphaVertices(Real alpha) const
 {
 	vector<int>         vertices = Tes->getAlphaVertices(alpha);
 	boost::python::list ret;
