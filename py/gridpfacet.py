@@ -187,7 +187,7 @@ def cylinderConnection(vertices,radius=0.2,nodesIds=[],cylIds=[],dynamic=None,fi
 	# now create connection between the gridNodes
 	for i,j in zip( nodesIdsCC[:-1], nodesIdsCC[1:]):
 		cylIds.append( O.bodies.append( gridConnection(i,j,radius=radius,
-						wire=wire,color=color,highlight=highlight,material=intMaterial,mask=mask,cellDist=None)) )
+						wire=wire,color=color,highlight=highlight,material=extMaterial,mask=mask,cellDist=None)) )
 
 
 def pfacet(id1,id2,id3,wire=True,color=None,highlight=False,material=-1,mask=1,cellDist=None):
