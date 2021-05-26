@@ -1,4 +1,3 @@
-import math
 from yade import pack
 #######################################
 ###       FUNCTION DEFINITIONS      ###
@@ -12,7 +11,7 @@ def averageVelGrad(xq,Aq,vol0): # Compute Velocity Gradient of the Aggregate
 def triStressMicro(stressPt,triThresh,creepThresh): # Apply Uniform Stress Tensor
   while 1:	
     O.run(1000, True) 
-    meanStress = TW.getAlphaStress(alpha,alphaShrinked,True)
+    meanStress = TW.calcAlphaStress(alpha,alphaShrinked,True)
     triDiff = stressPt.diagonal() - meanStress.diagonal()
     caps=TW.getAlphaCaps(alpha,alphaShrinked,True)
     velArr = [O.bodies[cap[0]].state.vel for cap in caps]

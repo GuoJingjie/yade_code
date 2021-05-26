@@ -1,4 +1,4 @@
-import math, os, sys, gts
+import os, sys, gts
 from scipy.interpolate import griddata
 from yade import pack, export
 import numpy as np
@@ -41,7 +41,7 @@ def triStressMicro(stressPt,stabThresh,triThresh,creepThresh):
     TW.triangulate()
     caps=TW.getAlphaCaps(alpha,alphaShrinked,True)
     unb = unbalancedForce()
-    meanStress = TW.getAlphaStress(alpha,alphaShrinked,True)
+    meanStress = TW.calcAlphaStress(alpha,alphaShrinked,True)
     print('unb:',unb,' Boundary Velocity:',meanBVel)
     print('Stress Tensor\n',np.asarray(meanStress))
     print('Velocity Gradient Tensor\n',np.asarray(lbar))
@@ -104,7 +104,7 @@ def sepath(alpha,alphaShrinked,isFix):
   # Note that currF and Fbar are both evaluations of the deformation gradient
   # currF tracks from velocity gradient, while Fbar obtains it after reinterpolating
   # the surface grid to the latest power diagram
-  Sbar.append(TW.getAlphaStress(alpha,alphaShrinked,True))
+  Sbar.append(TW.calcAlphaStress(alpha,alphaShrinked,True))
   FbarRef, FbarCurr, SbarRef, SbarCurr = Fbar[0], Fbar[-1], Sbar[0], Sbar[-1]
   eGreen = 0.5 * ( FbarCurr * FbarCurr.transpose() - Matrix3.Identity )
   hydroStress = SbarCurr.trace() / 3.e6
@@ -164,7 +164,7 @@ TW.triangulate()
 stressM, rate_v = Matrix3.Identity * (-5.0e6), Matrix3.Zero
 TW.applyAlphaForces(stressM,alpha,alphaShrinked,True)
 O.step()
-Sbar = [TW.getAlphaStress(alpha,alphaShrinked,True)]
+Sbar = [TW.calcAlphaStress(alpha,alphaShrinked,True)]
 print("Initial Stress Tensor \n",np.asarray(Sbar[0]))
 currF = Matrix3.Identity
 Fbar = [currF]
