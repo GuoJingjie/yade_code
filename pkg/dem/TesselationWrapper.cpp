@@ -347,7 +347,7 @@ void TesselationWrapper::defToVtkFromPositions(string inputFile1, string inputFi
 
 void TesselationWrapper::defToVtk(string outputFile) { mma.analyser->DefToFile(outputFile.c_str()); }
 
-boost::python::dict TesselationWrapper::getVolPoroDef(bool deformation)
+boost::python::dict TesselationWrapper::calcVolPoroDef(bool deformation)
 {
 	delete Tes;
 	CGT::TriaxialState* ts;
@@ -442,7 +442,7 @@ void TesselationWrapper::applyAlphaVel(Matrix3r velGrad, Real alpha, Real shrink
 	}
 }
 
-Matrix3r TesselationWrapper::getAlphaStress(Real alpha, Real shrinkedAlpha, bool fixedAlpha)
+Matrix3r TesselationWrapper::calcAlphaStress(Real alpha, Real shrinkedAlpha, bool fixedAlpha)
 {
 	// Scene* scene = Omega::instance().getScene().get();
 	build_triangulation_with_ids(scene->bodies, *this, true); //triangulation needed
