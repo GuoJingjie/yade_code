@@ -688,3 +688,12 @@ class SimpleTests(unittest.TestCase):
 		self.assertEqual(self.getDefaultTolerance("cadd" , False ) , HPn.ComplexAddCost    )
 		self.assertEqual(self.getDefaultTolerance("cmul" , False ) , HPn.ComplexMulCost    )
 
+	def testDefReadonly(self):
+		# boost::python def_readonly(…) has problems with higher precision Real
+		# types: https://yade-dem.org/doc/prog.html#custom-converters
+		# The solution (already applied almost everywhere in Serializable.hpp)
+		# is to use ::boost::python::return_by_value in def_readonly(…) when
+		# exposing Real member variable.
+		t = yade.TriaxialStressController()
+		p = t.porosity
+
