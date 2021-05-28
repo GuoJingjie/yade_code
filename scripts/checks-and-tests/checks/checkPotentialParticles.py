@@ -5,7 +5,7 @@
 # Uses the following algorithm:
 # CW Boon, GT Houlsby, S Utili (2013) A new contact detection algorithm for three dimensional non-spherical particles. Powder Technology 248, S.I. on DEM, 94-102.
 
-if ('POTENTIALPARTICLES' in features):
+if ('POTENTIAL_PARTICLES' in features):
 	errors=0
 	errMsg=""
 	# ----------------------------------------------------------------------------------------------------------------------------------------------- #

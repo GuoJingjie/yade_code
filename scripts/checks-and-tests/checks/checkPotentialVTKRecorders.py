@@ -75,7 +75,7 @@ if ('VTK' in features):
 			raise YadeCheckError("checkPotentialVTKRecorders failed at the end because there were over 100 non-matching lines in sections where non-matching lines were allowed.")
 
 # check PotentialParticleVTKRecorder
-if ('POTENTIALPARTICLES' in features) and ('VTK' in features):
+if ('POTENTIAL_PARTICLES' in features) and ('VTK' in features):
 	if not os.path.exists(vtkSaveDir):
 		os.makedirs(vtkSaveDir);
 	# ----------------------------------------------------------------------------------------------------------------------------------------------- #
@@ -137,7 +137,7 @@ else:
 	print("skip PotentialParticleVTKRecorder check, PotentialParticles or VTK not available")
 
 # check PotentialBlockVTKRecorder
-if ('POTENTIALBLOCKS' in features) and ('VTK' in features):
+if ('POTENTIAL_BLOCKS' in features) and ('VTK' in features):
 	O.resetThisScene()
 	if not os.path.exists(vtkSaveDir):
 		os.makedirs(vtkSaveDir);
