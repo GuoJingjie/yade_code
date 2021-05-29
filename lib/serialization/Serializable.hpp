@@ -1,8 +1,6 @@
 /*************************************************************************
-*  Copyright (C) 2004 by Olivier Galizzi                                 *
-*  olivier.galizzi@imag.fr                                               *
-*  Copyright (C) 2004 by Janek Kozicki                                   *
-*  cosurgi@berlios.de                                                    *
+*  2004      Olivier Galizzi                                             *
+*  2004-2021 Janek Kozicki                                               *
 *                                                                        *
 *  This program is free software; it is licensed under the terms of the  *
 *  GNU General Public License v2 or later. See file LICENSE for details. *
@@ -17,6 +15,8 @@
 #include <lib/factory/Factorable.hpp>
 #include <lib/pyutil/doc_opts.hpp>
 #include <lib/pyutil/raw_constructor.hpp>
+// Include it as the last one: for high precision types, make sure that def_readonly(…) does not return internal reference.
+#include <lib/serialization/PyClassCustom.hpp>
 
 namespace yade {
 
@@ -292,7 +292,7 @@ private:                                                                        
 		checkPyClassRegistersItself(#thisClass);                                                                                                       \
 		::boost::python::scope thisScope(_scope);                                                                                                      \
 		YADE_SET_DOCSTRING_OPTS;                                                                                                                       \
-		::boost::python::class_<thisClass, shared_ptr<thisClass>, ::boost::python::bases<baseClass>, boost::noncopyable> _classObj(                    \
+		::boost::python::PyClassCustom<thisClass, shared_ptr<thisClass>, ::boost::python::bases<baseClass>, boost::noncopyable> _classObj(             \
 		        #thisClass, docString);                                                                                                                \
 		_classObj.def("__init__", ::boost::python::raw_constructor(Serializable_ctor_kwAttrs<thisClass>));                                             \
 		BOOST_PP_SEQ_FOR_EACH(_PYATTR_DEF, thisClass, attrs);                                                                                          \
@@ -333,7 +333,7 @@ private:                                                                        
 		initSetStaticAttributesValue();                                                                                                                \
 		::boost::python::scope thisScope(_scope);                                                                                                      \
 		YADE_SET_DOCSTRING_OPTS;                                                                                                                       \
-		::boost::python::class_<thisClass, shared_ptr<thisClass>, ::boost::python::bases<baseClass>, boost::noncopyable> _classObj(                    \
+		::boost::python::PyClassCustom<thisClass, shared_ptr<thisClass>, ::boost::python::bases<baseClass>, boost::noncopyable> _classObj(             \
 		        #thisClass, docString "\n\n" BOOST_PP_SEQ_FOR_EACH(_STATATTR_MAKE_DOC, thisClass, attrs));                                             \
 		_classObj.def("__init__", ::boost::python::raw_constructor(Serializable_ctor_kwAttrs<thisClass>));                                             \
 		BOOST_PP_SEQ_FOR_EACH(_STATATTR_PY, thisClass, attrs);                                                                                         \
@@ -349,7 +349,7 @@ private:                                                                        
 		checkPyClassRegistersItself(#pyClassName);                                                                                                     \
 		::boost::python::scope thisScope(_scope);                                                                                                      \
 		YADE_SET_DOCSTRING_OPTS;                                                                                                                       \
-		::boost::python::class_<thisClass, shared_ptr<thisClass>, ::boost::python::bases<baseClass>, boost::noncopyable> _classObj(                    \
+		::boost::python::PyClassCustom<thisClass, shared_ptr<thisClass>, ::boost::python::bases<baseClass>, boost::noncopyable> _classObj(             \
 		        #pyClassName, docString);                                                                                                              \
 		_classObj.def("__init__", ::boost::python::raw_constructor(Serializable_ctor_kwAttrs<thisClass>));                                             \
 		BOOST_PP_SEQ_FOR_EACH(_PYATTR_DEF, thisClass, attrs);                                                                                          \
