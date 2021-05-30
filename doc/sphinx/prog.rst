@@ -2111,6 +2111,8 @@ When an object is crossing c++/python boundary, boost::python's global "converte
 
 	In short, the default for ``def_readwrite`` and ``def_readonly`` is to return references to underlying c++ objects, which avoids performing conversion on them. For that reason, return value policy must be set to ``return_by_value`` explicitly, using slighly more complicated ``add_property`` syntax, as explained at the page referenced.
 
+	This deficiency is addressed presently in the file :ysrc:`lib/serialization/PyClassCustom.hpp` for the ``.def_readonly(…)`` function. It can be improved later if the need arises.
+
 .. [#wrap]
 	Wrapped classes are automatically registered when the class wrapper is created. If wrapped class derives from another wrapped class (and if this dependency is declared with the ``boost::python::bases`` template, which Yade's classes do automatically), parent class must be registered before derived class, however. (This is handled via loop in ``Omega::buildDynlibDatabase``, which reiterates over classes, skipping failures, until they all successfully register)
 	Math classes (Vector3, Matrix3, Quaternion) are wrapped in :yref:`yade.minieigenHP`. See :ref:`high precision documentation<highPrecisionReal>` for more details.
