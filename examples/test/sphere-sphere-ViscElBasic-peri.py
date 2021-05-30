@@ -1,4 +1,5 @@
-# -*- coding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 # Testing sphere-sphere interaction in periodic case.
 # Pass, if the spheres moves along the X axis, interacting through the period.

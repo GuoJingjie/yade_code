@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 ################################################################################
 # 
 # Script to test tetra gl functions and prescribed motion

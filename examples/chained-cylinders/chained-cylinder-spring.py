@@ -1,7 +1,7 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 from __future__ import print_function
 #--- bruno.chareyre@grenoble-inp.fr ---
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 
 # Experiment beam-like behaviour with chained cylinders + CohFrict connexions
 

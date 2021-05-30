@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 # With Thinkpad laptops, control the sphere's motion by tilting the
 # laptop.

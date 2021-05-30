@@ -1,4 +1,5 @@
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # the script demonstrates a simple case of triaxial simulation using TriaxialCompressionEngine. More elaborated examples can be found in the triax-tutorial folder
 from yade import pack
 

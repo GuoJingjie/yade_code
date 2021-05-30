@@ -1,4 +1,5 @@
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 
 # Abstract : this script defines a "rock joint" sample : two rectangular blocks separated by an horizontal joint surface. Imposing relative movements of the blocks, that are clumps, allows to test directly the behaviour of the joint, described by JCFpm model.

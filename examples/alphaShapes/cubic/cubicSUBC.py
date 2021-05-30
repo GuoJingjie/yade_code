@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 import os, sys, gts
 from scipy.interpolate import griddata
 from yade import pack, export

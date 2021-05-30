@@ -1,4 +1,5 @@
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 "An example showing how to create two cylinders which are interacting."
 
 from yade.gridpfacet import *

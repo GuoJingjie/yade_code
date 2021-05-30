@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # 2021 J.Kozicki, A.Gladky, K.Thoeni "Implementation of high-precision computation capabilities into the dynamic simulation framework YADE" (to be submitted)
 # The script is tested with yade_2021.01a
 from yade import plot, qt, math

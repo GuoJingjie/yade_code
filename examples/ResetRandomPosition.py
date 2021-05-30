@@ -1,4 +1,5 @@
-# -*- coding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 from yade import pack,export,qt
 import gts,os

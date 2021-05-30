@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 #2012 Bruno Chareyre <bruno.chareyre@grenoble-inp.fr>
 """Example usage of a TesselationWrapper object for getting microscale quantities."""
 # See Catalano2014a for the definition of micro-strain

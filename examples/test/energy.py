@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 from yade import pack,plot
 
 readParamsFromTable(useL3Geom=True,nonviscDamp=0,frictAngle=0,useClumps=False,noTableOk=True)

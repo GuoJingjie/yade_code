@@ -1,4 +1,5 @@
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 from builtins import range
 from yade import pack,geom,qt

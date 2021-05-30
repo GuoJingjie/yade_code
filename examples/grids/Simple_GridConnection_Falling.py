@@ -1,4 +1,5 @@
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 from builtins import zip
 from builtins import range

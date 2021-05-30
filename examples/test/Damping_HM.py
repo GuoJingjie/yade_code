@@ -1,4 +1,5 @@
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # 2010 Chiara Modenese <c.modenese@gmail.com>
 
 # Script to test the contact damping in HM (both in the normal and shear direction)

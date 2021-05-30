@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # In order for mpy module to work, don't forget to make a symlink to yade executable named "yadeimport.py":
 # ln -s path/to/yade/yade-version path/to/yade/yadeimport.py
 #

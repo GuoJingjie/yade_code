@@ -1,5 +1,6 @@
-#!/usr/local/bin/yade-trunk -x
-# -*- coding: utf-8 -*-
+
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 #Author : Kneib François, francois.kneib@gmail.com
 #This script is designed to show the "circleView" features, which allow to display circles instead of spheres for 2D simulations.
 #/!\ this is just a DISPLAY FEATURE, computed particles still are SPHERICAL.

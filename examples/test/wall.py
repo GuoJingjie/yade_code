@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 """
 Show basic wall functionality (infinite axis-aligned planes).
 """

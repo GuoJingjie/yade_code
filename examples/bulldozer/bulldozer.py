@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 ### Simpificated buldozer simulation
 from numpy import linspace
 from numpy import arange

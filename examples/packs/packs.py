@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 from yade import pack,ymport,export,geom,bodiesHandling
 
 """ This script demonstrates how to use 2 components of creating packings:

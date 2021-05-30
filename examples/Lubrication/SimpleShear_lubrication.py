@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 # This script perform a simple shear experiment with lubrication law.
 # It shows the use of

@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # coding: utf-8
 # 2009 © Václav Šmilauer <eudoxos@arcig.cz>
 # 2011 ©Bruno Chareyre <bruno.chareyre@grenoble-inp.fr>

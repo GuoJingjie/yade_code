@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 """Simple script to create tunnel with random dense packing of spheres.
 The tunnel is difference between an axis-aligned box and cylinder, or which

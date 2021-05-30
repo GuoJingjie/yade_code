@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 ## Demonstrate scene construction using the default list of engines
 ## Note that it is no longer necessary to define O.dt

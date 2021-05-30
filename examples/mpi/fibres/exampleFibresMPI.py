@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 #Example showing how to run 'fiber' (gridNode+girdConnection) in Yade-MPI
 
 from yade import utils

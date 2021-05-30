@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 """ This file shows 2 ways to fill union of triangulated surfaces:
 You can either use union of 2 inGtsSurface predicates or
 create union of surfaces using GTS calls first and use a single

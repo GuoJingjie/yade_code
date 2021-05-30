@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 from __future__ import print_function
 from yade.pack import *
 s1=inSphere((0,0,0),1)

@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 import os 
 from yade import mpy as mp     
 numThreads = 4 

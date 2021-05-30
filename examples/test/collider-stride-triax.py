@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 """ Playground for tuning collider strides depending on maximum velocity. """
 from __future__ import print_function
 

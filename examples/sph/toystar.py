@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 # This script demonstrates SPH-engine in Yade
 # !!! Very experimental at the moment!!!

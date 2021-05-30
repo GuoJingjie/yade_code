@@ -1,4 +1,5 @@
-#!/usr/bin/python3
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # 2020 (c) Vasileios Angelidakis <v.angelidakis2@ncl.ac.uk>
 
 # Collapse of a zero-porosity packing of cuboidal blocks in a Jenga-like tower, using the Potential Blocks.

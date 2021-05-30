@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 from yade import pack,timing
 readParamsFromTable(noTableOk=True,num=12000)
 import yade.params.table

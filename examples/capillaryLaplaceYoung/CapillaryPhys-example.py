@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 """
 To run this script you need to have all 10 text files from https://yade-dem.org/wiki/CapillaryTriaxialTest

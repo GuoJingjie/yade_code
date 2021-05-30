@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # Anton Gladky <gladk@debian.org>
 
 # If you want to change the number of generated particles,

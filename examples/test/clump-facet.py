@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 O.engines=[
 	ForceResetter(),
 	InsertionSortCollider([

@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 #*************************************************************************
 #  Copyright (C) 2010 by Bruno Chareyre                                  *
 #  bruno.chareyre_at_grenoble-inp.fr                                     *

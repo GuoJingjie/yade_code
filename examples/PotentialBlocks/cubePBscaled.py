@@ -1,4 +1,4 @@
-#!/usr/local/bin/yade-trunk -x
+#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # CWBoon 2015
 

@@ -1,5 +1,5 @@
-# default parameters or from table
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 """ THIS SCRIPT IS NOT WORKING!
 ERROR MESSAGE:

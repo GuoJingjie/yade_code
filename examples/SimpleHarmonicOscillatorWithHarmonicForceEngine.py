@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 #This example demonstrates the use of HarmonicForceEngine
 #A simple harmonic oscillator (spring-mass-damper) excited by an external force is demonstrated
 #The mass of the oscillator is a single spherical particle, stiffness comes from contact with a wall,

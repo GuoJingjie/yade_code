@@ -1,4 +1,5 @@
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 # example of use JCFpm classes : Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM...
 # a cubic rock massif, containing a rock joint with ~ 31 deg. dip angle. At one time, the mechanical properties of the joint are degraded, triggering a smooth sliding

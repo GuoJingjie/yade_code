@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 #authors: katia.boschi@polimi.it, bruno.chareyre@3sr-grenoble.fr
 
 # This script and features used in it are experimental. PLease wait stabilization before asking questions about it.

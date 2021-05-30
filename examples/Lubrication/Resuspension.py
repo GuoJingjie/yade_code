@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 # Read parameters from a table, or assign default values
 readParamsFromTable(young=1.e8, friction=0.5, viscosity=10, roughness=7.e-4,numberOfGrains=10000, savedir=".",dv_xy=0,dv_xz=10, g=-50, dRho=1000)

@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 ### Simpificated buldozer simulation with VTK recorder
 ### vtk-files are saved in /tmp directory with names buldozer-*.vtk
 from numpy import linspace

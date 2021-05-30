@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 #
 # This script plots the viscous and normal forces of the contact
 # of 2 spheres

@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 # Testing facet-sphere interaction.
 # A facet is rotated around Z axis.  Test pass, if a sphere at (0,0) position is not moving (because in this case no transfer moment from the facet to the sphere), but a sphere at facet's edge moves with the facet (for this sphere blocked the rotation DOFs in order to remove rolling).

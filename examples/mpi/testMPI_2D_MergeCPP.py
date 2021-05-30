@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # Possible executions of this script
 ### Parallel:
 # mpiexec -n 4 yade-mpi -n -x testMPIxNxM.py

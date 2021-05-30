@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 ## Omega is the super-class that orchestrates the whole program.
 ## It holds the entire simulation (MetaBody), takes care of loading/saving,

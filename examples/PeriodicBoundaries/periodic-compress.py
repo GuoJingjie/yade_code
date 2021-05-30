@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 '''
 This example shows compression of a packing with a periodic cell.
 '''

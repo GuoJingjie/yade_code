@@ -1,4 +1,5 @@
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # This script demonstrates a simple case of drainage simulation using the "2PFV" two-phase model implemented in UnsaturatedEngine.
 # The script was used to generate the result and supplementary material (video) of [1]. The only difference is the problem size (40k particles in the paper vs. 1k (default) in this version)
 # [1] Yuan, C., & Chareyre, B. (2017). A pore-scale method for hydromechanical coupling in deformable granular media. Computer Methods in Applied Mechanics and Engineering, 318, 1066-1079. (http://www.sciencedirect.com/science/article/pii/S0045782516307216)

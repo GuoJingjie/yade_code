@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 from __future__ import print_function
 ######################################################################
 # A script for subdivision of macro perticles into a dense packing of

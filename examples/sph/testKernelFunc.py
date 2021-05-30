@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 # This example allows to test different kernel functions
 from __future__ import print_function

@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 from yade import utils, plot
 o = Omega()
 fr = 0.5;rho=2000

@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 from __future__ import print_function
 ######################################################################
 # Gravity deposition as a simple simulation illustrating creation of

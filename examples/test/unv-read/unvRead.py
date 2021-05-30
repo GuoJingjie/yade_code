@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # Example of ymport.unv function
 # Reads facets from shell.unv and adds them to simulation
 

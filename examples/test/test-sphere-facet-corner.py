@@ -1,6 +1,5 @@
+#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
-
-
 
 ## PhysicalParameters 
 Young = 7e6

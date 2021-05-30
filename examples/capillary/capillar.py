@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 # The simulation of different capillary bridge models.
 # Parameters are set like in experiments of [Willett2000]

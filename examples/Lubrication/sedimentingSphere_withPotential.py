@@ -1,6 +1,5 @@
-#!/usr/local/bin/yade-trunk -x
-# -*- coding: utf-8 -*-
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 from yade import plot
 import math

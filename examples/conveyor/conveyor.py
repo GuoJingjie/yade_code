@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # This example shows, how one can simulate the conveyor of
 # complex form, using mask-parameter in NewtonIntegrator.
 # The elements of conveyor are getting the velocity, but

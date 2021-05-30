@@ -1,4 +1,5 @@
-# -*- coding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 # Testing facet-sphere interaction in periodic case.
 # Pass, if the sphere is rolling from left to right through the period.

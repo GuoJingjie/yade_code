@@ -1,4 +1,5 @@
-# -*- coding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 from yade import qt,plot
 from yade.gridpfacet import *
 

@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 """ CAUTION:
 Running this script can take very long!

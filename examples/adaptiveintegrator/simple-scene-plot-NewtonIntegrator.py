@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 from __future__ import print_function
 import matplotlib
 matplotlib.use('Qt5Agg')

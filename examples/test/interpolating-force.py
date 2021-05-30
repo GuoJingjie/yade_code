@@ -1,4 +1,5 @@
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # 2009 Václav Šmilauer <eudoxos@arcig.cz>
 
 # script showing how to use InterpolatingDirectedForceEngine,

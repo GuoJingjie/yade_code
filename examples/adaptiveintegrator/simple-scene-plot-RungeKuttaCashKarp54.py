@@ -1,11 +1,11 @@
-#!/usr/bin/python
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # 	Burak ER
 #	burak.er@btu.edu.tr
 # 	github.com/burak-er
 #	Mechanical Engineering Department
 #	Bursa Technical University
 #
-# -*- coding: utf-8 -*-
 from __future__ import print_function
 import matplotlib
 matplotlib.use('Qt5Agg')

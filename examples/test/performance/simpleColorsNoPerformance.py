@@ -1,4 +1,5 @@
-# -*- coding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 #
 # This is the same simulation as examples/test/performance/checkPerf.py, but does not perform a benchmark.
 # It can be used to see the --stdbenchmark simulation in the 3D view.

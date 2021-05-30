@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 """
 This example shows how LSMGenGeo generates Cylinder 
 with given parameters.

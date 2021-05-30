@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # © 2012 Bruno Chareyre <bruno.chareyre@grenoble-inp.fr>

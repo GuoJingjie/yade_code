@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # constructors, constants as static objects
 x,y,z,one=Vector3.UnitX,Vector3.UnitY,Vector3.UnitZ,Vector3(1,1,1)
 x2=Vector3(x)

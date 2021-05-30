@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 '''This example shows usage of clumpTemplate(), replaceByClumps() and getRoundness().'''
 from __future__ import print_function

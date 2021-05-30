@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 from __future__ import print_function
 ##############################################################################################################################
 #Authors: Luc Sibille  luc.sibille@3sr-grenoble.fr

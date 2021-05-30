@@ -1,4 +1,5 @@
-# encoding: utf-8
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 #
 # demonstrate how to generate sphere packing based on arbitrary PSD (particle size distribution)
 # show the difference between size-based and mass-based (≡ volume-based in our case) PSD

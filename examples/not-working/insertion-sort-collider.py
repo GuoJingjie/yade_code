@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 """ NOTE
 Needs yade compiled with CGAL feature

@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 # Possible executions of this script
 # ./yadempi script.py #interactive will spawn 3 additional workers
 # mpiexec -n 4 ./yadempi script.py #non interactive

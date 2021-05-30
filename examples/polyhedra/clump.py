@@ -1,3 +1,5 @@
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 from __future__ import print_function
 m = PolyhedraMat()
 m.density = 2600 #kg/m^3 

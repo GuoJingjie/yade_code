@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-#encoding: ascii
+#!/usr/bin/yadedaily
+# -*- encoding=utf-8 -*-
 
 # Modefied Oedometric Test for particle deformation under const. volume
 # The reference paper [Haustein2017]
