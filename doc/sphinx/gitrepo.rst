@@ -5,7 +5,7 @@ Yade on GitLab
 ##############
 
 ************************************************
-Fast checkout without GitLab account (read-only)
+Fast checkout (read-only)
 ************************************************
  
 Getting the source code without registering on GitLab can be done via a single command. It will not allow interactions with the remote repository, which you access the read-only way::
@@ -13,7 +13,7 @@ Getting the source code without registering on GitLab can be done via a single c
  git clone https://gitlab.com/yade-dev/trunk.git
 
 ************************
-Using branches on GitLab
+Branches on GitLab
 ************************
 
 Most usefull commands are below. For more details, see for instance http://gitref.org/index.html and https://help.github.com/articles/set-up-git
@@ -61,12 +61,12 @@ Setup
    
    Holding a fork under personnal account is in fact not strictly necessary. It is recommended, however, and in what follows it is assumed that the above steps have been followed.
 
-Retrieving older Commits
+Older versions
 ========================
 
 In case you want to work with, or compile, an older version of Yade which is not tagged, you can create your own (local) branch of the corresponding daily build. Look `here <https://answers.launchpad.net/yade/+question/235867>`_ for details.
 
-Committing and updating 
+Committing and updating
 ========================
 
 Inspecting changes
@@ -77,8 +77,8 @@ After changing the source code in the local repository you may start by inspecti
    git status
    git diff path/to/modified/file.cpp
 
-Pushing changes to remote repository
-------------------------------------
+Pushing changes
+---------------
 
 Depending on the remote repository you want to push to, follow one of the methods below.
 
@@ -112,24 +112,6 @@ Depending on the remote repository you want to push to, follow one of the method
    The changes will be pushed to your personal fork.
    
 
-Requesting merge into yade-dev master branch
---------------------------------------------
-
-If you have tested your changes and you are ready to merge them into yade-dev's master branch, you'll have to make a "merge request" (MR) from the gitlab.com interface (see the "+" button at the top of the repository webpage). Set source branch and target branch, from yade-dev/trunk/newlyCreatedBranch to yade-dev/trunk/master. The MR will trigger a `pipeline <https://gitlab.com/yade-dev/trunk/pipelines>`_ which includes compiling, running regression tests, and generating the documentation (the `newly built <https://yade-dev.gitlab.io/trunk>`_ documentation is accessible via settings->pages).
-If the full pipeline succeeds the merge request can be merged into master branch.
-
-.. note::
-   In case of MR to yade-dev's master from another branch of yade-dev, the pipeline will use group runners attached to yade-dev (the group runners are kindly provided by `3SR <https://www.3sr-grenoble.fr/?lang=en>`_ and `UMS Gricad <https://gricad.univ-grenoble-alpes.fr/>`_).
-   If the MR is from a branch of a forked repository (under personnal account) however, the pipeline needs runners available under the personnal account (check this with your local IT support). If you don't have access to gitlab runners pushing to a branch of yade-dev is mandatory (method 1 in previous section).
-
-Alternatively, create a patch from your commit via::
-
- git format-patch origin  #create patch file in current folder)
-
-and send to the developers mailing list (yade-dev@lists.launchpad.net) as attachment. In either way, after reviewing your changes they will be added to the main trunk.
-
-When the pull request has been reviewed and accepted, your changes are integrated in the main trunk. Everyone will get them via ``git fetch``.
-
 Updating
 --------
 
@@ -148,19 +130,19 @@ If you have local uncommited changes this will return an error. A workaround to 
 
 .. _yade-auto-rebase:
 
-auto-rebase
+Auto rebase
 -----------
 
 We promote "rebasing" to avoid confusing logs after each commit/pull/push cycle. It can be convenient to setup automatic rebase, so it does not have to be added everytime in the above commands::
 
     git config --global branch.autosetuprebase always
 
-   Now your file ~/.gitconfig should include::
+Now your file ``~/.gitconfig`` should include::
 
 	  [branch]
 	    autosetuprebase = always
 
-   Check also .git/config file in your local trunk folder (rebase = true)::
+Check also ``.git/config`` file in your local trunk folder (rebase = true)::
 
 	  [remote "origin"]
 	    url = git@gitlab.com:yade-dev/trunk.git
@@ -190,15 +172,63 @@ If you forgot to make that backup-copy and want to go back, then make a copy any
 
  git reset --merge ORIG_HEAD
 
-The ``ORIG_HEAD`` backs up the position of HEAD before a potentially dangerous operation (merge, rebase, etc.).
+The ``ORIG_HEAD`` backs up the position of ``HEAD`` before a potentially dangerous operation (merge, rebase, etc.).
 
 A tutorial on `fixing the conflicts <https://medium.com/@porteneuve/fix-conflicts-only-once-with-git-rerere-7d116b2cec67>`_ is a recommended read.
 
 .. note:: If you are lost about how to fix your git problems try `a git choose your own adventure <https://sethrobertson.github.io/GitFixUm/fixup.html>`_.
 
-********************************************
-General guidelines for pushing to yade/trunk
-********************************************
+**************
+Merge requests
+**************
+
+Members of yade-dev
+===================
+
+If you have tested your changes and you are ready to merge them into yade-dev's master branch, you'll have to make a "merge request" (MR) from the gitlab.com interface (see the "+" button at the top of the repository webpage). Set source branch and target branch, from yade-dev/trunk/newlyCreatedBranch to yade-dev/trunk/master. The MR will trigger a `pipeline <https://gitlab.com/yade-dev/trunk/pipelines>`_ which includes compiling, running regression tests, and generating the documentation (the `newly built <https://yade-dev.gitlab.io/trunk>`_ documentation is accessible via settings->pages or by clicking on the "Browse" button in the "Job artifacts" (in the right pane) in the ``doc_18_04`` build from the pipeline; then navigating to path ``Artifacts/install/share/doc``).
+If the full pipeline succeeds the merge request can be merged into the master branch.
+
+.. note::
+   In case of MR to yade-dev's master from another branch of yade-dev, the pipeline will use group runners attached to yade-dev (the group runners are kindly provided by `3SR <https://www.3sr-grenoble.fr/?lang=en>`_, `UMS Gricad <https://gricad.univ-grenoble-alpes.fr/>`_ and `Gdańsk University of Technology <https://pg.edu.pl/>`_).
+
+New developers
+==============
+
+Welcome! At start it is very convenient to work on a local fork of YADE in your own gitlab profile. When you are confident that your changes are ready to be merged into official YADE release, please open a Merge Request (MR) in the following way:
+
+	1. Make sure that your work is in a separate branch, not in the ``master`` branch. You can "copy" your branch into another branch with command ``git checkout -b myNewFeature``. Please make sure that the amount of changes as compared to the master branch is not large. In case of larger code improvements it is better to split it into several smaller merge requests. This way it will be faster for us to check it and merge.
+
+	2. Push your branch to the repository on your gitlab profile with command such as::
+
+		git push --set-upstream origin myNewFeature
+
+	3. You should see something like::
+
+		remote:
+		remote: To create a merge request for myNewFeature, visit:
+		remote:   https://gitlab.com/myProfileName/trunk/-/merge_requests/new?merge_request%5Bsource_branch%5D=myNewFeature
+		remote:
+
+	4. When you visit the link mentioned above, you will have to select "Change branches" and make sure that correct target branch is selected. Usually that will be ``yade-dev/trunk:master``, because this is the official YADE repository.
+
+	5. Fill in the title and description then click "Create merge request" at the bottom of the page.
+
+	6. After we review the merge request we can click on it to run in our Continuous Integration (CI) pipeline. This pipeline can't start automatically for security reasons. It will be merged after the pipeline checks pass.
+
+
+Alternatively, create a patch from your commit via::
+
+ git format-patch origin  #create patch file in current folder)
+
+and send to the developers mailing list (yade-dev@lists.launchpad.net) as attachment. In either way, after reviewing your changes they will be added to the main trunk.
+
+When the pull request has been reviewed and accepted, your changes are integrated in the main trunk. Everyone will get them via ``git fetch``.
+
+**********************
+Guidelines for pushing
+**********************
+
+These are general guidelines for pushing to ``yade-dev/trunk``.
 
 1. Set autorebase globaly on the computer (only once see above), or at least on current local branch. Non-rebased pull requests will not be accepted on the upstream. This is to keep history linear, and avoid the merge commits.  
 
