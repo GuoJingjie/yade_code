@@ -102,6 +102,7 @@ void Gl1_PotentialBlock::go(const shared_ptr<Shape>& cm, const shared_ptr<State>
 			}
 		glEnd();
 	}
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 YADE_PLUGIN((Gl1_PotentialBlock));
 #endif // YADE_OPENGL

@@ -194,6 +194,7 @@ void Gl1_PotentialParticle::go(const shared_ptr<Shape>& cm, const shared_ptr<Sta
 			glVertex3v(triangles[i + 0]); //vertex #0
 		}
 	glEnd();
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	return;
 }
 
