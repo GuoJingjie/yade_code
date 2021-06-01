@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # 	Burak ER
 #	burak.er@btu.edu.tr

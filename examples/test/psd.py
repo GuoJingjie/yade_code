@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 #
 # demonstrate how to generate sphere packing based on arbitrary PSD (particle size distribution)

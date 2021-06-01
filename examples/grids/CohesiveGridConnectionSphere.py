@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 """
 Same example as CohesiveCylinderSphere.py but using gridConnections instead of chainedCylinder.

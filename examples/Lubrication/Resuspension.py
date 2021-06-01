@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 
 # Read parameters from a table, or assign default values

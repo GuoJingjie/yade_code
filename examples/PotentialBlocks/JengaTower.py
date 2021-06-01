@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # 2020 (c) Vasileios Angelidakis <v.angelidakis2@ncl.ac.uk>
 

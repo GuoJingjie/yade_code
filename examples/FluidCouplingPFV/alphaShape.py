@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 #*************************************************************************
 #  Copyright (C) 2019 by Robert Caulk and Bruno Chareyre                 *

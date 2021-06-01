@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 """
 Small showcase posted at http://www.youtube.com/watch?v=KUv26xlh89I,

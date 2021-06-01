@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 ######################################################################
 # Simple script to test VTK export of periodic cell

@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # coding: utf-8
 # 2009 © Václav Šmilauer <eudoxos@arcig.cz>

@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # 2012 ©Bruno Chareyre <bruno.chareyre@grenoble-inp.fr>
 # This variant of triax-basic.py shows the usage of cohesive contact laws and moments at contacts

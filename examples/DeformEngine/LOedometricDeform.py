@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 
 # Testing of the Deformation Enginge with Luding Contact Law

@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 
 # Test if different algorithm version give same results for TriaxialTest.

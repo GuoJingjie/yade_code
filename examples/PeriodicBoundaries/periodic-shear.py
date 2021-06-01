@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 O.periodic=True
 O.cell.setBox(.55,.55,.55)

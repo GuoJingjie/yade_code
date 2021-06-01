@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # This example shows, how one can simulate the conveyor of
 # complex form, using mask-parameter in NewtonIntegrator.

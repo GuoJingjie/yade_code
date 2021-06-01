@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 from __future__ import print_function
 # this script demonstrates how to benchmark using timingEnabled: how to measure how much time each module takes.

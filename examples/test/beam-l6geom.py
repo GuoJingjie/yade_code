@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 #
 # Demonstrate L6Geom class with suspended hook-shaped beam fixed at one side, subject to gravity

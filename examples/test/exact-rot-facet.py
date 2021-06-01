@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 ##
 ## TODO: verify that the code for facet & hasShear is physically correct!

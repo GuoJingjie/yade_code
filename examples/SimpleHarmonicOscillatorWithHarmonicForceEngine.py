@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 #This example demonstrates the use of HarmonicForceEngine
 #A simple harmonic oscillator (spring-mass-damper) excited by an external force is demonstrated

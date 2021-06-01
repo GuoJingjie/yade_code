@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # This script demonstrates polyhedra splitting/crushing under compression.
 from yade import polyhedra_utils

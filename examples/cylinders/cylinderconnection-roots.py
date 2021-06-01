@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 "Beam-like behaviour with cylinderConnections for roots interaction with spheres."
 from __future__ import print_function

@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 #authors: katia.boschi@polimi.it, bruno.chareyre@3sr-grenoble.fr
 

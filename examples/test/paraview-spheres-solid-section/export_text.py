@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 maxCorner = (10,10,10)
 center = (5,5,5)

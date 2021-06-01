@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # 2010 Chiara Modenese <c.modenese@gmail.com>
 

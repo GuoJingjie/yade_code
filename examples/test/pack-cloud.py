@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 """ Generate random periodic sphere packing using SpherePack::makeCloud """
 from __future__ import print_function

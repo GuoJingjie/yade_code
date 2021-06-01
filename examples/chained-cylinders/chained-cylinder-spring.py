@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 from __future__ import print_function
 #--- bruno.chareyre@grenoble-inp.fr ---

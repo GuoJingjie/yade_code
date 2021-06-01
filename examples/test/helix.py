@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # script for testing InterpolatingHelixEngine: sphere going in a sphere-like motion around bar
 O.bodies.append([box([0,0,0],[.005,.005,1],fixed=True),sphere([0,.1,-1],.04,fixed=False)])

@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 #*************************************************************************
 #  Copyright (C) 2010 by Bruno Chareyre                                  *

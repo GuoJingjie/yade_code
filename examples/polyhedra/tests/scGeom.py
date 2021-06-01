@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 from yade import plot, polyhedra_utils
 from yade import qt

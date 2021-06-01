@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # author: Marcus Guadagnin Moravia <marcus.moravia@3sr-grenoble.fr>
 # example showing how to handle interactions involving spheres, gridConnections, and PFacets

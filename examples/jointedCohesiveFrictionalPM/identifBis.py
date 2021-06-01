@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 
 # ---- Script to detect spheres which are "onJoint", according to JCFpm. -----

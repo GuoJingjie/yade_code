@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # 2011 ©Bruno Chareyre <bruno.chareyre@grenoble-inp.fr>
 "Demonstrate the compression of a periodic cell with non-trivial initial geometry."

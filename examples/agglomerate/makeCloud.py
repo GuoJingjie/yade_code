@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 ######################################################################
 # A script for prepare loose packing of macro particles

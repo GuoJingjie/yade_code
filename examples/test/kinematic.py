@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # Deomonstrate composition of KinematicEngine's with +:
 # The first engine is composed (from translation and 2 independent rotations, one global and one local)

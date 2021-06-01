@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 
 readParamsFromTable(roughness=0, eta=10, a=1.e-2, rho=1e3, g=10., young=5.e7, u0=1.)

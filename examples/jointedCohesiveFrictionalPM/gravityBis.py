@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 
 # example of use JCFpm classes : Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM...

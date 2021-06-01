@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # 2012 © Bruno Chareyre <bruno.chareyre_A_hmg.inpg.fr>
 "Test and demonstrate the use of timestepper and density scaling."

@@ -1,8 +1,6 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 from __future__ import print_function
 from yade import  ymport, qt
-
 
 ## definition of some colors for colored text output in terminal
 BLUE = '\033[94m'

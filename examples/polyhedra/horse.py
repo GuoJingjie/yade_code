@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # modified script yade/examples/gts-horse/horse.py
 from yade import pack,ymport

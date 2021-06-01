@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # 2020 © Vasileios Angelidakis <v.angelidakis2@ncl.ac.uk>
 # 2020 © Bruno Chareyre <bruno.chareyre@grenoble-inp.fr> 

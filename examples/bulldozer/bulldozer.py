@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 ### Simpificated buldozer simulation
 from numpy import linspace

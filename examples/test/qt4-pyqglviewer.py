@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # install pyqglviewer from https://launchpad.net/~nakednous/+ppa-packages
 from PyQGLViewer import *

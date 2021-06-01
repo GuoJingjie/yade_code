@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # peri3dController_shear.py
 # script, that explains funcionality and input parameters of Peri3dController on the example of

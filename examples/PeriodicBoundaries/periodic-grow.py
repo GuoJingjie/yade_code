@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 """Script that shrinks the periodic cell progressively.
 It prints strain and average stress (computed from total volume force)

@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 # 2017 Bruno Chareyre <bruno.chareyre~a~grenoble-inp.fr>
 "Demonstrate cell flipping in periodic boundary conditions"

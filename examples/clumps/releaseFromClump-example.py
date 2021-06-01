@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 
 '''This example shows usage of releaseFromClump() and clump().'''

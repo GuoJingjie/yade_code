@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 '''	The script shows how to include the effect of buoyancy in a particle assembly 
 	under condition of an increasing water-level. Water-level at start of the sim-

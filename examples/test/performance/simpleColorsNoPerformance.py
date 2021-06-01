@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 #
 # This is the same simulation as examples/test/performance/checkPerf.py, but does not perform a benchmark.

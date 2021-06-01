@@ -1,4 +1,3 @@
-#!/usr/bin/yadedaily
 # -*- encoding=utf-8 -*-
 """Simple test of periodic collider.
 A few spheres falling down in gravity field and one moving accross.
