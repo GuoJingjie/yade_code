@@ -16,7 +16,15 @@ Getting the source code without registering on GitLab can be done via a single c
 Branches on GitLab
 ************************
 
-Most usefull commands are below. For more details, see for instance http://gitref.org/index.html and https://help.github.com/articles/set-up-git
+Most useful commands are listed in the sections below. For more details, see these git guides:
+
+1. `ProGit <https://github.com/progit/progit2>`_ `online Book <https://git-scm.com/book/en/v2>`_,
+
+2. `Guide on setting up git <https://help.github.com/articles/set-up-git>`_,
+
+3. `Git "choose your own adventure" <https://sethrobertson.github.io/GitFixUm/fixup.html>`_,
+
+4. `Guide on fixing the conflicts <https://medium.com/@porteneuve/fix-conflicts-only-once-with-git-rerere-7d116b2cec67>`_.
 
 Setup
 =====
@@ -35,9 +43,7 @@ Setup
    You can check these settings with ``git config --list``.
 
 
-4. `Fork <https://help.github.com/articles/fork-a-repo>`_ the repository (optional):
-
-   Click the “Fork” button on the `gitlab page <https://gitlab.com/yade-dev/trunk>`_
+4. To fork the repository (optional), click the “Fork” button on the `gitlab page <https://gitlab.com/yade-dev/trunk>`_
    
    .. note:: By default gitlab will try and compile the forked repository, and it will fail if you don't have runners attached to your account. To avoid receiving failure notifications go to repository settings (bottom of left panel->general->permissions) to turn of pipelines. 
 
