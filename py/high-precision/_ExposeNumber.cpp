@@ -50,8 +50,6 @@ private:
 		        .def("__imul__", &NumberVisitor::__imul__scalar<Scalar>)
 		        .def("__div__", &NumberVisitor::__div__scalar<long>)
 		        .def("__rdiv__", &NumberVisitor::__rdiv__scalar<long>)
-		        .def("__rdiv__", &NumberVisitor::__rdiv__scalar<int>)
-		        .def("__rdiv__", &NumberVisitor::__rdiv__scalar<double>)
 		        .def("__truediv__", &NumberVisitor::__div__scalar<long>)
 		        .def("__idiv__", &NumberVisitor::__idiv__scalar<long>)
 		        .def("__itruediv__", &NumberVisitor::__div__scalar<long>)
@@ -144,12 +142,12 @@ private:
 		return a * static_cast<Scalar>(scalar);
 	}
 	template <typename Scalar2, typename boost::enable_if<std::is_convertible<Scalar2, const Scalar&>, int>::type = 0>
-	static Number __rdiv__scalar(const Scalar2& scalar, const Number& a)
+	static Number __rdiv__scalar(const Number& a, const Scalar2& scalar)
 	{
 		return scalar / a;
 	}
 	template <typename Scalar2, typename boost::disable_if<std::is_convertible<Scalar2, const Scalar&>, int>::type = 0>
-	static Number __rdiv__scalar(const Scalar2& scalar, const Number& a)
+	static Number __rdiv__scalar(const Number& a, const Scalar2& scalar)
 	{
 		return static_cast<Scalar>(scalar) / a;
 	}
@@ -177,25 +175,31 @@ private:
 	}
 };
 
+template <int N, bool = (std::numeric_limits<RealHP<N>>::digits10 >= 18)> struct ExposeNum {
+	//                                                         ↑ the lower Real types are covered by python by default.
+	static void work(bool, const py::scope&) {};
+};
 
-template <int N> void expose_number(bool notDuplicate, const py::scope& topScope)
-{
-	if (::yade::math::RealHPConfig::getDigits10(N) < 18)
-		return; // the lower Real types are covered by python by default.
-
-	std::string numStr     = boost::lexical_cast<std::string>(N);
-	std::string HPn        = "HP" + numStr;
-	std::string realHPn    = "Real" + HPn;
-	std::string complexHPn = "Complex" + HPn;
-	if (notDuplicate) {
-		// currently only for readonly access. The write access is currently through python mpmath package and ToFromPythonConverter
-		py::class_<RealHP<N>>(realHPn.c_str(), ("The Real<" + numStr + "> type.").c_str(), py::init<>()).def(NumberVisitor<RealHP<N>>());
-		py::class_<ComplexHP<N>>(complexHPn.c_str(), ("The Complex<" + numStr + "> type.").c_str(), py::init<>()).def(NumberVisitor<ComplexHP<N>>());
-	} else {
-		py::scope().attr(realHPn.c_str())    = topScope.attr(realHPn.c_str());
-		py::scope().attr(complexHPn.c_str()) = topScope.attr(complexHPn.c_str());
+template <int N> struct ExposeNum<N, true> {
+	static void work(bool notDuplicate, const py::scope& topScope)
+	{
+		std::string numStr     = boost::lexical_cast<std::string>(N);
+		std::string HPn        = "HP" + numStr;
+		std::string realHPn    = "Real" + HPn;
+		std::string complexHPn = "Complex" + HPn;
+		if (notDuplicate) {
+			// currently only for readonly access. The write access is currently through python mpmath package and ToFromPythonConverter
+			py::class_<RealHP<N>>(realHPn.c_str(), ("The Real<" + numStr + "> type.").c_str(), py::init<>()).def(NumberVisitor<RealHP<N>>());
+			py::class_<ComplexHP<N>>(complexHPn.c_str(), ("The Complex<" + numStr + "> type.").c_str(), py::init<>())
+			        .def(NumberVisitor<ComplexHP<N>>());
+		} else {
+			py::scope().attr(realHPn.c_str())    = topScope.attr(realHPn.c_str());
+			py::scope().attr(complexHPn.c_str()) = topScope.attr(complexHPn.c_str());
+		}
 	}
-}
+};
+
+template <int N> void expose_number(bool notDuplicate, const py::scope& topScope) { ExposeNum<N>::work(notDuplicate, topScope); }
 
 // explicit instantination - tell compiler to produce a compiled version of expose_converters (it is faster when done in parallel in .cpp files)
 YADE_HP_PYTHON_REGISTER(expose_number)
