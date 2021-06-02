@@ -80,6 +80,7 @@ template <int N, bool registerConverters> struct RegisterEigenHP {
 		expose_complex2<N>(notDuplicate, topScope);
 		expose_quaternion<N>(notDuplicate, topScope);
 		expose_boxes<N>(notDuplicate, topScope);
+		expose_number<N>(notDuplicate, topScope);
 	}
 };
 
