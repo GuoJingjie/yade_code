@@ -49,7 +49,7 @@ private:
 		        .def("__rmul__", &NumberVisitor::__rmul__scalar<Scalar>)
 		        .def("__imul__", &NumberVisitor::__imul__scalar<Scalar>)
 		        .def("__div__", &NumberVisitor::__div__scalar<long>)
-		        .def("__rdiv__", &NumberVisitor::__rdiv__scalar<long>)
+		        .def("__rtruediv__", &NumberVisitor::__rdiv__scalar<long>)
 		        .def("__truediv__", &NumberVisitor::__div__scalar<long>)
 		        .def("__idiv__", &NumberVisitor::__idiv__scalar<long>)
 		        .def("__itruediv__", &NumberVisitor::__div__scalar<long>)
@@ -66,10 +66,26 @@ private:
 	static void visit_if_real(PyClass& cl)
 	{
 		cl.def("__round__", &NumberVisitor::__round__scalar)
+		        .def("__round__", &NumberVisitor::__round__places)
 		        .def("__lt__", &NumberVisitor::__lt__)
 		        .def("__le__", &NumberVisitor::__le__)
 		        .def("__gt__", &NumberVisitor::__gt__)
-		        .def("__ge__", &NumberVisitor::__ge__);
+		        .def("__ge__", &NumberVisitor::__ge__)
+// not this way:        .def("isnan", &NumberVisitor::isnan)
+/*
+t=TriaxialStressController()
+isnan(t.porosity)
+TypeError: must be real number, not RealHP1
+
+In [4]: yade.math.isnan(t.porosity)
+Out[4]: False # OK.
+So we have a working isnan, it needs to be imported in proper place.
+
+mpmath.mpf(t.porosity)
+TypeError: cannot create mpf from 1
+So now mpmath compatibility must be added.
+*/
+			;
 	}
 	template <typename CNum, typename RScalar, class PyClass, typename boost::disable_if_c<::yade::math::isComplexHP<CNum>, int>::type = 0>
 	static void visit_if_complex(PyClass&)
@@ -90,12 +106,14 @@ private:
 	static Number      __abs__(const Number& a) { return ::yade::math::abs(a); };
 	static Number      __neg__(const Number& a) { return -a; };
 	static Number      __round__scalar(const Number& a) { return ::yade::math::round(a); };
+	static Number      __round__places(const Number& a, const long& places) { return ::yade::math::round(a * places) / static_cast<Number>(places); };
 	static bool        __lt__(const Number& a, const Number& b) { return a < b; }
 	static bool        __le__(const Number& a, const Number& b) { return a <= b; }
 	static bool        __gt__(const Number& a, const Number& b) { return a > b; }
 	static bool        __ge__(const Number& a, const Number& b) { return a >= b; }
 	static bool        __eq__(const Number& a, const Number& b) { return a == b; }
 	static bool        __ne__(const Number& a, const Number& b) { return !__eq__(a, b); }
+//	static bool        isnan(const Number& a) { return ::yade::math::isnan(a); };
 
 	static Number __add__(const Number& a, const Number& b) { return a + b; }
 	static Number __iadd__(Number& a, const Number& b)
