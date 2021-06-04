@@ -6,7 +6,8 @@
 
 #YADE_EXECUTABLE=install/bin/yade-ci			<- this is for CI, uncomment when finished testing
 #GUI_TESTS_PATH=scripts/checks-and-tests/gui  FIXME: Path should be taken out of the call to the script	<- this is for CI, uncomment when finished testing
-YADE_EXECUTABLE=yade-2020-07-27.git-23b17b5
+#YADE_EXECUTABLE=yade-2020-07-27.git-23b17b5  <- non QM version of yade
+YADE_EXECUTABLE=~/Programs/yade_QM/install/bin/yade-2020-08-21.git-9ac74cd
 GUI_TESTS_PATH=.
 
 # You can test locally using this script, just change YADE_EXECUTABLE into something that works for you:
@@ -59,7 +60,11 @@ mkdir -p screenshots
 #        currently these names are written manually inside:
 #          *  scripts/checks-and-tests/gui/testGuiEmpty.py
 #          *  scripts/checks-and-tests/gui/testGuiSimple.py
-declare -a TESTS=( "Empty" "Simple" )
+#	declare -a TESTS=( "Empty" "Simple" )		<- old version, to be deleted if new approach is accepted
+#FIX: line below runs python script which gets the names of files and passes them to bash variable
+#Path to tests needs to be passed as an argument for it to find correct place with files
+
+TESTS=($(python3 ${GUI_TESTS_PATH}/helper/readNames.py ${GUI_TESTS_PATH} | tr -d '[],'))
 
 for TestFile in ${TESTS[@]}; do
 
