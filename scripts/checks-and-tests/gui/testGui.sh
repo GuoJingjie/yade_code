@@ -4,16 +4,16 @@
 # testGui.py script is only a slightly modified simple-scene-energy-tracking.py example.
 # the screenshots have to be taken inside yade session, while the GUI windows are open.
 
-#YADE_EXECUTABLE=install/bin/yade-ci			<- this is for CI, uncomment when finished testing
-#GUI_TESTS_PATH=scripts/checks-and-tests/gui  FIXME: Path should be taken out of the call to the script	<- this is for CI, uncomment when finished testing
-#YADE_EXECUTABLE=yade-2020-07-27.git-23b17b5  <- non QM version of yade
-YADE_EXECUTABLE=~/Programs/yade_QM/install/bin/yade-2020-08-21.git-9ac74cd
-GUI_TESTS_PATH=.
+YADE_EXECUTABLE=install/bin/yade-ci			#<- this is for CI, uncomment when finished testing
+GUI_TESTS_PATH=scripts/checks-and-tests/gui  #FIXME: Path should be taken out of the call to the script	<- this is for CI, uncomment when finished testing
+#YADE_EXECUTABLE=~/Programs/yade_QM/install/bin/yade-2020-08-21.git-9ac74cd	#<--- this is for manual testing
+#GUI_TESTS_PATH=.	#<--- this is for manual testing
 
 # You can test locally using this script, just change YADE_EXECUTABLE into something that works for you:
 #YADE_EXECUTABLE=./examples/yade
 #
 # Also remember that default path for GuiTest files is scripts/checks-and-tests/gui/* so it to something that works for you e.g. GUI_TESTS_PATH=./
+# Currently GUI_TESTS_PATH is read as an argument after calling the function
 #
 # then launch this command:
 #   xvfb-run -a -s "-screen 0 1600x1200x16" scripts/checks-and-tests/gui/testGui.sh
@@ -68,7 +68,7 @@ TESTS=($(python3 ${GUI_TESTS_PATH}/helper/readNames.py ${GUI_TESTS_PATH} | tr -d
 
 for TestFile in ${TESTS[@]}; do
 
-	LOGFILE="${GUI_TESTS_PATH}/screenshots/testGui_${TestFile}.txt"
+	LOGFILE="screenshots/testGui_${TestFile}.txt"
 	tail -F ${LOGFILE} &
 	TAIL_PID=$!
 
@@ -93,3 +93,13 @@ for TestFile in ${TESTS[@]}; do
 
 done
 
+python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${GUI_TESTS_PATH}/screenshots/ #As an argument path to the screenshots folder should be given
+#When processed by CI there will be need for path to comparables replacement in compareScreenshots.py as it bases off of current structure which is:
+#-checks-and-tests
+# |
+# -gui
+#  |
+#  -compareSources
+#  -differences
+#  -helper
+#  -screenshots
