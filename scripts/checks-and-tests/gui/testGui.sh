@@ -87,8 +87,8 @@ for TestFile in ${TESTS[@]}; do
 	kill -9 ${TAIL_PID}
 
 # FIXME : this number 14 is hardcoded in scripts/checks-and-tests/gui/helper/testGuiHelper.py as self.maxTestNum=14
-	if [[ ! -f ${SCREENSHOTS_PATH}/scr_${TestFile}_14.png ]] ; then
-	    echo "File ${SCREENSHOTS_PATH}/scr_${TestFile}_14.png is missing, aborting."
+	if [[ ! -f ${SCREENSHOTS_PATH}/${TestFile}OK.txt ]] ; then
+	    echo "File ${SCREENSHOTS_PATH}/${TestFile}OK.txt is missing, aborting."
 	    exit 1
 	fi
 
@@ -97,7 +97,7 @@ done
 
 sleep 1
 echo -e "******************************************\n*** Checking screenshots now ***\n******************************************\n"
-python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${GUI_TESTS_PATH} ${SCREENSHOTS_PATH} || { sleep 2 ; exit 1; }
+python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${GUI_TESTS_PATH} ${SCREENSHOTS_PATH} || { sleep 1 ; exit 1; }
 echo -e "******************************************\n*** Checking screenshots finished ***\n******************************************\n"
 
 #When processed by CI there will be need for path to comparables replacement in compareScreenshots.py as it bases off of current structure which is:

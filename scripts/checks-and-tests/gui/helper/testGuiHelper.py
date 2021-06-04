@@ -161,6 +161,7 @@ class TestGUIHelper:
 			# matplotlib.pyplot.close(fig)
 		if(self.scrNum == 14):
 			self.makeNextScreenshot();
+			self.createEmptyFile("screenshots/"+self.name+"OK.txt")
 			print(intro+" exiting\n\n")
 			O.pause()
 			vv=yade.qt.views()[0]
