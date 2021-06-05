@@ -265,8 +265,7 @@ class ControllerClass(QWidget,Ui_Controller):
 			self.realTimeLabel.setText('%02d:%02d:%02d'%(rt//3600,(rt%3600)//60,rt%60))
 			self.iterLabel.setText('#%ld, %.1f/s %s'%(iter,self.iterPerSec,subStepInfo))
 		else:
-			e=int((stopAtIter-iter)*self.iterPerSec)
-			self.realTimeLabel.setText('%02d:%02d:%02d (ETA %02d:%02d:%02d)'%(rt//3600,rt//60,rt%60,e//3600,e//60,e%60))
+			self.realTimeLabel.setText('%02d:%02d:%02d'%(rt//3600,(rt%3600)//60,rt%60))
 			self.iterLabel.setText('#%ld / %ld, %.1f/s %s'%(O.iter,stopAtIter,self.iterPerSec,subStepInfo))
 		if t!=float('inf'):
 			s=int(t); ms=int(t*1000)%1000; us=int(t*1000000)%1000; ns=int(t*1000000000)%1000
