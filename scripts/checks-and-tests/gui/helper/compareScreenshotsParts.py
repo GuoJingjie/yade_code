@@ -61,8 +61,9 @@ try:
 					# arithmetic average of errors from all 3 colours
 					error       = int( (cv2.countNonZero(r) + cv2.countNonZero(g) + cv2.countNonZero(b)) / 3. )
 					nowHasError = error > thresholdDict[refParts[j][1]]
-					if(refScr.endswith('_01.png') and j==0):
-						# Controller window, before it is moved into correct position can appear as having different sizes. So this one is not checked.
+					if((refScr.endswith('_01.png') or refScr.endswith('_03.png')) and j==0):
+						# 01: Controller - before it is moved into correct position it can appear as having different sizes.
+						# 03: View       - it may not appear on time when this screenshot is created
 						nowHasError = False
 					else:
 						maxEncountered[refParts[j][1]] = max(maxEncountered[refParts[j][1]],error)

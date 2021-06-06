@@ -69,7 +69,7 @@ for FileName in ${GUI_TESTS_PATH}/testGui*py; do
 
 	echo -e "******************************************\n*** Testing file testGui${TestFile}.py ***\n******************************************\nLog in file: ${LOGFILE}\ntail pid:${TAIL_PID}\n"
 
-	/usr/bin/xterm -l -xrm "XTerm*logFile:${LOGFILE}" -geometry 100x48+5+560  -e /bin/bash -c "time ${YADE_EXECUTABLE} ${GUI_TESTS_PATH}/testGui${TestFile}.py"
+	time /usr/bin/xterm -l -xrm "XTerm*logFile:${LOGFILE}" -geometry 100x48+5+560  -e /bin/bash -c "${YADE_EXECUTABLE} ${GUI_TESTS_PATH}/testGui${TestFile}.py"
 
 	# The idea here is to have a screenshot from outside of yade. But taking a screenshot after it finished (crashed, or by normal exit)
 	# will just produce an empty screenshot. It has to be done by calling scrot -z from inside scripts/checks-and-tests/gui/helper/testGuiHelper.py
@@ -83,8 +83,8 @@ for FileName in ${GUI_TESTS_PATH}/testGui*py; do
 	# If running was a success then a file testGui_${TestFile}_OK_or_Skipped.txt, it is created by scripts/checks-and-tests/gui/helper/testGuiHelper.py, at the end of screenshotEngine function.
 	echo -e "*** Checking if it was a success        ***"
 	if [[ ! -f ${CREATE_NEW_SCREENSHOTS}/testGui_${TestFile}_OK_or_Skipped.txt ]] ; then
-	    echo "File ${CREATE_NEW_SCREENSHOTS}/testGui_${TestFile}_OK_or_Skipped.txt is missing, aborting."
-	    exit 1
+		echo "File ${CREATE_NEW_SCREENSHOTS}/testGui_${TestFile}_OK_or_Skipped.txt is missing, aborting."
+		exit 1
 	else
 		ls -la ${CREATE_NEW_SCREENSHOTS}/testGui_${TestFile}_OK_or_Skipped.txt
 		echo -e "*** OK ***"
@@ -92,7 +92,7 @@ for FileName in ${GUI_TESTS_PATH}/testGui*py; do
 done
 
 sleep 1
-#echo -e "******************************************\n*** Checking screenshots now ***\n******************************************\n"
-#python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS} ${CREATE_NEW_SCREENSHOTS} || { sleep 1 ; exit 1; }
-#echo -e "******************************************\n*** Checking screenshots finished ***\n******************************************\n"
+echo -e "******************************************\n*** Checking screenshots now ***\n******************************************\n"
+python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS} ${CREATE_NEW_SCREENSHOTS} || { sleep 1 ; exit 1; }
+echo -e "******************************************\n*** Checking screenshots finished ***\n******************************************\n"
 
