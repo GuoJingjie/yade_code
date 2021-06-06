@@ -49,7 +49,7 @@ O.materials.append(CohFrictMat(
 law=Law2_ScGeom6D_CohFrictPhys_CohesionMoment(always_use_moment_law=False)
 g=9.81
 
-guiIterPeriod=500000
+guiIterPeriod=93000 # adjusted so that the screenshot shows the interaction force.
 
 O.trackEnergy=True
 O.engines=[

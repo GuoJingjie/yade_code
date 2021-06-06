@@ -12,7 +12,7 @@ from testGuiHelper import TestGUIHelper
 #        and just like scripts/checks-and-tests/checks/checkList.py is finding all the files to run.
 scr = TestGUIHelper("Empty")
 
-guiIterPeriod=500000
+guiIterPeriod=10000
 
 O.engines = O.engines+[PyRunner(iterPeriod=guiIterPeriod,command='scr.screenshotEngine()')]
 
