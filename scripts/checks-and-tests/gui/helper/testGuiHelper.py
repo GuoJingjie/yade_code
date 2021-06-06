@@ -60,6 +60,7 @@ class TestGUIHelper:
 			yade.qt.Controller()
 			yade.qt.controller.setWindowTitle('GUI test: ' + self.name)
 			yade.qt.controller.setGeometry(550, 20, 500, 1100)
+			yade.qt.Renderer().blinkHighlight='NEVER'
 		if(self.scrNum == 2):
 			self.makeNextScreenshot()
 			print(intro + " opening yade.qt.View()")
@@ -163,7 +164,7 @@ class TestGUIHelper:
 			# matplotlib.pyplot.close(fig)
 		if(self.scrNum == 14):
 			self.makeNextScreenshot()
-			self.createEmptyFile("screenshots/" + self.name + "OK.txt")
+			self.createEmptyFile("screenshots/testGui_" + self.name + "_OK_or_Skipped.txt")
 			print(intro + " exiting\n\n")
 			O.pause()
 			vv = yade.qt.views()[0]

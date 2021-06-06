@@ -1,28 +1,25 @@
 #!/bin/bash
+# This check is to be called inside xvfb-run, so that it has a working Xserver in which a simple yade GUI session can be started,
+# the simplest of those checks, testGuiEmpty.py or testGuiSimple.py are only a slightly modified simple-scene-energy-tracking.py example.
+# The screenshots are taken inside yade session, while the GUI windows are open, by calling scrot from helper/testGuiHelper.py
 
-# This check is to be called inside xvfb-run, so that it has a working Xserver in which a simple yade GUI session can be started, the
-# testGui.py script is only a slightly modified simple-scene-energy-tracking.py example.
-# the screenshots have to be taken inside yade session, while the GUI windows are open.
+YADE_EXECUTABLE=install/bin/yade-ci
+GUI_TESTS_PATH=scripts/checks-and-tests/gui
+CREATE_NEW_SCREENSHOTS=screenshots
+REFERENCE_SCREENSHOTS=data/checks-and-tests/gui/screenshots
 
-YADE_EXECUTABLE=install/bin/yade-ci			#<- this is for CI, uncomment when finished testing
-GUI_TESTS_PATH=scripts/checks-and-tests/gui  #FIXME: Path should be taken out of the call to the script	<- this is for CI, uncomment when finished testing
-SCREENSHOTS_PATH=screenshots
-#YADE_EXECUTABLE=~/Programs/yade_QM/install/bin/yade-2020-08-21.git-9ac74cd	#<--- this is for manual testing
-#GUI_TESTS_PATH=.	#<--- this is for manual testing
-
-# You can test locally using this script, just change YADE_EXECUTABLE into something that works for you:
+# You can test this locally using this script, just change YADE_EXECUTABLE into something that works for you:
+#
 #YADE_EXECUTABLE=./examples/yade
 #
-# Also remember that default path for GuiTest files is scripts/checks-and-tests/gui/* so it to something that works for you e.g. GUI_TESTS_PATH=./
-# Currently GUI_TESTS_PATH is read as an argument after calling the function
-#
-# then launch this command:
+# then launch this command (inside xvfb):
 #   xvfb-run -a -s "-screen 0 1600x1200x16" scripts/checks-and-tests/gui/testGui.sh
 #
-# or just this command:
+# or just this command (to see it happening on your desktop):
 #   scripts/checks-and-tests/gui/testGui.sh
 
 
+# This function checks if necessary tools are installed.
 testTool () {
 	WHICHtool=`which $1`
 	echo -e "is $1 present? We found this: ${WHICHtool}"
@@ -53,23 +50,19 @@ testTool "xdotool" "/usr/bin/xdotool"
 testTool "bash"    "/bin/bash"        "/usr/bin/bash"
 testTool "gdb"     "/usr/bin/gdb"     "ERROR_OK"
 
-echo -e "\n\n=== Will now test inside xterm, all usefull output, including gdb crash backtrace, will be on screenshots ===\n\n"
+echo -e "\n\n=== Will now test inside xterm, all useful output, including gdb crash backtrace ===\n=== will be on screenshots and in the xterm logs: /screenshots/*.txt             ===\n\n"
 
-mkdir -p ${SCREENSHOTS_PATH} # screenshots
+mkdir -p ${CREATE_NEW_SCREENSHOTS} # screenshots
 
-# FIXME: this should be deduced automatically from the files matching pattern testGui*.py, see also testGui.py
-#        currently these names are written manually inside:
-#          *  scripts/checks-and-tests/gui/testGuiEmpty.py
-#          *  scripts/checks-and-tests/gui/testGuiSimple.py
-#	declare -a TESTS=( "Empty" "Simple" )		<- old version, to be deleted if new approach is accepted
-#FIX: line below runs python script which gets the names of files and passes them to bash variable
-#Path to tests needs to be passed as an argument for it to find correct place with files
+# Loop over files ${GUI_TESTS_PATH}/testGui*py
+# TODO: tell the called scripts what name to use "Empty" "Simple", etc. currently these names are written manually inside
+#  * scripts/checks-and-tests/gui/testGuiEmpty.py
+#  * scripts/checks-and-tests/gui/testGuiSimple.py
+#  * etc.
+for FileName in ${GUI_TESTS_PATH}/testGui*py; do
+	TestFile=($(echo $FileName | sed -e "s@${GUI_TESTS_PATH}/testGui@@g" | sed -e 's/.py$//g' ))
 
-TESTS=($(python3 ${GUI_TESTS_PATH}/helper/readNames.py ${GUI_TESTS_PATH} | tr -d '[],'))
-
-for TestFile in ${TESTS[@]}; do
-
-	LOGFILE="${SCREENSHOTS_PATH}/testGui_${TestFile}.txt"
+	LOGFILE="${CREATE_NEW_SCREENSHOTS}/testGui_${TestFile}.txt"
 	tail -F ${LOGFILE} &
 	TAIL_PID=$!
 
@@ -77,35 +70,28 @@ for TestFile in ${TESTS[@]}; do
 
 	/usr/bin/xterm -l -xrm "XTerm*logFile:${LOGFILE}" -geometry 100x48+5+560  -e /bin/bash -c "${YADE_EXECUTABLE} ${GUI_TESTS_PATH}/testGui${TestFile}.py"
 
-	# FIXME: the idea is to have a screenshot from outside of yade. But taking a screenshot after it finished (crashed, or by normal exit)
-	#        will just produce an empty screenshot. It has to be done in a different way.
-	# scrot -z scrBash01.png
+	# The idea here is to have a screenshot from outside of yade. But taking a screenshot after it finished (crashed, or by normal exit)
+	# will just produce an empty screenshot. It has to be done by calling scrot -z from inside scripts/checks-and-tests/gui/helper/testGuiHelper.py
 
-	mv scr*.png ${SCREENSHOTS_PATH}
+	# Running is finished, move all created screenshots to the artifacts directory.
+	mv scr_*.png ${CREATE_NEW_SCREENSHOTS}
 	sleep 0.25
 	echo -e "******************************************\n*** Finished file testGui${TestFile}.py ***\n******************************************\n"
 	kill -9 ${TAIL_PID}
 
-# FIXME : this number 14 is hardcoded in scripts/checks-and-tests/gui/helper/testGuiHelper.py as self.maxTestNum=14
-	if [[ ! -f ${SCREENSHOTS_PATH}/${TestFile}OK.txt ]] ; then
-	    echo "File ${SCREENSHOTS_PATH}/${TestFile}OK.txt is missing, aborting."
+	# If running was a success then a file testGui_${TestFile}_OK_or_Skipped.txt, it is created by scripts/checks-and-tests/gui/helper/testGuiHelper.py, at the end of screenshotEngine function.
+	echo -e "*** Checking if it was a success        ***"
+	if [[ ! -f ${CREATE_NEW_SCREENSHOTS}/testGui_${TestFile}_OK_or_Skipped.txt ]] ; then
+	    echo "File ${CREATE_NEW_SCREENSHOTS}/testGui_${TestFile}_OK_or_Skipped.txt is missing, aborting."
 	    exit 1
+	else
+		ls -la ${CREATE_NEW_SCREENSHOTS}/testGui_${TestFile}_OK_or_Skipped.txt
+		echo -e "*** OK ***"
 	fi
-
 done
-
 
 sleep 1
 echo -e "******************************************\n*** Checking screenshots now ***\n******************************************\n"
-python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${GUI_TESTS_PATH} ${SCREENSHOTS_PATH} || { sleep 1 ; exit 1; }
+python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${GUI_TESTS_PATH} ${CREATE_NEW_SCREENSHOTS} || { sleep 1 ; exit 1; }
 echo -e "******************************************\n*** Checking screenshots finished ***\n******************************************\n"
-
-#When processed by CI there will be need for path to comparables replacement in compareScreenshots.py as it bases off of current structure which is:
-#-checks-and-tests
-# |
-# -gui
-#  |
-#  -compareSources
-#  -differences
-#  -helper
 

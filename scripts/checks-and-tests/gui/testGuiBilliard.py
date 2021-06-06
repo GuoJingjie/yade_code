@@ -37,7 +37,7 @@ for r in range(0, rowsN):
 		xPos = i * 2 * radiusBall - r * pow(radiusBall, 3.0 / 2.0)
 		sphereIds.append(O.bodies.append(sphere([xPos, yPos, 0.0], radiusBall, material=sphereMat)))
 
-schlagBall = O.bodies.append(sphere([0.0, -2.0 * radiusBall, 0.0], radiusBall, material=sphereMat))
+schlagBall = O.bodies.append(sphere([0.0, -2.2 * radiusBall, 0.0], radiusBall, material=sphereMat))
 
 O.bodies[schlagBall].state.vel = Vector3(0, velBall, 0)
 # Timestep
@@ -54,7 +54,6 @@ O.engines = [
 		),
 		NewtonIntegrator(damping=0),
 		PyRunner(iterPeriod=guiIterPeriod, command='scr.screenshotEngine()'),
-		PyRunner(iterPeriod=guiIterPeriod, command='print("PY RUNNER WORKING")')
 ]
 
 O.run(guiIterPeriod * scr.getTestNum() + 1)

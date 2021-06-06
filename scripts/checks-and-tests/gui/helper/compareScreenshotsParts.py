@@ -8,7 +8,6 @@ except:
 	sys.stdout.flush()
 	os._exit(0)  # os._exit(1) use 1 for error and 0 for ok
 
-
 screenshotNames = []
 # Number of pixels which have to be different in order to get attention
 thresholdDict = dict({'view': 60000, 'console': 110000, 'controller': 110000, 'inspector': 100000})
