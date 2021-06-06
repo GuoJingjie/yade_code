@@ -95,7 +95,7 @@ class AttrEditor_Bool(AttrEditor,QFrame):
 		AttrEditor.__init__(self,getter,setter)
 		QFrame.__init__(self,parent)
 		self.checkBox=QCheckBox(self)
-		lay=QVBoxLayout(self); lay.setSpacing(0); lay.setContentsMargins(0,0,0,0); lay.addStretch(1); lay.addWidget(self.checkBox); lay.addStretch(1)
+		lay=QVBoxLayout(self); lay.setSpacing(0); lay.setContentsMargins(0,0,0,0); lay.addWidget(self.checkBox);
 		self.checkBox.clicked.connect(self.update)
 	def refresh(self): self.checkBox.setChecked(self.getter())
 	def update(self): self.trySetter(self.checkBox.isChecked())

@@ -85,8 +85,9 @@ class ControllerClass(QWidget,Ui_Controller):
 		self.dtEditUpdate=True # to avoid updating while being edited
 		# show off with this one as well now
 	def addPreprocessors(self):
+		self.generatorCombo.addItem('TriaxialTest') # this generator is the first one (reproducible screenshot), and is always present.
 		for c in yade.system.childClasses('FileGenerator'):
-			self.generatorCombo.addItem(c)
+			if(c != 'TriaxialTest'): self.generatorCombo.addItem(c)
 	def addRenderers(self):
 		self.displayCombo.addItem('OpenGLRenderer'); afterSep=1
 		for bc in ('GlShapeFunctor','GlStateFunctor','GlBoundFunctor','GlIGeomFunctor','GlIPhysFunctor'):
@@ -134,6 +135,9 @@ class ControllerClass(QWidget,Ui_Controller):
 		ser=(self.renderer if dispStr=='OpenGLRenderer' else eval(str(dispStr)+'()'))
 		path='yade.qt.Renderer()' if dispStr=='OpenGLRenderer' else dispStr
 		se=SerializableEditor(ser,parent=self.displayArea,ignoredAttrs=set(['label']),showType=True,path=path)
+		verticalFiller=QVBoxLayout()
+		verticalFiller.addStretch(1000)
+		se.layout().addRow(verticalFiller)
 		self.displayArea.setWidget(se)
 	def loadSlot(self):
 		f=QFileDialog.getOpenFileName(self,'Load simulation','','Yade simulations (*.xml *.xml.bz2 *.xml.gz *.yade *.yade.gz *.yade.bz2);; *.*')
