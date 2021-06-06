@@ -24,6 +24,9 @@ stages:
   - pages
   - deb
 
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
 # See: https://docs.gitlab.com/ee/ci/yaml/#retry
 # Skip repeats when:
 #     - always: Retry on any failure (default).
@@ -87,6 +90,9 @@ stages:
   <<: *gitlab_runner_retry_definition
   stage: build
   script:
+    - cd ./data
+    - git log --oneline -n 5
+    - cd ..
     - export PYTHONUNBUFFERED=1
     - mkdir install
     # the command 'git diff -w --shortstat' counts the number of changes. The '-w' tells it to ignore whitespace.
@@ -460,6 +466,9 @@ make_SSE:
   <<: *gitlab_runner_retry_definition
   stage: test
   script:
+    - cd ./data
+    - git log --oneline -n 5
+    - cd ..
     - export PYTHONUNBUFFERED=1
     - install/bin/yade-ci --test
     - if [[ ${NO_GUI} == "NO_GUI" ]] ; then echo -e "\n\e[93m===\nSkipping GUI test.\n===\e[0m\n"; else xvfb-run -a -s "-screen 0 1600x1200x16" scripts/checks-and-tests/gui/testGui.sh; fi
@@ -681,6 +690,9 @@ test_SSE:
 #    - export OMPI_MCA_btl_vader_single_copy_mechanism=none
 #    - export OMPI_MCA_mpi_yield_when_idle=1 #degraded mode when oversubscribing (https://www.open-mpi.org/faq/?category=running#oversubscribing)
   script:
+    - cd ./data
+    - git log --oneline -n 5
+    - cd ..
     - export PYTHONUNBUFFERED=1
     - echo -e "\n===\n\e[44mSingle core check yade --checkall\e[0m\n===\n"
     - install/bin/yade-ci --checkall

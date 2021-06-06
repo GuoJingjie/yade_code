@@ -10,7 +10,7 @@ Fast checkout (read-only)
  
 Getting the source code without registering on GitLab can be done via a single command. It will not allow interactions with the remote repository, which you access the read-only way::
 
- git clone https://gitlab.com/yade-dev/trunk.git
+ git clone --recurse-submodules https://gitlab.com/yade-dev/trunk.git
 
 ************************
 Branches on GitLab
@@ -43,17 +43,19 @@ Setup
    You can check these settings with ``git config --list``.
 
 
-4. To fork the repository (optional), click the “Fork” button on the `gitlab page <https://gitlab.com/yade-dev/trunk>`_
-   
+4. To fork the repository (optional), click the “Fork” button on the `gitlab page <https://gitlab.com/yade-dev/trunk>`_, and also fork the `YADE data files <https://gitlab.com/yade-dev/yade-data>`_.
+
    .. note:: By default gitlab will try and compile the forked repository, and it will fail if you don't have runners attached to your account. To avoid receiving failure notifications go to repository settings (bottom of left panel->general->permissions) to turn of pipelines. 
 
-5. Set Up Your Local Repo through terminal:
+5. Set Up Your Local Repo through terminal. The argument ``--recurse-submodules`` is to make sure that ``./data`` directory is filled with the recent data from `yade-data <https://gitlab.com/yade-dev/yade-data>`_ (the path is `relative <https://gitlab.com/yade-dev/trunk/-/blob/master/.gitmodules#L3>`_ to your gitlab profile):
 
    ::
 
-      git clone git@gitlab.com:username/trunk.git
+      git clone --recurse-submodules git@gitlab.com:username/trunk.git
    
-   This creates a new folder, named trunk, that contains the whole code (make sure username is replaced by your GitLab name).
+   This creates a new folder, named trunk, that contains the whole code (make sure username is replaced by your GitLab name). If you already have a cloned yade repository with ``./data`` directory in it, then you can populate your existing repository using command::
+
+      git submodule update --init --recursive
 
 6. Configure remotes
 
