@@ -236,9 +236,9 @@ public:
 };
 
 // ask to create a new view and wait till it exists
-pyGLViewer createView()
+pyGLViewer createView(double timeout = 5.)
 {
-	int id = OpenGLManager::self->waitForNewView();
+	int id = OpenGLManager::self->waitForNewView(timeout);
 	if (id < 0) throw std::runtime_error("Unable to open new 3d view.");
 	return pyGLViewer((*OpenGLManager::self->views.rbegin())->viewId);
 }
@@ -281,7 +281,7 @@ try {
 	y::OpenGLManager* glm = new y::OpenGLManager(); // keep this singleton object forever
 	glm->emitStartTimer();
 
-	py::def("View", y::createView, "Create a new 3d view.");
+	py::def("View", y::createView, py::arg("timeout") = 5.0, "Create a new 3d view.");
 	py::def("centerValues",
 	        y::centerValues,
 	        ":return: a dictionary with all parameters currently used by ``yade.qt.center(…)``, see :yref:`yade.qt.center<yade.qt._GLViewer.center>` or "

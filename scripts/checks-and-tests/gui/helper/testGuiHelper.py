@@ -64,12 +64,13 @@ class TestGUIHelper:
 		if(self.scrNum == 2):
 			self.makeNextScreenshot()
 			print(intro + " opening yade.qt.View()")
-			yade.qt.View()
-			vv = yade.qt.views()[0]
-			vv.axes = True
-			vv.eyePosition = (2.8717367257539266, -3.2498802823394684, 11.986065750108025)
-			vv.upVector = (-0.786154130840315, -0.2651054185084529, 0.558283798475441)
-			vv.center()
+			yade.qt.View(90.)
+			vv             = yade.qt.views()[0]
+			vv.axes        = True
+			vv.lookAt      = ( 7.978,-4.635, 8.221)
+			vv.viewDir     = (-0.647, 0.441,-0.620)
+			vv.eyePosition = ( 8.626,-5.076, 8.842)
+			vv.upVector    = (-0.691, 0.000, 0.721)
 		if(self.scrNum == 3):
 			self.makeNextScreenshot()
 			print(intro + " opening yade.qt.Inspector() , setting wire=True, setting intrGeom=True")
@@ -80,8 +81,8 @@ class TestGUIHelper:
 					yade.qt.controller.inspector.setGeometry(1050, 20, 500, 1100)
 					success = True
 				except:
-					print("waiting for Inspector window to open after mouse click.")
-					time.sleep(0.25)
+					print("waiting for Inspector window to open after the mouse click.")
+					time.sleep(0.3)
 			if(not success):
 				self.createEmptyFile("screenshots/mouse_click_the_Inspector_open_FAILED_" + self.name)
 				print("*** ERROR: self.clickOnScreen failed to open Inspector window ***")

@@ -137,6 +137,7 @@ int OpenGLManager::waitForNewView(double timeout, bool center)
 	size_t origViewCount = views.size();
 	emitCreateView();
 	double t = 0;
+	LOG_DEBUG("Waiting " << timeout << " seconds")
 	while (views.size() != origViewCount + 1) {
 		usleep(50000);
 		t += .05;
