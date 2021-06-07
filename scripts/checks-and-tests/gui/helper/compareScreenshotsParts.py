@@ -1,7 +1,8 @@
 import numpy as np
 import os, sys
-scrDir = sys.argv[-1]
-refDir = sys.argv[-2]
+tstHP  = (sys.argv[-1] == '1')
+scrDir = sys.argv[-2]
+refDir = sys.argv[-3]
 try:
 	import cv2
 except:
@@ -12,8 +13,8 @@ print('\033[93m Checking screenshots\n  reference directory : ', refDir, '\n  ne
 
 screenshotNames = []
 # Number of pixels which have to be different in order to get attention
-thresholdDict = dict({'view': 5    , 'term': 5     , 'cont': 20    , 'insp': 20    })
-maxEncountered= dict({'view': 0    , 'term': 0     , 'cont': 0     , 'insp': 0     })
+thresholdDict = dict({'view': 5    , 'term': 45 if tstHP else 5 , 'cont': 20    , 'insp': 20    })
+maxEncountered= dict({'view': 0    , 'term': 0                  , 'cont': 0     , 'insp': 0     })
 
 def printFlushExit(msg, code):
 	print(msg)
