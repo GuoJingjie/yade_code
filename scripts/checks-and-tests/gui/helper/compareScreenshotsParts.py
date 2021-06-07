@@ -1,8 +1,8 @@
 import numpy as np
 import os, sys
-tstHP  = (sys.argv[-1] == '1')
-scrDir = sys.argv[-2]
-refDir = sys.argv[-3]
+xtermTolerance  = int(sys.argv[-1])
+scrDir          = sys.argv[-2]
+refDir          = sys.argv[-3]
 try:
 	import cv2
 except:
@@ -12,9 +12,9 @@ except:
 print('\033[93m Checking screenshots\n  reference directory : ', refDir, '\n  new screenshots dir : ', scrDir  , ' \033[0m (can be found in job artifacts)')
 
 screenshotNames = []
-# Number of pixels which have to be different in order to get attention
-thresholdDict = dict({'view': 5    , 'term': 45 if tstHP else 5 , 'cont': 20    , 'insp': 20    })
-maxEncountered= dict({'view': 0    , 'term': 0                  , 'cont': 0     , 'insp': 0     })
+# Maximum allowed average pixel difference between screenhots.
+thresholdDict = dict({'view': 5    , 'term': xtermTolerance , 'cont': 20    , 'insp': 20    })
+maxEncountered= dict({'view': 0    , 'term': 0              , 'cont': 0     , 'insp': 0     })
 
 def printFlushExit(msg, code):
 	print(msg)
