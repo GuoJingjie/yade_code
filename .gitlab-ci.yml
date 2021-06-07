@@ -328,6 +328,23 @@ make_debug:
     - export CXXFLAGS="-O2 $CXXFLAGS"
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
 
+make_as_i386:
+  <<: *make_definition
+  <<: *skip_WIP_and_Draft
+  before_script:
+    - export TESTS_AFTER_MAKE="TESTS_AFTER_MAKE"
+    - export EXTRA_CMAKE_ARGS="-DENABLE_PARTIALSAT=OFF -DENABLE_USEFUL_ERRORS=0 -DENABLE_ASAN=1 $EXTRA_CMAKE_ARGS"
+    - echo $EXTRA_CMAKE_ARGS
+    - export ASAN_OPTIONS=detect_leaks=0:log_path=stdout:verify_asan_link_order=false
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-i386
+  tags:
+    - debug
+    - qemu
+  artifacts:
+    when: always
+    paths:
+      - screenshots
+
 make_asan:
   <<: *make_definition
   <<: *skip_WIP
