@@ -29,6 +29,8 @@ Creating Body objects
 
 :yref:`Body` objects are only rarely constructed by hand by their components (:ref:`Shape<inheritanceGraphShape>`, :ref:`Bound<inheritanceGraphBound>`, :ref:`State<inheritanceGraphState>`, :ref:`Material<inheritanceGraphMaterial>`); instead, convenience functions :yref:`sphere<yade.utils.sphere>`, :yref:`facet<yade.utils.facet>` and :yref:`wall<yade.utils.wall>` are used to create them. Using these functions also ensures better future compatibility, if internals of :yref:`Body` change in some way. These functions receive geometry of the particle and several other characteristics. See their documentation for details. If the same :ref:`Material<inheritanceGraphMaterial>` is used for several (or many) bodies, it can be shared by adding it in ``O.materials``, as explained below.
 
+.. _DefiningMaterials:
+	
 Defining materials
 ------------------
 

@@ -160,7 +160,19 @@ def text(fileName,shift=Vector3.Zero,scale=1.0,**kw):
 
 
 def stl(file, dynamic=None,fixed=True,wire=True,color=None,highlight=False,noBound=False,material=-1,scale=1.0,shift=Vector3.Zero):
-	""" Import geometry from stl file, return list of created facets."""
+	""" Import a .stl geometry in the form of a set of :yref:`Facet`-shaped bodies.
+	
+	:param string file: the .stl file serving as geometry input
+	:param bool dynamic: controls :yref:`Body.dynamic`
+	:param bool fixed: controls :yref:`Body.dynamic` (with fixed = True imposing :yref:`Body.dynamic` = False) if *dynamic* attribute is not given
+	:param bool wire: rendering option, passed to :yref:`Facet.wire`
+	:param color: rendering option, passed to :yref:`Facet.color`
+	:param bool highlight: rendering option, passed to :yref:`Facet.highlight`
+	:param bool noBound: sets :yref:`Body.bounded` to False if True, preventing collision detection (and vice-versa)
+	:param material: defines :yref:`material<Body.material>` properties, see :ref:`DefiningMaterials` for usage
+	:param float scale: scaling factor to e.g. dilate the geometry if > 1
+	:param Vector3 shift: for translating the geometry
+	:returns: a corresponding list of :yref:`Facet`-shaped bodies"""
 	imp = STLImporter()
 	facets=imp.ymport(file)
 	for b in facets:
