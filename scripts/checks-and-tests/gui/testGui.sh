@@ -94,24 +94,15 @@ done
 sleep 1
 echo -e "******************************************\n*** Checking screenshots now ***\n******************************************\n"
 echo "This is CI job: ${CI_JOB_NAME}"
-if [[ ${CI_JOB_NAME} == tstHP* || ${CI_JOB_NAME} == make_asan_HP ]]; then
-			# FIXME : high precision tests produce different output in terminal. This is related to https://gitlab.com/yade-dev/trunk/-/issues/203
-			#         for now I temporarily use higher xterm tolerance for this test. Remember to remove this once #203 is fixed.
-			python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS} ${CREATE_NEW_SCREENSHOTS} 45 || { sleep 1 ; exit 1; }
+if [[ ${CI_JOB_NAME} == tstHP* || ${CI_JOB_NAME} == make_asan_HP || ${CI_JOB_NAME} == test_opposite || ${CI_JOB_NAME} == test_SSE ]]; then
+	# FIXME : high precision tests produce different output in terminal. This is related to https://gitlab.com/yade-dev/trunk/-/issues/203
+	#         for now I temporarily use higher xterm tolerance for this test. Remember to remove this once #203 is fixed.
+	# NOTE  : The test_opposite prints different messages in the terminal. We could add different reference screenshots. For now let's just use higher xterm tolerance.
+	# NOTE  : test_SSE also needs higher tolerance, because of Eigen messages about memory alignment.
+	python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS} ${CREATE_NEW_SCREENSHOTS} 45 || { sleep 1 ; exit 1; }
 else
-	if [[ ${CI_JOB_NAME} == test_opposite || ${CI_JOB_NAME} == test_20_04 ]]; then
-			# NOTE: The test_opposite prints different messages in the terminal. We could add different reference screenshots. For now let's just use higher xterm tolerance.
-			#       Also ubuntu prints a bit differently in terminal.
-			python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS} ${CREATE_NEW_SCREENSHOTS} 29 || { sleep 1 ; exit 1; }
-	else
-		if [[ ${CI_JOB_NAME} == test_SSE ]]; then
-			# test_SSE also needs higher tolerance, because of Eigen messages about memory alignment.
-			python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS} ${CREATE_NEW_SCREENSHOTS} 45 || { sleep 1 ; exit 1; }
-		else
-			# Smallest xterm tolerance is 11, enough for different session cookie and some variation in messages.
-			python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS} ${CREATE_NEW_SCREENSHOTS} 11 || { sleep 1 ; exit 1; }
-		fi
-	fi
+	# Smallest xterm tolerance is 5, enough for different session cookie and some small variation in messages.
+	python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS} ${CREATE_NEW_SCREENSHOTS}  5 || { sleep 1 ; exit 1; }
 fi
 echo -e "******************************************\n*** Checking screenshots finished ***\n******************************************\n"
 
