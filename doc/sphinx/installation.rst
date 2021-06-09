@@ -349,6 +349,14 @@ The following cmake options are available: (see the `source code <https://gitlab
 	* SUITESPARSEPATH: define this variable with the path to a custom suitesparse install
 	* PYTHON_VERSION: force Python version to the given one, e.g. ``-DPYTHON_VERSION=3.5``. Set to -1 to automatically use the last version on the system (-1 by default)
 
+It is possible to disable all options to create the slim build::
+
+	cmake -DDISABLE_ALL=ON
+
+In this case all available options will be switched off. In this case some required options can be enabled explicitely::
+
+	cmake -DDISABLE_ALL=ON -DENABLE_VTK=ON
+
 For using more extended parameters of cmake, please follow the corresponding
 documentation on `https://cmake.org/documentation <https://cmake.org/documentation/>`_.
 
