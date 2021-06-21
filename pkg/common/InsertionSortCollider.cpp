@@ -493,7 +493,7 @@ void InsertionSortCollider::action()
 			for (int i = 0; i < 3; i++)
 #ifdef YADE_OPENMP
 			{
-				if (ompThreads <= 1 || nBodies < 1000) insertionSort(BB[i], interactions, scene);
+				if (ompThreads <= 1 || nBodies < 1000 || verletDist == 0) insertionSort(BB[i], interactions, scene);
 				else
 					insertionSortParallel(BB[i], interactions, scene);
 			}
