@@ -92,6 +92,7 @@ protected:
 		);
 	// clang-format on
 	REGISTER_CLASS_INDEX(Polyhedra, Shape);
+	DECLARE_LOGGER;
 };
 REGISTER_SERIALIZABLE(Polyhedra);
 
