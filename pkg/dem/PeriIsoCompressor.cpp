@@ -50,8 +50,8 @@ void PeriIsoCompressor::action()
 	if (minSize < 2.1 * maxSpan) { throw runtime_error("Minimum cell size is smaller than 2.1*span_of_the_biggest_body! (periodic collider requirement)"); }
 	if (((step % globalUpdateInt) == 0) || avgStiffness < 0 || sigma[0] < 0 || sigma[1] < 0 || sigma[2] < 0) {
 		//  declaration of ‘sumForces’ shadows a member of ‘yade::PeriIsoCompressor’ [-Werror=shadow]
-		Vector3r sumForces2 = Shop::totalForceInVolume(avgStiffness, scene);
-		sigma               = -Vector3r(sumForces2[0] / cellArea[0], sumForces2[1] / cellArea[1], sumForces2[2] / cellArea[2]);
+		Matrix3r stress_tensor = Shop::getStress();
+		sigma               = Vector3r(stress_tensor(0,0), stress_tensor(1,1), stress_tensor(2,2));
 		LOG_TRACE("Updated sigma=" << sigma << ", avgStiffness=" << avgStiffness);
 	}
 	Real sigmaGoal = stresses[state];
@@ -95,26 +95,28 @@ void PeriIsoCompressor::action()
 	TRVAR4(cellGrow, sigma, sigmaGoal, avgStiffness);
 	assert(scene->dt > 0);
 	for (int axis = 0; axis < 3; axis++) {
-		scene->cell->velGrad(axis, axis) = cellGrow[axis] / (scene->dt * scene->cell->getSize()[axis]);
+		scene->cell->velGrad(axis, axis) = .1 * cellGrow[axis] / (scene->dt * scene->cell->getSize()[axis]);
 	}
 
 	// handle state transitions
-	if (allStressesOK) {
-		if ((step % globalUpdateInt) == 0) currUnbalanced = Shop::unbalancedForce(/*useMaxForce=*/false, scene);
-		if (currUnbalanced < maxUnbalanced) {
-			state += 1;
-			// sigmaGoal reached and packing stable
-			if (state == stresses.size()) { // no next stress to go for
-				LOG_INFO("Finished");
-				if (!doneHook.empty()) {
-					LOG_DEBUG("Running doneHook: " << doneHook);
-					pyRunString(doneHook);
+	if ((step % globalUpdateInt) == 0) {
+		if (allStressesOK) {
+			currUnbalanced = Shop::unbalancedForce(/*useMaxForce=*/false, scene);
+			if (currUnbalanced < maxUnbalanced) {
+				state += 1;
+				// sigmaGoal reached and packing stable
+				if (state == stresses.size()) { // no next stress to go for
+					LOG_INFO("Finished");
+					if (!doneHook.empty()) {
+						LOG_DEBUG("Running doneHook: " << doneHook);
+						pyRunString(doneHook);
+					}
+				} else {
+					LOG_INFO("Loaded to " << sigmaGoal << " done, going to " << stresses[state] << " now");
 				}
 			} else {
-				LOG_INFO("Loaded to " << sigmaGoal << " done, going to " << stresses[state] << " now");
+				if ((step % globalUpdateInt) == 0) LOG_DEBUG("Stress=" << sigma << ", goal=" << sigmaGoal << ", unbalanced=" << currUnbalanced);
 			}
-		} else {
-			if ((step % globalUpdateInt) == 0) LOG_DEBUG("Stress=" << sigma << ", goal=" << sigmaGoal << ", unbalanced=" << currUnbalanced);
 		}
 	}
 }
