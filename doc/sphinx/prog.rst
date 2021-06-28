@@ -628,13 +628,13 @@ As a reminder in the standard ReST syntax the references are:
 Bibliographical references
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As in any scientific documentation, references to publications are very important. To cite an article, add it to BibTeX file in :ysrc:`doc/references.bib`, using the BibTeX format. Please adhere to the following conventions:
+As in any scientific documentation, references to publications are very important. To cite an article, first add it in BibTeX format to files :ysrc:`doc/references.bib` or :ysrc:`doc/yade-*.bib<doc/yade-articles.bib>` depending whether that reference used Yade (the latter cases) or not (the former). Please adhere to the following conventions:
 
 #. Keep entries in the form ``Author2008`` (``Author`` is the first author), ``Author2008b`` etc if multiple articles from one author;
 #. Try to fill `mandatory fields <http://en.wikipedia.org/wiki/Bibtex#Entry_Types>`_ for given type of citation;
 #. Do not use ``\'{i}`` funny escapes for accents, since they will not work with the HTML output; put everything in straight utf-8.
 
-In your docstring, the ``Author2008`` article can be cited by ``[Author2008]_``; for example::
+In your docstring, the ``Author2008`` article can be then cited by ``[Author2008]_``; for example::
 
 	According to [Allen1989]_, the integration scheme …
 
