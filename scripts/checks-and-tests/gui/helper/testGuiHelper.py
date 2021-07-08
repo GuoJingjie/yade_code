@@ -7,7 +7,7 @@
 #  GNU General Public License v2 or later. See file LICENSE for details. #
 ##########################################################################
 
-import subprocess, time, os
+import subprocess, time, os, sys
 import yade
 from yade import qt
 
@@ -76,16 +76,17 @@ class TestGUIHelper:
 			print(intro + " opening yade.qt.Inspector() , setting wire=True, setting intrGeom=True")
 			self.clickOnScreen(982, 60)
 			success = False
-			for attempt in range(0, 20):
+			for attempt in range(0, 30):
 				try:
 					yade.qt.controller.inspector.setGeometry(1050, 20, 500, 1100)
 					success = True
 				except:
-					print("waiting for Inspector window to open after the mouse click.")
-					time.sleep(0.3)
+					time.sleep(1)
 			if(not success):
 				self.createEmptyFile("screenshots/mouse_click_the_Inspector_open_FAILED_" + self.name)
-				print("*** ERROR: self.clickOnScreen failed to open Inspector window ***")
+				print("\n\n*** ERROR: self.clickOnScreen failed to open Inspector window ***\n\n")
+				self.makeNextScreenshot() # a debug screenshot.
+				sys.stdout.flush()
 				self.finish()
 			yade.qt.controller.inspector.show()
 			qt.Renderer().wire = True
