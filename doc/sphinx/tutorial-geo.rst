@@ -14,7 +14,7 @@ Suppose we want to study the influence of :yref:`damping<NewtonIntegrator.dampin
 
 #. We have to make sure the script reads relevant parameters from the *parameter table*. This is done using :yref:`yade.utils.readParamsFromTable`; the parameters which are read are created as variables in the ``yade.params.table`` module::
 
-   	utils.readParamsFromTable(damping=.2)      # yade.params.table.damping variable will be created
+   	readParamsFromTable(damping=.2)      # yade.params.table.damping variable will be created
    	from yade.params import table              # typing table.damping is easier than yade.params.table.damping
 
    Note that :yref:`yade.utils.readParamsFromTable` takes default values of its parameters, which are used if the script is not run in non-batch mode.
@@ -28,15 +28,15 @@ Suppose we want to study the influence of :yref:`damping<NewtonIntegrator.dampin
       O.engines+=[PyRunner(iterPeriod=1000,command='checkUnbalancedForce()')]    # call our function defined below periodically
 
       def checkUnbalancedForce():
-         if utils.unbalancedForce<0.05:                      # exit Yade if unbalanced force drops below 0.05
-            utils.saveDataTxt(O.tags['d.id']+'.data.bz2')    # save all data into a unique file before exiting   
+         if unbalancedForce<0.05:                            # exit Yade if unbalanced force drops below 0.05
+            plot.saveDataTxt(O.tags['d.id']+'.data.bz2')     # save all data into a unique file before exiting   
             import sys
             sys.exit(0)                                      # exit the program
 
 #. Finally, we must start the simulation at the very end of the script::
 
       O.run()               # run forever, until stopped by checkUnbalancedForce()
-      utils.waitIfBatch()   # do not finish the script until the simulation ends; does nothing in non-batch mode
+      waitIfBatch()         # do not finish the script until the simulation ends; does nothing in non-batch mode
 
 The *parameter table* is a simple text-file (e.g. ``params.txt`` ), where each line specifies a simulation to run::
 
@@ -50,7 +50,7 @@ Finally, the simulation is run using the special batch command::
 
    user@machine:~\$ yade-batch params.txt simulation.py
 
-.. todo:: Parametric studies need to be described better. Perhaps the behavior should be changed so that in batch mode, :yref:`O.run<Omega.run>` and :yref:`yade.utils.waitIfBatch` are run from the main yade script by default. That would however make it only possible to exit the batch via ``sys.exit(0)``, or by a new function like ``utils.exitBatch()`` (which would call ``sys.exit(0)`` for now anyway)
+.. todo:: Parametric studies need to be described better. Perhaps the behavior should be changed so that in batch mode, :yref:`O.run<Omega.run>` and :yref:`yade.utils.waitIfBatch` are run from the main yade script by default. That would however make it only possible to exit the batch via ``sys.exit(0)``, or by a new function like ``exitBatch()`` (which would call ``sys.exit(0)`` for now anyway)
 
 .. rubric:: Exercises
 
