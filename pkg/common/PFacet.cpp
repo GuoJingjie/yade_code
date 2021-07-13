@@ -21,53 +21,27 @@ using math::min; // using inside .cpp file is ok.
 boost::tuple<Vector3r, bool, double, double, double> Ig2_Sphere_PFacet_ScGridCoGeom::projection(const shared_ptr<Shape>& cm2, const State& state1)
 {
 	const State* sphereSt = YADE_CAST<const State*>(&state1);
-	PFacet*      Pfacet   = YADE_CAST<PFacet*>(cm2.get());
+	const PFacet* Pfacet   = YADE_CAST<PFacet*>(cm2.get());
+        
+        // the logic is as follows: if X' = λ1 * P1 + λ2 * P2 + (1-λ1-λ2) * P3 is the projection of X in the plane (P1,P2,P3),
+        // then X' - P3 = λ1 * (P1-P3) + λ2 * (P2-P3)
+        // in order to find λ1 (resp. λ2) we compute the cross product of the above with (P2-P3):
+        // (X' - P3)x(P2-P3) = λ1 * (P1-P3)x(P2-P3)
+        // then we project on any vector perpendicular to the facet
+        // λ1  = ((X' - P3)x(P2-P3)).n / ((P1-P3)x(P2-P3)).n
+        // The dot product automatically cancels the contribution by the out-of plane part of (X-P3), so that ((X'-P3)x(P2-P3)).n = ((X-P3)x(P2-P3)).n,
+        // hence there is no need to compute the projection X' of X in the first place, we can just use X.
+        // There is no need for 'n' to be a unit vector either
+        
 
-	vector<Vector3r> vertices;
-	vertices.push_back(Pfacet->node1->state->pos);
-	vertices.push_back(Pfacet->node2->state->pos);
-	vertices.push_back(Pfacet->node3->state->pos);
-	Vector3r center = vertices[0]
-	        + ((vertices[2] - vertices[0]) * (vertices[1] - vertices[0]).norm() + (vertices[1] - vertices[0]) * (vertices[2] - vertices[0]).norm())
-	                / ((vertices[1] - vertices[0]).norm() + (vertices[2] - vertices[1]).norm() + (vertices[0] - vertices[2]).norm());
-
-
-	Vector3r e[3]   = { vertices[1] - vertices[0], vertices[2] - vertices[1], vertices[0] - vertices[2] };
-	Vector3r normal = e[0].cross(e[1]) / ((e[0].cross(e[1])).norm());
-
-	// 	Vector3r centerS=sphereSt->pos+shift2;//FIXME: periodicity?
-	const Vector3r& centerS = sphereSt->pos;
-	Vector3r        cl      = centerS - center;
-
-	Real dist = normal.dot(cl);
-
-	if (dist < 0) {
-		normal = -normal;
-		dist   = -dist;
-	}
-
-	Vector3r P = center + (cl - dist * normal);
-
-	Vector3r v0 = vertices[1] - vertices[0];
-	Vector3r v1 = vertices[2] - vertices[0];
-	Vector3r v2 = P - vertices[0];
-
-	// Compute dot products
-	Real dot00 = v0.dot(v0);
-	Real dot01 = v0.dot(v1);
-	Real dot02 = v0.dot(v2);
-	Real dot11 = v1.dot(v1);
-	Real dot12 = v1.dot(v2);
-
-	// Compute the barycentric coordinates of the projection P
-	Real invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-	Real p2       = (dot11 * dot02 - dot01 * dot12) * invDenom;
-	Real p3       = (dot00 * dot12 - dot01 * dot02) * invDenom;
-	Real p1       = 1 - p2 - p3;
-
-	// Check if P is in triangle
-	bool isintriangle = (p1 > 0) && (p2 > 0) && (p1 + p2 < 1);
-	return boost::make_tuple(P, isintriangle, p1, p2, p3);
+	Vector3r e[3]   = {Pfacet->node2->state->pos - Pfacet->node1->state->pos, Pfacet->node3->state->pos - Pfacet->node2->state->pos, Pfacet->node1->state->pos - Pfacet->node3->state->pos };
+        Vector3r normal = e[0].cross(e[1]);
+        Real lambda0 = -(sphereSt->pos - Pfacet->node3->state->pos).cross(e[1]).dot(normal) / e[0].cross(e[1]).dot(normal);
+        Real lambda1 = -(sphereSt->pos - Pfacet->node3->state->pos).cross(e[2]).dot(normal) / e[1].cross(e[2]).dot(normal);
+        Real lambda2 = 1 - lambda0 - lambda1;
+        Vector3r  P  = lambda0 * Pfacet->node1->state->pos + lambda1 * Pfacet->node2->state->pos + lambda2 * Pfacet->node3->state->pos;
+	bool isintriangle = (lambda0 > 0) && (lambda1 > 0) && (lambda2 > 0);
+	return boost::make_tuple(P, isintriangle, lambda0, lambda1, lambda2);
 }
 
 
