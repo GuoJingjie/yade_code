@@ -140,14 +140,9 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 
 	shared_ptr<Body> GridList[3] = { Pfacet->conn1, Pfacet->conn2, Pfacet->conn3 };
 
-	// Check if the projection of the contact point is inside the triangle
-	bool isconn1 = ((p1 > 0) && (p2 <= 0) && (p1 + p2 < 1)) || ((p1 > 0) && (p2 <= 0) && (p1 + p2 >= 1));
-	bool isconn2 = ((p1 > 0) && (p2 > 0) && (p1 + p2 >= 1)) || ((p1 <= 0) && (p2 > 0) && (p1 + p2 >= 1));
-	bool isconn3 = ((p1 <= 0) && (p2 > 0) && (p1 + p2 < 1)) || ((p1 <= 0) && (p2 <= 0) && (p1 + p2 < 1));
+
 
 	Real penetrationDepth = 0;
-	int  connnum          = -1;
-
 	GridNode* GridNodeList[3] = { YADE_CAST<GridNode*>(Pfacet->node1->shape.get()),
 		                      YADE_CAST<GridNode*>(Pfacet->node2->shape.get()),
 		                      YADE_CAST<GridNode*>(Pfacet->node3->shape.get()) };
@@ -181,11 +176,14 @@ bool Ig2_Sphere_PFacet_ScGridCoGeom::go(
 			}
 		}
 	} else {
-		// 		identification of the cylinder possibly in contact with the sphere
-		if (isconn1) connnum = 0;
-		if (isconn2) connnum = 1;
-		if (isconn3) connnum = 2;
-		// 		check if the identified cylinder  previously is in contact with the sphere
+		// identification of the cylinder possibly in contact with the sphere
+		int  connnum = -1;
+		if (p1>0 and p2>0 and p3<=0) connnum = 0;
+		else {
+			if (p1<=0 and p2>0 and p3>0) connnum = 1;
+			else if (p1>0 and p2<=0 and p3>0) connnum = 2;
+		}
+		// check if the identified cylinder  previously is in contact with the sphere
 		if (connnum != -1) {
 			//verify if there is a contact between the a neighbouring PFacet, avoid double contacts
 			for (int unsigned i = 0; i < 3; i++) {
