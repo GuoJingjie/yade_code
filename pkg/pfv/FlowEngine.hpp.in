@@ -270,7 +270,7 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 		CELL_SCALAR_GETTER(bool,.Pcondition,cellPImposed)
 		CELL_SCALAR_GETTER(bool,.Tcondition,cellTImposed)
 		CELL_SCALAR_SETTER_EXTRA(bool,.Pcondition,setCellPImposed,solver->resetLinearSystem())
-		CELL_SCALAR_SETTER(double,.Tcondition,setCellTImposed)
+		CELL_SCALAR_SETTER(bool,.Tcondition,setCellTImposed)
 		boost::python::list getVertices(unsigned int id) const {
 			boost::python::list ids2;
 			if (not checkMaxId(id)) return ids2;
