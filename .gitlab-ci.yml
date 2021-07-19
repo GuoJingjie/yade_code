@@ -14,6 +14,7 @@
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-mips64el # crashes, as predicted by warnings -Wcast-align
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-ppc64el
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-arm64
+# image: registry.gitlab.com/yade-dev/docker-yade:archlinux-current
 #
 # Useful link to validator: https://gitlab.com/yade-dev/trunk/-/ci/lint
 
@@ -141,8 +142,8 @@ variables:
     - export LINK_GOLD=$(case    $CI_PIPELINE_SOURCE in "merge_request_event") echo "20" ;; *) echo "10";; esac)
     - export LINK_REGULAR=$(case $CI_PIPELINE_SOURCE in "merge_request_event") echo "10" ;; *) echo "20";; esac)
     - ld --version
-    - update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" $LINK_GOLD
-    - update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" $LINK_REGULAR
+    - if grep -q "Arch Linux" /etc/issue; then echo "skip ld setting"; else update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" $LINK_GOLD   ; fi
+    - if grep -q "Arch Linux" /etc/issue; then echo "skip ld setting"; else update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" $LINK_REGULAR ; fi
     - ld --version
     # 4pak has 64cores 256GB RAM, and has concurrent = 5 ← amount of simultaneous gitlab jobs
     # 6pak has 48cores 128GB RAM, and has concurrent = 3 , but 6pak must have a little smaller load than the maximum
@@ -231,6 +232,11 @@ make_bullseye:
   <<: *make_definition
   <<: *artifacts_definition
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
+
+make_archlinux:
+  <<: *make_definition
+  <<: *artifacts_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:archlinux-current
 
 mk_bll_i386:
   <<: *make_definition
@@ -525,6 +531,13 @@ test_bullseye:
     - make_bullseye
   needs: ["make_bullseye"]
 
+test_archlinux:
+  <<: *test_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:archlinux-current
+  dependencies:
+    - make_archlinux
+  needs: ["make_archlinux"]
+
 tst_bll_i386:
   <<: *test_definition
   <<: *skip_WIP_and_Draft
@@ -750,6 +763,14 @@ check_bullseye:
   dependencies:
     - make_bullseye
   needs: ["make_bullseye"]
+
+check_archlinux:
+  <<: *check_definition
+  before_script:
+  image: registry.gitlab.com/yade-dev/docker-yade:archlinux-current
+  dependencies:
+    - make_archlinux
+  needs: ["make_archlinux"]
 
 ck_bll_i386:
   <<: *check_definition
