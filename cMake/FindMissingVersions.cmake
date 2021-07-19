@@ -13,7 +13,11 @@
 # So let's use dpkg. A very simple and efficient method....
 EXECUTE_PROCESS( COMMAND /usr/bin/dpkg --print-architecture COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
 if (NOT ARCHITECTURE) # .... which doesn't work on other linux distributions. So someone might want to fix this later.
-            set(ARCHITECTURE "unknown")
+    # Warning: uname -m doesn't work properly inside i386 docker (but seems to work with ppc64le and aarch64)
+    EXECUTE_PROCESS( COMMAND /usr/sbin/uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
+    if (NOT ARCHITECTURE)
+        set(ARCHITECTURE "unknown")
+    endif()
 endif()
 
 message( STATUS "Architecture: ${ARCHITECTURE}" )
