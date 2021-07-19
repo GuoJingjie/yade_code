@@ -38,6 +38,7 @@ struct RealHP {
 #include <boost/mpl/find.hpp>
 #include <boost/mpl/size.hpp>
 #include <boost/mpl/vector.hpp>
+#include <boost/mpl/at.hpp>
 #include <boost/type_traits/is_complex.hpp>
 #include <boost/utility/enable_if.hpp>
 #ifdef YADE_MPFR
