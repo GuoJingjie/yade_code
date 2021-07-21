@@ -41,8 +41,8 @@ if(yade.runtime.opts.stdperformance):
 	radRAD      = [30.77]
 	iterN       = [7000]
 	coefCor     = [9]
-	numberTests = 10
-	print("\033[93m Running --stdperformance test: 10000 spheres, "+str(iterN)+" iterations, average over "+str(numberTests)+" runs. Threads: "+str(numThreads)+"\033[0m")
+	numberTests = int(yade.runtime.opts.stdperformance)
+	print("\033[93m Running --stdperformance "+str(yade.runtime.opts.stdperformance)+" times, testing: 10000 spheres, "+str(iterN)+" iterations, average over "+str(numberTests)+" runs. Threads: "+str(numThreads)+"\033[0m")
 elif(yade.runtime.opts.quickperformance):
 	radRAD      = [23.658]
 	iterN       = [2000]
@@ -131,28 +131,6 @@ while len(iterVel) < (numberTests*len(radRAD)):
 		iterVel += [nbIter/(tEnd-tStart)]
 		testTime += [tEnd-tStart]
 		particlesNumber += [len(O.bodies)]
-	# in --stdperformance test an attempt is made to find an average with low standard deviation.
-	if((len(radRAD) == 1) and yade.runtime.opts.stdperformance and ( numberTests >= 7 ) and ( len(iterVel) >= numberTests )):
-		# this loop will keep removing outliers which are too far away from average result. Must have have at least 7 results for this to work
-		# If standard deviation is too big, then remove largest outliers. Better to check three times, otherwise if the situation changed
-		# (another program was stopped) only the last result would be kept being removed.
-		for outliers in range(3):
-			iterVelNumpy , avgVel , dispVel = calcAverageSoFar( len(iterVel) , iterVel , len(radRAD) , 0 )
-			# remove only if standard deviation is too big.
-			if (dispVel>1.0):
-				pos=None
-				maxDiff=0
-				for z in range(len(iterVel)):
-					diff = abs(avgVel-iterVel[z])
-					if (diff > maxDiff):
-						maxDiff = diff
-						pos     = z
-					#print("\033[93m maxDiff="+str(maxDiff)+" pos="+str(pos)+"\033[0m")
-				# will remove position 'pos' from the results.
-				print("\033[93m Standard deviation "+str(dispVel)+" too large, removing result number "+str(pos)+"\033[0m, current average vel: "+str(avgVel))
-				del iterVel[pos]
-				del testTime[pos]
-				del particlesNumber[pos]
 
 tEndAll=time.time()
 commonTime = tEndAll-tStartAll
