@@ -65,7 +65,7 @@ variables:
       - $CI_MERGE_REQUEST_TITLE =~ /^WIP:.*/
       - $CI_MERGE_REQUEST_TITLE =~ /^Draft:.*/
 
-.skip_wip_test_template_nogui: &skip_NO_GUI
+.skip_wip_test_template_nogui: &skip_GUI_TEST
   before_script: # there can be only one before_script: so if you need NO_GUI and before_script: this line has to be pasted there
     - export NO_GUI="NO_GUI"
 
@@ -588,7 +588,7 @@ test_no_vtk:
 
 test_minimal:
   <<: *test_definition
-  <<: *skip_NO_GUI
+  <<: *skip_GUI_TEST
   <<: *skip_WIP_and_Draft
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
   dependencies:
@@ -605,7 +605,7 @@ test_opposite:
 
 test_suse15:
   <<: *test_definition
-  <<: *skip_NO_GUI
+  <<: *skip_GUI_TEST
   <<: *skip_WIP
   image: registry.gitlab.com/yade-dev/docker-yade:suse15
   dependencies:
@@ -631,7 +631,7 @@ test_18_foam:
 
 test_18_04_nogui:
   <<: *test_definition
-  <<: *skip_NO_GUI
+  <<: *skip_GUI_TEST
   <<: *skip_WIP_and_Draft
   image: registry.gitlab.com/yade-dev/docker-yade:ubuntu18.04_nogui
   dependencies:
