@@ -12,7 +12,7 @@ namespace yade { // Cannot have #include directive inside.
 
 namespace CGT {
 
-//Since template inheritance does not automatically give access to the members of the base class, this macro can be used to declare all members at once.
+	//Since template inheritance does not automatically give access to the members of the base class, this macro can be used to declare all members at once.
 
 #define DECLARE_TESSELATION_TYPES(baseType)                                                                                                                    \
 	typedef typename baseType::RTriangulation         RTriangulation;                                                                                      \
@@ -46,9 +46,9 @@ namespace CGT {
 	//TT is of model TriangulationTypes
 	template <class TT> class _Tesselation {
 	public:
-		typedef typename TT::RTriangulation RTriangulation;
-		typedef typename TT::AlphaShape     AlphaShape;
-		typedef typename TT::Alpha_iterator Alpha_iterator;
+		typedef typename TT::RTriangulation                       RTriangulation;
+		typedef typename TT::AlphaShape                           AlphaShape;
+		typedef typename TT::Alpha_iterator                       Alpha_iterator;
 		typedef typename TT::Vertex_Info                          VertexInfo;
 		typedef typename TT::Cell_Info                            CellInfo;
 		typedef typename RTriangulation::Vertex_iterator          VertexIterator;

@@ -42,15 +42,15 @@ public:
 	typedef Tesselation::VertexInfo                          VertexInfo;
 	typedef Tesselation::CellInfo                            CellInfo;
 	typedef RTriangulation::Finite_edges_iterator            FiniteEdgesIterator;
-	typedef Tesselation::AlphaFace AlphaFace;
-	typedef Tesselation::AlphaCap  AlphaCap;
+	typedef Tesselation::AlphaFace                           AlphaFace;
+	typedef Tesselation::AlphaCap                            AlphaCap;
 
 	mutable Tesselation* Tes; // Modifying internal state of Tesselation in read-only functions is allowed.
-	Real         mean_radius, inf;
-	bool         rad_divided;
-	bool         bounded;
-	CGT::Point   Pmin;
-	CGT::Point   Pmax;
+	Real                 mean_radius, inf;
+	bool                 rad_divided;
+	bool                 bounded;
+	CGT::Point           Pmin;
+	CGT::Point           Pmax;
 
 	~TesselationWrapper();
 
@@ -62,7 +62,7 @@ public:
 	bool move(Real x, Real y, Real z, Real rad, unsigned int id);
 
 	void checkMinMax(Real x, Real y, Real z, Real rad); //for experimentation purpose
-	                                                            /// Reset the triangulation
+	                                                    /// Reset the triangulation
 	void clear(void);
 	void clear2(void);
 

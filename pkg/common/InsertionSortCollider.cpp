@@ -283,18 +283,18 @@ void InsertionSortCollider::action()
 		const vector<Body::id_t>& erased  = scene->bodies->erasedBodies;
 		size_t                    nInsert = insrts.size();
 		size_t                    nErased = erased.size();
-		size_t                    nReal = scene->bodies->realBodies.size();
+		size_t                    nReal   = scene->bodies->realBodies.size();
 		size_t                    BBsize  = BB[0].size();
-		
-		// BBsize==0 if collider runs for the first time, 1/ at iteration 0, or 2/ at iteration N after loading scene. 
+
+		// BBsize==0 if collider runs for the first time, 1/ at iteration 0, or 2/ at iteration N after loading scene.
 		// In both cases it should be safe to insert all real bodies from scratch, hence the copy below.
 		// It will simply ignore any sequence of insert/erase that could have happen before collider execution
 		// Next collision detections will effectively insert/erase incrementaly after this initialisation
-		if (BBsize==0) {
-			insrts = scene->bodies->realBodies;
+		if (BBsize == 0) {
+			insrts  = scene->bodies->realBodies;
 			nInsert = nReal;
 		}
-		
+
 		// Handle erased bodies
 		int countNoBound = 0;
 		if (nErased > 0) {
@@ -662,10 +662,13 @@ void InsertionSortCollider::insertionSortPeri(VecBounds& v, InteractionContainer
 	assert(periodic);
 	size_t&       loIdx = v.loIdx;
 	const size_t& size  = v.size();
-	
+
 	// The condition in next "for" loop would segfault if size=0, escape here and warn
-	if (BB[0].size()==0) { LOG_WARN("no bounds where found, empty scene? Turn collider off if nothing to collide, else please report bug"); return; }
-	
+	if (BB[0].size() == 0) {
+		LOG_WARN("no bounds where found, empty scene? Turn collider off if nothing to collide, else please report bug");
+		return;
+	}
+
 	/* We have to visit each bound at least once (first condition), but this is not enough. The correct ordering in the begining of the list needs a second pass to connect begin and end consistently (the second condition). Strictly the second condition should include "+ (v.norm(j+1)==loIdx ? v.cellDim : 0)" but it is ok as is since the shift is added inside the loop. */
 	for (size_t _i = 0; (_i < size) || (v[v.norm(_i)].coord < v[v.norm(_i - 1)].coord); _i++) {
 		const size_t i   = v.norm(_i); //FIXME: useless, and many others can probably be removed

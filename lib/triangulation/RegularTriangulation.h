@@ -172,8 +172,8 @@ namespace CGT {
 
 		typedef CGAL::Triangulation_3<K>                   Triangulation;
 		typedef CGAL::Regular_triangulation_3<Traits, Tds> RTriangulation;
-		typedef CGAL::Alpha_shape_3<RTriangulation> AlphaShape;
-		typedef typename AlphaShape::Alpha_iterator Alpha_iterator;
+		typedef CGAL::Alpha_shape_3<RTriangulation>        AlphaShape;
+		typedef typename AlphaShape::Alpha_iterator        Alpha_iterator;
 
 		typedef typename RTriangulation::Vertex_iterator          VertexIterator;
 		typedef typename RTriangulation::Vertex_handle            VertexHandle;

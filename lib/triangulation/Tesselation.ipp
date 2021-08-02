@@ -305,7 +305,7 @@ namespace CGT {
 			if (dotP < 0) surface = -surface;
 			Real    area2 = sqrt(surface.squared_length());
 			CVector normal = surface / area2; //unit normal
-			                                 // 		std::cerr <<"dotP="<<dotP<<std::endl<<"surface: "<<surface<<std::endl;
+			                                  // 		std::cerr <<"dotP="<<dotP<<std::endl<<"surface: "<<surface<<std::endl;
 
 			Real h1 = (f->first->vertex(facetVertices[idx][0])->point().point() - vv) * surface
 			        / area2; //orthogonal distance from Voronoi vertex to the plane in which the spheres lie, call the intersection V
@@ -319,7 +319,7 @@ namespace CGT {
 				std::cerr << "NEGATIVE TEMP!" << std::endl;
 			}
 			if (temp2 > maxWeight) temp2 = maxWeight; //if alpha vertex is too far, crop
-			Real h2 = sqrt(temp2);                   // this is now the distance from Voronoi vertex to "alpha" vertex (after cropping if needed)
+			Real h2 = sqrt(temp2);                    // this is now the distance from Voronoi vertex to "alpha" vertex (after cropping if needed)
 			V = V + h2 * normal;
 			std::cerr << "dist alpha center:" << sqrt((V - Point(0, 0, 0)).squared_length()) << "(vs. Liu:" << distLiu << ")" << std::endl;
 		}
@@ -444,12 +444,12 @@ namespace CGT {
 		std::vector<CVector> areas;
 		std::vector<CVector> centroids;
 		std::vector<CVector> areaMoments;
-		std::vector<Real> areaNormSums;
+		std::vector<Real>    areaNormSums;
 		//initialize area vectors in a list accessed via ids (hence the size), later refactored into a shorter list in "caps"
-		areas.resize(maxId + 1, CVector(0, 0, 0)); // from 0 to maxId
-		centroids.resize(maxId + 1, CVector(0, 0, 0)); // from 0 to maxId
+		areas.resize(maxId + 1, CVector(0, 0, 0));       // from 0 to maxId
+		centroids.resize(maxId + 1, CVector(0, 0, 0));   // from 0 to maxId
 		areaMoments.resize(maxId + 1, CVector(0, 0, 0)); // from 0 to maxId
-		areaNormSums.resize(maxId + 1, 0.); // from 0 to maxId
+		areaNormSums.resize(maxId + 1, 0.);              // from 0 to maxId
 
 		RTriangulation temp(*Tri);
 		AlphaShape     as(temp);
@@ -516,20 +516,20 @@ namespace CGT {
 				const Point& p2 = e->first->vertex(facetVertices[e->second][ftx < 2 ? ftx + 1 : 0])->point().point();
 				const Point& cc1 = setCircumCenter(e->first);
 				const Point& cc2 = setCircumCenter(e->first->neighbor(e->second));
-				CVector u = cc1 - cc2;
+				CVector      u = cc1 - cc2;
 				int          makeClockWise = u * cross_product(p2 - p1, fictV - p1) > 0 ? 1 : -1;
-				CVector area1 = (makeClockWise * 0.5) * cross_product(u, cc1 - p1);
-				CVector area2 = -(makeClockWise * 0.5) * cross_product(u, cc1 - p2);
-				Real area1Norm = sqrt(area1.squared_length());
-				Real area2Norm = sqrt(area2.squared_length());						
+				CVector      area1 = (makeClockWise * 0.5) * cross_product(u, cc1 - p1);
+				CVector      area2 = -(makeClockWise * 0.5) * cross_product(u, cc1 - p2);
+				Real         area1Norm = sqrt(area1.squared_length());
+				Real         area2Norm = sqrt(area2.squared_length());
 				areas[id1] = areas[id1] + area1;
-				areas[id2]=areas[id2] + area2;			
+				areas[id2] = areas[id2] + area2;
 				areaNormSums[id1] += area1Norm;
-				areaNormSums[id2] += area2Norm;			
+				areaNormSums[id2] += area2Norm;
 				CVector cTri1 = CGAL::centroid(Triangle(cc1, cc2, p1)) - p1;
-				CVector cTri2 = CGAL::centroid(Triangle(cc1, cc2, p2)) - p2;			
+				CVector cTri2 = CGAL::centroid(Triangle(cc1, cc2, p2)) - p2;
 				areaMoments[id1] = areaMoments[id1] + area1Norm * cTri1;
-				areaMoments[id2] = areaMoments[id2] + area2Norm * cTri2;			
+				areaMoments[id2] = areaMoments[id2] + area2Norm * cTri2;
 				centroids[id1] = p1 - CGAL::ORIGIN;
 				centroids[id2] = p2 - CGAL::ORIGIN;
 			}

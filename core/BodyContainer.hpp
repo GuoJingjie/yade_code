@@ -72,7 +72,7 @@ public:
 	bool erase(Body::id_t id, bool eraseClumpMembers);
 
 	void updateRealBodies();
-	
+
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(BodyContainer,Serializable,"Standard body container for a scene",
 		((ContainerT,body,,,"The underlying vector<shared_ptr<Body> >"))

@@ -83,7 +83,7 @@ public:
 REGISTER_SERIALIZABLE(LinearDragEngine);
 
 class HarmonicForceEngine : public PartialEngine {
-  	void action() override;
+	void action() override;
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(HarmonicForceEngine,PartialEngine,"This engine adds a harmonic (sinusoidal) force to a set of bodies. It is identical to :yref:`HarmonicMotionEngine` except a force amplitude is prescribed instead of motion, see also the `dynamics of harmonic motion <http://en.wikipedia.org/wiki/Simple_harmonic_motion#Dynamics_of_simple_harmonic_motion>`__",
 		((Vector3r,A ,  Vector3r::Zero(),,"Amplitude [N]"))
@@ -94,6 +94,5 @@ class HarmonicForceEngine : public PartialEngine {
 };
 REGISTER_SERIALIZABLE(HarmonicForceEngine);
 
-  
-  
+
 } // namespace yade

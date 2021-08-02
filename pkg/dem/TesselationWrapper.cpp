@@ -419,7 +419,7 @@ void TesselationWrapper::applyAlphaForces(Matrix3r stress, Real alpha, Real shri
 	vector<AlphaCap> caps;
 	Tes->setExtendedAlphaCaps(caps, alpha, shrinkedAlpha, fixedAlpha);
 	for (const auto& b : *scene->bodies)
-		scene->forces.setPermForce(b->id,Vector3r::Zero());
+		scene->forces.setPermForce(b->id, Vector3r::Zero());
 	for (auto f = caps.begin(); f != caps.end(); f++)
 		scene->forces.setPermForce(f->id, stress * makeVector3r(f->normal));
 }
@@ -427,18 +427,18 @@ void TesselationWrapper::applyAlphaForces(Matrix3r stress, Real alpha, Real shri
 void TesselationWrapper::applyAlphaVel(Matrix3r velGrad, Real alpha, Real shrinkedAlpha, bool fixedAlpha)
 {
 	// Scene* scene = Omega::instance().getScene().get();
-	build_triangulation_with_ids(scene->bodies,*this,true);//triangulation needed
+	build_triangulation_with_ids(scene->bodies, *this, true); //triangulation needed
 	vector<AlphaCap> caps;
-	Tes->setExtendedAlphaCaps(caps,alpha,shrinkedAlpha,fixedAlpha);
+	Tes->setExtendedAlphaCaps(caps, alpha, shrinkedAlpha, fixedAlpha);
 	for (const auto& b : *scene->bodies)
-		b->state->blockedDOFs=State::DOF_NONE;
-	const auto aabb = Shop::aabbExtrema();
-	Vector3r bbCenter = 0.5 * (aabb.first + aabb.second);
-	for (auto f=caps.begin();f!=caps.end();f++)  {
-		Body* b=Body::byId(f->id,scene).get();
-		b->state->blockedDOFs=State::DOF_ALL;
-		b->state->vel = velGrad * ( makeVector3r(f->centroid) - bbCenter );
-		b->state->angVel = Vector3r::Zero();
+		b->state->blockedDOFs = State::DOF_NONE;
+	const auto aabb     = Shop::aabbExtrema();
+	Vector3r   bbCenter = 0.5 * (aabb.first + aabb.second);
+	for (auto f = caps.begin(); f != caps.end(); f++) {
+		Body* b               = Body::byId(f->id, scene).get();
+		b->state->blockedDOFs = State::DOF_ALL;
+		b->state->vel         = velGrad * (makeVector3r(f->centroid) - bbCenter);
+		b->state->angVel      = Vector3r::Zero();
 	}
 }
 
@@ -448,15 +448,15 @@ Matrix3r TesselationWrapper::calcAlphaStress(Real alpha, Real shrinkedAlpha, boo
 	build_triangulation_with_ids(scene->bodies, *this, true); //triangulation needed
 	vector<AlphaCap> caps;
 	Tes->setExtendedAlphaCaps(caps, alpha, shrinkedAlpha, fixedAlpha);
-	Matrix3r cauchyLWS(Matrix3r::Zero()); 
-	scene->forces.sync();	// needed to make resultants predictable
+	Matrix3r cauchyLWS(Matrix3r::Zero());
+	scene->forces.sync(); // needed to make resultants predictable
 	alphaCapsVol = 0.;
-	for (auto f=caps.begin(); f!=caps.end(); f++)  {
-		Vector3r areaV = makeVector3r(f->normal);
+	for (auto f = caps.begin(); f != caps.end(); f++) {
+		Vector3r areaV     = makeVector3r(f->normal);
 		Vector3r resultant = scene->forces.getPermForce(f->id) - scene->forces.getForce(f->id);
-		Vector3r centroid = makeVector3r(f->centroid);
-		cauchyLWS += resultant*(centroid.transpose());
-		alphaCapsVol += areaV.norm()/3. * centroid.dot(areaV.normalized());
+		Vector3r centroid  = makeVector3r(f->centroid);
+		cauchyLWS += resultant * (centroid.transpose());
+		alphaCapsVol += areaV.norm() / 3. * centroid.dot(areaV.normalized());
 	}
 	cauchyLWS /= alphaCapsVol;
 	return cauchyLWS;

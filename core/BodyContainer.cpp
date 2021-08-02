@@ -1,10 +1,10 @@
 // 2010 © Václav Šmilauer <eudoxos@arcig.cz>
 
-#include <lib/base/LoggingUtils.hpp>
 #include "BodyContainer.hpp"
 #include "Body.hpp"
 #include "Clump.hpp"
 #include "Scene.hpp"
+#include <lib/base/LoggingUtils.hpp>
 #ifdef YADE_OPENMP
 #include <omp.h>
 #endif
@@ -126,7 +126,10 @@ bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
 
 void BodyContainer::updateRealBodies()
 {
-	if (not enableRedirection) {LOG_ONCE_WARN("updateRealBodies returns because enableRedirection is false - please report bug"); return;}
+	if (not enableRedirection) {
+		LOG_ONCE_WARN("updateRealBodies returns because enableRedirection is false - please report bug");
+		return;
+	}
 	if (not dirty) return; //already ok
 	unsigned long size1 = realBodies.size();
 	realBodies.clear();

@@ -68,8 +68,14 @@ void Polyhedra::Initialize()
 		points[i] = CGALpoint(v[i][0], v[i][1], v[i][2]);
 	}
 
-	CGAL::convex_hull_3(points.begin(), points.end(), P); // i.e. ch_quickhull_polyhedron_3 in convex_hull_3.h see https://doc.cgal.org/4.11.3/Convex_hull_3/group__PkgConvexHull3Functions.html#gadc8318947c2133e56b2e56171b2ecd7d,
-	if(int(P.size_of_vertices()) != N) LOG_WARN("Polyhedra surface description downgraded from "<< N <<" points to "<<P.size_of_vertices()<<". Are you sure your vertices input is convex ?" )
+	CGAL::convex_hull_3(
+	        points.begin(),
+	        points.end(),
+	        P); // i.e. ch_quickhull_polyhedron_3 in convex_hull_3.h see https://doc.cgal.org/4.11.3/Convex_hull_3/group__PkgConvexHull3Functions.html#gadc8318947c2133e56b2e56171b2ecd7d,
+	if (int(P.size_of_vertices()) != N)
+		LOG_WARN(
+		        "Polyhedra surface description downgraded from " << N << " points to " << P.size_of_vertices()
+		                                                         << ". Are you sure your vertices input is convex ?")
 
 	//connect triagular facets if possible
 	std::transform(P.facets_begin(), P.facets_end(), P.planes_begin(), Plane_equation());

@@ -57,8 +57,8 @@ private:
 			// and if not then file a bug report.
 			LOG_ONCE_WARN(
 			        "frexp(…) documentation says that the result is always >= 0.5 and < 1.0. But here frexp("
-			        << math::toStringHP(x) << ",&ex) == " << math::toStringHP(norm) << ", please file a bug report against the "
-			        << demangledType << "\n Not sure if this bug is in multiprecision or in MPFR, or somewhere else.");
+			        << math::toStringHP(x) << ",&ex) == " << math::toStringHP(norm) << ", please file a bug report against the " << demangledType
+			        << "\n Not sure if this bug is in multiprecision or in MPFR, or somewhere else.");
 			LOG_ONCE_WARN("Trying to fix this. Will warn about this problem only once.");
 			if ((norm > 0.25) and (norm < 0.5)) { // if this bug becomes more annoying this fix might need to get moved into MathFunctions.hpp
 				norm *= 2;
