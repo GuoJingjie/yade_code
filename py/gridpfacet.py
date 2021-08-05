@@ -173,7 +173,7 @@ def cylinderConnection(vertices,radius=0.2,nodesIds=[],cylIds=[],dynamic=None,fi
 	"""
 	Create a chain of cylinders with given parameters. The cylinders (:yref:`GridConnection<GridConnection>`) and its corresponding nodes (yref:`GridNodes<GridNode>`) are automatically added to the simulation. The lists with nodes and cylinder ids will be updated automatically.
 
-	:param [[Vector3]] vertices: coordinates of vertices to connect in the global coordinate system.
+	:param [Vector3] vertices: coordinates of vertices to connect in the global coordinate system.
 	
 	See :yref:`yade.gridpfacet.cylinder` documentation for meaning of other parameters.
 
