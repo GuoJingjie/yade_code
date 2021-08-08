@@ -8,8 +8,8 @@
 ##########################################################################
 #
 # invoke:
-#       scripts/clang-format-all.sh ./Directory   optionally-clang-format-executable
-#       scripts/clang-format-all.sh ./SingleFile  optionally-clang-format-executable
+#       scripts/clang-formatter.sh ./Directory   optionally-clang-format-executable
+#       scripts/clang-formatter.sh ./SingleFile  optionally-clang-format-executable
 
 FORMATTER=clang-format
 
