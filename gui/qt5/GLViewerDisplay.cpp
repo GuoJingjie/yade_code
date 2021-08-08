@@ -380,10 +380,10 @@ void GLViewer::postDraw()
 			glEnd();
 		}
 		glLineWidth(1.);
-		glEnable(GL_DEPTH_TEST);
 		std::ostringstream oss {};
 		oss << std::setprecision(3) << segmentSize;
 		QGLViewer::drawText(scaleCenter[0], scaleCenter[1], oss.str().c_str());
+		glEnable(GL_DEPTH_TEST);
 		stopScreenCoordinatesSystem();
 	}
 
@@ -414,6 +414,7 @@ void GLViewer::postDraw()
 		const int lineHt = 13;
 		unsigned  x = 10, y = height() - 3 - lineHt * 2;
 		glColor3v(Vector3r(1, 1, 1));
+		glDisable(GL_DEPTH_TEST);
 		if (timeDispMask & GLViewer::TIME_VIRT) {
 			std::ostringstream oss;
 			const Real&        t   = Omega::instance().getScene()->time;
@@ -453,6 +454,7 @@ void GLViewer::postDraw()
 			QGLViewer::drawText(x, y, oss.str().c_str());
 			y -= lineHt;
 		}
+		glEnable(GL_DEPTH_TEST);
 	}
 	QGLViewer::postDraw();
 	if (!nextFrameSnapshotFilename.empty()) {
