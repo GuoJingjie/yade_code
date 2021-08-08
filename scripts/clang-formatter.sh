@@ -40,8 +40,16 @@ function finish-print-stats {
 
 if [ ! -d "${1}" ]; then
 	if [ -f "${1}" ]; then
-		echo "Formatting single file: ${FORMATTER} -i ${1}"
-		${FORMATTER} -i ${1}
+		FILE=${1}
+		extension=${FILE##*.}
+		echo "File extension: "${extension}
+		if [ "${extension}" = "py"  ]; then
+			echo "Formatting Python with: autopep8 --max-line-length 160 --ignore=E401 -i ${1}"
+			autopep8 --max-line-length 160 --ignore=E401 -i ${1}
+		else
+			echo "Formatting C++ with: ${FORMATTER} -i ${1}"
+			${FORMATTER} -i ${1}
+		fi
 		finish-print-stats
 	else
 		echo "${1} is neither a file nor a directory"
@@ -50,6 +58,8 @@ if [ ! -d "${1}" ]; then
 else
 	echo "Formatting directory: ${FORMATTER} -i ${1}"
 	find ${1} -iname *.cpp -o -iname *.hpp -o -iname *.ipp -o -iname *.h | xargs ${FORMATTER} -i
+	echo "clang-format finished, now running autopep8 (from package python3-autopep8). It is slower, so uses 8 cores with: -P 8"
+	find ${1} -iname *.py -print0 | xargs -0 -P 8 -I'{}' autopep8 --max-line-length 160 --ignore=E401 -i {}
 	finish-print-stats
 fi
 
