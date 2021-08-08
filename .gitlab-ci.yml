@@ -181,7 +181,7 @@ variables:
     - if [[ ${TESTS_AFTER_MAKE} == "TESTS_AFTER_MAKE" ]] ; then echo -e "\n===\n\e[44mSingle core test yade --test\e[0m\n===\n"; install/bin/yade-ci --test ; fi
     - if [[ ${TESTS_AFTER_MAKE} == "TESTS_AFTER_MAKE" ]] ; then echo -e "\n===\n\e[44mSingle core check yade --checkall\e[0m\n===\n"; install/bin/yade-ci --checkall; fi
     - if [[ ${TESTS_AFTER_MAKE} == "TESTS_AFTER_MAKE" ]] ; then echo -e "\n===\n\e[44mParallel check yade -j5 --checkall\e[0m\n===\n"; install/bin/yade-ci -j5 --checkall; fi
-    - if [[ ${TESTS_AFTER_MAKE} == "TESTS_AFTER_MAKE" ]] ; then xvfb-run -a -s "-screen 0 1600x1200x16" scripts/checks-and-tests/gui/testGui.sh; fi
+    - if [[ ${TESTS_AFTER_MAKE} == "TESTS_AFTER_MAKE" ]] ; then xvfb-run -a -s "-screen 0 1600x1200x24" scripts/checks-and-tests/gui/testGui.sh; fi
     - if [[ ${TESTS_AFTER_MAKE} == "TESTS_AFTER_MAKE" ]] ; then install/bin/yade-ci --quickperformance -j8; fi
     - cat /etc/os-release
     - if grep -q "Arch Linux" /etc/issue; then /usr/sbin/uname -m; else  /usr/bin/dpkg --print-architecture ; fi
@@ -477,7 +477,7 @@ make_SSE:
     - cd ..
     - export PYTHONUNBUFFERED=1
     - install/bin/yade-ci --test
-    - if [[ ${NO_GUI} == "NO_GUI" ]] ; then echo -e "\n\e[93m===\nSkipping GUI test.\n===\e[0m\n"; else xvfb-run -a -s "-screen 0 1600x1200x16" scripts/checks-and-tests/gui/testGui.sh; fi
+    - if [[ ${NO_GUI} == "NO_GUI" ]] ; then echo -e "\n\e[93m===\nSkipping GUI test.\n===\e[0m\n"; else xvfb-run -a -s "-screen 0 1600x1200x24" scripts/checks-and-tests/gui/testGui.sh; fi
     - install/bin/yade-ci --quickperformance -j8
     - cat /etc/os-release
     - if grep -q "Arch Linux" /etc/issue; then /usr/sbin/uname -m; else  /usr/bin/dpkg --print-architecture ; fi
