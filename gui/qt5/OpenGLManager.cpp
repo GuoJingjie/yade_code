@@ -1,4 +1,5 @@
 #include "OpenGLManager.hpp"
+#include <QEventLoop>
 
 namespace yade { // Cannot have #include directive inside.
 
@@ -132,16 +133,16 @@ int OpenGLManager::getGridDecimalPlaces() const
 
 void OpenGLManager::startTimerSlot() { startTimer(50); }
 
-int OpenGLManager::waitForNewView(double timeout, bool center)
+int OpenGLManager::waitForNewView(double timeout /* TODO - use C++ type to represent units of realtime seconds here , like 5s, where 5_s will be simulation seconds */, bool center)
 {
 	size_t origViewCount = views.size();
 	emitCreateView();
 	double t = 0;
 	LOG_DEBUG("Waiting " << timeout << " seconds")
+	QEventLoop eventLoop{};
 	while (views.size() != origViewCount + 1) {
-		usleep(50000);
+		eventLoop.processEvents(QEventLoop::WaitForMoreEvents, 50);
 		t += .05;
-		// wait at most 5 secs
 		if (t >= timeout) {
 			LOG_ERROR("Timeout waiting for the new view to open, giving up.");
 			return -1;

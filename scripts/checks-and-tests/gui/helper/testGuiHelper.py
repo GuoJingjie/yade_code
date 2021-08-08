@@ -18,6 +18,7 @@ class TestGUIHelper:
 	"""
 
 	def __init__(self, name=None):
+		self.viewWaitTimeSeconds = 30.0 # sometimes the build servers are oveloaded. Let's try 30 seconds and see if it works. When testing locally put here 1 second.
 		self.scrNum = 0
 		# FIXME : this number 14 is hardcoded in scripts/checks-and-tests/gui/testGui.sh when testing if screenshots are present.
 		self.maxTestNum = 14
@@ -64,7 +65,17 @@ class TestGUIHelper:
 		if(self.scrNum == 2):
 			self.makeNextScreenshot()
 			print(intro + " opening yade.qt.View()")
-			yade.qt.View(90.)
+			self.clickOnScreen(634, 1054)
+			# Let's wait and see if it worked
+			t = 0.0
+			while (len(yade.qt.views()) == 0):
+				time.sleep(0.5)
+				t += 0.5
+				if(t > self.viewWaitTimeSeconds):
+					self.createEmptyFile("screenshots/yade_qt_View_FAILED_" + self.name)
+					print("*** ERROR: failed to open QT View window by clicking ***")
+					self.finish()
+			# OK, now we have a view to work with.
 			vv             = yade.qt.views()[0]
 			vv.axes        = True
 			vv.lookAt      = ( 7.978,-4.635, 8.221)
