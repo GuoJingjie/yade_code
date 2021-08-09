@@ -55,8 +55,8 @@ else:
   O.materials.append(FrictMatCDM(young=1e7, poisson=0.3, frictionAngle=np.arctan(frict), density=1000.0 ,sigmaMax=5e5, alpha=np.radians(82.0),  c1=c1, c2=c2,label="Material1"))#ballast
 
 #for both contact laws:
-#use adapted geometric functors for Sphere-Wall Sphere-Facet contacts -> see Hertz theory
-GeomFunctorList=[Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_Hertz_ScGeom(), Ig2_Wall_Sphere_Hertz_ScGeom()]
+#ATTENTION geometric functors for Sphere-Wall Sphere-Facet contacts use Hertzian theory
+GeomFunctorList=[Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom(Hertzian=True), Ig2_Wall_Sphere_ScGeom(Hertzian=True)]
 
 
 

@@ -29,7 +29,7 @@ qt.View() # To visualize the system!
 makeCDM=1
 
 #------------------------choose type of particle, which collides with the sphere:
-TYPE=      'SPHERE'#, 'FACET'#  'WALL'#  
+TYPE=       'SPHERE'#, 'FACET'#   'WALL'# 
 
 
 #------------------------- sphere radius and position
@@ -54,8 +54,8 @@ else:
 
 
 #for both contact laws:
-#use adapted geometric functors for Sphere-Wall Sphere-Facet contacts -> see Hertz theory
-GeomFunctorList=[Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_Hertz_ScGeom(), Ig2_Wall_Sphere_Hertz_ScGeom()]
+#ATTENTION geometric functors for Sphere-Wall Sphere-Facet contacts use Hertzian theory
+GeomFunctorList=[Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom(Hertzian=True), Ig2_Wall_Sphere_ScGeom(Hertzian=True)]
 
 
 #-------------------------Define engines
