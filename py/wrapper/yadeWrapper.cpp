@@ -1361,12 +1361,12 @@ try {
 	        .add_property("time", &pyOmega::time, "Return virtual (model world) time of the simulation.")
 	        .add_property("realtime", &pyOmega::realTime, "Return clock (human world) time the simulation has been running.")
 	        .add_property("speed", &pyOmega::speed, "Return current calculation speed [iter/sec].")
-	        .add_property("dt", &pyOmega::dt_get, &pyOmega::dt_set, "Current timestep (Δt) value.")
+	        .add_property("dt", &pyOmega::dt_get, &pyOmega::dt_set, "Current timestep (Δt) value.  See :yref:`dynDt<Omega.dynDt>` for enabling/disabling automatic Δt updates through a :yref:`TimeStepper`.")
 	        .add_property(
 	                "dynDt",
 	                &pyOmega::dynDt_get,
 	                &pyOmega::dynDt_set,
-	                "Whether a :yref:`TimeStepper` is used for dynamic Δt control. See :yref:`dt<Omega.dt>` on how to enable/disable :yref:`TimeStepper`.")
+	                "Whether a :yref:`TimeStepper` (when present in :yref:`O.engines<Omega.engines>`) is used for dynamic Δt control.")
 	        .add_property(
 	                "dynDtAvailable",
 	                &pyOmega::dynDtAvailable_get,
