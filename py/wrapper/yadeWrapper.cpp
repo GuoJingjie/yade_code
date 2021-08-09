@@ -1374,15 +1374,15 @@ try {
 	        .def("load",
 	             &pyOmega::load,
 	             (py::arg("file"), py::arg("quiet") = false),
-	             "Load simulation from file. The file should be :yref:`saved<Omega.save>` in the same version of Yade, otherwise compatibility is not "
-	             "guaranteed.")
+	             "Load simulation from file. The file should have been :yref:`saved<Omega.save>` in the same version of Yade built or compiled with the same features, otherwise compatibility is not "
+	             "guaranteed. Compatibility may also be affected by different versions of external libraries such as Boost")
 	        .def("reload", &pyOmega::reload, (py::arg("quiet") = false), "Reload current simulation")
 	        .def("save",
 	             &pyOmega::save,
 	             (py::arg("file"), py::arg("quiet") = false),
 	             "Save current simulation to file (should be .xml or .xml.bz2 or .yade or .yade.gz). .xml files are bigger than .yade, but can be more or "
-	             "less easily (due to their size) opened and edited, e.g. with text editors. .bz2 and .gz correspond both to compressed versions. All "
-	             "saved files should be :yref:`loaded<Omega.load>` in the same version of Yade, otherwise compatibility is not guaranteed.")
+	             "less easily (due to their size) opened and edited, e.g. with text editors. .bz2 and .gz correspond both to compressed versions. "
+	             "There are software requirements for successful reloads, see :yref:`O.load<Omega.load>`.")
 	        .def("loadTmp",
 	             &pyOmega::loadTmp,
 	             (py::arg("mark") = "", py::arg("quiet") = false),
