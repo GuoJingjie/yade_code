@@ -5,7 +5,7 @@ XXX - See what improvements can be made based on the new (as of Sept 2009)
 highlighted tracebacks.
 """
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Needed modules
 
 # Standard library
@@ -13,18 +13,19 @@ import re
 
 # Third party
 from pygments.lexer import Lexer, do_insertions
-from pygments.lexers.agile import (PythonConsoleLexer, PythonLexer, 
+from pygments.lexers.agile import (PythonConsoleLexer, PythonLexer,
                                    PythonTracebackLexer)
 from pygments.token import Comment, Generic
 
 from sphinx import highlighting
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Global constants
 line_re = re.compile('.*?\n')
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Code begins - classes and functions
+
 
 class IPythonConsoleLexer(Lexer):
     """
@@ -48,7 +49,7 @@ class IPythonConsoleLexer(Lexer):
 
       - It assumes the default IPython prompts, not customized ones.
     """
-    
+
     name = 'IPython console session'
     aliases = ['ipython']
     mimetypes = ['text/x-ipython-console']
@@ -109,6 +110,7 @@ def setup(app):
     # suppresses the sphinx warning we'd get without it.
     pass
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # Register the extension as a valid pygments lexer
 highlighting.lexers['ipython'] = IPythonConsoleLexer()
