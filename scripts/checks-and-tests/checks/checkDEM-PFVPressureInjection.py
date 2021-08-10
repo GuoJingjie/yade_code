@@ -1,3 +1,5 @@
+# encoding: utf-8
+# autopep8: off
 from yade import pack
 from yade import export
 from yade import timing
@@ -334,3 +336,4 @@ if ( 'PFVFLOW' in features ):
 else:
     print("This checkDEM-PFVPressureInjection.py cannot be executed because PFVFLOW is disabled")
 
+# autopep8: on

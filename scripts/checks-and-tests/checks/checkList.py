@@ -65,17 +65,17 @@ def mustCheck(sc):
 
 
 for script in scriptsToRun:
-    if (script[len(script)-3:] == ".py" and mustCheck(script)[0]):
+    if (script[len(script) - 3:] == ".py" and mustCheck(script)[0]):
         print("###################################")
         print("running: ", script)
         try:
             t0 = time.time()
-            execfile(checksPath+"/"+script)
+            execfile(checksPath + "/" + script)
             t1 = time.time()
-            elapsedTime = t1-t0
+            elapsedTime = t1 - t0
             maxElapsedTime = max(elapsedTime, maxElapsedTime)
-            print("Status:\033[92m success\033[0m, time spent on this check:"+("\033[92m " if elapsedTime <
-                                                                               30 else "\033[91m ")+str(datetime.timedelta(seconds=elapsedTime))+"\033[0m")
+            print("Status:\033[92m success\033[0m, time spent on this check:" + ("\033[92m " if elapsedTime <
+                                                                                 30 else "\033[91m ") + str(datetime.timedelta(seconds=elapsedTime)) + "\033[0m")
             print("___________________________________")
         except Exception as e:
             failedScripts.append(script)
@@ -93,11 +93,11 @@ print("Most time spend on a single check: " +
       str(datetime.timedelta(seconds=maxElapsedTime)))
 
 if (len(failedScripts) != 0):
-    print('\033[91m', len(failedScripts), " tests are failed"+'\033[0m')
+    print('\033[91m', len(failedScripts), " tests are failed" + '\033[0m')
     for s in failedScripts:
-        print("  "+s)
+        print("  " + s)
     sys.exit(1)
 else:
     # https://misc.flogisoft.com/bash/tip_colors_and_formatting
-    print('\033[92m'+"*** ALL CHECKS PASSED ***"+'\033[0m')
+    print('\033[92m' + "*** ALL CHECKS PASSED ***" + '\033[0m')
     sys.exit(0)
