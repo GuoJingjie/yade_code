@@ -21,7 +21,7 @@ if "CI_PIPELINE_IID" in os.environ:
 
 repoups = git.Repo('.')
 versiondebian = dt.strftime("%Y%m%d") + pipeline_ID + "~" + repoups.head.commit.hexsha[0:7] + "~" + args.dist + "1"
-tarballname = 'yadedaily_%s.orig.tar.xz'%(versiondebian)
+tarballname = 'yadedaily_%s.orig.tar.xz' % (versiondebian)
 
 # Create tempdir
 os.mkdir(dirpath)
@@ -29,8 +29,8 @@ os.mkdir(dirpath)
 shutil.copytree('.', dirpathyade, ignore=shutil.ignore_patterns('.git', 'deb', '.ccache'))
 
 # Create tarball
-with tarfile.open('%s/%s'%(dirpath,tarballname), mode='w:xz') as out:
-    print('Creating tarball... %s'%tarballname)
+with tarfile.open('%s/%s' % (dirpath, tarballname), mode='w:xz') as out:
+    print('Creating tarball... %s' % tarballname)
     out.add(dirpathyade + '/.', arcname='yadedaily', recursive=True)
 
 # Copy debian-directory into the proper place
@@ -49,6 +49,6 @@ with fileinput.FileInput(dirpathyade + '/debian/rules', inplace=True) as file:
     for line in file:
         print(line.replace("VERSIONYADEREPLACE", versiondebian), end='')
 
-print (versiondebian)
-print (dirpath)
-#shutil.rmtree(dirpath)
+print(versiondebian)
+print(dirpath)
+# shutil.rmtree(dirpath)

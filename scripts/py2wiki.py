@@ -32,51 +32,67 @@ from __future__ import print_function
 
 from builtins import range
 from builtins import object
-import sys,re
+import sys, re
+
+
 class Text(object):
-	def __init__(self,txt):
-		self.text=[txt]
-class Code(Text): pass
-class Comment(Text): pass
-pg=[]
-commentPatterns=(r'\s*##($|\s(.*)$)',r'\s*//@((.*))$')
-codeLangs=('python','cpp')
-assert(len(sys.argv)<=3)
-for i in range(0,len(sys.argv)-1):
-	pg.append([Comment('')])
-	sys.stderr.write(str(i)+': '+sys.argv[i+1]+'\n')
-	for l in open(sys.argv[i+1]):
-		l=l[:-1]
-		m=re.match(commentPatterns[i],l)
-		if m: ll=Comment(m.group(1)[1:] if (len(m.group(1))>0 and m.group(1)[0]==' ') else m.group(1))
-		else: ll=Code(l)
-		if pg[i][-1].__class__==ll.__class__:
-			pg[i][-1].text.append(ll.text[0])
-		else: pg[i].append(ll)
+    def __init__(self, txt):
+        self.text = [txt]
+
+
+class Code(Text):
+    pass
+
+
+class Comment(Text):
+    pass
+
+
+pg = []
+commentPatterns = (r'\s*##($|\s(.*)$)', r'\s*//@((.*))$')
+codeLangs = ('python', 'cpp')
+assert(len(sys.argv) <= 3)
+for i in range(0, len(sys.argv) - 1):
+    pg.append([Comment('')])
+    sys.stderr.write(str(i) + ': ' + sys.argv[i + 1] + '\n')
+    for l in open(sys.argv[i + 1]):
+        l = l[:-1]
+        m = re.match(commentPatterns[i], l)
+        if m:
+            ll = Comment(m.group(1)[1:] if (len(m.group(1)) > 0 and m.group(1)[0] == ' ') else m.group(1))
+        else:
+            ll = Code(l)
+        if pg[i][-1].__class__ == ll.__class__:
+            pg[i][-1].text.append(ll.text[0])
+        else:
+            pg[i].append(ll)
 
 # replace tabs by 8 _nonbreakable_ spaces (\xc2 in utf-8) in code
 # strip leading/trailing blank lines
 for p in pg:
-	for l in p:
-		if l.__class__==Code('').__class__:
-			l.text=[ll.replace('\t',8*' ') for ll in l.text]
-			while len(l.text)>0 and l.text[-1]=='': l.text=l.text[:-1]
-			while len(l.text)>0 and l.text[0]=='': l.text=l.text[1:]
+    for l in p:
+        if l.__class__ == Code('').__class__:
+            l.text = [ll.replace('\t', 8 * ' ') for ll in l.text]
+            while len(l.text) > 0 and l.text[-1] == '':
+                l.text = l.text[:-1]
+            while len(l.text) > 0 and l.text[0] == '':
+                l.text = l.text[1:]
 
-table=False
-showCode=len(pg)-1
+table = False
+showCode = len(pg) - 1
 for i in range(len(pg[0])):
-	ll=pg[0][i]
-	if ll.__class__==Comment('').__class__:
-		for l in ll.text: print(l)
-	if ll.__class__==Code('').__class__:
-		if table: print('<table><tr>')
-		for j in (list(range(len(pg))) if table else [showCode]):
-			print('%s<source lang="%s">'%('<td>' if table else '',codeLangs[j]))
-			#if pg[j][i].text[0][0]==' ': print ' ',
-			for l in pg[j][i].text: print(l)
-			print('</source>%s'%('</td>' if table else ''))
-		if table: print('</tr></table>')
-		
-	
-
+    ll = pg[0][i]
+    if ll.__class__ == Comment('').__class__:
+        for l in ll.text:
+            print(l)
+    if ll.__class__ == Code('').__class__:
+        if table:
+            print('<table><tr>')
+        for j in (list(range(len(pg))) if table else [showCode]):
+            print('%s<source lang="%s">' % ('<td>' if table else '', codeLangs[j]))
+            # if pg[j][i].text[0][0]==' ': print ' ',
+            for l in pg[j][i].text:
+                print(l)
+            print('</source>%s' % ('</td>' if table else ''))
+        if table:
+            print('</tr></table>')
