@@ -5,18 +5,18 @@
 
 # should correspond to the values in export_text.py
 from __future__ import print_function
-center = (5,5,5)
-normal = (1,1,1)
+from paraview.simple import *
+center = (5, 5, 5)
+normal = (1, 1, 1)
 
 maxRadius = 1.5
 
-from paraview.simple import *
 
 view = GetActiveViewOrCreate('RenderView')
 
-testvtk = LegacyVTKReader(FileNames=['/tmp/test.vtk'],guiName="test.vtk")
+testvtk = LegacyVTKReader(FileNames=['/tmp/test.vtk'], guiName="test.vtk")
 
-glyph1 = Glyph(Input=testvtk, GlyphType='Sphere', Scalars=['POINTS','radius'])
+glyph1 = Glyph(Input=testvtk, GlyphType='Sphere', Scalars=['POINTS', 'radius'])
 glyph1.GlyphType.Radius = 1.0
 glyph1.GlyphType.ThetaResolution = 16
 glyph1.GlyphType.PhiResolution = 16
@@ -28,9 +28,9 @@ clip = Clip(Input=glyph1)
 clip.ClipType.Origin = center
 clip.ClipType.Normal = normal
 
-testSectionvtk = LegacyVTKReader(FileNames=['/tmp/testSection.vtk'], guiName="testSection.vtk" )
+testSectionvtk = LegacyVTKReader(FileNames=['/tmp/testSection.vtk'], guiName="testSection.vtk")
 
-sections = Glyph(Input=testSectionvtk, GlyphType='Cylinder', Vectors=['POINTS','normal'], Scalars=['POINTS','radius'])
+sections = Glyph(Input=testSectionvtk, GlyphType='Cylinder', Vectors=['POINTS', 'normal'], Scalars=['POINTS', 'radius'])
 sections.GlyphType.Height = 0.01
 sections.GlyphType.Radius = 1.0
 sections.GlyphType.Resolution = 16
@@ -66,10 +66,10 @@ SetActiveSource(sections)
 view.ResetCamera()
 view.OrientationAxesVisibility = False
 view.Background = [1.0, 1.0, 1.0]
-view.ViewSize = [600,600]
+view.ViewSize = [600, 600]
 view.CameraFocalPoint = center
-view.CameraPosition = [-10,12,-16]
-view.CameraViewUp = [1,0,0]
+view.CameraPosition = [-10, 12, -16]
+view.CameraViewUp = [1, 0, 0]
 view.CameraParallelScale = 0
 
 RenderAllViews()
