@@ -10,12 +10,12 @@ from yade.math import toHP1 as Real
 ### set parameters ###
 L = Real('0.1')      # length [m]
 n = 4                # number of nodes for the length [-]
-r = L/100            # radius [m]
+r = L / 100            # radius [m]
 g = Real('9.81')     # gravity
 inclination = math.radiansHP1(20)  # Initial inclination of rods [degrees]
 color = [1, 0.5, 0]  # Define a color for bodies
 
-O.dt = Real('1e-05') # time step
+O.dt = Real('1e-05')  # time step
 damp = Real('1e-1')  # damping. It is interesting to examine  damp = 0
 
 O.engines = [  # define engines, main functions for simulation
@@ -39,15 +39,15 @@ O.materials.append(CohFrictMat(young=1e5, poisson=0, density=1e1,
 # create spheres
 nodeIds = []
 for i in range(0, n):
-    nodeIds.append(O.bodies.append(sphere([i*L/n*math.cos(inclination),
-        i*L/n*math.sin(inclination), 0], r, wire=False, fixed=False,
-        material='mat', color=color)))
+    nodeIds.append(O.bodies.append(sphere([i * L / n * math.cos(inclination),
+                                           i * L / n * math.sin(inclination), 0], r, wire=False, fixed=False,
+                                          material='mat', color=color)))
 
 # create rods
 for i, j in zip(nodeIds[:-1], nodeIds[1:]):
     inter = createInteraction(i, j)
-    inter.phys.unp = -(O.bodies[j].state.pos-O.bodies[i].state.pos).norm() + \
-        O.bodies[i].shape.radius+O.bodies[j].shape.radius
+    inter.phys.unp = -(O.bodies[j].state.pos - O.bodies[i].state.pos).norm() + \
+        O.bodies[i].shape.radius + O.bodies[j].shape.radius
 
 O.bodies[0].dynamic = False  # set a fixed upper node
 qt.View()                    # create a GUI view

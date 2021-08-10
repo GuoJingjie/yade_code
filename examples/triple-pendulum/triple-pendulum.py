@@ -16,17 +16,17 @@ if(math == sys.modules['math']):
 ### set parameters ###
 L = Real('0.1')      # length [m]
 n = 4                # number of nodes for the length [-]
-r = L/100            # radius [m]
+r = L / 100            # radius [m]
 g = Real('9.81')     # gravity
 inclination = math.radiansHP1(20)  # Initial inclination of rods [degrees]
 color = [1, 0.5, 0]  # Define a color for bodies
 
-O.dt = Real('1e-05') # time step
+O.dt = Real('1e-05')  # time step
 damp = Real('1e-1')  # damping. It is interesting to examine  damp = 0
 
 totalSecDuration = 100
-totalIterDuration = int(totalSecDuration/O.dt)
-iterPyRunnerPeriod = int(1e-4/O.dt)
+totalIterDuration = int(totalSecDuration / O.dt)
+iterPyRunnerPeriod = int(1e-4 / O.dt)
 
 O.engines = [  # define engines, main functions for simulation
     ForceResetter(),
@@ -44,9 +44,9 @@ O.engines = [  # define engines, main functions for simulation
     PyRunner(command='addPlotData()', initRun=True,
              iterPeriod=iterPyRunnerPeriod, firstIterRun=0),
     PyRunner(command='getPrevVel()', initRun=True,
-             iterPeriod=iterPyRunnerPeriod, firstIterRun=iterPyRunnerPeriod-1),
+             iterPeriod=iterPyRunnerPeriod, firstIterRun=iterPyRunnerPeriod - 1),
     PyRunner(command='saveResults()', initRun=True,
-             iterPeriod=iterPyRunnerPeriod, firstIterRun=totalIterDuration-1)
+             iterPeriod=iterPyRunnerPeriod, firstIterRun=totalIterDuration - 1)
 ]
 
 # define material:
@@ -57,20 +57,22 @@ O.materials.append(CohFrictMat(young=1e5, poisson=0, density=1e1,
 # create spheres
 nodeIds = []
 for i in range(0, n):
-    nodeIds.append(O.bodies.append(sphere([i*L/n*math.cos(inclination),
-        i*L/n*math.sin(inclination), 0], r, wire=False, fixed=False,
-        material='mat', color=color)))
+    nodeIds.append(O.bodies.append(sphere([i * L / n * math.cos(inclination),
+                                           i * L / n * math.sin(inclination), 0], r, wire=False, fixed=False,
+                                          material='mat', color=color)))
 
 # create rods
 for i, j in zip(nodeIds[:-1], nodeIds[1:]):
     inter = createInteraction(i, j)
-    inter.phys.unp = -(O.bodies[j].state.pos-O.bodies[i].state.pos).norm() + \
-        O.bodies[i].shape.radius+O.bodies[j].shape.radius
+    inter.phys.unp = -(O.bodies[j].state.pos - O.bodies[i].state.pos).norm() + \
+        O.bodies[i].shape.radius + O.bodies[j].shape.radius
 
 # Set a fixed node
 O.bodies[0].dynamic = False
 
 # Calculate angle between three points: a, b, c
+
+
 def calculateAngle(a, b, c):
     ba = a - b
     bc = c - b
@@ -85,19 +87,23 @@ def calculateAngle(a, b, c):
     return (math.degrees(angle))
 
 # Calculate potential energy
+
+
 def calculatePotentialEnergy():
     potEnergy = Real(0)
     for i in range(0, n):
         h1 = O.bodies[i].state.pos[1]  # mass is lumped into nodes
-        h2 = L/n*i
+        h2 = L / n * i
         potEnergy += O.bodies[i].state.mass * g * (h1 + h2)
     return potEnergy
 
 # Calculate elastic energy
+
+
 def calculateElasticEnergy():  # normal force only
     elEnergy = Real(0)
     for i in O.interactions:
-        elEnergy += i.phys.normalForce.squaredNorm()/(2 * i.phys.kn)
+        elEnergy += i.phys.normalForce.squaredNorm() / (2 * i.phys.kn)
     return elEnergy
 
 
@@ -140,7 +146,7 @@ def getPrevVel():
                                O.bodies[1].state.pos, O.bodies[2].state.pos)
     ang2_prev = calculateAngle(O.bodies[1].state.pos,
                                O.bodies[2].state.pos, O.bodies[3].state.pos)
-    kin_prev = kineticEnergy() # not used in the paper, only used for cross-checking
+    kin_prev = kineticEnergy()  # not used in the paper, only used for cross-checking
     pot_prev = calculatePotentialEnergy()
     elast_prev = calculateElasticEnergy()
 
@@ -153,65 +159,68 @@ def addPlotData():
     ang2 = calculateAngle(O.bodies[1].state.pos,
                           O.bodies[2].state.pos, O.bodies[3].state.pos)
 
-    curTime = O.iter*O.dt
+    curTime = O.iter * O.dt
     kin = kineticEnergy()
     pot = calculatePotentialEnergy()
     elast = calculateElasticEnergy()
 
-    dataCurrent  = {'time': curTime, 'iter_prev': iter_prev, 'iter': O.iter,
-                    'pos1_prev_x': pos_prev['1'][0], 'pos1_prev_y': pos_prev['1'][1],
-                    'pos2_prev_x': pos_prev['2'][0], 'pos2_prev_y': pos_prev['2'][1],
-                    'pos3_prev_x': pos_prev['3'][0], 'pos3_prev_y': pos_prev['3'][1],
-                    'pos1_x': O.bodies[1].state.pos[0], 'pos1_y': O.bodies[1].state.pos[1],
-                    'pos2_x': O.bodies[2].state.pos[0], 'pos2_y': O.bodies[2].state.pos[1],
-                    'pos3_x': O.bodies[3].state.pos[0], 'pos3_y': O.bodies[3].state.pos[1],
-                    'vel1_prev_x': vel_prev['1'][0],    'vel1_prev_y': vel_prev['1'][1],
-                    'vel2_prev_x': vel_prev['2'][0],    'vel2_prev_y': vel_prev['2'][1],
-                    'vel3_prev_x': vel_prev['3'][0],    'vel3_prev_y': vel_prev['3'][1],
-                    'vel1_x': O.bodies[1].state.vel[0], 'vel1_y': O.bodies[1].state.vel[1],
-                    'vel2_x': O.bodies[2].state.vel[0], 'vel2_y': O.bodies[2].state.vel[1],
-                    'vel3_x': O.bodies[3].state.vel[0], 'vel3_y': O.bodies[3].state.vel[1],
-                    'ang1_prev': ang1_prev,
-                    'ang2_prev': ang2_prev,
-                    'ang1': ang1,
-                    'ang2': ang2,
-                    'kin_prev': kin_prev,
-                    'pot_prev': pot_prev,
-                    'elast_prev': elast_prev,
-                    'kin': kin,
-                    'pot': pot,
-                    'elast': elast
-                    }
+    dataCurrent = {'time': curTime, 'iter_prev': iter_prev, 'iter': O.iter,
+                   'pos1_prev_x': pos_prev['1'][0], 'pos1_prev_y': pos_prev['1'][1],
+                   'pos2_prev_x': pos_prev['2'][0], 'pos2_prev_y': pos_prev['2'][1],
+                   'pos3_prev_x': pos_prev['3'][0], 'pos3_prev_y': pos_prev['3'][1],
+                   'pos1_x': O.bodies[1].state.pos[0], 'pos1_y': O.bodies[1].state.pos[1],
+                   'pos2_x': O.bodies[2].state.pos[0], 'pos2_y': O.bodies[2].state.pos[1],
+                   'pos3_x': O.bodies[3].state.pos[0], 'pos3_y': O.bodies[3].state.pos[1],
+                   'vel1_prev_x': vel_prev['1'][0], 'vel1_prev_y': vel_prev['1'][1],
+                   'vel2_prev_x': vel_prev['2'][0], 'vel2_prev_y': vel_prev['2'][1],
+                   'vel3_prev_x': vel_prev['3'][0], 'vel3_prev_y': vel_prev['3'][1],
+                   'vel1_x': O.bodies[1].state.vel[0], 'vel1_y': O.bodies[1].state.vel[1],
+                   'vel2_x': O.bodies[2].state.vel[0], 'vel2_y': O.bodies[2].state.vel[1],
+                   'vel3_x': O.bodies[3].state.vel[0], 'vel3_y': O.bodies[3].state.vel[1],
+                   'ang1_prev': ang1_prev,
+                   'ang2_prev': ang2_prev,
+                   'ang1': ang1,
+                   'ang2': ang2,
+                   'kin_prev': kin_prev,
+                   'pot_prev': pot_prev,
+                   'elast_prev': elast_prev,
+                   'kin': kin,
+                   'pot': pot,
+                   'elast': elast
+                   }
     dataToSave.append(dataCurrent)
     plot.addData(
         ang1=ang1, ang2=ang2, time1=curTime, time2=curTime, kin=kin, pot=pot, elast=elast
     )
 
+
 def infoString():
-    return '_digits_'+str(yade.math.getDigits10(1))+'_dt_'+str(O.dt)
+    return '_digits_' + str(yade.math.getDigits10(1)) + '_dt_' + str(O.dt)
+
 
 def saveResults():
-    fname1 = 'data_angles'+infoString()
-    fname2 = 'data_energy'+infoString()+'.csv.xz'
-    print('\n'+'-'*70)
-    print(int(totalIterDuration), "iterations finished. Saving results to:\n",fname1,"\n",fname2)
-    print('-'*70)
+    fname1 = 'data_angles' + infoString()
+    fname2 = 'data_energy' + infoString() + '.csv.xz'
+    print('\n' + '-' * 70)
+    print(int(totalIterDuration), "iterations finished. Saving results to:\n", fname1, "\n", fname2)
+    print('-' * 70)
     plot.saveGnuplot(fname1)
     with lzma.open(fname2, mode='wt') as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=list(dataToSave[0].keys()))
         writer.writeheader()
         for i in dataToSave:
             writer.writerow(i)
-    print('\n'+'-'*70)
+    print('\n' + '-' * 70)
     print('data saved')
-    print('-'*70)
+    print('-' * 70)
+
 
 plot.plots = {'time1': ('ang1', 'ang2'), 'time2': ('kin', 'pot', 'elast')}
 plot.plot()
 
 O.saveTmp()
 
-if(opts.nogui==False):
+if(opts.nogui == False):
     from yade import qt
     qt.View()                    # create a GUI view
     Gl1_Sphere.stripes = True    # mark spheres with stripes
@@ -220,10 +229,9 @@ if(opts.nogui==False):
     rr.intrPhys = True           # draw the normal forces between the spheres.
 
 
-print('-'*70)
-print("Will now run",int(totalIterDuration),"iterations, which is",totalSecDuration,"seconds.")
-print("Using time step = ",O.dt)
-print('-'*70)
+print('-' * 70)
+print("Will now run", int(totalIterDuration), "iterations, which is", totalSecDuration, "seconds.")
+print("Using time step = ", O.dt)
+print('-' * 70)
 
 O.run(totalIterDuration)
-
