@@ -1,5 +1,6 @@
 # encoding: utf-8
 # 2008 © Václav Šmilauer <eudoxos@arcig.cz> 
+# autopep8: off
 """
 Module containing utility functions for plotting inside yade. See :ysrc:`examples/simple-scene/simple-scene-plot.py` or :ysrc:`examples/concrete/uniax.py` for example of usage.
 
@@ -777,3 +778,4 @@ def saveGnuplot(baseName,term='wxt',extension=None,timestamp=False,comment=None,
 		i+=1
 	fPlot.close()
 	return baseName+'.gnuplot'
+# autopep8: on
