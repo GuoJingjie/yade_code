@@ -1,9 +1,9 @@
-#Deepak Kunhappan, deepak.kunhappan@3sr-grenoble.fr
-#Example script of Yade-OpenFOAM coupling.
-#get the OpenFOAM solver at : https://github.com/dpkn31/Yade-OpenFOAM-coupling
-#get the latest version of Yade with the FoamCoupling engine here : https://gitlab.com/yade-dev/trunk
-#Both binary and compiled versions of OpenFOAM-6 can be used. (currently tested for OpenFOAM-6).
-#Have MPI (preferably OpenMPI) installed. Note : Both OpenFOAM and Yade has to be compiled with the same MPI version.
+# Deepak Kunhappan, deepak.kunhappan@3sr-grenoble.fr
+# Example script of Yade-OpenFOAM coupling.
+# get the OpenFOAM solver at : https://github.com/dpkn31/Yade-OpenFOAM-coupling
+# get the latest version of Yade with the FoamCoupling engine here : https://gitlab.com/yade-dev/trunk
+# Both binary and compiled versions of OpenFOAM-6 can be used. (currently tested for OpenFOAM-6).
+# Have MPI (preferably OpenMPI) installed. Note : Both OpenFOAM and Yade has to be compiled with the same MPI version.
 #----------------------------------------------------------------------------------------------------------------#
 # Usage :
 #
@@ -93,7 +93,7 @@
 #
 #
 #
-#10. Post-Processing : Paraview or ParaFOAM can be used to visualize the results, you can also use the OpenFOAM
+# 10. Post-Processing : Paraview or ParaFOAM can be used to visualize the results, you can also use the OpenFOAM
 #    utilities to postprocess the fluid side.
 #
 #       DISCLAIMER : The settings provided in this example are not universal, depending on your problem, you
@@ -101,94 +101,90 @@
 #----------------------------------------------------------------------------------------------------------------#
 
 from __future__ import print_function
+import builtins
 import sys
 from yadeimport import *
 from yade.utils import *
 
-initMPI() #Initialize the mpi environment, always required.
-fluidCoupling = yade.FoamCoupling();
-fluidCoupling.getRank();
+initMPI()  # Initialize the mpi environment, always required.
+fluidCoupling = yade.FoamCoupling()
+fluidCoupling.getRank()
 
 
-#example of spheres in shear flow : two-way point force coupling
+# example of spheres in shear flow : two-way point force coupling
 class simulation():
 
-  def __init__(self):
+    def __init__(self):
 
-    O.periodic = True;
-    O.cell.setBox(1,1,1);
+        O.periodic = True
+        O.cell.setBox(1, 1, 1)
 
+        numspheres = 1000
+        young = 5e6
+        density = 1000
 
-    numspheres=1000;
-    young = 5e6; density = 1000;
+        O.materials.append(FrictMat(young=young, poisson=0.5, frictionAngle=radians(15), density=density, label='spheremat'))
+        O.materials.append(FrictMat(young=young, poisson=0.5, frictionAngle=0, density=0, label='wallmat'))
 
-    O.materials.append(FrictMat(young=young,poisson=0.5,frictionAngle=radians(15),density=density,label='spheremat'))
-    O.materials.append(FrictMat(young=young,poisson=0.5,frictionAngle=0,density=0,label='wallmat'))
+        minval = 1e-08
+        maxval = 1 - (1e-08)
+        # wall coords, use facets for wall BC:
+        v0 = Vector3(minval, minval, minval)
+        v1 = Vector3(minval, minval, maxval)
+        v2 = Vector3(maxval, minval, minval)
+        v3 = Vector3(maxval, minval, maxval)
 
-    minval = 1e-08;
-    maxval = 1-(1e-08)
-    #wall coords, use facets for wall BC:
-    v0 = Vector3(minval, minval, minval)
-    v1 = Vector3(minval,minval,maxval)
-    v2 = Vector3(maxval,minval,minval)
-    v3 = Vector3(maxval,minval,maxval)
+        v4 = Vector3(minval, maxval, minval)
+        v5 = Vector3(minval, maxval, maxval)
+        v6 = Vector3(maxval, maxval, minval)
+        v7 = Vector3(maxval, maxval, maxval)
 
-    v4 = Vector3(minval,maxval,minval)
-    v5 = Vector3(minval,maxval,maxval)
-    v6 = Vector3(maxval,maxval,minval)
-    v7 = Vector3(maxval, maxval, maxval)
+        lf0 = facet([v0, v1, v2], material='wallmat')
+        O.bodies.append(lf0)
+        lf1 = facet([v1, v3, v2], material='wallmat')
+        O.bodies.append(lf1)
 
+        mn, mx = Vector3(2e-08, 2e-08, 2e-08), Vector3(1 - 2e-08, 1 - 2e-08, 1 - 2e-08)
 
-    lf0 = facet([v0,v1,v2],material='wallmat')
-    O.bodies.append(lf0);
-    lf1 = facet([v1,v3,v2],material='wallmat')
-    O.bodies.append(lf1);
+        sp = pack.SpherePack()
+        sp.makeCloud(mn, mx, rMean=0.0075, rRelFuzz=0.10, num=numspheres)
+        O.bodies.append([sphere(center, rad, material='spheremat') for center, rad in sp])
 
+        sphereIDs = [b.id for b in O.bodies if type(b.shape) == Sphere]
+        numparts = len(sphereIDs)
 
+        fluidCoupling.setNumParticles(numparts)
+        fluidCoupling.setIdList(sphereIDs)
+        fluidCoupling.isGaussianInterp = True  # use pimpleFoamYade for gaussianInterp
 
-    mn, mx= Vector3(2e-08,2e-08,2e-08), Vector3(1-2e-08,1-2e-08, 1-2e-08)
+        # add small damping in case of stability issues.. ~ 0.1 max, also note : If using gravity,  make sure buoyancy force is switched on in the foam side, else the simulation will crash
+        newton = NewtonIntegrator(damping=0.0, gravity=(0.0, 0.0, 0.0))
 
-    sp = pack.SpherePack();
-    sp.makeCloud(mn,mx,rMean=0.0075,rRelFuzz=0.10, num=numspheres)
-    O.bodies.append([sphere(center,rad,material='spheremat') for center,rad in sp])
+        O.engines = [
+            ForceResetter(),
+            InsertionSortCollider([Bo1_Sphere_Aabb(), Bo1_Facet_Aabb()], allowBiggerThanPeriod=True),
+            InteractionLoop(
+                [Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom()],
+                [Ip2_FrictMat_FrictMat_FrictPhys()],
+                [Law2_ScGeom_FrictPhys_CundallStrack()]
+            ),
+            GlobalStiffnessTimeStepper(timestepSafetyCoefficient=0.5, label="ts"),
+            fluidCoupling,  # to be called after timestepper
+            PyRunner(command='sim.printMessage()', iterPeriod=1000, label='outputMessage'),
+            newton,
+            VTKRecorder(fileName='yadep/3d-vtk-', recorders=['spheres'], iterPeriod=1000)
+        ]
 
-    sphereIDs = [b.id for b in O.bodies if type(b.shape)==Sphere]
-    numparts = len(sphereIDs);
+    def printMessage(self):
+        print("********************************YADE-ITER = " + str(O.iter) + " **********************************")
 
-    fluidCoupling.setNumParticles(numparts)
-    fluidCoupling.setIdList(sphereIDs)
-    fluidCoupling.isGaussianInterp=True;  #use pimpleFoamYade for gaussianInterp
-
-    newton=NewtonIntegrator(damping=0.0, gravity = (0.0 ,0.0, 0.0)) # add small damping in case of stability issues.. ~ 0.1 max, also note : If using gravity,  make sure buoyancy force is switched on in the foam side, else the simulation will crash
-
-    O.engines=[
-	ForceResetter(),
-	InsertionSortCollider([Bo1_Sphere_Aabb(),Bo1_Facet_Aabb()], allowBiggerThanPeriod=True),
-	InteractionLoop(
-		[Ig2_Sphere_Sphere_ScGeom(),Ig2_Facet_Sphere_ScGeom()],
-		[Ip2_FrictMat_FrictMat_FrictPhys()],
-		[Law2_ScGeom_FrictPhys_CundallStrack()]
-	),
-	GlobalStiffnessTimeStepper(timestepSafetyCoefficient=0.5, label = "ts"),
-        fluidCoupling, #to be called after timestepper
-        PyRunner(command='sim.printMessage()', iterPeriod= 1000, label='outputMessage'),
-	newton,
-        VTKRecorder(fileName='yadep/3d-vtk-',recorders=['spheres'],iterPeriod=1000)
-    ]
-
-  def printMessage(self):
-     print("********************************YADE-ITER = " + str(O.iter) +" **********************************")
-
-
-
-  def irun(self,num):
-      O.run(num,1)
+    def irun(self, num):
+        O.run(num, 1)
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     sim = simulation()
     sim.irun(1000000)
     fluidCoupling.killMPI()
 
-import builtins
-builtins.sim=sim
+builtins.sim = sim
