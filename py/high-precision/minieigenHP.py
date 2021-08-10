@@ -35,4 +35,3 @@ The ``RealHP<n>`` :ref:`higher precision<higher-hp-precision>` vectors and matri
 # all C++ functions are accessible now:
 import yade
 from yade._minieigenHP import *
-

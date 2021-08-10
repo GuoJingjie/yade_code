@@ -22,10 +22,10 @@ Example usage in C++ is as follows:
 from yade._log import *
 
 # some python functions can be added here too, like this one:
-## def test():
-## 	"""
-## 	.. note:: This is a test.
-## 	"""
+# def test():
+# """
+# .. note:: This is a test.
+# """
 ## 	print("Test OK")
 
 
@@ -35,4 +35,3 @@ from yade._log import *
 # Suppelement it with a python testAllLevelsPython(), like it is written in _log.cpp.
 # And mention them in prog.rst.
 # search if there is some kind of python logging library and use for this maybe?
-

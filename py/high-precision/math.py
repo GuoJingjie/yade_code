@@ -46,77 +46,86 @@ import yade.config
 
 # import these two functions to yade.math
 getDigits10 = yade._math.RealHPConfig.getDigits10
-getDigits2  = yade._math.RealHPConfig.getDigits2
+getDigits2 = yade._math.RealHPConfig.getDigits2
+
 
 def needsMpmathAtN(N):
-	"""
-	:param N: The ``int`` N value of ``RealHP<N>`` in question. Must be ``N >= 1``.
-	:return: ``True`` or ``False`` with information if using ``mpmath`` is necessary to avoid losing precision when working with ``RealHP<N>``.
-	"""
-	if(N < 1):
-		raise ValueError("Incorrect N argument: "+str(N))
-	return yade._math.RealHPConfig.getDigits10(N) > 15
+    """
+    :param N: The ``int`` N value of ``RealHP<N>`` in question. Must be ``N >= 1``.
+    :return: ``True`` or ``False`` with information if using ``mpmath`` is necessary to avoid losing precision when working with ``RealHP<N>``.
+    """
+    if(N < 1):
+        raise ValueError("Incorrect N argument: " + str(N))
+    return yade._math.RealHPConfig.getDigits10(N) > 15
+
 
 def usesHP():
-	"""
-	:return: ``True`` if yade is using default ``Real`` precision higher than 15 digit (53 bits) ``double`` type.
-	"""
-	return needsMpmathAtN(1)
+    """
+    :return: ``True`` if yade is using default ``Real`` precision higher than 15 digit (53 bits) ``double`` type.
+    """
+    return needsMpmathAtN(1)
+
 
 def getRealHPCppDigits10():
-	"""
-	:return: tuple containing amount of decimal digits supported on C++ side by Eigen and CGAL.
-	"""
-	return tuple(yade._math.RealHPConfig.getDigits10(i) for i in yade._math.RealHPConfig.getSupportedByEigenCgal())
+    """
+    :return: tuple containing amount of decimal digits supported on C++ side by Eigen and CGAL.
+    """
+    return tuple(yade._math.RealHPConfig.getDigits10(i) for i in yade._math.RealHPConfig.getSupportedByEigenCgal())
+
 
 def getRealHPPythonDigits10():
-	"""
-	:return: tuple containing amount of decimal digits supported on python side by yade.minieigenHP.
-	"""
-	return tuple(yade._math.RealHPConfig.getDigits10(i) for i in yade._math.RealHPConfig.getSupportedByMinieigen())
+    """
+    :return: tuple containing amount of decimal digits supported on python side by yade.minieigenHP.
+    """
+    return tuple(yade._math.RealHPConfig.getDigits10(i) for i in yade._math.RealHPConfig.getSupportedByMinieigen())
 
-def linspace(a,b,num):
-	"""
-	This function calls ``numpy.linspace(…)`` or ``mpmath.linspace(…)``, because ``numpy.linspace`` function does not work with mpmath.
-	"""
-	if(needsMpmathAtN(1)):
-		import mpmath
-		return mpmath.linspace(a,b,num)
-	else:
-		import numpy
-		return numpy.linspace(a,b,num=num)
+
+def linspace(a, b, num):
+    """
+    This function calls ``numpy.linspace(…)`` or ``mpmath.linspace(…)``, because ``numpy.linspace`` function does not work with mpmath.
+    """
+    if(needsMpmathAtN(1)):
+        import mpmath
+        return mpmath.linspace(a, b, num)
+    else:
+        import numpy
+        return numpy.linspace(a, b, num=num)
+
 
 def toHP1(arg):
-	"""
-	This function is for compatibility of calls like: ``g = yade.math.toHP1("-9.81")``. If yade is compiled with default ``Real`` precision set as ``double``,
-	then python won't accept string arguments as numbers. However when using higher precisions only calls
-	``yade.math.toHP1("1.234567890123456789012345678901234567890")`` do not cut to the first 15 decimal places.
-	The calls such as ``yade.math.toHP1(1.234567890123456789012345678901234567890)`` will use default ``python`` ↔ ``double`` conversion and will cut
-	the number to its first 15 digits.
+    """
+    This function is for compatibility of calls like: ``g = yade.math.toHP1("-9.81")``. If yade is compiled with default ``Real`` precision set as ``double``,
+    then python won't accept string arguments as numbers. However when using higher precisions only calls
+    ``yade.math.toHP1("1.234567890123456789012345678901234567890")`` do not cut to the first 15 decimal places.
+    The calls such as ``yade.math.toHP1(1.234567890123456789012345678901234567890)`` will use default ``python`` ↔ ``double`` conversion and will cut
+    the number to its first 15 digits.
 
-	If you are debugging a high precision python script, and have difficulty finding places where such cuts have happened you should use ``yade.math.toHP1(string)``
-	for declaring all python floating point numbers which are physically important in the simulation.
-	This function will throw exception if bad conversion is about to take place.
+    If you are debugging a high precision python script, and have difficulty finding places where such cuts have happened you should use ``yade.math.toHP1(string)``
+    for declaring all python floating point numbers which are physically important in the simulation.
+    This function will throw exception if bad conversion is about to take place.
 
-	Also see example high precision check :ysrc:`checkGravityRungeKuttaCashKarp54.py<scripts/checks-and-tests/checks/checkGravityRungeKuttaCashKarp54.py>`.
-	"""
-	if(type(arg) == float):
-		raise RuntimeError("Error: only first 15 digits would be used for arg = "+str(arg)+", better pass the argument as string or python mpmath high precision type.")
-		#print('\033[91m'+"Warning: only 15 digits are used for arg = ",arg,'\033[0m')
-	if((type(arg) == str) and (not usesHP())):      # also: ("PrecisionDouble" in yade.config.features)  or  (getDigits2(1)==53)  or  (getDigits10(1)==15)
-		return yade._math.toHP1(float(arg))     # if yade is compiled with `double` then toHP1(…) cannot accept string and python float has enough precision. So here we make sure it works.
-	else:
-		return yade._math.toHP1(arg)
+    Also see example high precision check :ysrc:`checkGravityRungeKuttaCashKarp54.py<scripts/checks-and-tests/checks/checkGravityRungeKuttaCashKarp54.py>`.
+    """
+    if(type(arg) == float):
+        raise RuntimeError("Error: only first 15 digits would be used for arg = " + str(arg) +
+                           ", better pass the argument as string or python mpmath high precision type.")
+        #print('\033[91m'+"Warning: only 15 digits are used for arg = ",arg,'\033[0m')
+    if((type(arg) == str) and (not usesHP())):      # also: ("PrecisionDouble" in yade.config.features)  or  (getDigits2(1)==53)  or  (getDigits10(1)==15)
+        # if yade is compiled with `double` then toHP1(…) cannot accept string and python float has enough precision. So here we make sure it works.
+        return yade._math.toHP1(float(arg))
+    else:
+        return yade._math.toHP1(arg)
+
 
 def radiansHP1(arg):
-	"""
-	The default python function ``import math ; math.radians(arg)`` only works on 15 digit ``double`` precision. If you want to carry on calculations in higher precision
-	it is advisable to use this function ``yade.math.radiansHP1(arg)`` instead. It uses full yade ``Real`` precision numbers.
+    """
+    The default python function ``import math ; math.radians(arg)`` only works on 15 digit ``double`` precision. If you want to carry on calculations in higher precision
+    it is advisable to use this function ``yade.math.radiansHP1(arg)`` instead. It uses full yade ``Real`` precision numbers.
 
-	NOTE: in the future this function may replace ``radians(…)`` function which is called in yade in many scripts, and which in fact is a call to native python ``math.radians``.
-	We only need to find the best backward compatible approach for this. The function ``yade.math.radiansHP1(arg)`` will remain as the function which uses native yade ``Real`` precision.
-	"""
-	return yade.math.HP1.Pi() * toHP1(arg) / toHP1(180)
+    NOTE: in the future this function may replace ``radians(…)`` function which is called in yade in many scripts, and which in fact is a call to native python ``math.radians``.
+    We only need to find the best backward compatible approach for this. The function ``yade.math.radiansHP1(arg)`` will remain as the function which uses native yade ``Real`` precision.
+    """
+    return yade.math.HP1.Pi() * toHP1(arg) / toHP1(180)
 
 # Note: why toHP1(…) is used differently in radiansHP1(…) and in degreesHP1(…) ?
 #   * radiansHP1 is often used for specifying initial conditions for simulations. Call toHP1 makes sure that there is no loss in precision when same script switches to higher precision yade.
@@ -124,24 +133,26 @@ def radiansHP1(arg):
 #                   this little relaxation of requirements in degreesHP1 means that some script might break when switching to higher precision yade. But this breakage will be because
 #                   of improper use of precision in the script and will be properly detected.
 
+
 def degreesHP1(arg):
-	"""
-	:return: arg in radians converted to degrees, using yade.math.Real precision.
-	"""
-	if((type(arg) == float) and (not usesHP())):
-		return toHP1(180) * arg / yade.math.HP1.Pi()
-	else:
-		return toHP1(180) * toHP1(arg) / yade.math.HP1.Pi()
+    """
+    :return: arg in radians converted to degrees, using yade.math.Real precision.
+    """
+    if((type(arg) == float) and (not usesHP())):
+        return toHP1(180) * arg / yade.math.HP1.Pi()
+    else:
+        return toHP1(180) * toHP1(arg) / yade.math.HP1.Pi()
+
 
 radians = radiansHP1
 degrees = degreesHP1
 
 # Create convenience compatibility aliases for all n ∈ getSupportedByMinieigen()
 #    yade.math.Real2 → yade._math.HP2.toHP2
-Real  = toHP1
+Real = toHP1
 Real1 = toHP1
 # The loop below is the same as the commands above. But for higher n.
 for n in yade._math.RealHPConfig.getSupportedByMinieigen():
-	if(n==1): continue
-	exec('Real'+str(n)+'=yade._math.HP'+str(n)+'.toHP'+str(n),globals(),globals())
-
+    if(n == 1):
+        continue
+    exec('Real' + str(n) + '=yade._math.HP' + str(n) + '.toHP' + str(n), globals(), globals())

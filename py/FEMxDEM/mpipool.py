@@ -1,10 +1,11 @@
+from mpi4py import MPI
 from builtins import range
 from builtins import object
-__contributor__="Lisandro Dalcín"
+__contributor__ = "Lisandro Dalcín"
 """ MPIPool wrapped using mpi4py """
 #import mpi4py
 #mpi4py.rc.threaded = False
-from mpi4py import MPI
+
 
 class MPIPool(object):
 
@@ -38,7 +39,8 @@ class MPIPool(object):
 
             if tasklist:
                 flag = comm.Iprobe(source=MPI.ANY_SOURCE, tag=MPI.ANY_TAG)
-                if not flag: continue
+                if not flag:
+                    continue
             else:
                 comm.Probe(source=MPI.ANY_SOURCE, tag=MPI.ANY_TAG)
 
@@ -53,19 +55,21 @@ class MPIPool(object):
         return resultlist
 
     def start(self):
-        if not self.is_worker(): return
+        if not self.is_worker():
+            return
         comm = self.comm
         master = self.master
         status = MPI.Status()
         while True:
             task = comm.recv(source=master, tag=MPI.ANY_TAG, status=status)
-            if task is None: break
+            if task is None:
+                break
             function, arg = task
             result = function(arg)
             comm.ssend(result, master, status.tag)
 
     def close(self):
-        if not self.is_master(): return
+        if not self.is_master():
+            return
         for worker in self.workers:
             self.comm.send(None, worker, 0)
-
