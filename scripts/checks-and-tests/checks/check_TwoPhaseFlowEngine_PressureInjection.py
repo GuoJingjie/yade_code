@@ -1,3 +1,5 @@
+# encoding: utf-8
+# autopep8: off
 if ( ('PFVFLOW' in features) and ('TWOPHASEFLOW' in features) ):
   from yade import pack
   from yade import export
@@ -374,3 +376,4 @@ if ( ('PFVFLOW' in features) and ('TWOPHASEFLOW' in features) ):
 else:
    print("This check_TwoPhaseFlowEngine_PressureInjection.py cannot be executed because TWOPHASEFLOW or PFVFLOW are disabled")
 
+# autopep8: on

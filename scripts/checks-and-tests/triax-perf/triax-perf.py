@@ -1,4 +1,5 @@
 from __future__ import print_function
+from yade import timing
 # Performance test for running
 #
 #  1. Regular TriaxialTest with 3 independent dispatchers (geom, phys, constitutive law)
@@ -14,12 +15,10 @@ from __future__ import print_function
 # You have to collect the results by hand from log files, or run sh mkTextTable.sh and use
 # triax-perf.ods to get comparison
 #
-utils.readParamsFromTable(fast=False,noTableOk=True)
-TriaxialTest(numberOfGrains=50000,fast=fast,noFiles=True).load()
-O.run(10,True) # filter out initialization
-O.timingEnabled=True
-O.run(200,True)
-from yade import timing
+utils.readParamsFromTable(fast=False, noTableOk=True)
+TriaxialTest(numberOfGrains=50000, fast=fast, noFiles=True).load()
+O.run(10, True)  # filter out initialization
+O.timingEnabled = True
+O.run(200, True)
 timing.stats()
-print('ForceContainer synced %d times'%(O.bexSyncCount))
-
+print('ForceContainer synced %d times' % (O.bexSyncCount))
