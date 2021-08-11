@@ -13,7 +13,7 @@ REFERENCE_SCREENSHOTS=data/checks-and-tests/gui/screenshots
 #YADE_EXECUTABLE=./examples/yade
 #
 # then launch this command (inside xvfb):
-#   xvfb-run -a -s "-screen 0 1600x1200x16" scripts/checks-and-tests/gui/testGui.sh
+#   xvfb-run -a -s "-screen 0 1600x1200x24" scripts/checks-and-tests/gui/testGui.sh
 #
 # or just this command (to see it happening on your desktop):
 #   scripts/checks-and-tests/gui/testGui.sh

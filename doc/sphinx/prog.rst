@@ -448,6 +448,30 @@ To add a new check, the following steps must be performed:
 2. Inside the new script use ``checksPath`` when it is necessary to load some data file, like :ysrc:`scripts/checks-and-tests/checks/data/100spheres`
 3. When error occurs raise exception with command ``raise YadeCheckError(messageString)``
 
+GUI Tests
+-----------
+
+In order to add a new GUI test one needs to add a file to :ysrc:`scripts/checks-and-tests/gui` directory. File must be named according to the following convention:
+``testGuiName.py`` with an appropriate test ``Name`` in place (the ``testGui.sh`` script :ysrccommit:`is searching <6a3ac07fbfb734a60a/scripts/checks-and-tests/gui/testGui.sh#L64>`
+for files matching this pattern).
+The :ysrc:`scripts/checks-and-tests/gui/testGuiBilliard.py` may serve as a boilerplate example. The important "extra" parts of the code (taken from e.g. :ysrc:`example <examples>` directory) are:
+
+1. ``from testGuiHelper import TestGUIHelper``
+2. ``scr = TestGUIHelper("Billiard")``, make sure to put the chosen test ``Name`` in place of ``Billiard``.
+3. Establish a reasonable value of ``guiIterPeriod`` which makes the test finish in less than 30 seconds.
+4. Inside ``O.engines`` there has to be a call at the end of the loop to ``PyRunner(iterPeriod=guiIterPeriod, command='scr.screenshotEngine()')``.
+5. The last command in the script should be ``O.run(guiIterPeriod * scr.getTestNum() + 1)`` to start the test process.
+6. Make sure to push to `yade-data repository <https://gitlab.com/yade-dev/yade-data>`__ the reference screenshots (for dealing with ``./data`` dir see :ref:`yade-gitrepo-label`). These screenshots can be also obtained from artifacts by clicking "Download" button in the gitlab pipeline, next to the "Browse" button in the right pane.
+
+These tests can be run locally, after adjusting the paths at the start of :ysrccommit:`testGui.sh <6a3ac07fbfb734a60a/scripts/checks-and-tests/gui/testGui.sh#L6>` script. Two modes of operation are possible:
+
+1. Launch on the local desktop via command: ``scripts/checks-and-tests/gui/testGui.sh``, in this case the screenshots will be different from those used during the test.
+2. Or launch inside a virtual xserver via command: ``xvfb-run -a -s "-screen 0 1600x1200x24" scripts/checks-and-tests/gui/testGui.sh``, then the screenshots will be similar to those used in the test, but still there may be some differences in the font size. In such case it is recommended to use the reference screenshots downloaded from the artifacts in the gitlab pipeline (see point 6. above).
+
+Care should be taken to not use random colors of bodies used in the test. Also no windows such as 3d View or Inspector view should be opened in the script ``testGuiName.py``, because they are opened during the test by the ``TestGUIHelper`` class.
+
+.. note:: It is not possible to call GUI tests from a call such as ``yade --test`` because of the necessity to launch YADE inside a virtual xserver.
+
 Conventions
 ============
 
