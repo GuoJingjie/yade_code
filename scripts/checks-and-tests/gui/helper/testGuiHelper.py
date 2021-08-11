@@ -17,8 +17,9 @@ class TestGUIHelper:
 	This simple class makes screenshots.
 	"""
 
-	def __init__(self, name=None):
-		self.viewWaitTimeSeconds = 30.0 # sometimes the build servers are oveloaded. Let's try 30 seconds and see if it works. When testing locally put here 1 second.
+	def __init__(self, name = None, recenter = False):
+		self.recenter            = recenter # recenter after adjusting camera
+		self.viewWaitTimeSeconds = 30.0     # sometimes the build servers are oveloaded. Let's try 30 seconds and see if it works. When testing locally put here 1 second.
 		self.scrNum = 0
 		# FIXME : this number 14 is hardcoded in scripts/checks-and-tests/gui/testGui.sh when testing if screenshots are present.
 		self.maxTestNum = 14
@@ -82,6 +83,8 @@ class TestGUIHelper:
 			vv.viewDir     = (-0.647, 0.441,-0.620)
 			vv.eyePosition = ( 8.626,-5.076, 8.842)
 			vv.upVector    = (-0.691, 0.000, 0.721)
+			if(self.recenter):
+				yade.qt.center()
 		if(self.scrNum == 3):
 			self.makeNextScreenshot()
 			print(intro + " opening yade.qt.Inspector() , setting wire=True, setting intrGeom=True")
