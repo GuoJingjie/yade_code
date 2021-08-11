@@ -103,13 +103,13 @@ if [[ ${CI_JOB_NAME} == tstHP* || ${CI_JOB_NAME} == make_asan_HP || ${CI_JOB_NAM
 	#         for now I temporarily use higher xterm tolerance for this test. Remember to remove this once #203 is fixed.
 	# NOTE  : The test_opposite prints different messages in the terminal. We could add different reference screenshots. For now let's just use higher xterm tolerance.
 	# NOTE  : test_SSE also needs higher tolerance, because of Eigen messages about memory alignment.
-	python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS} ${CREATE_NEW_SCREENSHOTS} 45 || { sleep 1 ; exit 1; }
+	python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS}/default ${CREATE_NEW_SCREENSHOTS} 45 || { sleep 1 ; exit 1; }
 else
 	if [[ ${CI_JOB_NAME} == test_archlinux ]]; then
-	python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS} ${CREATE_NEW_SCREENSHOTS} 20 || { sleep 1 ; exit 1; }
+	python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS}/archlinux ${CREATE_NEW_SCREENSHOTS} 20 || { sleep 1 ; exit 1; }
 	else
 	# Smallest xterm tolerance is 5, enough for different session cookie and some small variation in messages.
-	python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS} ${CREATE_NEW_SCREENSHOTS}  5 || { sleep 1 ; exit 1; }
+	python3 ${GUI_TESTS_PATH}/helper/compareScreenshotsParts.py ${REFERENCE_SCREENSHOTS}/default ${CREATE_NEW_SCREENSHOTS}  5 || { sleep 1 ; exit 1; }
 	fi
 fi
 echo -e "******************************************\n*** Checking screenshots finished ***\n******************************************\n"
