@@ -57,6 +57,7 @@ void OpenGLRenderer::init()
 void OpenGLRenderer::setBodiesRefSe3()
 {
 	LOG_DEBUG("(re)initializing reference positions and orientations.");
+	const std::lock_guard<std::mutex> lock(scene->bodies->drawloopmutex);
 	for (const auto& b : *scene->bodies)
 		if (b && b->state) {
 			b->state->refPos = b->state->pos;
@@ -94,6 +95,7 @@ bool OpenGLRenderer::pointClipped(const Vector3r& p)
 
 void OpenGLRenderer::setBodiesDispInfo()
 {
+	const std::lock_guard<std::mutex> lock(scene->bodies->drawloopmutex);
 	if (scene->bodies->size() != bodyDisp.size()) {
 		bodyDisp.resize(scene->bodies->size());
 		for (unsigned k = 0; k < scene->bodies->size(); k++)
@@ -256,6 +258,7 @@ void OpenGLRenderer::render(const shared_ptr<Scene>& _scene, Body::id_t selectio
 
 void OpenGLRenderer::renderAllInteractionsWire()
 {
+	const std::lock_guard<std::mutex> lock(scene->interactions->drawloopmutex);
 	for (const auto& i : *scene->interactions) {
 		// geometry must exist              , sometimes a body can get deleted
 		if ((not i->functorCache.geomExists)) { continue; }
@@ -285,6 +288,7 @@ void OpenGLRenderer::renderDOF_ID()
 {
 	const GLfloat ambientColorSelected[4]   = { 10.0, 0.0, 0.0, 1.0 };
 	const GLfloat ambientColorUnselected[4] = { 0.5, 0.5, 0.5, 1.0 };
+	const std::lock_guard<std::mutex> lock(scene->bodies->drawloopmutex);
 	for (const auto& b : *scene->bodies) {
 		if (!b) continue;
 		if (b->shape && ((b->getGroupMask() & mask) || b->getGroupMask() == 0)) {
@@ -353,6 +357,7 @@ void OpenGLRenderer::renderBound()
 	boundDispatcher.scene = scene.get();
 	boundDispatcher.updateScenePtr();
 
+	const std::lock_guard<std::mutex> lock(scene->bodies->drawloopmutex);
 	for (const auto& b : *scene->bodies) {
 		if (!b || !b->bound) continue;
 		if (!bodyDisp[b->getId()].isDisplayed or bodyDisp[b->getId()].hidden) continue;
@@ -391,6 +396,7 @@ void OpenGLRenderer::renderShape()
 	// instead of const shared_ptr&, get proper shared_ptr;
 	// Less efficient in terms of performance, since memory has to be written (not measured, though),
 	// but it is still better than crashes if the body gets deleted meanwile.
+	const std::lock_guard<std::mutex> lock(scene->bodies->drawloopmutex);
 	for (const auto& b : *scene->bodies) {
 		if (!b || !b->shape) continue;
 		if (!(bodyDisp[b->getId()].isDisplayed and !bodyDisp[b->getId()].hidden)) continue;

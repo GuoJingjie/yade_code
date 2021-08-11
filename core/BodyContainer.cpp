@@ -77,7 +77,7 @@ const shared_ptr<Body>& BodyContainer::operator[](unsigned int id) const { retur
 
 bool BodyContainer::exists(Body::id_t id) const { return ((id >= 0) && ((size_t)id < body.size()) && ((bool)body[id])); }
 
-bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
+bool BodyContainer::eraseAlreadyLocked(Body::id_t id, bool eraseClumpMembers)
 { //default is false (as before)
 	if (!body[id]) return false;
 	const shared_ptr<Scene>& scene = Omega::instance().getScene();
@@ -92,7 +92,7 @@ bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
 		const shared_ptr<Body>  clumpBody = Body::byId(b->clumpId);
 		const shared_ptr<Clump> clump     = YADE_PTR_CAST<Clump>(clumpBody->shape);
 		Clump::del(clumpBody, b);
-		if (clump->members.size() == 0) this->erase(clumpBody->id, false); //Clump has no members any more. Remove it
+		if (clump->members.size() == 0) this->eraseAlreadyLocked(clumpBody->id, false); //Clump has no members any more. Remove it
 	}
 
 	if ((b) and (b->isClump())) {
@@ -104,7 +104,7 @@ bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
 			idsToRemove.push_back(mm.first); // Prepare an array of ids, which need to be removed.
 		for (Body::id_t memberId : idsToRemove) {
 			if (eraseClumpMembers) {
-				this->erase(memberId, false); // erase members
+				this->eraseAlreadyLocked(memberId, false); // erase members
 			} else {
 				//when the last members is erased, the clump will be erased automatically, see above
 				Body::byId(memberId)->clumpId = Body::ID_NONE; // make members standalones
@@ -122,6 +122,16 @@ bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
 	b->id = -1; //else it sits in the python scope without a chance to be inserted again
 	body[id].reset();
 	return true;
+}
+
+bool BodyContainer::erase(Body::id_t id, bool eraseClumpMembers)
+{
+	// Fix https://gitlab.com/yade-dev/trunk/-/issues/235 - wait with updating until some body removal is finished.
+	// NOTE: This is called very rarely, because it is erasing bodies. Not typical simulation occurrence.
+	//       But we still have to make sure to avoid crashes. Even those which are rare :)
+	const std::lock_guard<std::mutex> lock(drawloopmutex);
+
+	return this->eraseAlreadyLocked(id, eraseClumpMembers);
 }
 
 void BodyContainer::updateRealBodies()
