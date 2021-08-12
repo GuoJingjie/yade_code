@@ -52,6 +52,7 @@ class CellInspector(QWidget):
 	
 
 def makeBodyLabel(b):
+	if(b == None): return u'…'
 	ret=str(b.id)+u' '
 	if not b.shape: ret+=u'⬚'
 	else:
