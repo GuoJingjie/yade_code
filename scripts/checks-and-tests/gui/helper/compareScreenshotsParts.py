@@ -16,6 +16,32 @@ screenshotNames = []
 thresholdDict = dict({'view': 5    , 'term': xtermTolerance , 'cont': 20    , 'insp': 20    })
 maxEncountered= dict({'view': 0    , 'term': 0              , 'cont': 0     , 'insp': 0     })
 
+def getAllowedError(viewName,scrNumber,testName):
+	skipCheck = 10000
+	assert(viewName  in ['view','term','cont','insp'])
+	assert(scrNumber in range(15))
+	# Some exceptions are allowed here
+
+	# Before Controller is moved into correct position it can appear as having different sizes, in the View area.
+	if((viewName == 'view') and (scrNumber == 1)):
+		return (skipCheck,'Start Controller ')
+
+	# The View may not appear on time when this screenshot is created
+	if((viewName == 'view') and (scrNumber == 3)):
+		return (skipCheck,'Start View ')
+
+	# The testGuiHopper.py is numerically more random than other tests. Especially in different precisions.
+	# Its goal is to test for crashes when drawing and erasing, not for reproducibility of screenshots.
+	if('Hopper' in testName):
+		# In different precisions the clumps can go to different positions in 3D view
+		if((viewName == 'view') and (scrNumber >= 4)):
+			return (skipCheck,'Hpr View ')
+		# and the interactions might be different.
+		if((viewName == 'insp') and (scrNumber == 7)):
+			return (skipCheck,'Hpr Insp ')
+
+	return (thresholdDict[viewName],'')
+
 def printFlushExit(msg, code):
 	print(msg)
 	sys.stdout.flush()
@@ -55,29 +81,35 @@ try:
 			refParts = [ (ref[0:560, 0:550],'view'), (ref[560:1200, 0:550],'term'), (ref[20:1120, 550:1050],'cont'), (ref[20:1120, 1050:1550],'insp') ]
 			j = 0
 			rowHadError = False
+			rowMsg      = ''
 			while j < len(refParts):
 				if(refParts[j][0].shape == scrParts[j][0].shape):
 					partDiff = cv2.subtract(refParts[j][0], scrParts[j][0])
 					r, g, b = cv2.split(partDiff)
 					# sum of mean error for each channel, see https://docs.opencv.org/3.4/d2/de8/group__core__array.html#ga191389f8a0e58180bb13a727782cd461
 					error       = cv2.mean(r)[0] + cv2.mean(g)[0] + cv2.mean(b)[0]
-					nowHasError = error > thresholdDict[refParts[j][1]]
-					if((refScr.endswith('_01.png') or refScr.endswith('_03.png')) and j==0):
-						# 01: Controller - before it is moved into correct position it can appear as having different sizes.
-						# 03: View       - it may not appear on time when this screenshot is created
-						nowHasError = False
-					else:
-						maxEncountered[refParts[j][1]] = max(maxEncountered[refParts[j][1]],error)
+					tol,msg     = getAllowedError(refParts[j][1], int(refScr[-6:-4]), refScr)
+					nowHasError = error > tol
+					rowMsg     += msg
+					maxEncountered[refParts[j][1]] = max(maxEncountered[refParts[j][1]],error)
 					rowHadError = rowHadError or nowHasError
 					hadError    = hadError    or nowHasError
-					print(('\033[91m' if nowHasError else '') + str(round(error,6)).ljust(11) + ('\033[0m' if nowHasError else ''), end=('' if (j!=3 or rowHadError) else '\n'))
+					# https://misc.flogisoft.com/bash/tip_colors_and_formatting
+					print(
+						  ('\033[91m' if nowHasError else ('\033[95m' if (msg != '') else ''))
+						+ str(round(error,6)).ljust(11)
+						+ ('\033[0m' if (nowHasError or rowMsg != '') else '')
+						, end=('' if ((j != 3) or rowHadError or (rowMsg != '')) else '\n')
+					)
 					if(nowHasError):
 						cv2.imwrite(scrDir+'/'+refScr+'_diff_'+refParts[j][1]+'.png',partDiff)
 				else:
 					printFlushExit("can't compare pictures with different sizes", 1)
 				j += 1
 			if(rowHadError):
-				print("Error")
+				print("Error "+rowMsg)
+			elif(rowMsg != ''):
+				print(rowMsg)
 		else:
 			printFlushExit("can't compare pictures with different sizes", 1)
 	
