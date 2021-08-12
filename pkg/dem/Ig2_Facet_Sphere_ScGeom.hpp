@@ -39,7 +39,7 @@ public:
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ig2_Facet_Sphere_ScGeom,IGeomFunctor,"Create/update a :yref:`ScGeom` instance representing intersection of :yref:`Facet` and :yref:`Sphere`. The equivalent radius for the Facet (:yref:`ScGeom.refR1`) is chosen as twice the Sphere's one.",
 		((Real,shrinkFactor,((void)"no shrinking",0),,"The radius of the inscribed circle of the facet is decreased by the value of the sphere's radius multiplied by *shrinkFactor*. From the definition of contact point on the surface made of facets, the given surface is not continuous and becomes in effect surface covered with triangular tiles, with gap between the separate tiles equal to the sphere's radius multiplied by 2×*shrinkFactor*. If zero, no shrinking is done."))
-		((bool,Hertzian,false,,"The equivalent radius for the Facet (:yref:`ScGeom.refR1`) is chosen as 1e8 times the Sphere's radius (closer to Hertzian therory, where it it infinite)."))
+		((bool,hertzian,false,,"The equivalent radius for the Facet (:yref:`ScGeom.refR1`) is chosen as 1e8 times the Sphere's radius (closer to Hertzian therory, where it it infinite)."))
 	);
 	// clang-format on
 	DECLARE_LOGGER;
@@ -90,7 +90,7 @@ public:
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS(Ig2_Wall_Sphere_ScGeom,IGeomFunctor,"Create/update a :yref:`ScGeom` instance representing intersection of :yref:`Wall` and :yref:`Sphere`. The equivalent radius for the Wall (:yref:`ScGeom.refR1`) is chosen equal to the Sphere's radius.",
 		((bool,noRatch,true,,"Avoid granular ratcheting"))
-        ((bool,Hertzian,false,,"The equivalent radius for the Wall (:yref:`ScGeom.refR1`) is chosen as 1e8 times the Sphere's radius (closer to Hertzian therory, where it it infinite)."))
+        ((bool,hertzian,false,,"The equivalent radius for the Wall (:yref:`ScGeom.refR1`) is chosen as 1e8 times the Sphere's radius (closer to Hertzian therory, where it it infinite)."))
 	);
 	// clang-format on
 	FUNCTOR2D(Wall, Sphere);
