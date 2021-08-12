@@ -9,6 +9,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #endif
 
+#include <QOpenGLWidget>
 #include <QGLViewer/constraint.h>
 #include <QGLViewer/manipulatedFrame.h>
 #include <QGLViewer/qglviewer.h>
@@ -93,7 +94,7 @@ public:
 	int  timeDispMask;
 	enum { TIME_REAL = 1, TIME_VIRT = 2, TIME_ITER = 4 };
 
-	GLViewer(int viewId, const shared_ptr<OpenGLRenderer>& renderer, QGLWidget* shareWidget = 0);
+	GLViewer(int viewId, const shared_ptr<OpenGLRenderer>& renderer, QOpenGLWidget* = 0);
 	virtual ~GLViewer();
 #if 0
 			virtual void paintGL();
