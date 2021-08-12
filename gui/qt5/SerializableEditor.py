@@ -634,7 +634,7 @@ def makeSerializableLabel(ser,href=False,addr=True,boldHref=True,num=-1,count=-1
 		import re
 		ss=str(ser); m=re.match(u'<(.*) instance at (0x.*)>',ss)
 		if m: ret+=m.group(2)
-		else: logging.warning(u"Serializable converted to str ('%s') does not contain 'instance at 0x…'"%ss)
+		else: logging.debug(u"Serializable converted to str ('%s') does not contain 'instance at 0x…'"%ss)
 	return ret
 
 class SeqSerializableComboBox(QFrame):
