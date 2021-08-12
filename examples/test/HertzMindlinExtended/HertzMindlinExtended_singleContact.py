@@ -55,7 +55,7 @@ else:
 
 #for both contact laws:
 #ATTENTION geometric functors for Sphere-Wall Sphere-Facet contacts use Hertzian theory
-GeomFunctorList=[Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom(Hertzian=True), Ig2_Wall_Sphere_ScGeom(Hertzian=True)]
+GeomFunctorList=[Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom(hertzian=True), Ig2_Wall_Sphere_ScGeom(hertzian=True)]
 
 
 #-------------------------Define engines
