@@ -1,12 +1,11 @@
 #pragma once
 
+#ifdef YADE_OPENGL
 #include <lib/opengl/OpenGLWrapper.hpp>
 #include <core/Scene.hpp>
 #include <pkg/common/PeriodicEngines.hpp>
 
 #ifdef YADE_QT5
-#include <gui/qt5/OpenGLManager.hpp>
-#elif YADE_QT4
 #include <gui/qt5/OpenGLManager.hpp>
 #endif
 
@@ -33,3 +32,6 @@ public:
 REGISTER_SERIALIZABLE(SnapshotEngine);
 
 } // namespace yade
+
+#endif
+
