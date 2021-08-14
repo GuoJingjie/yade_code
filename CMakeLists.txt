@@ -14,6 +14,7 @@
 #  ENABLE_ASAN                : AddressSanitizer build, please see documentation (OFF by default)
 #  ENABLE_CGAL                : enable CGAL option (ON by default)
 #  ENABLE_DEFORM              : enable constant volume deformation engine (OFF by default)
+#  ENABLE_FAST_NATIVE         : use max optimization, code runs only on the same processor type; speedup about 2%, and above 5% with clang compiler, which requires ENABLE_USEFUL_ERRORS=OFF (OFF by default)
 #  ENABLE_FEMLIKE             : enable meshed solids (FEM-like)
 #  ENABLE_GL2PS               : enable GL2PS-option (ON by default)
 #  ENABLE_GTS                 : enable GTS-option (ON by default)
@@ -191,10 +192,28 @@ IF(DEBUG)
   SET(CMAKE_VERBOSE_MAKEFILE 1)
   SET(CMAKE_BUILD_TYPE Debug)
   ADD_DEFINITIONS("-DYADE_DEBUG")
+  IF(ENABLE_FAST_NATIVE)
+    MESSAGE(FATAL_ERROR "${Esc}[91m* The ENABLE_FAST_NATIVE flags are not used in debug build, because it sets 'CMAKE_CXX_FLAGS_RELEASE' *${Esc}[0m")
+  ENDIF(ENABLE_FAST_NATIVE)
 ELSE (DEBUG)
   IF (NOT(CMAKE_BUILD_TYPE))
     # If no build_type set, we use Release profile
     SET(CMAKE_BUILD_TYPE Release)
+    IF(ENABLE_FAST_NATIVE)
+      IF (NOT VECTORIZE)
+          SET(CMAKE_CXX_FLAGS_RELEASE "-Ofast -march=native -mtune=native -fno-associative-math -fno-finite-math-only -fsigned-zeros")
+      ELSE (NOT VECTORIZE)
+          SET(CMAKE_CXX_FLAGS_RELEASE "-Ofast -march=native -mtune=native -fno-associative-math -fno-finite-math-only -fsigned-zeros -faligned-new")
+          MESSAGE(STATUS "${Esc}[36mNote: ENABLE_FAST_NATIVE + VECTORIZE is experimental. Only latest compilers can produce the correct code for that.${Esc}[0m")
+      ENDIF (NOT VECTORIZE)
+
+      MESSAGE(STATUS "${Esc}[36mEnabling FAST_NATIVE:${Esc}[0m ${CMAKE_CXX_FLAGS_RELEASE}")
+      MESSAGE(STATUS "${Esc}[36mUsing native assembly instruction set for this processor. Warning: if you try to run this executable on a processor with a different assembly instruction set you will get an error about unrecognized assembler instruction, which that other preocessor cannot do. Usually it's a crash on startup.${Esc}[0m")
+
+      SET(CONFIGURED_FEATS "${CONFIGURED_FEATS} FAST_NATIVE")
+    ELSE(ENABLE_FAST_NATIVE)
+      SET(DISABLED_FEATS "${DISABLED_FEATS} FAST_NATIVE")
+    ENDIF(ENABLE_FAST_NATIVE)
   ENDIF (NOT(CMAKE_BUILD_TYPE))
 ENDIF (DEBUG)
 
@@ -371,9 +390,6 @@ ELSE(ENABLE_USEFUL_ERRORS)
   SET(DISABLED_FEATS "${DISABLED_FEATS} USEFUL_ERRORS")
 ENDIF(ENABLE_USEFUL_ERRORS)
 
-
-#===========================================================
-MESSAGE(STATUS   "${Esc}[36mChosen compiler flags are: CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS} ${Esc}[0m")
 #======================================
 #====== ** END Compiler flags ** ======
 #======================================
@@ -1294,7 +1310,10 @@ ELSE (DEBUG)
   ENDIF (ENABLE_ASAN)
 ENDIF (DEBUG)
 MESSAGE(STATUS "C++ standard version: ${CMAKE_CXX_STANDARD}")
-
+MESSAGE(STATUS "===========================================================")
+MESSAGE(STATUS   "${Esc}[36mCMAKE_CXX_FLAGS = ${Esc}[0m ${CMAKE_CXX_FLAGS}")
+MESSAGE(STATUS   "${Esc}[36mCMAKE_CXX_FLAGS_RELEASE = ${Esc}[0m ${CMAKE_CXX_FLAGS_RELEASE}")
+MESSAGE(STATUS   "${Esc}[36mCMAKE_CXX_FLAGS_DEBUG = ${Esc}[0m ${CMAKE_CXX_FLAGS_DEBUG}")
 MESSAGE(STATUS "===========================================================")
 #===========================================================
 #Building doc

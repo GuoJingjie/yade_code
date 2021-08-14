@@ -292,6 +292,21 @@ make_no_vtk:
     - echo $EXTRA_CMAKE_ARGS
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
 
+# using -Ofast native must be tested on the same CPU where it was compiled. So build & test must be in a single job.
+make_fast:
+  <<: *make_definition
+  <<: *skip_WIP_and_Draft
+  artifacts:
+    when: always
+    paths:
+      - screenshots
+  before_script:
+    # there can be only one before_script:, so the line below cannot be in a separate template
+    - export TESTS_AFTER_MAKE="TESTS_AFTER_MAKE"
+    - export EXTRA_CMAKE_ARGS="-DENABLE_FAST_NATIVE=ON $EXTRA_CMAKE_ARGS"
+    - echo $EXTRA_CMAKE_ARGS
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
+
 make_debug:
   <<: *make_definition
   <<: *skip_WIP_and_Draft

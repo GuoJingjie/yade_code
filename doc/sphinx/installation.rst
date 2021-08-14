@@ -320,6 +320,7 @@ The following cmake options are available: (see the `source code <https://gitlab
 	* ENABLE_ASAN: AddressSanitizer allows detection of memory errors, memory leaks, heap corruption errors and out-of-bounds accesses (but it is slow) 
 	* ENABLE_CGAL: enable CGAL option (ON by default)
 	* ENABLE_DEFORM: enable constant volume deformation engine (OFF by default)
+	* ENABLE_FAST_NATIVE: use maximum optimization compiler flags including ``-Ofast`` and ``-mtune=native``. Note: ``native`` means that code will **only** run on the same processor type on which it was compiled. Observed speedup was 2% (below standard deviation measurement error) and above 5% if clang compiler was used. (OFF by default)
 	* ENABLE_FEMLIKE: enable meshed solids, FEM-like (OFF by default, experimental)
 	* ENABLE_GL2PS: enable GL2PS-option (ON by default)
 	* ENABLE_GTS: enable GTS-option (ON by default)
