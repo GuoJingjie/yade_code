@@ -37,7 +37,7 @@
 
 #include <pkg/common/Grid.hpp>
 
-#include <pkg/dem/Tetra.hpp>
+#include <pkg/tetra/Tetra.hpp>
 
 #ifdef YADE_OPENGL
 #include <pkg/common/Gl1_NormPhys.hpp>

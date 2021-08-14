@@ -11,7 +11,7 @@
 #include <pkg/dem/DemXDofGeom.hpp>
 #include <pkg/dem/ScGeom.hpp>
 #include <postprocessing/dem/Shop.hpp>
-#include <pkg/dem/Tetra.hpp>
+#include <pkg/tetra/Tetra.hpp>
 #include <pkg/dem/ViscoelasticPM.hpp>
 #ifdef YADE_MPI
 #pragma GCC diagnostic push
