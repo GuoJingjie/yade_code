@@ -1149,10 +1149,6 @@ ENDFOREACH()
 SET(${result} ${dirlist})
 endmacro()
 
-IF(ENABLE_GUI)
-SET(SRC_LIB "${SRC_LIB};lib/opengl/SnapshotEngine.cpp")
-ENDIF(ENABLE_GUI)
-
 SET(SRC_LIB "${SRC_LIB};lib/base/Math.cpp;lib/high-precision/RealHPConfig.cpp;lib/factory/ClassFactory.cpp;lib/factory/DynLibManager.cpp;lib/base/Logging.cpp;lib/compatibility/LapackCompatibility.cpp;lib/compatibility/VTKCompatibility.cpp")
 SET(SRC_LIB "${SRC_LIB};lib/serialization/Serializable.cpp;lib/pyutil/gil.cpp;core/main/pyboot.cpp;${GUI_SRC_LIB};${CGAL_SRC_LIB}")
 IF(ENABLE_POTENTIAL_PARTICLES OR ENABLE_POTENTIAL_BLOCKS)
@@ -1180,24 +1176,70 @@ IF(ENABLE_GUI)
   TARGET_LINK_LIBRARIES(boot _GLViewer ${GUI_LIBS})
 ENDIF(ENABLE_GUI)
 
+#======================================
+#====== ** scan ./pkg/ dir    ** ======
+#======================================
+# The directories pkg  postprocessing  preprocessing are scanned for *.cpp files.
+# You can safely moving files between these directories and they will be discovered here.
+# The only "extra" thing to do is to link when needed with ${VTK_LIBRARIES} but nothing else.
+# Because everything is linked with boot, which in turn is linked with all that we need to run.
+# This saves on link time. It also means that there are unresolved symbols in each library before boot is loaded,
+# So we did an extra check to make sure that boot is loadedd first.
+
 # this is one shared library per /pkg subfolder, for some reason they need to link Boost_LIBRARIES, else segfault (although boot also has this link)
-SUBDIRLIST(SUBDIRS ${CMAKE_SOURCE_DIR}/pkg)
-MESSAGE("SUBDIRS " ${SUBDIRS})
-FOREACH(subdir ${SUBDIRS})
-    FILE(GLOB files "pkg/${subdir}/*.cpp")
-    ADD_LIBRARY(${subdir} SHARED ${files})
-    SET_TARGET_PROPERTIES(${subdir}  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
-	TARGET_LINK_LIBRARIES(${subdir} ${Boost_LIBRARIES} )
-    TARGET_LINK_LIBRARIES(boot ${subdir})
-
-	INSTALL(TARGETS ${subdir} DESTINATION ${YADE_LIB_PATH})
+SUBDIRLIST(SUBDIRS_PKG ${CMAKE_SOURCE_DIR}/pkg)
+MESSAGE("-- pkg:")
+FOREACH(subdir ${SUBDIRS_PKG})
+    MESSAGE(" + " ${subdir})
+    FILE(GLOB_RECURSE files "pkg/${subdir}/*.cpp")
+    ADD_LIBRARY("pkg_${subdir}" SHARED ${files})
+    SET_TARGET_PROPERTIES("pkg_${subdir}"  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
+    TARGET_LINK_LIBRARIES("pkg_${subdir}" ${Boost_LIBRARIES} )
+    TARGET_LINK_LIBRARIES(boot "pkg_${subdir}")
+    INSTALL(TARGETS "pkg_${subdir}" DESTINATION ${YADE_LIB_PATH})
 ENDFOREACH()
-
 # see comment https://gitlab.com/yade-dev/trunk/-/merge_requests/616#note_527636625 for details.
-TARGET_LINK_LIBRARIES(yade   ${VTK_LIBRARIES})
-TARGET_LINK_LIBRARIES(common ${VTK_LIBRARIES})
-TARGET_LINK_LIBRARIES(dem    ${VTK_LIBRARIES})
-TARGET_LINK_LIBRARIES(pfv    ${VTK_LIBRARIES})
+TARGET_LINK_LIBRARIES(pkg_potential ${VTK_LIBRARIES})
+TARGET_LINK_LIBRARIES(pkg_pfv       ${VTK_LIBRARIES})
+
+#======================================
+#==== ** scan ./preprocessing/ ** =====
+#======================================
+SUBDIRLIST(SUBDIRS_PRE ${CMAKE_SOURCE_DIR}/preprocessing)
+MESSAGE("-- preprocessing:")
+FOREACH(subdir ${SUBDIRS_PRE})
+    MESSAGE(" + " ${subdir})
+    FILE(GLOB_RECURSE files "preprocessing/${subdir}/*.cpp")
+    ADD_LIBRARY("pre_${subdir}" SHARED ${files})
+    SET_TARGET_PROPERTIES("pre_${subdir}"  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
+    TARGET_LINK_LIBRARIES("pre_${subdir}" ${Boost_LIBRARIES} )
+    TARGET_LINK_LIBRARIES(boot "pre_${subdir}")
+    INSTALL(TARGETS "pre_${subdir}" DESTINATION ${YADE_LIB_PATH})
+ENDFOREACH()
+# see comment https://gitlab.com/yade-dev/trunk/-/merge_requests/616#note_527636625 for details.
+TARGET_LINK_LIBRARIES(pre_dem ${VTK_LIBRARIES})
+
+#======================================
+#==== ** scan ./postprocessing/ ** ====
+#======================================
+SUBDIRLIST(SUBDIRS_PRE ${CMAKE_SOURCE_DIR}/postprocessing)
+MESSAGE("-- postprocessing:")
+FOREACH(subdir ${SUBDIRS_PRE})
+    MESSAGE(" + " ${subdir})
+    FILE(GLOB_RECURSE files "postprocessing/${subdir}/*.cpp")
+    ADD_LIBRARY("post_${subdir}" SHARED ${files})
+    SET_TARGET_PROPERTIES("post_${subdir}"  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
+    TARGET_LINK_LIBRARIES("post_${subdir}" ${Boost_LIBRARIES} )
+    TARGET_LINK_LIBRARIES(boot "post_${subdir}")
+    INSTALL(TARGETS "post_${subdir}" DESTINATION ${YADE_LIB_PATH})
+ENDFOREACH()
+TARGET_LINK_LIBRARIES(post_vtk ${VTK_LIBRARIES})
+
+#======================================
+#==== ******* END scanning ******* ====
+#======================================
+# see comment https://gitlab.com/yade-dev/trunk/-/merge_requests/616#note_527636625 for details.
+TARGET_LINK_LIBRARIES(yade ${VTK_LIBRARIES})
 
 IF(ENABLE_MPFR)
   TARGET_LINK_LIBRARIES(boot ${MPFR_LIBRARIES})
