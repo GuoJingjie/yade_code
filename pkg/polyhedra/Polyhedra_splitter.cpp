@@ -9,7 +9,7 @@
 #endif
 
 #include <lib/high-precision/Constants.hpp>
-#include <pkg/dem/Polyhedra_splitter.hpp>
+#include <pkg/polyhedra/Polyhedra_splitter.hpp>
 #include <sys/stat.h>
 
 namespace yade { // Cannot have #include directive inside.
