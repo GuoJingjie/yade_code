@@ -30,15 +30,15 @@ def getAllowedError(viewName,scrNumber,testName):
 	if((viewName == 'view') and (scrNumber == 3)):
 		return (skipCheck,'Start View ')
 
-	# The testGuiHopper.py is numerically more random than other tests. Especially in different precisions.
-	# Its goal is to test for crashes when drawing and erasing, not for reproducibility of screenshots.
-	if('Hopper' in testName):
+	# The testGuiHopper.py and testGuiVideo.py are more random than other tests. Especially in different precisions.
+	# Their goal is to test for crashes and when drawing and erasing, not for reproducibility of screenshots.
+	if(('Hopper' in testName) or ('Video' in testName)):
 		# In different precisions the clumps can go to different positions in 3D view
 		if((viewName == 'view') and (scrNumber >= 4)):
-			return (skipCheck,'Hpr View ')
+			return (skipCheck,'View ')
 		# and the interactions might be different.
 		if((viewName == 'insp') and (scrNumber == 7)):
-			return (skipCheck,'Hpr Insp ')
+			return (skipCheck,'Insp ')
 
 	return (thresholdDict[viewName],'')
 
