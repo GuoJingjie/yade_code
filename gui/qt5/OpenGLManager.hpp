@@ -30,10 +30,12 @@ public:
 	std::vector<shared_ptr<GLViewer>> viewsLater;
 	shared_ptr<OpenGLRenderer>        renderer;
 	// signals are protected, emitting them is therefore wrapped with such funcs
-	void emitResizeView(int id, int wd, int ht) { emit resizeView(id, wd, ht); }
-	void emitCreateView() { emit createView(); }
-	void emitStartTimer() { emit startTimerSignal(); }
-	void emitCloseView(int id) { emit closeView(id); }
+	// NOTE: QT uses #define foreach Q_FOREACH which breaks boost. So I had to replace
+	//       signals → Q_SIGNALS, slots → Q_SLOTS, emit → Q_EMIT also
+	void emitResizeView(int id, int wd, int ht) { Q_EMIT resizeView(id, wd, ht); }
+	void emitCreateView() { Q_EMIT createView(); }
+	void emitStartTimer() { Q_EMIT startTimerSignal(); }
+	void emitCloseView(int id) { Q_EMIT closeView(id); }
 	// create a new view and wait for it to become available; return the view number
 	// if timout (in seconds) elapses without the view to come up, reports error and returns -1
 	int waitForNewView(double timeout = 5., bool center = true);
@@ -42,13 +44,13 @@ public:
 	Vector3r getGridOrigin() const;
 	Vector3r getSuggestedCenter() const;
 	int      getGridDecimalPlaces() const;
-signals:
+Q_SIGNALS:
 	void createView();
 	void resizeView(int id, int wd, int ht);
 	void closeView(int id);
 	// this is used to start timer from the main thread via postEvent (ugly)
 	void startTimerSignal();
-public slots:
+public Q_SLOTS:
 	virtual void cleanupViewsSlot();
 	virtual void createViewSlot();
 	virtual void resizeViewSlot(int id, int wd, int ht);
