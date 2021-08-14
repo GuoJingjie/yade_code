@@ -1235,7 +1235,7 @@ FOREACH(subdir ${SUBDIRS_PRE})
     INSTALL(TARGETS "pre_${subdir}" DESTINATION ${YADE_LIB_PATH})
 ENDFOREACH()
 # see comment https://gitlab.com/yade-dev/trunk/-/merge_requests/616#note_527636625 for details.
-#TARGET_LINK_LIBRARIES(pre_dem ${VTK_LIBRARIES})
+TARGET_LINK_LIBRARIES(pre_dem ${VTK_LIBRARIES})
 
 #======================================
 #==== ** scan ./postprocessing/ ** ====
