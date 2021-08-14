@@ -7,7 +7,7 @@
 #include <pkg/common/Facet.hpp>
 #include <pkg/common/Wall.hpp>
 #include <pkg/dem/DemXDofGeom.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <postprocessing/dem/Shop.hpp>
 
 #ifdef YADE_OPENGL
 #include <lib/opengl/GLUtils.hpp>

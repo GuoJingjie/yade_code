@@ -22,7 +22,7 @@
 #include <core/Engine.hpp>
 #include <pkg/common/KinematicEngines.hpp>
 #include <pkg/common/MatchMaker.hpp>
-#include <pkg/dem/SpherePack.hpp>
+#include <preprocessing/dem/SpherePack.hpp>
 #ifdef YADE_OPENGL
 #include <pkg/common/GLDrawFunctors.hpp>
 #include <pkg/common/OpenGLRenderer.hpp>

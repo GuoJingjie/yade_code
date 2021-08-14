@@ -51,7 +51,7 @@
 #include <pkg/dem/ConcretePM.hpp>
 #include <pkg/dem/JointedCohesiveFrictionalPM.hpp>
 #include <pkg/dem/Lubrication.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <postprocessing/dem/Shop.hpp>
 #include <pkg/dem/WirePM.hpp>
 #include <pkg/pfv/PartialSatClayEngine.hpp>
 #include <pkg/pfv/Thermal.hpp>

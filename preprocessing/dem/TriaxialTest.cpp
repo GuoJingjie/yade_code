@@ -26,10 +26,10 @@
 #include <pkg/dem/FrictPhys.hpp>
 #include <pkg/dem/GlobalStiffnessTimeStepper.hpp>
 #include <pkg/dem/NewtonIntegrator.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <postprocessing/dem/Shop.hpp>
 #include <pkg/dem/TriaxialCompressionEngine.hpp>
-#include <pkg/dem/TriaxialStateRecorder.hpp>
-#include <pkg/dem/TriaxialStressController.hpp>
+#include <postprocessing/dem/TriaxialStateRecorder.hpp>
+#include <preprocessing/dem/TriaxialStressController.hpp>
 
 #include <pkg/common/Bo1_Aabb.hpp>
 #include <pkg/common/Wall.hpp>
@@ -37,7 +37,7 @@
 #include <pkg/dem/Ig2_Facet_Sphere_ScGeom.hpp>
 #include <pkg/dem/Ig2_Sphere_Sphere_ScGeom.hpp>
 
-#include <pkg/dem/SpherePack.hpp>
+#include <preprocessing/dem/SpherePack.hpp>
 #include <boost/limits.hpp>
 #include <boost/numeric/conversion/bounds.hpp>
 //#include<pkg/dem/MicroMacroAnalyser.hpp>

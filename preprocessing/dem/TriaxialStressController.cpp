@@ -15,7 +15,7 @@
 #include <pkg/common/Sphere.hpp>
 #include <pkg/dem/FrictPhys.hpp>
 #include <pkg/dem/ScGeom.hpp>
-#include <pkg/postprocessing/Shop.hpp>
+#include <postprocessing/dem/Shop.hpp>
 #include <assert.h>
 
 #ifdef FLOW_ENGINE

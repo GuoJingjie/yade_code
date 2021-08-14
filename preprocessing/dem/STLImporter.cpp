@@ -7,7 +7,7 @@
 *************************************************************************/
 #include "STLImporter.hpp"
 #include <lib/high-precision/Constants.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <postprocessing/dem/Shop.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 

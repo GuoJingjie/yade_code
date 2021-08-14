@@ -23,7 +23,7 @@
 #include <pkg/common/ParallelEngine.hpp>
 #include <pkg/common/Sphere.hpp>
 // #include <pkg/dem/LubricationWithPotential.hpp>
-#include <pkg/dem/STLImporter.hpp>
+#include <preprocessing/dem/STLImporter.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/archive/codecvt_null.hpp>
 #include <boost/bind.hpp>

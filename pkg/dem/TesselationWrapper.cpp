@@ -11,8 +11,8 @@
 #include "TesselationWrapper.hpp"
 #include <lib/high-precision/Constants.hpp>
 #include <lib/triangulation/Timer.h>
-#include <pkg/dem/Shop.hpp>
-#include <pkg/dem/SpherePack.hpp>
+#include <postprocessing/dem/Shop.hpp>
+#include <preprocessing/dem/SpherePack.hpp>
 
 // https://codeyarns.com/2014/03/11/how-to-selectively-ignore-a-gcc-warning/
 #pragma GCC diagnostic push

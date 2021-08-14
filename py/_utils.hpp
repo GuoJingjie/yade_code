@@ -10,7 +10,7 @@
 #include <pkg/common/Sphere.hpp>
 #include <pkg/dem/DemXDofGeom.hpp>
 #include <pkg/dem/ScGeom.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <postprocessing/dem/Shop.hpp>
 #include <pkg/dem/Tetra.hpp>
 #include <pkg/dem/ViscoelasticPM.hpp>
 #ifdef YADE_MPI

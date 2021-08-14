@@ -12,7 +12,7 @@
 
 #include <lib/base/Math.hpp>
 #include <core/PartialEngine.hpp>
-#include <pkg/dem/TriaxialStressController.hpp>
+#include <preprocessing/dem/TriaxialStressController.hpp>
 #include <string>
 
 namespace yade { // Cannot have #include directive inside.

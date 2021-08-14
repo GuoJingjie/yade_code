@@ -44,7 +44,7 @@ The files are
 #include<pkg/pfv/FlowEngine.hpp>
 #include<pkg/common/Sphere.hpp>
 #include<core/Clump.hpp>
-#include<pkg/dem/Shop.hpp>
+#include<postprocessing/dem/Shop.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 

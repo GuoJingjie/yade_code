@@ -3,7 +3,7 @@
 #include <lib/base/Logging.hpp>
 #include <lib/base/Math.hpp>
 #include <lib/pyutil/doc_opts.hpp>
-#include <pkg/dem/SpherePack.hpp>
+#include <preprocessing/dem/SpherePack.hpp>
 
 CREATE_CPP_LOCAL_LOGGER("_packSpheres.cpp");
 

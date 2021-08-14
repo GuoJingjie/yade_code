@@ -3,7 +3,7 @@
 #include <lib/smoothing/LinearInterpolate.hpp>
 #include <core/Scene.hpp>
 #include <pkg/common/KinematicEngines.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <postprocessing/dem/Shop.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 

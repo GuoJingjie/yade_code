@@ -17,7 +17,7 @@
 #include <pkg/common/InsertionSortCollider.hpp>
 #include <pkg/dem/GlobalStiffnessTimeStepper.hpp>
 #include <pkg/dem/NewtonIntegrator.hpp>
-//#include <pkg/dem/Shop.hpp>
+//#include <postprocessing/dem/Shop.hpp>
 #include <boost/filesystem/convenience.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/limits.hpp>

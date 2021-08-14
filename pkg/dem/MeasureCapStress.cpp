@@ -4,7 +4,7 @@
 #include <pkg/dem/CapillaryPhys.hpp>
 #include <pkg/dem/MeasureCapStress.hpp>
 #include <pkg/dem/ScGeom.hpp>
-#include <pkg/dem/Shop.hpp> // for direct use of aabbExtrema
+#include <postprocessing/dem/Shop.hpp> // for direct use of aabbExtrema
 
 
 namespace yade { // Cannot have #include directive inside.

@@ -6,8 +6,8 @@
 #include <core/Scene.hpp>
 #include <pkg/common/NormShearPhys.hpp>
 #include <pkg/dem/DemXDofGeom.hpp>
-#include <pkg/dem/PeriIsoCompressor.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <preprocessing/dem/PeriIsoCompressor.hpp>
+#include <postprocessing/dem/Shop.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 
