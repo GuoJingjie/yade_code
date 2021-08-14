@@ -16,22 +16,33 @@ your choice.
 Building
 -------------
 
-Yade source tree has the following structure (omitting, ``doc``,
-``examples`` and ``scripts`` which don't participate in the build process);
-we shall call each top-level component *module*::
+Yade source tree has the following structure.
+We shall call each top-level component *module*; excluding, ``doc``,
+``examples`` and ``scripts`` which don't participate in the build process.
+Only example subdirectories of *modules* are shown for brevity, see ``README.rst`` files therein for more information::
 
-	core/         ## core simulation building blocks
-	extra/        ## miscillanea
-	gui/          ## user interfaces
-	   qt4/          ## graphical user interface based on qt3 and OpenGL
-	   qt5/          ## same, but for qt5
-	lib/          ## support libraries, not specific to simulations
-	pkg/          ## simulation-specific files
-	   common/       ## generally useful classes
-	   dem/          ## classes for Discrete Element Method
-	py/           ## python modules
-
-.. FIXME: what about /pkg/lbm i /pkg/pvf - put them here?
+	cMake/           ## cmake files used to detect compilation requirements
+	core/            ## core simulation building blocks
+	data/            ## (larga) data files used by yade, packaged separately
+	doc/             ## this documentation
+	examples/        ## examples directory
+	gui/             ## user interfaces
+	   qt5/             ## same, but for qt5
+	lib/             ## support libraries, not specific to simulations
+	preprocessing/   ## files associated with creation or generation of the simulation
+	   dem/             ## creating a DEM simulation
+	   potential/       ## creating a PotentialBlocks or PotentialParticles simulation
+	   README.rst       ## more information about this directory
+	pkg/             ## simulation-specific files
+	   common/          ## generally useful classes
+	   dem/             ## classes for Discrete Element Method
+	   README.rst       ## more information about this directory
+	postprocessing/  ## files associated with extracting results for postprocessing
+	   dem/             ## general data extraction from DEM, no particular data target
+	   image/           ## creating images from simulation
+	   vtk/             ## extracting data for VTK
+	   README.rst       ## more information about this directory
+	py/              ## python modules
 
 
 Header installation
