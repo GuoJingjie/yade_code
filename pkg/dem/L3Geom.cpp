@@ -8,7 +8,6 @@
 #ifdef YADE_OPENGL
 #include <lib/opengl/GLUtils.hpp>
 #include <lib/opengl/OpenGLWrapper.hpp>
-#include <GL/glu.h>
 #endif
 
 namespace yade { // Cannot have #include directive inside.

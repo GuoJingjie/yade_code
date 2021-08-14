@@ -1,13 +1,15 @@
 #pragma once
 
-#ifdef YADE_OPENGL
+#if (defined(YADE_OPENGL) and defined(YADE_QT5))
 #include <lib/opengl/OpenGLWrapper.hpp>
 #include <core/Scene.hpp>
 #include <pkg/common/PeriodicEngines.hpp>
 
-#ifdef YADE_QT5
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <gui/qt5/OpenGLManager.hpp>
-#endif
+#pragma GCC diagnostic pop
 
 namespace yade { // Cannot have #include directive inside.
 

@@ -15,7 +15,6 @@
 #include <lib/opengl/OpenGLWrapper.hpp>
 #include <pkg/common/GLDrawFunctors.hpp>
 #include <pkg/common/OpenGLRenderer.hpp>
-#include <GL/glu.h>
 #endif
 
 namespace yade { // Cannot have #include directive inside.

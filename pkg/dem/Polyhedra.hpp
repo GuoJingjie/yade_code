@@ -27,7 +27,6 @@
 #include <lib/opengl/GLUtils.hpp>
 #include <lib/opengl/OpenGLWrapper.hpp>
 #include <pkg/common/GLDrawFunctors.hpp>
-#include <GL/glu.h>
 #endif
 
 #include <lib/base/AliasCGAL.hpp>

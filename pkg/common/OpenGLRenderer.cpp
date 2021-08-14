@@ -12,10 +12,6 @@
 #include <core/Scene.hpp>
 #include <core/Timing.hpp>
 
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
-
 namespace yade { // Cannot have #include directive inside.
 
 YADE_ENUM(yade::OpenGLRenderer, BlinkHighlight, (NEVER)(NORMAL)(WEAK));

@@ -7,9 +7,15 @@
 
 #pragma once
 
-#ifndef YADE_OPENGL
-#error "This build doesn't support openGL. Therefore, this header must not be used."
+#if ((not defined(YADE_OPENGL)) or (not defined(YADE_QT5)))
+#error "This build doesn't support OpenGL. Therefore, this header must not be used."
 #endif
+
+// This is included first.
+#include <QtGui/qopengl.h>
+// We have to make sure to use the OpenGL version shipped with QT, otherwise we may end up with strange conflicts and crashes. Se we don't #include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
 
 #include <lib/base/Math.hpp>
 #include <type_traits>
@@ -17,9 +23,6 @@
 // https://stackoverflow.com/questions/7064039/how-to-prevent-non-specialized-template-instantiation/7064062
 template <typename T> struct dontCallThis : std::false_type {
 };
-
-#include <GL/gl.h>
-#include <GL/glut.h>
 
 namespace forCtags {
 struct OpenGLWrapper {

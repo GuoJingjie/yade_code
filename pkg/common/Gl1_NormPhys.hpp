@@ -4,7 +4,6 @@
 #include <lib/opengl/OpenGLWrapper.hpp>
 #include <pkg/common/GLDrawFunctors.hpp>
 #include <pkg/common/NormShearPhys.hpp>
-#include <GL/glu.h>
 
 
 namespace yade { // Cannot have #include directive inside.
