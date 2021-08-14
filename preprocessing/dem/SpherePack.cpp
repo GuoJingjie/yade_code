@@ -6,8 +6,8 @@
 #include <core/Scene.hpp>
 #include <core/Timing.hpp>
 #include <pkg/common/Sphere.hpp>
-#include <pkg/dem/Shop.hpp>
-#include <pkg/dem/SpherePack.hpp>
+#include <pkg/postprocessing/Shop.hpp>
+#include <pkg/preprocessing/SpherePack.hpp>
 #include <random>
 
 namespace yade { // Cannot have #include directive inside.
