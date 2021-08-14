@@ -17,7 +17,7 @@ thresholdDict = dict({'view': 5    , 'term': xtermTolerance , 'cont': 20    , 'i
 maxEncountered= dict({'view': 0    , 'term': 0              , 'cont': 0     , 'insp': 0     })
 
 def getAllowedError(viewName,scrNumber,testName):
-	skipCheck = 10000
+	skipCheck = 1000000
 	assert(viewName  in ['view','term','cont','insp'])
 	assert(scrNumber in range(15))
 	# Some exceptions are allowed here
@@ -32,13 +32,20 @@ def getAllowedError(viewName,scrNumber,testName):
 
 	# The testGuiHopper.py and testGuiVideo.py are more random than other tests. Especially in different precisions.
 	# Their goal is to test for crashes and when drawing and erasing, not for reproducibility of screenshots.
-	if(('Hopper' in testName) or ('Video' in testName)):
+	if('Hopper' in testName):
 		# In different precisions the clumps can go to different positions in 3D view
 		if((viewName == 'view') and (scrNumber >= 4)):
-			return (skipCheck,'View ')
+			return (skipCheck,'Hpr View ')
 		# and the interactions might be different.
 		if((viewName == 'insp') and (scrNumber == 7)):
-			return (skipCheck,'Insp ')
+			return (skipCheck,'Hpr Insp ')
+	if('Video' in testName):
+		# In different precisions the clumps can go to different positions in 3D view
+		if((viewName == 'view') and (scrNumber >= 3) and (scrNumber <= 8)):
+			return (skipCheck,'Vid View ')
+		# and the interactions might be different.
+		if((viewName == 'insp') and (scrNumber == 7)):
+			return (skipCheck,'Vid Insp ')
 
 	return (thresholdDict[viewName],'')
 
