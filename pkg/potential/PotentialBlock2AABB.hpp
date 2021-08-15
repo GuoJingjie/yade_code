@@ -3,7 +3,7 @@
 #pragma once
 
 #include <core/Dispatching.hpp>
-#include <pkg/dem/PotentialBlock.hpp>
+#include <pkg/potential/PotentialBlock.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 

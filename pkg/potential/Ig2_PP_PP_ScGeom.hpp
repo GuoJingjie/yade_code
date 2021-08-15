@@ -11,7 +11,7 @@
 #include <lib/serialization/Serializable.hpp>
 #include <core/Dispatching.hpp>
 #include <pkg/common/Sphere.hpp>
-#include <pkg/dem/PotentialParticle.hpp>
+#include <pkg/potential/PotentialParticle.hpp>
 #include <Eigen/Core>
 #include <stdio.h>
 

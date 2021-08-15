@@ -5,9 +5,9 @@
 
 #include <lib/computational-geometry/MarchingCube.hpp>
 #include <vector>
-//#include <pkg/dem/PotentialBlock.hpp>
+//#include <pkg/potential/PotentialBlock.hpp>
 #include <pkg/common/PeriodicEngines.hpp>
-#include <pkg/dem/PotentialBlock2AABB.hpp>
+#include <pkg/potential/PotentialBlock2AABB.hpp>
 
 #ifdef YADE_VTK
 

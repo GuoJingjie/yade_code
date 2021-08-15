@@ -4,7 +4,7 @@
 #include <core/Scene.hpp>
 //#include <pkg/dem/ScGeom.hpp>
 #include <core/Omega.hpp>
-#include <pkg/dem/PotentialParticle.hpp>
+#include <pkg/potential/PotentialParticle.hpp>
 
 
 namespace yade { // Cannot have #include directive inside.

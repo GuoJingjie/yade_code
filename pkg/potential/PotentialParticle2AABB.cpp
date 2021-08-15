@@ -4,7 +4,7 @@
 #ifdef YADE_POTENTIAL_PARTICLES
 #include "PotentialParticle2AABB.hpp"
 #include <core/Aabb.hpp>
-#include <pkg/dem/PotentialParticle.hpp>
+#include <pkg/potential/PotentialParticle.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 

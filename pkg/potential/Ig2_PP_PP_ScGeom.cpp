@@ -6,9 +6,9 @@
 #include "Ig2_PP_PP_ScGeom.hpp"
 #include <lib/high-precision/Constants.hpp>
 #include <pkg/dem/ScGeom.hpp>
-//#include <pkg/dem/PotentialParticle.hpp>
+//#include <pkg/potential/PotentialParticle.hpp>
 //#include <yade/lib-base/yadeWm3Extra.hpp>
-#include <pkg/dem/KnKsLaw.hpp>
+#include <pkg/potential/KnKsLaw.hpp>
 
 #include <lib/base/Math.hpp>
 #include <core/InteractionLoop.hpp>

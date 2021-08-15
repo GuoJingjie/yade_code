@@ -3,23 +3,29 @@
 /* CW Boon, GT Houlsby, S Utili (2015).  Designing Tunnel Support in Jointed Rock Masses Via the DEM.  Rock Mechanics and Rock Engineering,  48 (2), 603-632. */
 #if defined(YADE_POTENTIAL_BLOCKS) && defined(YADE_VTK)
 #pragma once
-#include <lib/compatibility/LapackCompatibility.hpp>
-#include <pkg/dem/PotentialBlock.hpp>
-#include <pkg/dem/PotentialBlock2AABB.hpp>
+#include <pkg/potential/PotentialBlock.hpp>
+#include <pkg/potential/PotentialBlock2AABB.hpp>
 
 #include <pkg/common/PeriodicEngines.hpp>
 #include <vector>
 
 #include <stdio.h>
 
-#pragma GCC diagnostic push
 // https://codeyarns.com/2014/03/11/how-to-selectively-ignore-a-gcc-warning/
+// https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Pragmas.html
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wshadow"
 #pragma GCC diagnostic ignored "-Wcomment"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 // Code that generates this warning, Note: we cannot do this trick in yade. If we have a warning in yade, we have to fix it! See also https://gitlab.com/yade-dev/trunk/merge_requests/73
 // This method will work once g++ bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53431#c34 is fixed.
+#include <ClpSimplex.hpp>
+#include <CoinBuild.hpp>
+#include <CoinHelperFunctions.hpp>
+#include <CoinModel.hpp>
+#include <CoinTime.hpp>
+
 #include <vtkAppendPolyData.h>
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
@@ -37,22 +43,11 @@
 #include <vtkXMLImageDataWriter.h>
 #include <vtkXMLStructuredGridWriter.h>
 #include <vtkXMLUnstructuredGridWriter.h>
-
-#include <ClpSimplex.hpp>
-#include <CoinBuild.hpp>
-#include <CoinHelperFunctions.hpp>
-#include <CoinModel.hpp>
-#include <CoinTime.hpp>
 #pragma GCC diagnostic pop
 
 namespace yade { // Cannot have #include directive inside.
 
-class RockLiningGlobal : public PeriodicEngine {
-protected:
-	Real stiffnessMatrix[36];
-	//Real * globalStiffnessMatrix;
-	Real globalStiffnessMatrix[3 * 3 * 200 * 200];
-
+class RockBolt : public PeriodicEngine {
 public:
 #if 0
 		struct Bolts{
@@ -75,14 +70,13 @@ public:
 	        const State*          state2,
 	        const Vector3r        localPt1,
 	        const Vector3r        localPt2) const;
-	bool installLining(
+	bool installBolts(
 	        const PotentialBlock* cm1,
 	        const State*          state1,
 	        const Vector3r        startingPt,
 	        const Vector3r        direction,
 	        const Real            length,
 	        Vector3r&             intersectionPt);
-	int  insertNode(Vector3r pos, Real mass, Real intervalLength);
 	Real evaluateFNoSphereVol(const PotentialBlock* s1, const State* state1, const Vector3r newTrial);
 	bool intersectPlane(
 	        const PotentialBlock* s1,
@@ -95,41 +89,31 @@ public:
 	        const Real            planeD);
 	void action(void) override;
 	// clang-format off
-  	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(RockLiningGlobal,PeriodicEngine,"Engine recording potential blocks as surfaces into files with given periodicity.",
-		((bool,assembledKglobal,false ,,"global stiffness matrix"))
-		((Real,density,0.0 ,,"density"))
-		((Real,lumpedMass,0.0 ,,"lumpedMass"))
-		((Real,EA,0.0 ,,"EA"))
-		((Real,EI,0.0 ,,"EI"))
-		((Real,initOverlap,pow(10,-5),,"initialOverlap"))
-		((Real,expansionFactor,pow(10,-5),,"alpha deltaT"))
-		((Real,contactLength,1.0 ,,"contactLength"))
-		((vector<Real>, sigmaMax, ,,"sigma max"))
-		((vector<Real>, sigmaMin, ,,"sigma min"))
-		((Real,ElasticModulus,0.0 ,,"E"))
-		((Real,liningThickness,0.1 ,,"liningThickness"))
-		((Real,Inertia,0.0 ,,"I"))
-		((vector<Real>,lengthNode, ,,"L"))
-		((vector<int>,stickIDs, ,,"L"))
-		((Real,Area,0.02 ,,"A"))
-		((Real,interfaceStiffness,pow(10,8) ,,"L"))
-		((Real,interfaceFriction,30.0 ,,"L"))
-		((Real,interfaceCohesion,0.5*pow(10,6) ,,"L"))
-		((Real,interfaceTension,0.8*pow(10,6) ,,"L"))
-		((int,totalNodes,0 ,,"L"))
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(RockBolt,PeriodicEngine,"Engine recording potential blocks as surfaces into files with given periodicity.",
+		((Real,normalStiffness,0.0 ,,"EA/L"))
+		((Real,shearStiffness,0.0 ,,"stiffness"))
+		((Real,axialStiffness,0.0 ,,"EA"))
+		((bool,useMidPoint,false ,,"large length"))
+		((Real,halfActiveLength,0.02 ,,"stiffness"))
+		((bool,resetLengthInit,false ,,"reset length for pretension"))
 		((Vector3r,startingPoint,Vector3r(0,0,0) ,,"startingPt"))
+		((Real,boltLength,0.0 ,,"startingPt"))
+		((Vector3r,boltDirection,Vector3r(0,0,0) ,,"direction"))
 		((vector<int>,blockIDs, ,,"ids"))
+		((Real,displacements, ,,"ids"))
 		((vector<Vector3r>,localCoordinates, ,,"local coordinates of intersection"))
-		((vector<Vector3r>,refPos, ,,"initial u"))
-		((vector<Vector3r>,refDir, ,,"initial v"))
-		((vector<Quaternionr>,refOri, ,,"initial theta"))
-		((vector<Real>,refAngle, ,,"initial theta"))
-		((vector<Real>,moment, ,,"moment"))
+		((vector<Real>,initialLength, ,,"initial length"))
+		((vector<Vector3r>,initialDirection, ,,"initial length"))
+		((vector<Vector3r>,nodeDistanceVec, ,,"nodeDistance"))
+		((vector<Vector3r>,nodePosition, ,,"nodePosition"))
+		((vector<Real>,distanceFrCentre, ,,"nodePosition"))
+		((vector<Real>,forces, ,,"force"))
 		((vector<Real>,axialForces, ,,"force"))
 		((vector<Real>,shearForces, ,,"force"))
-		((vector<Real>,displacement, ,,"force"))
-		((vector<Real>,radialDisplacement, ,,"force"))
 		((Real,openingRad,5.0 ,,"estimated opening radius"))
+		((Real,preTension,0.0 ,,"prestressed tension"))
+		((Real,averageForce,0.0 ,,"averageForce"))
+		((Real,maxForce,0.0 ,,"maxForce"))
 		((bool,installed,false ,,"installed?"))
 		((bool,openingCreated,false ,,"opening created?"))
 		((vector<bool>,ruptured, ,,"ruptured"))
@@ -140,12 +124,11 @@ public:
 		((string,fileName,,,"File prefix to save to"))
 		((string,name,,,"File prefix to save to"))
 		,
-			//globalStiffnessMatrix = new Real[totalNodes*3*totalNodes*3];
 		,
-  	);
+	);
 	// clang-format on
 };
-REGISTER_SERIALIZABLE(RockLiningGlobal);
+REGISTER_SERIALIZABLE(RockBolt);
 
 } // namespace yade
 

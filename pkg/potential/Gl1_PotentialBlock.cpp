@@ -3,7 +3,7 @@
 
 #include <core/Aabb.hpp>
 #include <core/Clump.hpp>
-#include <pkg/dem/KnKsPBLaw.hpp>
+#include <pkg/potential/KnKsPBLaw.hpp>
 #include <pkg/dem/ScGeom.hpp>
 
 #include "Gl1_PotentialBlock.hpp"

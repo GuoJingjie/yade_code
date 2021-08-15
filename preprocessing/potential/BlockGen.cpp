@@ -6,7 +6,7 @@
 
 #include <lib/high-precision/Constants.hpp>
 #include <core/Clump.hpp>
-#include <pkg/dem/KnKsPBLaw.hpp>
+#include <pkg/potential/KnKsPBLaw.hpp>
 
 #include <core/Aabb.hpp>
 #include <core/Body.hpp>
@@ -28,8 +28,8 @@
 #include <boost/random/variate_generator.hpp>
 
 #include "BlockGen.hpp"
-#include <pkg/dem/Ig2_PB_PB_ScGeom.hpp>
-#include <pkg/dem/PotentialBlock2AABB.hpp>
+#include <pkg/potential/Ig2_PB_PB_ScGeom.hpp>
+#include <pkg/potential/PotentialBlock2AABB.hpp>
 
 /* IpOpt */
 #include <boost/random.hpp>
