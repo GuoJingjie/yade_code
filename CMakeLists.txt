@@ -371,7 +371,7 @@ if(ENABLE_USEFUL_ERRORS)
     MESSAGE(STATUS   "Numpy version ${NUMPY_VERSION_MAJOR}.${NUMPY_VERSION_MINOR} < 1.13, setting -Wno-unused-function")
     SET(WORKAROUND_LIBRARY_WARNINGS "${WORKAROUND_LIBRARY_WARNINGS} -Wno-unused-function")
   ENDIF()
-  SET(ALL_ENABLED_USEFUL_ERRORS " -Werror -Wformat -Wformat-security -Wformat-nonliteral -Wall -Wextra -Wnarrowing -Wreturn-type -Wuninitialized -Wfloat-conversion -Wcast-align -Wdisabled-optimization -Wtrampolines -Wpointer-arith -Wswitch-bool -Wwrite-strings -Wnon-virtual-dtor -Wreturn-local-addr -Wsuggest-override -Wshadow")
+  SET(ALL_ENABLED_USEFUL_ERRORS " -Werror -Wformat -Wformat-security -Wformat-nonliteral -Wall -Wextra -Wnarrowing -Wreturn-type -Wuninitialized -Wfloat-conversion -Wcast-align -Wdisabled-optimization -Wtrampolines -Wpointer-arith -Wswitch-bool -Wwrite-strings -Wnon-virtual-dtor -Wreturn-local-addr -Wsuggest-override -Wshadow -Wswitch-default")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ALL_ENABLED_USEFUL_ERRORS} ${WORKAROUND_LIBRARY_WARNINGS} -Wno-error=cpp -fdce -fstack-protector-strong")
   SET(CONFIGURED_FEATS "${CONFIGURED_FEATS} USEFUL_ERRORS")
 
