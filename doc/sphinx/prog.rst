@@ -502,6 +502,8 @@ Using clang-format
 
 The file :ysrc:`.clang-format` contains the config which should produce always the same results. The aim is to eliminate commits that change formatting. The script :ysrc:`scripts/clang-formatter.sh` can be invoked on either file or a directory and will do the reformatting. Usually this can be integrated with the editor, `see clang-format documentation <https://clang.llvm.org/docs/ClangFormat.html>`_ (except that for vim ``py3f`` command has to be used), and in kdevelop it is added `as a custom formatter <https://www.kdevelop.org/features>`_.
 
+The The script :ysrc:`scripts/python-formatter.sh` applied our coding conventions to formatting of python scripts. It should be used before committing changes to python scripts.
+
 Class naming
 -------------
 
