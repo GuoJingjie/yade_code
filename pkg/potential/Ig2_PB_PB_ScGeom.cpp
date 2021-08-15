@@ -8,9 +8,9 @@
 #include "Ig2_PB_PB_ScGeom.hpp"
 #include <lib/high-precision/Constants.hpp>
 #include <pkg/dem/ScGeom.hpp>
-//#include <pkg/dem/PotentialBlock.hpp>
+//#include <pkg/potential/PotentialBlock.hpp>
 //#include<yade/lib-base/yadeWm3Extra.hpp>
-#include <pkg/dem/KnKsPBLaw.hpp>
+#include <pkg/potential/KnKsPBLaw.hpp>
 
 #include <lib/base/Math.hpp>
 #include <core/InteractionLoop.hpp>

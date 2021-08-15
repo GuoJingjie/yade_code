@@ -5,14 +5,14 @@
 #include <lib/high-precision/Constants.hpp>
 #include <core/Omega.hpp>
 #include <core/Scene.hpp>
-#include <pkg/dem/PotentialBlock.hpp>
+#include <pkg/potential/PotentialBlock.hpp>
 #include <pkg/dem/ScGeom.hpp>
 
 #include "KnKsPBLaw.hpp"
 #include <core/Scene.hpp>
 //#include <pkg/dem/ScGeom.hpp>
 #include <core/Omega.hpp>
-#include <pkg/dem/PotentialBlock.hpp>
+#include <pkg/potential/PotentialBlock.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 

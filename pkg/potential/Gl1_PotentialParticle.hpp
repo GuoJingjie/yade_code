@@ -4,8 +4,8 @@
 #include <lib/computational-geometry/MarchingCube.hpp>
 #include <pkg/common/GLDrawFunctors.hpp>
 #include <pkg/common/PeriodicEngines.hpp>
-#include <pkg/dem/PotentialParticle.hpp>
-#include <pkg/dem/PotentialParticle2AABB.hpp>
+#include <pkg/potential/PotentialParticle.hpp>
+#include <pkg/potential/PotentialParticle2AABB.hpp>
 #include <vector>
 
 #ifdef YADE_VTK

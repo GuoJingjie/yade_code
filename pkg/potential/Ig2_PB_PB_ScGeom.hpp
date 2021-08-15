@@ -13,7 +13,7 @@
 #include <lib/serialization/Serializable.hpp>
 #include <core/Dispatching.hpp>
 #include <pkg/common/Sphere.hpp>
-#include <pkg/dem/PotentialBlock.hpp>
+#include <pkg/potential/PotentialBlock.hpp>
 #include <Eigen/Core>
 #include <stdio.h>
 
