@@ -1220,7 +1220,6 @@ FOREACH(subdir ${SUBDIRS_PKG})
 ENDFOREACH()
 # see comment https://gitlab.com/yade-dev/trunk/-/merge_requests/616#note_527636625 for details.
 TARGET_LINK_LIBRARIES(pkg_potential  ${VTK_LIBRARIES})
-TARGET_LINK_LIBRARIES(pkg_dem        ${VTK_LIBRARIES}) # remove after VTKRecorder is moved to postprocessing
 TARGET_LINK_LIBRARIES(pkg_pfv        ${VTK_LIBRARIES})
 
 #======================================
@@ -1254,7 +1253,7 @@ FOREACH(subdir ${SUBDIRS_PRE})
     TARGET_LINK_LIBRARIES(boot "post_${subdir}")
     INSTALL(TARGETS "post_${subdir}" DESTINATION ${YADE_LIB_PATH})
 ENDFOREACH()
-#TARGET_LINK_LIBRARIES(post_vtk ${VTK_LIBRARIES})
+TARGET_LINK_LIBRARIES(post_vtk ${VTK_LIBRARIES})
 
 #======================================
 #==== ******* END scanning ******* ====
