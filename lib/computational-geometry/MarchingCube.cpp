@@ -161,6 +161,7 @@ void MarchingCube::computeNormal(const vector<vector<vector<Real>>>& scalarField
 		case 9: normals[offset] = computeNormalY(scalarField, x + 1, y, z); break;
 		case 10: normals[offset] = computeNormalY(scalarField, x + 1, y, z + 1); break;
 		case 11: normals[offset] = computeNormalY(scalarField, x, y, z + 1); break;
+		default: throw std::runtime_error(__FILE__ " : switch default case error.");
 	}
 }
 

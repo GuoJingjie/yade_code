@@ -248,6 +248,8 @@ long SpherePack::makeCloud(
 					int piece = psdGetPiece(rand, psdCumm, norm);
 					r         = psdRadii[piece] + norm * (psdRadii[piece + 1] - psdRadii[piece]);
 				}
+				break;
+			default: throw std::runtime_error(__FILE__ " : switch default case error.");
 		}
 		// try to put the sphere into a free spot
 		for (t = 0; t < maxTry; ++t) {

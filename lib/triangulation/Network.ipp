@@ -387,6 +387,7 @@ namespace CGT {
 				} else
 					cell->info().solidSurfaces[j][facetF2] = 0;
 			}; break;
+			default: throw std::runtime_error(__FILE__ " : switch default case error.");
 		}
 
 		Ssolid = Ssolid1 + Ssolid1n + Ssolid2 + Ssolid2n + Ssolid3 + Ssolid3n;
@@ -466,6 +467,7 @@ namespace CGT {
 				if (bi1.flowCondition && !slipBoundary) Ssolid2 = 0.5 * abs(p1p2v1Surface[bi1.coordinate]);
 				if (bi2.flowCondition && !slipBoundary) Ssolid3 = 0.5 * abs(p1p2v1Surface[bi2.coordinate]);
 			}; break;
+			default: throw std::runtime_error(__FILE__ " : switch default case error.");
 		}
 		return Ssolid1 + Ssolid2 + Ssolid3;
 	}
@@ -744,6 +746,9 @@ namespace CGT {
 				cell->info().solidLine[j][facetF1] = abs(d23);
 				cell->info().solidLine[j][facetF2] = abs(d13);
 			}; break;
+			default:
+				LOG_NOFILTER("Unhandled switch case:" << facetNFictious);
+				// throw std::runtime_error(__FILE__ " : switch default case error.");
 		}
 
 		lSolid = cell->info().solidLine[j][0] + cell->info().solidLine[j][1] + cell->info().solidLine[j][2];

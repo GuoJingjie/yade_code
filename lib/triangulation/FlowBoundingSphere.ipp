@@ -1906,6 +1906,7 @@ namespace CGT {
 							extraCells += 6;
 							extraV += 7;
 						} break;
+						default: throw std::runtime_error(__FILE__ " : switch default case error.");
 					}
 				}
 			}
@@ -1999,6 +2000,8 @@ namespace CGT {
 						vtkfile.write_cell(id0, id5, id1, id2);
 						vtkfile.write_cell(id0, id1, id4, id5);
 					}
+					break;
+				default: throw std::runtime_error(__FILE__ " : switch default case error.");
 			}
 		}
 		vtkfile.end_cells();

@@ -63,17 +63,20 @@ void basicVTKwritter::begin_data(const char* dataname, DataPosition pos, DataNam
 				hasCellData = true;
 			}
 			break;
+		default: throw std::runtime_error(__FILE__ " : switch default case error.");
 	}
 
 	switch (name) {
 		case SCALARS: file << "SCALARS " << dataname; break;
 		case VECTORS: file << "VECTORS " << dataname; break;
 		case TENSORS: file << "TENSORS " << dataname; break;
+		default: throw std::runtime_error(__FILE__ " : switch default case error.");
 	}
 
 	switch (type) {
 		case INT: file << " int"; break;
 		case FLOAT: file << " float"; break;
+		default: throw std::runtime_error(__FILE__ " : switch default case error.");
 	}
 
 	if (name == SCALARS) {

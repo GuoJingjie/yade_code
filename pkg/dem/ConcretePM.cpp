@@ -171,6 +171,7 @@ Real CpmPhys::funcG(const Real& kappaD, const Real& epsCrackOnset, const Real& e
 			return (1. - epsCrackOnset / kappaD) / (1. - epsCrackOnset / epsFracture);
 		case 1: // exponential
 			return 1. - (epsCrackOnset / kappaD) * exp(-(kappaD - epsCrackOnset) / epsFracture);
+		default: throw std::runtime_error(__FILE__ " : switch default case error.");
 	}
 	throw runtime_error("CpmPhys::funcG: wrong damLaw\n");
 }
@@ -182,6 +183,7 @@ Real CpmPhys::funcGDKappa(const Real& kappaD, const Real& epsCrackOnset, const R
 			return epsCrackOnset / ((1. - epsCrackOnset / epsFracture) * kappaD * kappaD);
 		case 1: // exponential
 			return epsCrackOnset / kappaD * (1. / kappaD + 1. / epsFracture) * exp(-(kappaD - epsCrackOnset) / epsFracture);
+		default: throw std::runtime_error(__FILE__ " : switch default case error.");
 	}
 	throw runtime_error("CpmPhys::funcGDKappa: wrong damLaw\n");
 }
@@ -192,7 +194,7 @@ Real CpmPhys::funcGInv(const Real& omega, const Real& epsCrackOnset, const Real&
 	switch (damLaw) {
 		case 0: // linear
 			return epsCrackOnset / (1. - omega * (1. - epsCrackOnset / epsFracture));
-		case 1: // exponential
+		case 1: { // exponential
 			// Newton's iterations
 			Real fg, dfg, decr, ret = epsCrackOnset, tol = 1e-3;
 			int  maxIter = 100;
@@ -205,6 +207,8 @@ Real CpmPhys::funcGInv(const Real& omega, const Real& epsCrackOnset, const Real&
 				if (math::abs(decr / epsCrackOnset) < tol) { return ret; }
 			}
 			throw runtime_error("CpmPhys::funcGInv: no convergence\n");
+		} break;
+		default: throw std::runtime_error(__FILE__ " : switch default case error.");
 	}
 	throw runtime_error("CpmPhys::funcGInv: wrong damLaw\n");
 }

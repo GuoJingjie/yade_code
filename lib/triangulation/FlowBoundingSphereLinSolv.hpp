@@ -271,6 +271,7 @@ namespace CGT {
 				case 2: pardisoSolve(dt); break;
 				case 3: eigenSolve(dt); break;
 				case 4: cholmodSolve(dt); break;
+				default: throw std::runtime_error(__FILE__ " : switch default case error.");
 			}
 			computedOnce = true;
 		}

@@ -19,6 +19,7 @@
 #pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wshadow"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
+#pragma GCC diagnostic ignored "-Wswitch-default"
 #include <ClpSimplex.hpp>
 #include <ClpSimplexDual.hpp>
 #include <CoinBuild.hpp>

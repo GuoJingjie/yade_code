@@ -230,6 +230,9 @@ bool do_intersect(Polyhedron A, Polyhedron B, std::vector<int>& sep_plane)
 			}
 			if (found) return false;
 		} break;
+		default:
+			LOG_WARN("Unhandled switch case:" << sep_plane[0] << ", function do_intersect(…).");
+			// throw std::runtime_error(__FILE__ " : switch default case error.");
 	}
 
 	//regular test with no previous information about separating plane
