@@ -52,26 +52,28 @@ yade.%s module
 #
 # NOTE: in file doc/sphinx/conf.py there is a moduleMap={……} variable which must reflect what is written below.
 # hint: follow changes in d067b0696a8 to add new modules.
-mods = {
-        'libVersions': ['_libVersions'],
-        'log': ['_log'],
-        'math': ['_math'],
-        'minieigenHP': ['_minieigenHP'],
-        'export': [],
-        'post2d': [],
-        'pack': ['_packSpheres', '_packPredicates', '_packObb'],
-        'plot': [],
-        'timing': [],
-        'utils': ['_utils'],
-        'polyhedra_utils': ['_polyhedra_utils'],
-        'ymport': [],
-        'geom': [],
-        'bodiesHandling': [],
-        'qt': ['qt._GLViewer'],
-        'linterpolation': [],
-        'gridpfacet': [],
-        'mpy': []
-}
+# yapf: disable
+mods={
+          'libVersions'     : ['_libVersions']
+        , 'log'             : ['_log']
+        , 'math'            : ['_math']
+        , 'minieigenHP'     : ['_minieigenHP']
+        , 'export'          : []
+        , 'post2d'          : []
+        , 'pack'            : ['_packSpheres','_packPredicates','_packObb']
+        , 'plot'            : []
+        , 'timing'          : []
+        , 'utils'           : ['_utils']
+        , 'polyhedra_utils' : ['_polyhedra_utils']
+        , 'ymport'          : []
+        , 'geom'            : []
+        , 'bodiesHandling'  : []
+        , 'qt'              : ['qt._GLViewer']
+        , 'linterpolation'  : []
+        , 'gridpfacet'      : []
+        , 'mpy'             : []
+    }
+# yapf: enable
 #
 # generate documentation, in alphabetical order
 mm = list(mods.keys())
@@ -234,8 +236,8 @@ def genWrapperRst():
 	global docClasses
 	docClasses = set()  # reset globals
 	wrapper = open('yade.wrapper.rst', 'w', encoding="utf8")
-	wrapper.write(
-	        """.. _yade.wrapper::
+	# yapf: disable
+	wrapper.write(""".. _yade.wrapper::
 
 Yade wrapper class reference
 ============================
@@ -246,39 +248,31 @@ Yade wrapper class reference
 
 .. currentmodule:: yade.wrapper
 
-""" + sect('Bodies', '', ['Body', 'Shape', 'State', 'Material', 'Bound']) + sect('Interactions', '', ['Interaction', 'IGeom', 'IPhys']) +
-	        sect('Global engines', '', ['FieldApplier', 'Collider', 'BoundaryController', 'PeriodicEngine', 'GlobalEngine'], reverse=True) +
-	        sect('Partial engines', '', ['PartialEngine']) + sect(
-	                'Dispatchers',
-	                '', ['Dispatcher'],
-	                willBeLater=childSet(['BoundDispatcher', 'IGeomDispatcher', 'IPhysDispatcher', 'LawDispatcher', 'InternalForceDispatcher'])
-	        ) + sect(
-	                'Functors',
-	                '', ['Functor'],
-	                willBeLater=childSet(
-	                        [
-	                                'IPhysFunctor', 'GlStateFunctor', 'GlIGeomFunctor', 'IGeomFunctor', 'LawFunctor', 'GlBoundFunctor', 'GlIPhysFunctor',
-	                                'GlShapeFunctor', 'BoundFunctor', 'InternalForceFunctor'
-	                        ]
-	                )
-	        ) + sect('Bounding volume creation', '', ['BoundFunctor', 'BoundDispatcher']) +
-	        sect('Interaction Geometry creation', '', ['IGeomFunctor', 'IGeomDispatcher']) +
-	        sect('Interaction Physics creation', '', ['IPhysFunctor', 'IPhysDispatcher']) + sect('Constitutive laws', '', ['LawFunctor', 'LawDispatcher']) +
-	        sect('Internal forces', '', ['InternalForceFunctor', 'InternalForceDispatcher']) + sect(
-	                'Callbacks',
-	                '',
-	                [  #'BodyCallback',
-	                        'IntrCallback'
-	                ]
-	        ) + sect('Preprocessors', '', ['FileGenerator']) +
-	        sect('Rendering', '', ['OpenGLRenderer', 'GlShapeFunctor', 'GlStateFunctor', 'GlBoundFunctor', 'GlIGeomFunctor', 'GlIPhysFunctor']
-	            ) +  # ,'GlShapeDispatcher','GlStateDispatcher','GlBoundDispatcher','GlIGeomDispatcher','GlIPhysDispatcher'])+
-	        sect('Simulation data', '', ['Omega', 'BodyContainer', 'InteractionContainer', 'ForceContainer', 'MaterialContainer', 'Scene', 'Cell']) + """
+"""+
+	sect('Bodies','',['Body','Shape','State','Material','Bound'])+
+	sect('Interactions','',['Interaction','IGeom','IPhys'])+
+	sect('Global engines','',['FieldApplier','Collider','BoundaryController','PeriodicEngine','GlobalEngine'],reverse=True)+
+	sect('Partial engines','',['PartialEngine'])+
+	sect('Dispatchers','',['Dispatcher'],willBeLater=childSet(['BoundDispatcher', 'IGeomDispatcher', 'IPhysDispatcher', 'LawDispatcher', 'InternalForceDispatcher']))+
+	sect('Functors','',['Functor'],willBeLater=childSet(['IPhysFunctor', 'GlStateFunctor', 'GlIGeomFunctor', 'IGeomFunctor', 'LawFunctor', 'GlBoundFunctor', 'GlIPhysFunctor', 'GlShapeFunctor', 'BoundFunctor', 'InternalForceFunctor']))+
+	sect('Bounding volume creation','',['BoundFunctor','BoundDispatcher'])+
+	sect('Interaction Geometry creation','',['IGeomFunctor','IGeomDispatcher'])+
+	sect('Interaction Physics creation','',['IPhysFunctor','IPhysDispatcher'])+
+	sect('Constitutive laws','',['LawFunctor','LawDispatcher'])+
+	sect('Internal forces','',['InternalForceFunctor', 'InternalForceDispatcher'])+
+	sect('Callbacks','',[#'BodyCallback',
+	    'IntrCallback'])+
+	sect('Preprocessors','',['FileGenerator'])+
+	sect('Rendering','',['OpenGLRenderer','GlShapeFunctor','GlStateFunctor','GlBoundFunctor','GlIGeomFunctor','GlIPhysFunctor'])+ # ,'GlShapeDispatcher','GlStateDispatcher','GlBoundDispatcher','GlIGeomDispatcher','GlIPhysDispatcher'])+
+	sect('Simulation data','',['Omega','BodyContainer','InteractionContainer','ForceContainer','MaterialContainer','Scene','Cell'])
+	+"""
 Other classes
 ---------------
 
-""" + ''.join([autodocClass(k) for k in (yade.system.childClasses('Serializable') - docClasses) | set(['Serializable', 'TimingDeltas', 'Cell'])])
+"""
+	+''.join([autodocClass(k) for k in (yade.system.childClasses('Serializable')-docClasses)|set(['Serializable','TimingDeltas','Cell'])])
 	)
+	# yapf: enable
 
 	wrapper.close()
 

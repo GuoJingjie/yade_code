@@ -105,18 +105,20 @@ def yadesrccommit_role(role, rawtext, lineno, inliner, options={}, content=[]):
 #
 # NOTE: in file doc/sphinx/yadeSphinx.py there is a mods={……} variable which must reflect what is written below.
 # hint: follow changes in d067b0696a8 to add new modules.
-moduleMap = {
-        'yade._libVersions': 'yade.libVersions',
-        'yade._log': 'yade.log',
-        'yade._math': 'yade.math',
-        'yade._minieigenHP': 'yade.minieigenHP',
-        'yade._packPredicates': 'yade.pack',
-        'yade._packSpheres': 'yade.pack',
-        'yade._packObb': 'yade.pack',
-        'yade._utils': 'yade.utils',
-        'yade._polyhedra_utils': 'yade.polyhedra_utils',
-        'yade.qt._GLViewer': 'yade.qt'
+# yapf: disable
+moduleMap={
+   'yade._libVersions'       : 'yade.libVersions'
+ , 'yade._log'               : 'yade.log'
+ , 'yade._math'              : 'yade.math'
+ , 'yade._minieigenHP'       : 'yade.minieigenHP'
+ , 'yade._packPredicates'    : 'yade.pack'
+ , 'yade._packSpheres'       : 'yade.pack'
+ , 'yade._packObb'           : 'yade.pack'
+ , 'yade._utils'             : 'yade.utils'
+ , 'yade._polyhedra_utils'   : 'yade.polyhedra_utils'
+ , 'yade.qt._GLViewer'       : 'yade.qt'
 }
+# yapf: enable
 
 
 class YadeXRefRole(XRefRole):

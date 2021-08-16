@@ -128,8 +128,8 @@ def genWrapperRst():
 	global docClasses
 	docClasses = set()  # reset globals
 	wrapper = file('yade.wrapper.rst', 'w')
-	wrapper.write(
-	        """.. _yade.wrapper::
+	# yapf: disable
+	wrapper.write(""".. _yade.wrapper::
 
 Yade wrapper class reference
 ============================
@@ -141,26 +141,28 @@ Yade wrapper class reference
 .. currentmodule:: yade.wrapper
 .. autosummary::
 
-""" + sect('Bodies', '', ['Body', 'Shape', 'State', 'Material', 'Bound']) + sect('Interactions', '', ['Interaction', 'IGeom', 'IPhys']) +
-	        sect('Global engines', '', ['FieldApplier', 'Collider', 'BoundaryController', 'GlobalEngine'], reverse=True) +
-	        sect('Partial engines', '', ['PartialEngine']) + sect('Bounding volume creation', '', ['BoundFunctor', 'BoundDispatcher']) +
-	        sect('Interaction Geometry creation', '', ['IGeomFunctor', 'IGeomDispatcher']) +
-	        sect('Interaction Physics creation', '', ['IPhysFunctor', 'IPhysDispatcher']) + sect('Constitutive laws', '', ['LawFunctor', 'LawDispatcher']) +
-	        sect(
-	                'Callbacks',
-	                '',
-	                [  #'BodyCallback',
-	                        'IntrCallback'
-	                ]
-	        ) + sect('Preprocessors', '', ['FileGenerator']) +
-	        sect('Rendering', '', ['OpenGLRenderer', 'GlShapeFunctor', 'GlStateFunctor', 'GlBoundFunctor', 'GlIGeomFunctor', 'GlIPhysFunctor']
-	            ) +  # ,'GlShapeDispatcher','GlStateDispatcher','GlBoundDispatcher','GlIGeomDispatcher','GlIPhysDispatcher'])+
-	        sect('Simulation data', '', ['Omega', 'BodyContainer', 'InteractionContainer', 'ForceContainer', 'MaterialContainer', 'Scene', 'Cell']) + """
+"""+
+	sect('Bodies','',['Body','Shape','State','Material','Bound'])+
+	sect('Interactions','',['Interaction','IGeom','IPhys'])+
+	sect('Global engines','',['FieldApplier','Collider','BoundaryController','GlobalEngine'],reverse=True)+
+	sect('Partial engines','',['PartialEngine'])+
+	sect('Bounding volume creation','',['BoundFunctor','BoundDispatcher'])+
+	sect('Interaction Geometry creation','',['IGeomFunctor','IGeomDispatcher'])+
+	sect('Interaction Physics creation','',['IPhysFunctor','IPhysDispatcher'])+
+	sect('Constitutive laws','',['LawFunctor','LawDispatcher'])+
+	sect('Callbacks','',[#'BodyCallback',
+	 'IntrCallback'])+
+	sect('Preprocessors','',['FileGenerator'])+
+	sect('Rendering','',['OpenGLRenderer','GlShapeFunctor','GlStateFunctor','GlBoundFunctor','GlIGeomFunctor','GlIPhysFunctor'])+ # ,'GlShapeDispatcher','GlStateDispatcher','GlBoundDispatcher','GlIGeomDispatcher','GlIPhysDispatcher'])+
+	sect('Simulation data','',['Omega','BodyContainer','InteractionContainer','ForceContainer','MaterialContainer','Scene','Cell'])
+	+"""
 Other classes
 ---------------
 
-""" + ''.join([autodocClass(k) for k in (yade.system.childClasses('Serializable') - docClasses) | set(['Serializable', 'TimingDeltas', 'Cell'])])
+"""
+	+''.join([autodocClass(k) for k in (yade.system.childClasses('Serializable')-docClasses)|set(['Serializable','TimingDeltas','Cell'])])
 	)
+	# yapf: enable
 
 	wrapper.close()
 
