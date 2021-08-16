@@ -73,9 +73,9 @@ import warnings
 
 # To keep compatibility with various python versions
 try:
-    from hashlib import md5
+	from hashlib import md5
 except ImportError:
-    from md5 import md5
+	from md5 import md5
 
 # Third-party
 import matplotlib
@@ -95,10 +95,9 @@ from IPython.Shell import MatplotlibShell
 sphinx_version = sphinx.__version__.split(".")
 # The split is necessary for sphinx beta versions where the string is
 # '6b1'
-sphinx_version = tuple([int(re.split('[a-z]', x)[0])
-                        for x in sphinx_version[:2]])
+sphinx_version = tuple([int(re.split('[a-z]', x)[0]) for x in sphinx_version[:2]])
 
-COMMENT, INPUT, OUTPUT =  list(range(3))
+COMMENT, INPUT, OUTPUT = list(range(3))
 rc_override = {}
 rgxin = re.compile('In \[(\d+)\]:\s?(.*)\s*')
 rgxcont = re.compile('   \.+:\s?(.*)\s*')
@@ -107,11 +106,12 @@ fmtin = 'In [%d]:'
 fmtout = 'Out[%d]:'
 fmtcont = '   .\D.:'
 
+
 #-----------------------------------------------------------------------------
 # Functions and class declarations
 #-----------------------------------------------------------------------------
 def block_parser(part):
-    """
+	"""
     part is a string of ipython text, comprised of at most one
     input, one ouput, comments, and blank lines.  The block parser
     parses the text into a list of::
@@ -132,350 +132,366 @@ def block_parser(part):
       OUTPUT: the output string, possibly multi-line
     """
 
-    block = []
-    lines = part.split('\n')
-    N = len(lines)
-    i = 0
-    decorator = None
-    while 1:
+	block = []
+	lines = part.split('\n')
+	N = len(lines)
+	i = 0
+	decorator = None
+	while 1:
 
-        if i==N:
-            # nothing left to parse -- the last line
-            break
+		if i == N:
+			# nothing left to parse -- the last line
+			break
 
-        line = lines[i]
-        i += 1
-        line_stripped = line.strip()
-        if line_stripped.startswith('#'):
-            block.append((COMMENT, line))
-            continue
+		line = lines[i]
+		i += 1
+		line_stripped = line.strip()
+		if line_stripped.startswith('#'):
+			block.append((COMMENT, line))
+			continue
 
-        if line_stripped.startswith('@'):
-            # we're assuming at most one decorator -- may need to
-            # rethink
-            decorator = line_stripped
-            continue
+		if line_stripped.startswith('@'):
+			# we're assuming at most one decorator -- may need to
+			# rethink
+			decorator = line_stripped
+			continue
 
-        # does this look like an input line?
-        matchin = rgxin.match(line)
-        if matchin:
-            lineno, inputline = int(matchin.group(1)), matchin.group(2)
+		# does this look like an input line?
+		matchin = rgxin.match(line)
+		if matchin:
+			lineno, inputline = int(matchin.group(1)), matchin.group(2)
 
-            # the ....: continuation string
-            #continuation = '   %s:'%''.join(['.']*(len(str(lineno))+2))
-            #Nc = len(continuation)
-            # input lines can continue on for more than one line, if
-            # we have a '\' line continuation char or a function call
-            # echo line 'print'.  The input line can only be
-            # terminated by the end of the block or an output line, so
-            # we parse out the rest of the input line if it is
-            # multiline as well as any echo text
+			# the ....: continuation string
+			#continuation = '   %s:'%''.join(['.']*(len(str(lineno))+2))
+			#Nc = len(continuation)
+			# input lines can continue on for more than one line, if
+			# we have a '\' line continuation char or a function call
+			# echo line 'print'.  The input line can only be
+			# terminated by the end of the block or an output line, so
+			# we parse out the rest of the input line if it is
+			# multiline as well as any echo text
 
-            rest = []
-            while i<N:
+			rest = []
+			while i < N:
 
-                # look ahead; if the next line is blank, or a comment, or
-                # an output line, we're done
+				# look ahead; if the next line is blank, or a comment, or
+				# an output line, we're done
 
-                nextline = lines[i]
-                matchout = rgxout.match(nextline)
-                matchcont = rgxcont.match(nextline)
-                #print "nextline=%s, continuation=%s, starts=%s"%(nextline, continuation, nextline.startswith(continuation))
-                if matchout or nextline.startswith('#'):
-                    break
-                elif matchcont: #nextline.startswith(continuation):
-                    inputline += '\n' + matchcont.group(1) #nextline[Nc:]
-                else:
-                    rest.append(nextline)
-                i+= 1
+				nextline = lines[i]
+				matchout = rgxout.match(nextline)
+				matchcont = rgxcont.match(nextline)
+				#print "nextline=%s, continuation=%s, starts=%s"%(nextline, continuation, nextline.startswith(continuation))
+				if matchout or nextline.startswith('#'):
+					break
+				elif matchcont:  #nextline.startswith(continuation):
+					inputline += '\n' + matchcont.group(1)  #nextline[Nc:]
+				else:
+					rest.append(nextline)
+				i += 1
 
-            block.append((INPUT, (decorator, inputline, '\n'.join(rest))))
-            continue
+			block.append((INPUT, (decorator, inputline, '\n'.join(rest))))
+			continue
 
-        # if it looks like an output line grab all the text to the end
-        # of the block
-        matchout = rgxout.match(line)
-        if matchout:
-            lineno, output = int(matchout.group(1)), matchout.group(2)
-            if i<N-1:
-                output = '\n'.join([output] + lines[i:])
+		# if it looks like an output line grab all the text to the end
+		# of the block
+		matchout = rgxout.match(line)
+		if matchout:
+			lineno, output = int(matchout.group(1)), matchout.group(2)
+			if i < N - 1:
+				output = '\n'.join([output] + lines[i:])
 
-            block.append((OUTPUT, output))
-            break
+			block.append((OUTPUT, output))
+			break
 
-    return block
+	return block
 
 
 class EmbeddedSphinxShell(object):
-    """An embedded IPython instance to run inside Sphinx"""
+	"""An embedded IPython instance to run inside Sphinx"""
 
-    def __init__(self):
+	def __init__(self):
 
-        self.cout = io.StringIO()
+		self.cout = io.StringIO()
 
-        IPython.Shell.Term.cout = self.cout
-        IPython.Shell.Term.cerr = self.cout
-        argv = ['-autocall', '0']
-        self.user_ns = {}
-        self.user_glocal_ns = {}
+		IPython.Shell.Term.cout = self.cout
+		IPython.Shell.Term.cerr = self.cout
+		argv = ['-autocall', '0']
+		self.user_ns = {}
+		self.user_glocal_ns = {}
 
-        self.IP = IPython.ipmaker.make_IPython(
-            argv, self.user_ns, self.user_glocal_ns, embedded=True,
-            #shell_class=IPython.Shell.InteractiveShell,
-            shell_class=MatplotlibShell,
-            rc_override = dict(colors = 'NoColor', **rc_override))
+		self.IP = IPython.ipmaker.make_IPython(
+		        argv,
+		        self.user_ns,
+		        self.user_glocal_ns,
+		        embedded=True,
+		        #shell_class=IPython.Shell.InteractiveShell,
+		        shell_class=MatplotlibShell,
+		        rc_override=dict(colors='NoColor', **rc_override)
+		)
 
-        self.input = ''
-        self.output = ''
+		self.input = ''
+		self.output = ''
 
-        self.is_verbatim = False
-        self.is_doctest = False
-        self.is_suppress = False
+		self.is_verbatim = False
+		self.is_doctest = False
+		self.is_suppress = False
 
-        # on the first call to the savefig decorator, we'll import
-        # pyplot as plt so we can make a call to the plt.gcf().savefig
-        self._pyplot_imported = False
+		# on the first call to the savefig decorator, we'll import
+		# pyplot as plt so we can make a call to the plt.gcf().savefig
+		self._pyplot_imported = False
 
-        # we need bookmark the current dir first so we can save
-        # relative to it
-        self.process_input_line('bookmark ipy_basedir')
-        self.cout.seek(0)
-        self.cout.truncate(0)
+		# we need bookmark the current dir first so we can save
+		# relative to it
+		self.process_input_line('bookmark ipy_basedir')
+		self.cout.seek(0)
+		self.cout.truncate(0)
 
-    def process_input_line(self, line):
-        """process the input, capturing stdout"""
-        #print "input='%s'"%self.input
-        stdout = sys.stdout
-        sys.stdout = self.cout
-        #self.IP.resetbuffer()
-        self.IP.push(self.IP.prefilter(line, 0))
-        #self.IP.runlines(line)
-        sys.stdout = stdout
+	def process_input_line(self, line):
+		"""process the input, capturing stdout"""
+		#print "input='%s'"%self.input
+		stdout = sys.stdout
+		sys.stdout = self.cout
+		#self.IP.resetbuffer()
+		self.IP.push(self.IP.prefilter(line, 0))
+		#self.IP.runlines(line)
+		sys.stdout = stdout
 
-    # Callbacks for each type of token
-    def process_input(self, data, input_prompt, lineno):
-        """Process data block for INPUT token."""
-        decorator, input, rest = data
-        image_file = None
-        #print 'INPUT:', data
-        is_verbatim = decorator=='@verbatim' or self.is_verbatim
-        is_doctest = decorator=='@doctest' or self.is_doctest
-        is_suppress = decorator=='@suppress' or self.is_suppress
-        is_savefig = decorator is not None and decorator.startswith('@savefig')
+	# Callbacks for each type of token
+	def process_input(self, data, input_prompt, lineno):
+		"""Process data block for INPUT token."""
+		decorator, input, rest = data
+		image_file = None
+		#print 'INPUT:', data
+		is_verbatim = decorator == '@verbatim' or self.is_verbatim
+		is_doctest = decorator == '@doctest' or self.is_doctest
+		is_suppress = decorator == '@suppress' or self.is_suppress
+		is_savefig = decorator is not None and decorator.startswith('@savefig')
 
-        input_lines = input.split('\n')
+		input_lines = input.split('\n')
 
-        #continuation = '   %s:'%''.join(['.']*(len(str(lineno))+2))
-        #Nc = len(continuation)
+		#continuation = '   %s:'%''.join(['.']*(len(str(lineno))+2))
+		#Nc = len(continuation)
 
-        if is_savefig:
-            saveargs = decorator.split(' ')
-            filename = saveargs[1]
-            outfile = os.path.join('_static/%s'%filename)
-            # build out an image directive like
-            # .. image:: somefile.png
-            #    :width 4in
-            #
-            # from an input like
-            # savefig somefile.png width=4in
-            imagerows = ['.. image:: %s'%outfile]
+		if is_savefig:
+			saveargs = decorator.split(' ')
+			filename = saveargs[1]
+			outfile = os.path.join('_static/%s' % filename)
+			# build out an image directive like
+			# .. image:: somefile.png
+			#    :width 4in
+			#
+			# from an input like
+			# savefig somefile.png width=4in
+			imagerows = ['.. image:: %s' % outfile]
 
-            for kwarg in saveargs[2:]:
-                arg, val = kwarg.split('=')
-                arg = arg.strip()
-                val = val.strip()
-                imagerows.append('   :%s: %s'%(arg, val))
+			for kwarg in saveargs[2:]:
+				arg, val = kwarg.split('=')
+				arg = arg.strip()
+				val = val.strip()
+				imagerows.append('   :%s: %s' % (arg, val))
 
-            image_file = outfile
-            image_directive = '\n'.join(imagerows)
+			image_file = outfile
+			image_directive = '\n'.join(imagerows)
 
-        # TODO: can we get "rest" from ipython
-        #self.process_input_line('\n'.join(input_lines))
+		# TODO: can we get "rest" from ipython
+		#self.process_input_line('\n'.join(input_lines))
 
-        ret = []
-        is_semicolon = False
+		ret = []
+		is_semicolon = False
 
-        for i, line in enumerate(input_lines):
-            if line.endswith(';'):
-                is_semicolon = True
+		for i, line in enumerate(input_lines):
+			if line.endswith(';'):
+				is_semicolon = True
 
-            if i==0:
-                # process the first input line
-                if is_verbatim:
-                    self.process_input_line('')
-                else:
-                    # only submit the line in non-verbatim mode
-                    self.process_input_line(line)
-                formatted_line = '%s %s'%(input_prompt, line)
-            else:
-                # process a continuation line
-                if not is_verbatim:
-                    self.process_input_line(line)
+			if i == 0:
+				# process the first input line
+				if is_verbatim:
+					self.process_input_line('')
+				else:
+					# only submit the line in non-verbatim mode
+					self.process_input_line(line)
+				formatted_line = '%s %s' % (input_prompt, line)
+			else:
+				# process a continuation line
+				if not is_verbatim:
+					self.process_input_line(line)
 
-                formatted_line = fmtcont.replace('\D','.'*len(str(lineno)))+line #'%s %s'%(continuation, line)
+				formatted_line = fmtcont.replace('\D', '.' * len(str(lineno))) + line  #'%s %s'%(continuation, line)
 
-            if not is_suppress:
-                ret.append(formatted_line)
+			if not is_suppress:
+				ret.append(formatted_line)
 
-        if not is_suppress:
-            if len(rest.strip()):
-                if is_verbatim:
-                    # the "rest" is the standard output of the
-                    # input, which needs to be added in
-                    # verbatim mode
-                    ret.append(rest)
+		if not is_suppress:
+			if len(rest.strip()):
+				if is_verbatim:
+					# the "rest" is the standard output of the
+					# input, which needs to be added in
+					# verbatim mode
+					ret.append(rest)
 
-        self.cout.seek(0)
-        output = self.cout.read()
-        if not is_suppress and not is_semicolon:
-            ret.append(output)
+		self.cout.seek(0)
+		output = self.cout.read()
+		if not is_suppress and not is_semicolon:
+			ret.append(output)
 
-        self.cout.truncate(0)
-        return ret, input_lines, output, is_doctest, image_file
-        #print 'OUTPUT', output  # dbg
+		self.cout.truncate(0)
+		return ret, input_lines, output, is_doctest, image_file
+		#print 'OUTPUT', output  # dbg
 
-    def process_output(self, data, output_prompt,
-                       input_lines, output, is_doctest, image_file):
-        """Process data block for OUTPUT token."""
-        if is_doctest:
-            submitted = data.strip()
-            found = output
-            if found is not None:
-                ind = found.find(output_prompt)
-                if ind<0:
-                    raise RuntimeError('output prompt="%s" does not match out line=%s'%(output_prompt, found))
-                found = found[len(output_prompt):].strip()
+	def process_output(self, data, output_prompt, input_lines, output, is_doctest, image_file):
+		"""Process data block for OUTPUT token."""
+		if is_doctest:
+			submitted = data.strip()
+			found = output
+			if found is not None:
+				ind = found.find(output_prompt)
+				if ind < 0:
+					raise RuntimeError('output prompt="%s" does not match out line=%s' % (output_prompt, found))
+				found = found[len(output_prompt):].strip()
 
-                if found!=submitted:
-                    raise RuntimeError('doctest failure for input_lines="%s" with found_output="%s" and submitted output="%s"'%(input_lines, found, submitted))
-                #print 'doctest PASSED for input_lines="%s" with found_output="%s" and submitted output="%s"'%(input_lines, found, submitted)
+				if found != submitted:
+					raise RuntimeError(
+					        'doctest failure for input_lines="%s" with found_output="%s" and submitted output="%s"' %
+					        (input_lines, found, submitted)
+					)
+				#print 'doctest PASSED for input_lines="%s" with found_output="%s" and submitted output="%s"'%(input_lines, found, submitted)
 
-    def process_comment(self, data):
-        """Process data block for COMMENT token."""
-        if not self.is_suppress:
-            return [data]
+	def process_comment(self, data):
+		"""Process data block for COMMENT token."""
+		if not self.is_suppress:
+			return [data]
 
-    def process_block(self, block):
-        """
+	def process_block(self, block):
+		"""
         process block from the block_parser and return a list of processed lines
         """
 
-        ret = []
-        output = None
-        input_lines = None
+		ret = []
+		output = None
+		input_lines = None
 
-        m = rgxin.match(str(self.IP.outputcache.prompt1).strip())
-        lineno = int(m.group(1))
+		m = rgxin.match(str(self.IP.outputcache.prompt1).strip())
+		lineno = int(m.group(1))
 
-        input_prompt = fmtin%lineno
-        output_prompt = fmtout%lineno
-        image_file = None
-        image_directive = None
-        # XXX - This needs a second refactor.  There's too much state being
-        # held globally, which makes for a very awkward interface and large,
-        # hard to test functions.  I've already broken this up at least into
-        # three separate processors to isolate the logic better, but this only
-        # serves to highlight the coupling.  Next we need to clean it up...
-        for token, data in block:
-            if token==COMMENT:
-                out_data = self.process_comment(data)
-            elif token==INPUT:
-                out_data, input_lines, output, is_doctest, image_file= self.process_input(data, input_prompt, lineno)
-            elif token==OUTPUT:
-                out_data = self.process_output(data, output_prompt,
-                                        input_lines, output, is_doctest,
-                                        image_file)
-            if out_data:
-                ret.extend(out_data)
+		input_prompt = fmtin % lineno
+		output_prompt = fmtout % lineno
+		image_file = None
+		image_directive = None
+		# XXX - This needs a second refactor.  There's too much state being
+		# held globally, which makes for a very awkward interface and large,
+		# hard to test functions.  I've already broken this up at least into
+		# three separate processors to isolate the logic better, but this only
+		# serves to highlight the coupling.  Next we need to clean it up...
+		for token, data in block:
+			if token == COMMENT:
+				out_data = self.process_comment(data)
+			elif token == INPUT:
+				out_data, input_lines, output, is_doctest, image_file = self.process_input(data, input_prompt, lineno)
+			elif token == OUTPUT:
+				out_data = self.process_output(data, output_prompt, input_lines, output, is_doctest, image_file)
+			if out_data:
+				ret.extend(out_data)
 
-        if image_file is not None:
-            self.ensure_pyplot()
-            command = 'plt.gcf().savefig("%s")'%image_file
-            #print 'SAVEFIG', command  # dbg
-            self.process_input_line('bookmark ipy_thisdir')
-            self.process_input_line('cd -b ipy_basedir')
-            self.process_input_line(command)
-            self.process_input_line('cd -b ipy_thisdir')
-            self.cout.seek(0)
-            self.cout.truncate(0)
-        return ret, image_directive
+		if image_file is not None:
+			self.ensure_pyplot()
+			command = 'plt.gcf().savefig("%s")' % image_file
+			#print 'SAVEFIG', command  # dbg
+			self.process_input_line('bookmark ipy_thisdir')
+			self.process_input_line('cd -b ipy_basedir')
+			self.process_input_line(command)
+			self.process_input_line('cd -b ipy_thisdir')
+			self.cout.seek(0)
+			self.cout.truncate(0)
+		return ret, image_directive
 
-    def ensure_pyplot(self):
-        if self._pyplot_imported:
-            return
-        self.process_input_line('import matplotlib.pyplot as plt')
+	def ensure_pyplot(self):
+		if self._pyplot_imported:
+			return
+		self.process_input_line('import matplotlib.pyplot as plt')
+
 
 # A global instance used below. XXX: not sure why this can't be created inside
 # ipython_directive itself.
 shell = EmbeddedSphinxShell()
 
+
 def reconfig_shell():
-    """Called after setting module-level variables to re-instantiate
+	"""Called after setting module-level variables to re-instantiate
     with the set values (since shell is instantiated first at import-time
     when module variables have default values)"""
-    global shell
-    shell = EmbeddedSphinxShell()
+	global shell
+	shell = EmbeddedSphinxShell()
 
 
-def ipython_directive(name, arguments, options, content, lineno,
-                      content_offset, block_text, state, state_machine,
-                      ):
+def ipython_directive(
+        name,
+        arguments,
+        options,
+        content,
+        lineno,
+        content_offset,
+        block_text,
+        state,
+        state_machine,
+):
 
-    debug = ipython_directive.DEBUG
-    shell.is_suppress = 'suppress' in options
-    shell.is_doctest = 'doctest' in options
-    shell.is_verbatim = 'verbatim' in options
+	debug = ipython_directive.DEBUG
+	shell.is_suppress = 'suppress' in options
+	shell.is_doctest = 'doctest' in options
+	shell.is_verbatim = 'verbatim' in options
 
-    #print 'ipy', shell.is_suppress, options
-    parts = '\n'.join(content).split('\n\n')
-    lines = ['.. sourcecode:: ipython', '']
+	#print 'ipy', shell.is_suppress, options
+	parts = '\n'.join(content).split('\n\n')
+	lines = ['.. sourcecode:: ipython', '']
 
-    figures = []
-    for part in parts:
-        block = block_parser(part)
+	figures = []
+	for part in parts:
+		block = block_parser(part)
 
-        if len(block):
-            rows, figure = shell.process_block(block)
-            for row in rows:
-                lines.extend(['    %s'%line for line in row.split('\n')])
+		if len(block):
+			rows, figure = shell.process_block(block)
+			for row in rows:
+				lines.extend(['    %s' % line for line in row.split('\n')])
 
-            if figure is not None:
-                figures.append(figure)
+			if figure is not None:
+				figures.append(figure)
 
-    for figure in figures:
-        lines.append('')
-        lines.extend(figure.split('\n'))
-        lines.append('')
+	for figure in figures:
+		lines.append('')
+		lines.extend(figure.split('\n'))
+		lines.append('')
 
-    #print lines
-    if len(lines)>2:
-        if debug:
-            print('\n'.join(lines))
-        else:
-            #print 'INSERTING %d lines'%len(lines)
-            state_machine.insert_input(
-                lines, state_machine.input_lines.source(0))
+	#print lines
+	if len(lines) > 2:
+		if debug:
+			print('\n'.join(lines))
+		else:
+			#print 'INSERTING %d lines'%len(lines)
+			state_machine.insert_input(lines, state_machine.input_lines.source(0))
 
-    return []
+	return []
+
 
 ipython_directive.DEBUG = False
 
+
 # Enable as a proper Sphinx directive
 def setup(app):
-    setup.app = app
-    options = {'suppress': directives.flag,
-               'doctest': directives.flag,
-               'verbatim': directives.flag,
-               }
+	setup.app = app
+	options = {
+	        'suppress': directives.flag,
+	        'doctest': directives.flag,
+	        'verbatim': directives.flag,
+	}
 
-    app.add_directive('ipython', ipython_directive, True, (0, 2, 0), **options)
+	app.add_directive('ipython', ipython_directive, True, (0, 2, 0), **options)
 
 
 # Simple smoke test, needs to be converted to a proper automatic test.
 def test():
 
-    examples = [
-        r"""
+	examples = [
+	        r"""
 In [9]: pwd
 Out[9]: '/home/jdhunter/py4science/book'
 
@@ -493,7 +509,7 @@ In [4]: imshow(im)
 Out[4]: <matplotlib.image.AxesImage object at 0x39ea850>
         
 """,
-        r"""
+	        r"""
 
 In [1]: x = 'hello world'
 
@@ -507,7 +523,7 @@ Out[2]: 'HELLO WORLD'
 In [3]: x.st<TAB>
 x.startswith  x.strip
 """,
-    r"""
+	        r"""
 
 In [130]: url = 'http://ichart.finance.yahoo.com/table.csv?s=CROX\
    .....: &d=9&e=22&f=2009&g=d&a=1&br=8&c=2006&ignore=.csv'
@@ -518,7 +534,7 @@ In [131]: print url.split('&')
 In [60]: import urllib
 
 """,
-    r"""\
+	        r"""\
 
 In [133]: import numpy.random
 
@@ -540,8 +556,7 @@ array([[ 0.64524308,  0.59943846],
        [ 0.0072729 ,  0.34273127]])
 
 """,
-
-    r"""
+	        r"""
 In [106]: print x
 jdh
 
@@ -562,8 +577,7 @@ In [109]: for i in range(10):
 
 
 """,
-
-        r"""
+	        r"""
 
 In [144]: from pylab import *
 
@@ -577,8 +591,7 @@ In [151]: hist(np.random.randn(10000), 100);
 @savefig test_plot.png width=4in
 In [151]: plot(np.random.randn(10000), 'o');
    """,
-
-        r"""
+	        r"""
 # use a semicolon to suppress the output
 In [151]: plt.clf()
 
@@ -589,7 +602,7 @@ In [151]: plot([1,2,3])
 In [151]: hist(np.random.randn(10000), 100);
 
 """,
-     r"""
+	        r"""
 # update the current fig
 In [151]: ylabel('number')
 
@@ -600,20 +613,26 @@ In [152]: title('normal distribution')
 In [153]: grid(True)
 
         """,
-    ]
+	]
 
+	ipython_directive.DEBUG = True
+	#options = dict(suppress=True)
+	options = dict()
+	for example in examples:
+		content = example.split('\n')
+		ipython_directive(
+		        'debug',
+		        arguments=None,
+		        options=options,
+		        content=content,
+		        lineno=0,
+		        content_offset=None,
+		        block_text=None,
+		        state=None,
+		        state_machine=None,
+		)
 
-    ipython_directive.DEBUG = True
-    #options = dict(suppress=True)
-    options = dict()
-    for example in examples:
-        content = example.split('\n')
-        ipython_directive('debug', arguments=None, options=options,
-                          content=content, lineno=0,
-                          content_offset=None, block_text=None,
-                          state=None, state_machine=None,
-                          )
 
 # Run test suite as a script
-if __name__=='__main__':
-    test()
+if __name__ == '__main__':
+	test()

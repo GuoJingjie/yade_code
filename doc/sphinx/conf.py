@@ -42,121 +42,148 @@ import docutils
 #
 #
 import builtins
-if 'latex' in sys.argv: builtins.writer='latex'
-elif 'html' in sys.argv: builtins.writer='html'
-elif 'epub' in sys.argv: builtins.writer='epub'
-else: raise RuntimeError("Must have either 'latex' or 'html' on the command line (hack for reference styles)")
+if 'latex' in sys.argv:
+	builtins.writer = 'latex'
+elif 'html' in sys.argv:
+	builtins.writer = 'html'
+elif 'epub' in sys.argv:
+	builtins.writer = 'epub'
+else:
+	raise RuntimeError("Must have either 'latex' or 'html' on the command line (hack for reference styles)")
 
 
-
-def yaderef_role(role,rawtext,text,lineno,inliner,options={},content=[]):
+def yaderef_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
 	"Handle the :yref:`` role, by making hyperlink to yade.wrapper.*. It supports :yref:`Link text<link target>` syntax, like usual hyperlinking roles."
-	id=rawtext.split(':',2)[2][1:-1]
-	txt=id; explicitText=False
-	m=re.match('(.*)\s*<(.*)>\s*',id)
+	id = rawtext.split(':', 2)[2][1:-1]
+	txt = id
+	explicitText = False
+	m = re.match('(.*)\s*<(.*)>\s*', id)
 	if m:
-		explicitText=True
-		txt,id=m.group(1),m.group(2)
-	id=id.replace('::','.')
+		explicitText = True
+		txt, id = m.group(1), m.group(2)
+	id = id.replace('::', '.')
 	#node=nodes.reference(rawtext,docutils.utils.unescape(txt),refuri='http://beta.arcig.cz/~eudoxos/yade/doxygen/?search=%s'%id,**options)
 	#node=nodes.reference(rawtext,docutils.utils.unescape(txt),refuri='yade.wrapper.html#yade.wrapper.%s'%id,**options)
-	return [mkYrefNode(id,txt,rawtext,role,explicitText,lineno,options)],[]
+	return [mkYrefNode(id, txt, rawtext, role, explicitText, lineno, options)], []
 
-def yadesrc_role(role,rawtext,lineno,inliner,options={},content=[]):
+
+def yadesrc_role(role, rawtext, lineno, inliner, options={}, content=[]):
 	"Handle the :ysrc:`` role, making hyperlink to git repository webpage with that path. Supports :ysrc:`Link text<file/name>` syntax, like usual hyperlinking roles. If target ends with ``/``, it is assumed to be a directory."
-	id=rawtext.split(':',2)[2][1:-1]
-	txt=id
-	if( "#L" in id):
-		msg = "\n\n\033[93m"+(80*'=')+"\nYADE :ysrc: ERROR processing: '"+id+"'\033[0m\n\033[92mIf you want to link to a line number in source, you should use :ysrccommit:\ninstead of :ysrc: otherwise the link will break when someone changes the file.\nThe :ysrccommit: allows to link to a specific git commit hash and a line number.\033[0m\n\033[93mSee https://yade-dem.org/doc/prog.html#sphinx-documentation for details\n"+(80*'=')+"\033[0m\n\n"
+	id = rawtext.split(':', 2)[2][1:-1]
+	txt = id
+	if ("#L" in id):
+		msg = "\n\n\033[93m" + (
+		        80 * '='
+		) + "\nYADE :ysrc: ERROR processing: '" + id + "'\033[0m\n\033[92mIf you want to link to a line number in source, you should use :ysrccommit:\ninstead of :ysrc: otherwise the link will break when someone changes the file.\nThe :ysrccommit: allows to link to a specific git commit hash and a line number.\033[0m\n\033[93mSee https://yade-dem.org/doc/prog.html#sphinx-documentation for details\n" + (
+		        80 * '='
+		) + "\033[0m\n\n"
 		import sys
 		sys.__stderr__.write(msg)
 		sys.__stderr__.flush()
 		# unfortunately sphinx ignores this one
 		#raise RuntimeError(":ysrc: error, doc/sphinx/conf.py")
 		sys.exit(1)
-	m=re.match('(.*)\s*<(.*)>\s*',id)
+	m = re.match('(.*)\s*<(.*)>\s*', id)
 	if m:
-		txt,id=m.group(1),m.group(2)
-	return [nodes.reference(rawtext,docutils.utils.unescape(txt),refuri='https://gitlab.com/yade-dev/trunk/blob/master/%s'%id)],[] ### **options should be passed to nodes.reference as well
+		txt, id = m.group(1), m.group(2)
+	return [nodes.reference(rawtext, docutils.utils.unescape(txt),
+	                        refuri='https://gitlab.com/yade-dev/trunk/blob/master/%s' % id)], []  ### **options should be passed to nodes.reference as well
 
-def yadesrccommit_role(role,rawtext,lineno,inliner,options={},content=[]):
+
+def yadesrccommit_role(role, rawtext, lineno, inliner, options={}, content=[]):
 	"Handle the :ysrccommit:`` role, making hyperlink to git repository webpage with that path. Supports :ysrc:`Link text<commithash/file/name>` syntax, like usual hyperlinking roles. If target ends with ``/``, it is assumed to be a directory."
-	id=rawtext.split(':',2)[2][1:-1]
-	txt=id
-	m=re.match('(.*)\s*<(.*)>\s*',id)
+	id = rawtext.split(':', 2)[2][1:-1]
+	txt = id
+	m = re.match('(.*)\s*<(.*)>\s*', id)
 	if m:
-		txt,id=m.group(1),m.group(2)
-	return [nodes.reference(rawtext,docutils.utils.unescape(txt),refuri='https://gitlab.com/yade-dev/trunk/blob/%s'%id)],[] ### **options should be passed to nodes.reference as well
+		txt, id = m.group(1), m.group(2)
+	return [nodes.reference(rawtext, docutils.utils.unescape(txt),
+	                        refuri='https://gitlab.com/yade-dev/trunk/blob/%s' % id)], []  ### **options should be passed to nodes.reference as well
+
 
 # map modules to their html (rst) filenames. Used for sub-modules, where e.g. SpherePack is yade._packSphere.SpherePack, but is documented from yade.pack.rst
 #
 # NOTE: in file doc/sphinx/yadeSphinx.py there is a mods={……} variable which must reflect what is written below.
 # hint: follow changes in d067b0696a8 to add new modules.
-moduleMap={
-	  'yade._libVersions'       :'yade.libVersions'
-	, 'yade._log'               :'yade.log'
-	, 'yade._math'              :'yade.math'
-	, 'yade._minieigenHP'       :'yade.minieigenHP'
-	, 'yade._packPredicates'    :'yade.pack'
-	, 'yade._packSpheres'       :'yade.pack'
-	, 'yade._packObb'           :'yade.pack'
-	, 'yade._utils'             :'yade.utils'
-	, 'yade._polyhedra_utils'   :'yade.polyhedra_utils'
-	, 'yade.qt._GLViewer'       :'yade.qt'
+moduleMap = {
+        'yade._libVersions': 'yade.libVersions',
+        'yade._log': 'yade.log',
+        'yade._math': 'yade.math',
+        'yade._minieigenHP': 'yade.minieigenHP',
+        'yade._packPredicates': 'yade.pack',
+        'yade._packSpheres': 'yade.pack',
+        'yade._packObb': 'yade.pack',
+        'yade._utils': 'yade.utils',
+        'yade._polyhedra_utils': 'yade.polyhedra_utils',
+        'yade.qt._GLViewer': 'yade.qt'
 }
+
 
 class YadeXRefRole(XRefRole):
 	#def process_link
 	def process_link(self, env, refnode, has_explicit_title, title, target):
-		print('TARGET:','yade.wrapper.'+target)
-		return '[['+title+']]','yade.wrapper.'+target
+		print('TARGET:', 'yade.wrapper.' + target)
+		return '[[' + title + ']]', 'yade.wrapper.' + target
 
-def mkYrefNode(target,text,rawtext,role,explicitText,lineno,options={}):
+
+def mkYrefNode(target, text, rawtext, role, explicitText, lineno, options={}):
 	"""Create hyperlink to yade target. Targets starting with literal 'yade.' are absolute, but the leading 'yade.' will be stripped from the link text. Absolute tergets are supposed to live in page named yade.[module].html, anchored at #yade.[module2].[rest of target], where [module2] is identical to [module], unless mapped over by moduleMap.
 	
 	Other targets are supposed to live in yade.wrapper (such as c++ classes)."""
 
-	writer=builtins.writer # to make sure not shadowed by a local var
+	writer = builtins.writer  # to make sure not shadowed by a local var
 	import string
 	if target.startswith('yade.'):
-		module='.'.join(target.split('.')[0:2])
-		module2=(module if module not in list(moduleMap.keys()) else moduleMap[module])
-		if target==module: target='' # to reference the module itself
-		uri=('%%%s#%s'%(module2,target) if writer=='latex' else '%s.html#%s'%(module2,target))
-		if not explicitText and module!=module2:
-			text=module2+'.'+'.'.join(target.split('.')[2:])
-		text=text.replace('yade.','',1)
+		module = '.'.join(target.split('.')[0:2])
+		module2 = (module if module not in list(moduleMap.keys()) else moduleMap[module])
+		if target == module:
+			target = ''  # to reference the module itself
+		uri = ('%%%s#%s' % (module2, target) if writer == 'latex' else '%s.html#%s' % (module2, target))
+		if not explicitText and module != module2:
+			text = module2 + '.' + '.'.join(target.split('.')[2:])
+		text = text.replace('yade.', '', 1)
 	elif target.startswith('external:'):
-		exttarget=target.split(':',1)[1]
-		if not explicitText: text=exttarget
-		target=exttarget if '.' in exttarget else 'module-'+exttarget
-		uri=(('%%external#%s'%target) if writer=='latex' else 'external.html#%s'%target)
+		exttarget = target.split(':', 1)[1]
+		if not explicitText:
+			text = exttarget
+		target = exttarget if '.' in exttarget else 'module-' + exttarget
+		uri = (('%%external#%s' % target) if writer == 'latex' else 'external.html#%s' % target)
 	else:
-		uri=(('%%yade.wrapper#yade.wrapper.%s'%target) if writer=='latex' else 'yade.wrapper.html#yade.wrapper.%s'%target)
+		uri = (('%%yade.wrapper#yade.wrapper.%s' % target) if writer == 'latex' else 'yade.wrapper.html#yade.wrapper.%s' % target)
 		#print writer,uri
-	return nodes.reference(rawtext,docutils.utils.unescape(text),refuri=uri,**options)
+	return nodes.reference(rawtext, docutils.utils.unescape(text), refuri=uri, **options)
 	#return [refnode],[]
 
-def ydefault_role(role,rawtext,text,lineno,inliner,options={},content=[]):
+
+def ydefault_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
 	"Handle the :ydefault:`something` role. fixSignature handles it now in the member signature itself, this merely expands to nothing."
-	return [],[]
-def yattrtype_role(role,rawtext,text,lineno,inliner,options={},content=[]):
+	return [], []
+
+
+def yattrtype_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
 	"Handle the :yattrtype:`something` role. fixSignature handles it now in the member signature itself, this merely expands to nothing."
-	return [],[]
+	return [], []
+
+
 # FIXME: should return readable representation of bits of the number (yade.wrapper.AttrFlags enum)
-def yattrflags_role(role,rawtext,text,lineno,inliner,options={},content=[]):
+def yattrflags_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
 	"Handle the :yattrflags:`something` role. fixSignature handles it now in the member signature itself."
-	return [],[]
+	return [], []
+
 
 from docutils.parsers.rst import roles
-def yaderef_role_2(type,rawtext,text,lineno,inliner,options={},content=[]): return YadeXRefRole()('yref',rawtext,text,lineno,inliner,options,content)
+
+
+def yaderef_role_2(type, rawtext, text, lineno, inliner, options={}, content=[]):
+	return YadeXRefRole()('yref', rawtext, text, lineno, inliner, options, content)
+
+
 roles.register_canonical_role('yref', yaderef_role)
 roles.register_canonical_role('ysrc', yadesrc_role)
 roles.register_canonical_role('ysrccommit', yadesrccommit_role)
 roles.register_canonical_role('ydefault', ydefault_role)
 roles.register_canonical_role('yattrtype', yattrtype_role)
 roles.register_canonical_role('yattrflags', yattrflags_role)
-
 
 ## http://sphinx.pocoo.org/config.html#confval-rst_epilog
 rst_epilog = """
@@ -167,72 +194,87 @@ rst_epilog = """
 """
 
 import collections
+
+
 def customExclude(app, what, name, obj, skip, options):
-	if name=='clone':
-		if 'Serializable.clone' in str(obj): return False
+	if name == 'clone':
+		if 'Serializable.clone' in str(obj):
+			return False
 		return True
 	#escape crash on non iterable __doc__ in some qt object
-	if hasattr(obj,'__doc__') and obj.__doc__ and not isinstance(obj.__doc__, collections.Iterable): return True
-	if hasattr(obj,'__doc__') and obj.__doc__ and ('|ydeprecated|' in obj.__doc__ or '|yhidden|' in obj.__doc__): return True
+	if hasattr(obj, '__doc__') and obj.__doc__ and not isinstance(obj.__doc__, collections.Iterable):
+		return True
+	if hasattr(obj, '__doc__') and obj.__doc__ and ('|ydeprecated|' in obj.__doc__ or '|yhidden|' in obj.__doc__):
+		return True
 	#if re.match(r'\b(__init__|__reduce__|__repr__|__str__)\b',name): return True
 	if name.startswith('_'):
-		if name=='__init__':
+		if name == '__init__':
 			# skip boost classes with parameterless ctor (arg1=implicit self)
-			if obj.__doc__=="\n__init__( (object)arg1) -> None": return True
+			if obj.__doc__ == "\n__init__( (object)arg1) -> None":
+				return True
 			# skip undocumented ctors
-			if not obj.__doc__: return True
+			if not obj.__doc__:
+				return True
 			# skip default ctor for serializable, taking dict of attrs
-			if obj.__doc__=='\n__init__( (object)arg1) -> None\n\nobject __init__(tuple args, dict kwds)': return True
+			if obj.__doc__ == '\n__init__( (object)arg1) -> None\n\nobject __init__(tuple args, dict kwds)':
+				return True
 			#for i,l in enumerate(obj.__doc__.split('\n')): print name,i,l,'##'
 			return False
 		return True
 	return False
 
-def isBoostFunc(what,obj):
-	return what=='function' and obj.__repr__().startswith('<Boost.Python.function object at 0x')
 
-def isBoostMethod(what,obj):
+def isBoostFunc(what, obj):
+	return what == 'function' and obj.__repr__().startswith('<Boost.Python.function object at 0x')
+
+
+def isBoostMethod(what, obj):
 	"I don't know how to distinguish boost and non-boost methods..."
-	return what=='method' and obj.__repr__().startswith('<unbound method ');
+	return what == 'method' and obj.__repr__().startswith('<unbound method ')
+
 
 def replaceLaTeX(s):
 	# replace single non-escaped dollars $...$ by :math:`...`
 	# then \$ by single $
-	s=re.sub(r'(?<!\\)\$([^\$]+)(?<!\\)\$',r'\ :math:`\1`\ ',s)
-	return re.sub(r'\\\$',r'$',s)
+	s = re.sub(r'(?<!\\)\$([^\$]+)(?<!\\)\$', r'\ :math:`\1`\ ', s)
+	return re.sub(r'\\\$', r'$', s)
 
-def fixSrc(app,docname,source):
-	source[0]=replaceLaTeX(source[0])
 
-def fixDocstring(app,what,name,obj,options,lines):
-	try: #for python2 (python3 will produce an error)
-		for i in range(0,len(lines)): lines[i]=lines[i].decode('utf-8')
+def fixSrc(app, docname, source):
+	source[0] = replaceLaTeX(source[0])
+
+
+def fixDocstring(app, what, name, obj, options, lines):
+	try:  #for python2 (python3 will produce an error)
+		for i in range(0, len(lines)):
+			lines[i] = lines[i].decode('utf-8')
 	except:
 		pass
 	# remove empty default roles, which is not properly interpreted by docutils parser
-	for i in range(0,len(lines)):
-		lines[i]=lines[i].replace(':ydefault:``','')
-		lines[i]=lines[i].replace(':yattrtype:``','')
-		lines[i]=lines[i].replace(':yattrflags:``','')
+	for i in range(0, len(lines)):
+		lines[i] = lines[i].replace(':ydefault:``', '')
+		lines[i] = lines[i].replace(':yattrtype:``', '')
+		lines[i] = lines[i].replace(':yattrflags:``', '')
 		#lines[i]=re.sub(':``',':` `',lines[i])
 	# remove signature of boost::python function docstring, which is the first line of the docstring
-	if isBoostFunc(what,obj):
-		l2=boostFuncSignature(name,obj)[1]
+	if isBoostFunc(what, obj):
+		l2 = boostFuncSignature(name, obj)[1]
 		# we must replace lines one by one (in-place) :-|
 		# knowing that l2 is always shorter than lines (l2 is docstring with the signature stripped off)
-		for i in range(0,len(lines)):
-			lines[i]=l2[i] if i<len(l2) else ''
-	elif isBoostMethod(what,obj):
-		l2=boostFuncSignature(name,obj)[1]
+		for i in range(0, len(lines)):
+			lines[i] = l2[i] if i < len(l2) else ''
+	elif isBoostMethod(what, obj):
+		l2 = boostFuncSignature(name, obj)[1]
 		if (l2):
-			for i in range(0,len(lines)):
-				lines[i]=l2[i] if i<len(l2) else ''
+			for i in range(0, len(lines)):
+				lines[i] = l2[i] if i < len(l2) else ''
 	# LaTeX: replace $...$ by :math:`...`
 	# must be done after calling boostFuncSignature which uses original docstring
-	for i in range(0,len(lines)): lines[i]=replaceLaTeX(lines[i])
+	for i in range(0, len(lines)):
+		lines[i] = replaceLaTeX(lines[i])
 
 
-def boostFuncSignature(name,obj,removeSelf=False):
+def boostFuncSignature(name, obj, removeSelf=False):
 	"""Scan docstring of obj, returning tuple of properly formatted boost python signature
 	(first line of the docstring) and the rest of docstring (as list of lines).
 	The rest of docstring is stripped of 4 leading spaces which are automatically
@@ -240,60 +282,69 @@ def boostFuncSignature(name,obj,removeSelf=False):
 	
 	removeSelf will attempt to remove the first argument from the signature.
 	"""
-	doc=obj.__doc__
-	if doc==None: # not a boost method
-		return None,None
-	nname=name.split('.')[-1]
-	docc=doc.split('\n')
-	if len(docc)<2: return None,docc
-	doc1=docc[1]
+	doc = obj.__doc__
+	if doc == None:  # not a boost method
+		return None, None
+	nname = name.split('.')[-1]
+	docc = doc.split('\n')
+	if len(docc) < 2:
+		return None, docc
+	doc1 = docc[1]
 	# functions with weird docstring, likely not documented by boost
-	if not re.match('^'+nname+r'(.*)->.*$',doc1):
-		return None,docc
-	if doc1.endswith(':'): doc1=doc1[:-1]
-	strippedDoc=doc.split('\n')[2:]
+	if not re.match('^' + nname + r'(.*)->.*$', doc1):
+		return None, docc
+	if doc1.endswith(':'):
+		doc1 = doc1[:-1]
+	strippedDoc = doc.split('\n')[2:]
 	# check if all lines are padded
-	allLinesHave4LeadingSpaces=True
+	allLinesHave4LeadingSpaces = True
 	for l in strippedDoc:
-		if l.startswith('    '): continue
-		allLinesHave4LeadingSpaces=False; break
+		if l.startswith('    '):
+			continue
+		allLinesHave4LeadingSpaces = False
+		break
 	# remove the padding if so
-	if allLinesHave4LeadingSpaces: strippedDoc=[l[4:] for l in strippedDoc]
+	if allLinesHave4LeadingSpaces:
+		strippedDoc = [l[4:] for l in strippedDoc]
 	for i in range(len(strippedDoc)):
 		# fix signatures inside docstring (one function with multiple signatures)
-		strippedDoc[i],n=re.subn(r'([a-zA-Z_][a-zA-Z0-9_]*\() \(object\)arg1(, |)',r'\1',strippedDoc[i].replace('->','→'))
+		strippedDoc[i], n = re.subn(r'([a-zA-Z_][a-zA-Z0-9_]*\() \(object\)arg1(, |)', r'\1', strippedDoc[i].replace('->', '→'))
 	# inspect dosctring after mangling
 	if 'getViscoelasticFromSpheresInteraction' in name and False:
 		print(name)
 		print(strippedDoc)
 		print('======================')
-		for l in strippedDoc: print(l)
+		for l in strippedDoc:
+			print(l)
 		print('======================')
-	sig=doc1.split('(',1)[1]
+	sig = doc1.split('(', 1)[1]
 	if removeSelf:
 		# remove up to the first comma; if no comma present, then the method takes no arguments
 		# if [ precedes the comma, add it to the result (ugly!)
 		try:
-			ss=sig.split(',',1)
-			if ss[0].endswith('['): sig='['+ss[1]
-			else: sig=ss[1]
+			ss = sig.split(',', 1)
+			if ss[0].endswith('['):
+				sig = '[' + ss[1]
+			else:
+				sig = ss[1]
 		except IndexError:
 			# grab the return value
 			try:
-				sig=') -> '+sig.split('->')[-1]
+				sig = ') -> ' + sig.split('->')[-1]
 		#if 'Serializable' in name: print 1000*'#',name
 			except IndexError:
-				sig=')'
-	return '('+sig,strippedDoc
+				sig = ')'
+	return '(' + sig, strippedDoc
+
 
 def fixSignature(app, what, name, obj, options, signature, return_annotation):
 	#print what,name,obj,signature#,dir(obj)
-	if what=='attribute':
-		doc=str(obj.__doc__)
-		ret=''
-		m=re.match('.*:ydefault:`(.*?)`.*',doc)
+	if what == 'attribute':
+		doc = str(obj.__doc__)
+		ret = ''
+		m = re.match('.*:ydefault:`(.*?)`.*', doc)
 		if m:
-			typ=''
+			typ = ''
 			#try:
 			#	clss='.'.join(name.split('.')[:-1])
 			#	instance=eval(clss+'()')
@@ -301,54 +352,64 @@ def fixSignature(app, what, name, obj, options, signature, return_annotation):
 			#	if typ=='; NoneType': typ=''
 			#except TypeError: ##no registered converted
 			#	typ=''
-			dfl=m.group(1)
-			m2=re.match(r'\s*\(\s*\(\s*void\s*\)\s*\"(.*)\"\s*,\s*(.*)\s*\)\s*',dfl)
-			if m2: dfl="%s, %s"%(m2.group(2),m2.group(1))
-			if dfl!='': ret+=' (='+dfl+'%s)'%typ
-			else: ret+=' (=uninitalized%s)'%typ
+			dfl = m.group(1)
+			m2 = re.match(r'\s*\(\s*\(\s*void\s*\)\s*\"(.*)\"\s*,\s*(.*)\s*\)\s*', dfl)
+			if m2:
+				dfl = "%s, %s" % (m2.group(2), m2.group(1))
+			if dfl != '':
+				ret += ' (=' + dfl + '%s)' % typ
+			else:
+				ret += ' (=uninitalized%s)' % typ
 		#m=re.match('.*\[(.{,8})\].*',doc)
 		#m=re.match('.*:yunit:`(.?*)`.*',doc)
 		#if m:
 		#	units=m.group(1)
 		#	print '@@@@@@@@@@@@@@@@@@@@@',name,units
 		#	ret+=' ['+units+']'
-		return ret,None
-	elif what=='class':
-		ret=[]
-		if len(obj.__bases__)>0:
-			base=obj.__bases__[0]
-			while base.__module__!='Boost.Python':
-				ret+=[base.__name__]
-				if len(base.__bases__)>0: base=base.__bases__[0]
-				else: break
+		return ret, None
+	elif what == 'class':
+		ret = []
+		if len(obj.__bases__) > 0:
+			base = obj.__bases__[0]
+			while base.__module__ != 'Boost.Python':
+				ret += [base.__name__]
+				if len(base.__bases__) > 0:
+					base = base.__bases__[0]
+				else:
+					break
 		if len(ret):
-			return ' (inherits '+u' → '.join(ret)+')',None
-		else: return None,None
-	elif isBoostFunc(what,obj):
-		sig=boostFuncSignature(name,obj)[0] or ' (wrapped c++ function)'
-		return sig,None
-	elif isBoostMethod(what,obj):
-		sig=boostFuncSignature(name,obj,removeSelf=True)[0]
-		return sig,None
+			return ' (inherits ' + u' → '.join(ret) + ')', None
+		else:
+			return None, None
+	elif isBoostFunc(what, obj):
+		sig = boostFuncSignature(name, obj)[0] or ' (wrapped c++ function)'
+		return sig, None
+	elif isBoostMethod(what, obj):
+		sig = boostFuncSignature(name, obj, removeSelf=True)[0]
+		return sig, None
 	#else: print what,name,obj.__repr__()
 	#return None,None
-		
+
 
 from sphinx import addnodes
-def parse_ystaticattr(env,attr,attrnode):
-	m=re.match(r'([a-zA-Z0-9_]+)\.(.*)\(=(.*)\)',attr)
+
+
+def parse_ystaticattr(env, attr, attrnode):
+	m = re.match(r'([a-zA-Z0-9_]+)\.(.*)\(=(.*)\)', attr)
 	if not m:
-		print(100*'@'+' Static attribute %s not matched'%attr)
-		attrnode+=addnodes.desc_name(attr,attr)
-	klass,name,default=m.groups()
+		print(100 * '@' + ' Static attribute %s not matched' % attr)
+		attrnode += addnodes.desc_name(attr, attr)
+	klass, name, default = m.groups()
 	#attrnode+=addnodes.desc_type('static','static')
-	attrnode+=addnodes.desc_name(name,name)
-	plist=addnodes.desc_parameterlist()
-	if default=='': default='unspecified'
-	plist+=addnodes.desc_parameter('='+default,'='+default)
-	attrnode+=plist
-	attrnode+=addnodes.desc_annotation('  [static]','  [static]')
-	return klass+'.'+name
+	attrnode += addnodes.desc_name(name, name)
+	plist = addnodes.desc_parameterlist()
+	if default == '':
+		default = 'unspecified'
+	plist += addnodes.desc_parameter('=' + default, '=' + default)
+	attrnode += plist
+	attrnode += addnodes.desc_annotation('  [static]', '  [static]')
+	return klass + '.' + name
+
 
 #############################
 ## set tab size
@@ -357,23 +418,24 @@ def parse_ystaticattr(env,attr,attrnode):
 def setup(app):
 	from sphinx.highlighting import lexers
 	from pygments.lexers.compiled import CppLexer
-	lexers['cpp'] = CppLexer(tabsize=3) 
-	lexers['c++'] = CppLexer(tabsize=3) 
+	lexers['cpp'] = CppLexer(tabsize=3)
+	lexers['c++'] = CppLexer(tabsize=3)
 	from pygments.lexers.agile import PythonLexer
-	lexers['python'] = PythonLexer(tabsize=3) 
+	lexers['python'] = PythonLexer(tabsize=3)
 
-	app.connect('source-read',fixSrc)
+	app.connect('source-read', fixSrc)
 
-	app.connect('autodoc-skip-member',customExclude)
-	app.connect('autodoc-process-signature',fixSignature)
-	app.connect('autodoc-process-docstring',fixDocstring)
+	app.connect('autodoc-skip-member', customExclude)
+	app.connect('autodoc-process-signature', fixSignature)
+	app.connect('autodoc-process-docstring', fixDocstring)
 
 	import sphinx.versioning
 	if (sphinx.version_info[0] == 1):
 		# In newer sphinx version add_description_unit was deprecated. Keep for backcompatability
-		app.add_description_unit('ystaticattr',None,objname='static attribute',indextemplate='pair: %s; static method',parse_node=parse_ystaticattr)
+		app.add_description_unit('ystaticattr', None, objname='static attribute', indextemplate='pair: %s; static method', parse_node=parse_ystaticattr)
 	else:
-		app.add_object_type('ystaticattr',None,objname='static attribute',indextemplate='pair: %s; static method',parse_node=parse_ystaticattr)
+		app.add_object_type('ystaticattr', None, objname='static attribute', indextemplate='pair: %s; static method', parse_node=parse_ystaticattr)
+
 
 import sys, os
 
@@ -395,33 +457,33 @@ sys.path.append(os.path.abspath('.'))
 import yade.config
 
 if 1:
-	if yade.runtime.ipython_version<12:
+	if yade.runtime.ipython_version < 12:
 		import ipython_directive as id
 	else:
-		if 12<=yade.runtime.ipython_version<13:
+		if 12 <= yade.runtime.ipython_version < 13:
 			import ipython_directive012 as id
-		elif 13<=yade.runtime.ipython_version<200:
+		elif 13 <= yade.runtime.ipython_version < 200:
 			import ipython_directive013 as id
-		elif 200<=yade.runtime.ipython_version<500:
+		elif 200 <= yade.runtime.ipython_version < 500:
 			import ipython_directive200 as id
 		else:
 			import ipython_directive500 as id
 
 	#The next four lines are for compatibility with IPython 0.13.1
-	ipython_rgxin =re.compile(r'(?:In |Yade )\[(\d+)\]:\s?(.*)\s*')
-	ipython_rgxout=re.compile(r'(?:Out| ->  )\[(\d+)\]:\s?(.*)\s*')
-	ipython_promptin ='Yade [%d]:'
-	ipython_promptout=' ->  [%d]: '
-	ipython_cont_spaces='     '
+	ipython_rgxin = re.compile(r'(?:In |Yade )\[(\d+)\]:\s?(.*)\s*')
+	ipython_rgxout = re.compile(r'(?:Out| ->  )\[(\d+)\]:\s?(.*)\s*')
+	ipython_promptin = 'Yade [%d]:'
+	ipython_promptout = ' ->  [%d]: '
+	ipython_cont_spaces = '     '
 	#For IPython <=0.12, the following lines are used
-	id.rgxin =re.compile(r'(?:In |Yade )\[(\d+)\]:\s?(.*)\s*')
-	id.rgxout=re.compile(r'(?:Out| ->  )\[(\d+)\]:\s?(.*)\s*')
-	id.rgxcont=re.compile(r'(?:   +)\.\.+:\s?(.*)\s*')
-	id.fmtin  ='Yade [%d]:'
-	id.fmtout =' ->  [%d]: '  # for some reason, out and cont must have the trailing space
-	id.fmtcont='     .\D.: '
-	id.rc_override=dict(prompt_in1="Yade [\#]:",prompt_in2="     .\D.:",prompt_out=r" ->  [\#]: ")
-	if yade.runtime.ipython_version<12:
+	id.rgxin = re.compile(r'(?:In |Yade )\[(\d+)\]:\s?(.*)\s*')
+	id.rgxout = re.compile(r'(?:Out| ->  )\[(\d+)\]:\s?(.*)\s*')
+	id.rgxcont = re.compile(r'(?:   +)\.\.+:\s?(.*)\s*')
+	id.fmtin = 'Yade [%d]:'
+	id.fmtout = ' ->  [%d]: '  # for some reason, out and cont must have the trailing space
+	id.fmtcont = '     .\D.: '
+	id.rc_override = dict(prompt_in1="Yade [\#]:", prompt_in2="     .\D.:", prompt_out=r" ->  [\#]: ")
+	if yade.runtime.ipython_version < 12:
 		id.reconfig_shell()
 
 	import ipython_console_highlighting as ich
@@ -429,57 +491,54 @@ if 1:
 	ich.IPythonConsoleLexer.output_prompt = re.compile("(( ->  |Out)|\[[0-9]+\]: )")
 	ich.IPythonConsoleLexer.continue_prompt = re.compile("\s+\.\.\.+:")
 
-
 extensions = [
-		'sphinx.ext.autodoc',
-		'sphinx.ext.autosummary',
-		'sphinx.ext.coverage',
-		'sphinx.ext.mathjax',
-		'sphinx.ext.graphviz',
-		'sphinx.ext.viewcode',
-		'sphinx.ext.inheritance_diagram',
-		'matplotlib.sphinxext.plot_directive',
-		#'matplotlib.sphinxext.only_directives', #removed this with python3, seems not used anymore by sphinx.
-		#'matplotlib.sphinxext.mathmpl',
-		'ipython_console_highlighting',
-		'youtube',
-		'sphinx.ext.todo'
-		]
+        'sphinx.ext.autodoc',
+        'sphinx.ext.autosummary',
+        'sphinx.ext.coverage',
+        'sphinx.ext.mathjax',
+        'sphinx.ext.graphviz',
+        'sphinx.ext.viewcode',
+        'sphinx.ext.inheritance_diagram',
+        'matplotlib.sphinxext.plot_directive',
+        #'matplotlib.sphinxext.only_directives', #removed this with python3, seems not used anymore by sphinx.
+        #'matplotlib.sphinxext.mathmpl',
+        'ipython_console_highlighting',
+        'youtube',
+        'sphinx.ext.todo'
+]
 
-
-if yade.runtime.ipython_version<12:
+if yade.runtime.ipython_version < 12:
 	extensions.append('ipython_directive')
 else:
-	if 12<=yade.runtime.ipython_version<13:
+	if 12 <= yade.runtime.ipython_version < 13:
 		extensions.append('ipython_directive012')
-	elif 13<=yade.runtime.ipython_version<200:
+	elif 13 <= yade.runtime.ipython_version < 200:
 		extensions.append('ipython_directive013')
-	elif 200<=yade.runtime.ipython_version<500:
+	elif 200 <= yade.runtime.ipython_version < 500:
 		extensions.append('ipython_directive200')
-	elif yade.runtime.ipython_version<600:
+	elif yade.runtime.ipython_version < 600:
 		extensions.append('ipython_directive500')
 	else:
 		extensions.append('IPython.sphinxext.ipython_directive')
 
 # the sidebar extension
 if False:
-	if writer=='html':
-		extensions+=['sphinx.ext.sidebar']
+	if writer == 'html':
+		extensions += ['sphinx.ext.sidebar']
 
-	sidebar_all=True
-	sidebar_relling=True
+	sidebar_all = True
+	sidebar_relling = True
 	#sidebar_abbrev=True
-	sidebar_tocdepth=3
+	sidebar_tocdepth = 3
 
 ## http://trac.sagemath.org/sage_trac/attachment/ticket/7549/trac_7549-doc_inheritance_underscore.patch
-# GraphViz includes dot, neato, twopi, circo, fdp. 
-graphviz_dot = 'dot' 
-inheritance_graph_attrs = { 'rankdir' : 'BT' } 
-inheritance_node_attrs = { 'height' : 0.5, 'fontsize' : 12, 'shape' : 'oval' } 
-inheritance_edge_attrs = {} 
+# GraphViz includes dot, neato, twopi, circo, fdp.
+graphviz_dot = 'dot'
+inheritance_graph_attrs = {'rankdir': 'BT'}
+inheritance_node_attrs = {'height': 0.5, 'fontsize': 12, 'shape': 'oval'}
+inheritance_edge_attrs = {}
 
-
-my_latex_preamble=r'''
+my_latex_preamble = r'''
 \usepackage{euler} % must be loaded before fontspec for the whole doc (below); this must be kept for pngmath, however
 \usepackage{hyperref}
 \usepackage{amsmath}
@@ -566,9 +625,9 @@ my_latex_preamble=r'''
 
 '''
 
-pngmath_latex_preamble=r'\usepackage[active]{preview}'+my_latex_preamble
+pngmath_latex_preamble = r'\usepackage[active]{preview}' + my_latex_preamble
 
-pngmath_use_preview=True
+pngmath_use_preview = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['templates']
@@ -632,7 +691,6 @@ pygments_style = 'sphinx'
 # A list of ignored prefixes for module index sorting.
 modindex_common_prefix = ['yade.']
 
-
 # -- Options for HTML output ---------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
@@ -642,7 +700,7 @@ html_theme = 'default'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {'stickysidebar':'true','collapsiblesidebar':'true','rightsidebar':'false'}
+html_theme_options = {'stickysidebar': 'true', 'collapsiblesidebar': 'true', 'rightsidebar': 'false'}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
@@ -679,11 +737,11 @@ html_use_smartypants = True
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
 
-html_index='index.html'
+html_index = 'index.html'
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
-html_additional_pages = { 'index':'index.html'}
+html_additional_pages = {'index': 'index.html'}
 
 # If false, no module index is generated.
 #html_use_modindex = True
@@ -707,7 +765,6 @@ html_additional_pages = { 'index':'index.html'}
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'Yadedoc'
-
 
 # -- Options for LaTeX output --------------------------------------------------
 
@@ -774,20 +831,20 @@ In order to let users cite Yade consistently in publications, we provide a list 
 
 '''
 
-latex_elements=dict(
-	papersize='a4paper',
-	fontpkg=r'''
+latex_elements = dict(
+        papersize='a4paper',
+        fontpkg=r'''
 \usepackage{euler}
 \usepackage{fontspec,xunicode,xltxtra}
 %\setmainfont[BoldFont={LMRoman10 Bold}]{CMU Concrete} %% CMU Concrete must be installed by hand as otf
 	''',
-	utf8extra='',
-	fncychap='',
-	preamble=my_latex_preamble,
-	footer='',
-	inputenc='',
-	fontenc='',
-	maketitle=my_maketitle,
+        utf8extra='',
+        fncychap='',
+        preamble=my_latex_preamble,
+        footer='',
+        inputenc='',
+        fontenc='',
+        maketitle=my_maketitle,
 )
 
 # The paper size ('letter' or 'a4').
@@ -799,10 +856,9 @@ latex_elements=dict(
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-   ('index-toctree', 'Yade.tex', u'Yade Documentation',
-   u'Václav Šmilauer', 'manual'),
-   #('index-toctree_manuals', 'YadeManuals.tex', u'Yade Tutorial and Manuals',
-   #u'Václav Šmilauer', 'manual'),
+        ('index-toctree', 'Yade.tex', u'Yade Documentation', u'Václav Šmilauer', 'manual'),
+        #('index-toctree_manuals', 'YadeManuals.tex', u'Yade Tutorial and Manuals',
+        #u'Václav Šmilauer', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
