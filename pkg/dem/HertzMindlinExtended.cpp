@@ -35,39 +35,37 @@ void Ip2_FrictMatCDM_FrictMatCDM_MindlinPhysCDM::go( const shared_ptr<Material>&
 	interaction->phys = shared_ptr<MindlinPhysCDM>(new MindlinPhysCDM());
 	const shared_ptr<MindlinPhysCDM>& contactPhysics = YADE_PTR_CAST<MindlinPhysCDM>(interaction->phys);
 
-	//shared_ptr<MindlinPhysCDM> contactPhysics(new MindlinPhysCDM());
-	//interaction->phys = contactPhysics;
-	FrictMatCDM* mat1 = YADE_CAST<FrictMatCDM*>(b1.get());
-	FrictMatCDM* mat2 = YADE_CAST<FrictMatCDM*>(b2.get());
+	const FrictMatCDM* mat1 = YADE_CAST<FrictMatCDM*>(b1.get());
+	const FrictMatCDM* mat2 = YADE_CAST<FrictMatCDM*>(b2.get());
 	
 	/* from interaction physics */
-	Real Ea = mat1->young;
-	Real Eb = mat2->young;
-	Real Va = mat1->poisson;
-	Real Vb = mat2->poisson;
-	Real fa = mat1->frictionAngle;
-	Real fb = mat2->frictionAngle;
+	const Real Ea = mat1->young;
+	const Real Eb = mat2->young;
+	const Real Va = mat1->poisson;
+	const Real Vb = mat2->poisson;
+	const Real fa = mat1->frictionAngle;
+	const Real fb = mat2->frictionAngle;
 
 
 	/* from interaction geometry */
-	GenericSpheresContact* scg = YADE_CAST<GenericSpheresContact*>(interaction->geom.get());		
+	const GenericSpheresContact* scg = YADE_CAST<GenericSpheresContact*>(interaction->geom.get());		
 
 	/* calculate stiffness coefficients */
-	Real Ga = Ea/(2*(1+Va));
-	Real Gb = Eb/(2*(1+Vb));
+	const Real Ga = Ea/(2*(1+Va));
+	const Real Gb = Eb/(2*(1+Vb));
 	//Real V = (Va+Vb)/2; // average of poisson's ratio
-	Real E = Ea*Eb/((1.-std::pow(Va,2))*Eb+(1.-std::pow(Vb,2))*Ea); // equivalent Young's modulus
+	const Real E = Ea*Eb/((1.-std::pow(Va,2))*Eb+(1.-std::pow(Vb,2))*Ea); // equivalent Young's modulus
 	
 	//CHANGED use equivalent radius from geometry!!
-	Real Da = scg->refR1>0 ? scg->refR1 : scg->refR2; 
-	Real Db = scg->refR2; 
-	Real R = Da*Db/(Da+Db); // equivalent radius
+	const Real Da = scg->refR1>0 ? scg->refR1 : scg->refR2; 
+	const Real Db = scg->refR2; 
+	const Real R = Da*Db/(Da+Db); // equivalent radius
 
-	Real Kno = 4./3.*E*sqrt(R); // coefficient for normal stiffness
+	const Real Kno = 4./3.*E*sqrt(R); // coefficient for normal stiffness
 	//Real Kso = 2*sqrt(4*R)*G/(2-V); // coefficient for shear stiffness
 	//CHANGED
-	Real Kso = 8*sqrt(R)/( (2-Va)/Ga + (2-Vb)/Gb); // coefficient for shear stiffness
-	Real frictionAngle = (!frictAngle) ? std::min(fa,fb) : (*frictAngle)(mat1->id,mat2->id,mat1->frictionAngle,mat2->frictionAngle);
+	const Real Kso = 8*sqrt(R)/( (2-Va)/Ga + (2-Vb)/Gb); // coefficient for shear stiffness
+	const Real frictionAngle = (!frictAngle) ? std::min(fa,fb) : (*frictAngle)(mat1->id,mat2->id,mat1->frictionAngle,mat2->frictionAngle);
 
 
 	/* pass values calculated from above to MindlinPhys */
@@ -116,11 +114,11 @@ void Ip2_FrictMat_FrictMatCDM_MindlinPhysCDM::go( const shared_ptr<Material>& b1
 	if(interaction->phys) return; // no updates of an already existing contact necessary
 	shared_ptr<MindlinPhysCDM> contactPhysics(new MindlinPhysCDM());
 	interaction->phys = contactPhysics;
-    FrictMat* matFrictMat;
-    FrictMatCDM* matFrictMatCDM;
+    const FrictMat* matFrictMat;
+    const FrictMatCDM* matFrictMatCDM;
     // check which interaction partner is of which material class
     // try to cast b1 to FrictMatCDM, returns null if b1 is FrictMat
-    FrictMatCDM* matFrictMatCDM1= dynamic_cast<FrictMatCDM*>(b1.get());
+    const FrictMatCDM* matFrictMatCDM1= dynamic_cast<FrictMatCDM*>(b1.get());
     if  (matFrictMatCDM1){
         // b1 is FrictMatCDM, b2 is FrictMat
         matFrictMatCDM = YADE_CAST<FrictMatCDM*>(b1.get());
@@ -132,33 +130,31 @@ void Ip2_FrictMat_FrictMatCDM_MindlinPhysCDM::go( const shared_ptr<Material>& b1
     }
     
 	/* from interaction physics */
-	Real Ea = matFrictMat->young;
-	Real Eb = matFrictMatCDM->young;
-	Real Va = matFrictMat->poisson;
-	Real Vb = matFrictMatCDM->poisson;
-	Real fa = matFrictMat->frictionAngle;
-	Real fb = matFrictMatCDM->frictionAngle;
+	const Real Ea = matFrictMat->young;
+	const Real Eb = matFrictMatCDM->young;
+	const Real Va = matFrictMat->poisson;
+	const Real Vb = matFrictMatCDM->poisson;
+	const Real fa = matFrictMat->frictionAngle;
+	const Real fb = matFrictMatCDM->frictionAngle;
 
 
 	/* from interaction geometry */
-	GenericSpheresContact* scg = YADE_CAST<GenericSpheresContact*>(interaction->geom.get());		
+	const GenericSpheresContact* scg = YADE_CAST<GenericSpheresContact*>(interaction->geom.get());		
+	if (Va <= 0 or Vb<=0) throw std::invalid_argument("Ip2_FrictMat_FrictMatCDM_MindlinPhysCDM: Poisson's ratio must be > 0");
 
 	/* calculate stiffness coefficients */
-	Real Ga = Ea/(2*(1+Va));
-	Real Gb = Eb/(2*(1+Vb));
+	const Real Ga = Ea/(2*(1+Va));
+	const Real Gb = Eb/(2*(1+Vb));
 	//Real V = (Va+Vb)/2; // average of poisson's ratio
-	Real E = Ea*Eb/((1.-std::pow(Va,2))*Eb+(1.-std::pow(Vb,2))*Ea); //equivalent Young's modulus
+	const Real E = Ea*Eb/((1.-std::pow(Va,2))*Eb+(1.-std::pow(Vb,2))*Ea); //equivalent Young's modulus
 	
-	//CHANGED use equivalent radius from geometry!!
-	Real Da = scg->refR1>0 ? scg->refR1 : scg->refR2; 
-	Real Db = scg->refR2; 
-	Real R = Da*Db/(Da+Db); // equivalent radius
+	const Real Da = scg->refR1>0 ? scg->refR1 : scg->refR2; 
+	const Real Db = scg->refR2; 
+	const Real R = Da*Db/(Da+Db); // equivalent radius
 
-	Real Kno = 4./3.*E*sqrt(R); // coefficient for normal stiffness
-	//Real Kso = 2*sqrt(4*R)*G/(2-V); // coefficient for shear stiffness
-	//CHANGED
-	Real Kso = 8*sqrt(R)/( (2-Va)/Ga + (2-Vb)/Gb); // coefficient for shear stiffness
-	Real frictionAngle = (!frictAngle) ? std::min(fa,fb) : (*frictAngle)(matFrictMat->id,matFrictMatCDM->id,matFrictMat->frictionAngle,matFrictMatCDM->frictionAngle);
+	const Real Kno = 4./3.*E*sqrt(R); // coefficient for normal stiffness
+	const Real Kso = 8*sqrt(R)/( (2-Va)/Ga + (2-Vb)/Gb); // coefficient for shear stiffness
+	const Real frictionAngle = (!frictAngle) ? std::min(fa,fb) : (*frictAngle)(matFrictMat->id,matFrictMatCDM->id,matFrictMat->frictionAngle,matFrictMatCDM->frictionAngle);
 
 
 	/* pass values calculated from above to MindlinPhys */
@@ -201,7 +197,7 @@ Real Law2_ScGeom_MindlinPhysCDM_HertzMindlinCDM::ratioSlidingContacts()
 	Real ratio(0); int count(0);
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions){
 		if(!I->isReal()) continue;
-		MindlinPhysCDM* phys = dynamic_cast<MindlinPhysCDM*>(I->phys.get());
+		const MindlinPhysCDM* phys = dynamic_cast<MindlinPhysCDM*>(I->phys.get());
 		if (phys->isSliding) {ratio+=1;}
 		count++;
 	}  
@@ -215,7 +211,7 @@ Real Law2_ScGeom_MindlinPhysCDM_HertzMindlinCDM::ratioYieldingContacts()
 	Real ratio(0); int count(0);
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions){
 		if(!I->isReal()) continue;
-		MindlinPhysCDM* phys = dynamic_cast<MindlinPhysCDM*>(I->phys.get());
+		const MindlinPhysCDM* phys = dynamic_cast<MindlinPhysCDM*>(I->phys.get());
 		if (phys->isYielding) {ratio+=1;}
 		count++;
 	}  
@@ -229,19 +225,21 @@ CREATE_LOGGER(Law2_ScGeom_MindlinPhysCDM_HertzMindlinCDM);
 bool Law2_ScGeom_MindlinPhysCDM_HertzMindlinCDM::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys>& ip, Interaction* contact){
   
 	
-	Body::id_t id1 = contact->getId1(); // get id body 1
- 	Body::id_t id2 = contact->getId2(); // get id body 2
+	//const Body::id_t id1 = contact->getId1(); // get id body 1
+ 	//const Body::id_t id2 = contact->getId2(); // get id body 2
+    const auto id1 = contact->getId1();
+    const auto id2 = contact->getId2();
+    
+	const State* de1 = Body::byId(id1,scene)->state.get();
+	const State* de2 = Body::byId(id2,scene)->state.get();	
 
-	State* de1 = Body::byId(id1,scene)->state.get();
-	State* de2 = Body::byId(id2,scene)->state.get();	
-
-	ScGeom* scg = static_cast<ScGeom*>(ig.get());
+	const ScGeom* scg = static_cast<ScGeom*>(ig.get());
 	MindlinPhysCDM* phys = static_cast<MindlinPhysCDM*>(ip.get());	
  
 	/****************/
 	/* NORMAL FORCE */
 	/****************/
-	Real uDEM = scg->penetrationDepth;// get DEM overlap
+	const Real uDEM = scg->penetrationDepth;// get DEM overlap
 	if (uDEM<0){
 	  if (neverErase) {phys->shearForce = phys->normalForce = Vector3r::Zero(); phys->kn=phys->ks=0; return true;}
  	  else return false;
@@ -292,29 +290,26 @@ bool Law2_ScGeom_MindlinPhysCDM_HertzMindlinCDM::go(shared_ptr<IGeom>& ig, share
 	/********************/
 	phys->isSliding=false;
 	phys->shearViscous=Vector3r::Zero(); // reset so that during sliding, the previous values is not there
-	if (true) {
-	  // NO ADHESION
-		//-------Suhr&Six16---------------------------------------------------------
-		//change mu to be pressure dependent!
-		Real pm;
-		if (Fn>0.0){
-			//divide force with contact area (circular), radius: sqrt(phys->R*uN)
-			pm=Fn/(phys->R*uN*M_PI); //mean pressure of contact 
-		}else{
-			pm=0.0;
-		}
-		Real mu=phys->mu0+phys->c1/(1.0+phys->c2*pm);
-		phys->tangensOfFrictionAngle=mu;
+	// NO ADHESION
+    //-------Suhr&Six16---------------------------------------------------------
+    //change mu to be pressure dependent!
+    Real pm;
+    if (Fn>0.0){
+        //divide force with contact area (circular), radius: sqrt(phys->R*uN)
+        pm=Fn/(phys->R*uN*M_PI); //mean pressure of contact 
+    }else{
+        pm=0.0;
+    }
+    Real mu=phys->mu0+phys->c1/(1.0+phys->c2*pm);
+    phys->tangensOfFrictionAngle=mu;
 		
-	        Real maxFs = Fn*phys->tangensOfFrictionAngle;
+    Real maxFs = Fn*phys->tangensOfFrictionAngle;
 
-		if (shearElastic.squaredNorm() > maxFs*maxFs){
-			phys->isSliding=true;
-			Real ratio = maxFs/shearElastic.norm();
-			shearElastic *= ratio; phys->shearForce = shearElastic; /*store only elastic shear displacement*/			
-			}
-		else {phys->shearForce = shearElastic;} // update the shear force at the elastic value if no damping is present and if we passed MC
-	}
+    if (shearElastic.squaredNorm() > maxFs*maxFs){
+        phys->isSliding=true;
+        Real ratio = maxFs/shearElastic.norm();
+        shearElastic *= ratio; phys->shearForce = shearElastic; /*store only elastic shear displacement*/			
+    }else {phys->shearForce = shearElastic;} // update the shear force at the elastic value if no damping is present and if we passed MC
 
 	/****************/
 	/* APPLY FORCES */
@@ -330,49 +325,7 @@ bool Law2_ScGeom_MindlinPhysCDM_HertzMindlinCDM::go(shared_ptr<IGeom>& ig, share
 		scene->forces.addTorque(id2,(scg->radius2-0.5*scg->penetrationDepth)* scg->normal.cross(force));
 	}
 	
-	/********************************************/
-	/* MOMENT CONTACT LAW */
-	/********************************************/
-/*
-	if (includeMoment){
-		//  Bending 
-		// new code to compute relative particle rotation (similar to the way the shear is computed)
-		// use scg function to compute relAngVel
-	  	const Real& dt = scene->dt; // get time step
-		Vector3r relAngVel = scg->getRelAngVel(de1,de2,dt);
-		//Vector3r relAngVel = (b2->state->angVel-b1->state->angVel);
-		Vector3r relAngVelBend = relAngVel - scg->normal.dot(relAngVel)*scg->normal; // keep only the bending part 
-		Vector3r relRot = relAngVelBend*dt; // relative rotation due to rolling behaviour	
-		// incremental formulation for the bending moment (as for the shear part)
-		Vector3r& momentBend = phys->momentBend;
-		momentBend = scg->rotate(momentBend); // rotate moment vector (updated)
-		momentBend = momentBend-phys->kr*relRot; // add incremental rolling to the rolling vector
-		// ----------------------------------------------------------------------------------------
-		//  Torsion 
-		Vector3r relAngVelTwist = scg->normal.dot(relAngVel)*scg->normal;
-		Vector3r relRotTwist = relAngVelTwist*dt; // component of relative rotation along n
-		// incremental formulation for the torsional moment
-		Vector3r& momentTwist = phys->momentTwist;
-		momentTwist = scg->rotate(momentTwist); // rotate moment vector (updated)
-		momentTwist = momentTwist-phys->ktw*relRotTwist;
 
-		// check plasticity condition (only bending part for the moment)
-		Real MomentMax = phys->maxBendPl*phys->normalForce.norm();
-		Real scalarMoment = phys->momentBend.norm();
-		if (MomentMax>0){
-			if(scalarMoment > MomentMax) 
-			{
-			    Real ratio = MomentMax/scalarMoment; // to fix the moment to its yielding value
-			    phys->momentBend *= ratio;
-			 }
-		}
-		// apply moments
-		Vector3r moment = phys->momentTwist+phys->momentBend;
-		scene->forces.addTorque(id1,-moment); 
-		scene->forces.addTorque(id2,moment);
-	}
-	
-*/	
 	return true;
 }
 

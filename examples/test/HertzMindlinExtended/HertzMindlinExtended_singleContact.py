@@ -29,7 +29,7 @@ qt.View() # To visualize the system!
 makeCDM=1
 
 #------------------------choose type of particle, which collides with the sphere:
-TYPE=       'SPHERE'#, 'FACET'#   'WALL'# 
+TYPE=   'SPHERE'#, 'FACET'# 'WALL'#
 
 
 #------------------------- sphere radius and position

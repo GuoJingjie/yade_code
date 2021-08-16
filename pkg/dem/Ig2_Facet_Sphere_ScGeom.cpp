@@ -118,7 +118,7 @@ bool Ig2_Facet_Sphere_ScGeom::go(
 		normal                = facetAxisT * normal; // in global orientation
 		scm->contactPoint     = se32.position + shift2 - (sphereRadius - 0.5 * penetrationDepth) * normal;
 		scm->penetrationDepth = penetrationDepth;
-		scm->radius1          = (Hertzian)? 1e8 * sphereRadius : 2 * sphereRadius;
+		scm->radius1          = (hertzian)? hertzFac * sphereRadius : 2 * sphereRadius;
 		scm->radius2          = sphereRadius;
 		if (isNew) c->geom = scm;
 		scm->precompute(state1, state2, scene, c, normal, isNew, shift2, false /*avoidGranularRatcheting only for sphere-sphere*/);
@@ -211,7 +211,7 @@ bool Ig2_Wall_Sphere_ScGeom::go(
 	bool isNew = !c->geom;
 	if (isNew) c->geom = shared_ptr<ScGeom>(new ScGeom());
 	const shared_ptr<ScGeom>& ws = YADE_PTR_CAST<ScGeom>(c->geom);
-	ws->radius1 =  (Hertzian)? 1e8 * radius : radius; // default (not Hertzian): wall's "radius" is chosen as the same as the sphere's radius
+	ws->radius1 =  (hertzian)? hertzFac * radius : radius; // default (not Hertzian): wall's "radius" is chosen as the same as the sphere's radius
 	ws->radius2 = radius; 
 	ws->contactPoint          = contPt;
 	ws->penetrationDepth      = -(math::abs(dist) - radius);
