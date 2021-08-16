@@ -20,8 +20,7 @@ def averageDefGrad(xq,Aq,vol0): # Can be used for Deformation/Velocity Gradient 
 def triStressMicro(stressPt,stabThresh,triThresh,creepThresh):
   global stressM, currF
   deltaSigma = stressPt - stressM
-  sigmaDot = 5.e3 * deltaSigma.normalized() / \
-                    deltaSigma.normalized().maxAbsCoeff()
+  sigmaDot = 5.e3 * deltaSigma.normalized() / deltaSigma.normalized().maxAbsCoeff()
   count = int(deltaSigma.norm() / sigmaDot.norm())
   print('Incremental Loading Steps: ', count)
   stage = 1 # Loading stages 1) Increment Stress 2) Creep
@@ -54,8 +53,7 @@ def triStressMicro(stressPt,stabThresh,triThresh,creepThresh):
     sflag = 0
     for i in range(0,3):
       for j in range(0,3):
-        triDiff = abs(meanStress[i][j]-stressPt[i][j]) / \
-                   max( abs(meanStress[i][j]) , abs(meanStress.trace()/3.) )
+        triDiff = abs(meanStress[i][j]-stressPt[i][j]) / max( abs(meanStress[i][j]) , abs(meanStress.trace()/3.) )
         if triDiff > triThresh:
           sflag += 1
     if unb < stabThresh and stage == 2 and sflag == 0 and meanBVel < abs(creepThresh * boundVel):
@@ -161,8 +159,7 @@ def sepath(alpha,alphaShrinked,isFix):
   hydroStress = SbarCurr.trace() / 3.e6
   dhydroStress = (SbarCurr.trace()-SbarRef.trace()) / 3.e6
   volStrain = FbarCurr.determinant() -1.
-  pStress = SbarCurr.spectralDecomposition()[1] / 1.e6 - \
-                                    SbarRef.spectralDecomposition()[1] / 1.e6
+  pStress = SbarCurr.spectralDecomposition()[1] / 1.e6 - SbarRef.spectralDecomposition()[1] / 1.e6
   deviatorStress = pStress.maxCoeff() - pStress.minCoeff()
   axStrain = eGreen[0][0]
   pStrain = eGreen.spectralDecomposition()[1]

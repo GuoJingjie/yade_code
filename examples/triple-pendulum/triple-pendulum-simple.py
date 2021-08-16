@@ -46,8 +46,7 @@ for i in range(0, n):
 # create rods
 for i, j in zip(nodeIds[:-1], nodeIds[1:]):
     inter = createInteraction(i, j)
-    inter.phys.unp = -(O.bodies[j].state.pos-O.bodies[i].state.pos).norm() + \
-        O.bodies[i].shape.radius+O.bodies[j].shape.radius
+    inter.phys.unp = -(O.bodies[j].state.pos-O.bodies[i].state.pos).norm() + O.bodies[i].shape.radius+O.bodies[j].shape.radius
 
 O.bodies[0].dynamic = False  # set a fixed upper node
 qt.View()                    # create a GUI view

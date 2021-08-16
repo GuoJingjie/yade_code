@@ -400,13 +400,11 @@ class EmbeddedSphinxShell(object):
         image_directive = None
 
         is_verbatim = decorator=='@verbatim' or self.is_verbatim
-        is_doctest = (decorator is not None and \
-                     decorator.startswith('@doctest')) or self.is_doctest
+        is_doctest = (decorator is not None and decorator.startswith('@doctest')) or self.is_doctest
         is_suppress = decorator=='@suppress' or self.is_suppress
         is_okexcept = decorator=='@okexcept' or self.is_okexcept
         is_okwarning = decorator=='@okwarning' or self.is_okwarning
-        is_savefig = decorator is not None and \
-                     decorator.startswith('@savefig')
+        is_savefig = decorator is not None and decorator.startswith('@savefig')
 
         input_lines = input.split('\n')
         if len(input_lines) > 1:
@@ -665,8 +663,7 @@ class EmbeddedSphinxShell(object):
             elif token == INPUT:
                 found_input = True
                 (out_data, input_lines, output, is_doctest,
-                 decorator, image_file, image_directive) = \
-                          self.process_input(data, input_prompt, lineno)
+                 decorator, image_file, image_directive) = self.process_input(data, input_prompt, lineno)
             elif token == OUTPUT:
                 if not found_input:
 
@@ -693,8 +690,7 @@ class EmbeddedSphinxShell(object):
                     sys.stdout.write(e)
                     raise RuntimeError('An invalid block was detected.')
 
-                out_data = \
-                    self.process_output(data, output_prompt, input_lines,
+                out_data = self.process_output(data, output_prompt, input_lines,
                                         output, is_doctest, decorator,
                                         image_file)
                 if out_data:

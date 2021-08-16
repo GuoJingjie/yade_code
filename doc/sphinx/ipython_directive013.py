@@ -307,8 +307,7 @@ class EmbeddedSphinxShell(object):
         is_verbatim = decorator=='@verbatim' or self.is_verbatim
         is_doctest = decorator=='@doctest' or self.is_doctest
         is_suppress = decorator=='@suppress' or self.is_suppress
-        is_savefig = decorator is not None and \
-                     decorator.startswith('@savefig')
+        is_savefig = decorator is not None and decorator.startswith('@savefig')
 
         input_lines = input.split('\n')
         if len(input_lines) > 1:
@@ -383,8 +382,7 @@ class EmbeddedSphinxShell(object):
 
                 ind = found.find(output_prompt)
                 if ind<0:
-                    e='output prompt="%s" does not match out line=%s' % \
-                       (output_prompt, found)
+                    e='output prompt="%s" does not match out line=%s' % (output_prompt, found)
                     raise RuntimeError(e)
                 found = found[len(output_prompt):].strip()
 
@@ -434,11 +432,9 @@ class EmbeddedSphinxShell(object):
                 out_data = self.process_comment(data)
             elif token==INPUT:
                 (out_data, input_lines, output, is_doctest, image_file,
-                    image_directive) = \
-                          self.process_input(data, input_prompt, lineno)
+                    image_directive) = self.process_input(data, input_prompt, lineno)
             elif token==OUTPUT:
-                out_data = \
-                    self.process_output(data, output_prompt,
+                out_data = self.process_output(data, output_prompt,
                                         input_lines, output, is_doctest,
                                         image_file)
             if out_data:

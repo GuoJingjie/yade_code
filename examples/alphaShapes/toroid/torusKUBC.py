@@ -159,8 +159,7 @@ def sepath(alpha,alphaShrinked,isFix):
   hydroStress = SbarCurr.trace() / 3.e6
   dhydroStress = (SbarCurr.trace()-SbarRef.trace()) / 3.e6
   volStrain = FbarCurr.determinant() -1.
-  pStress = SbarCurr.spectralDecomposition()[1] / 1.e6 - \
-                                    SbarRef.spectralDecomposition()[1] / 1.e6
+  pStress = SbarCurr.spectralDecomposition()[1] / 1.e6 - SbarRef.spectralDecomposition()[1] / 1.e6
   deviatorStress = pStress.maxCoeff() - pStress.minCoeff()
   axStrain = eGreen[0][0]
   pStrain = eGreen.spectralDecomposition()[1]

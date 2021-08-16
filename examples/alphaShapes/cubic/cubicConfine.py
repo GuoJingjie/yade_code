@@ -28,10 +28,7 @@ def triStressMicro(stressPt,triThresh,creepThresh): # Apply Uniform Stress Tenso
     meanBVel = 0.5 * lbar.spectralDecomposition()[1].maxAbsCoeff()
     integrator.damping=max(0.2,min(0.99,(meanBVel/boundVel)**4))
     print('Boundary Velocity:',meanBVel,'Stress Diagonal',meanStress.diagonal())
-    if meanBVel < abs(creepThresh * boundVel) \
-                      and abs(triDiff[0]/stressPt[0][0]) < triThresh \
-                      and abs(triDiff[1]/stressPt[1][1]) < triThresh \
-                      and abs(triDiff[2]/stressPt[2][2]) < triThresh:
+    if meanBVel < abs(creepThresh * boundVel) and abs(triDiff[0]/stressPt[0][0]) < triThresh and abs(triDiff[1]/stressPt[1][1]) < triThresh and abs(triDiff[2]/stressPt[2][2]) < triThresh:
       break
     print('damping = ',integrator.damping)
 
@@ -40,8 +37,7 @@ def isoLoad(stabThresh,triThresh): # Use TriaxialStressController for Initial Co
     O.run(1000, True) 
     unb=unbalancedForce()
     triDiff=abs((triax.goal1-triax.meanStress)/(triax.goal1))
-    print('unb:',unb,' triDiff: ',triDiff,' meanS: ',triax.meanStress, \
-  				' porosity: ',triax.porosity)
+    print('unb:',unb,' triDiff: ',triDiff,' meanS: ',triax.meanStress, ' porosity: ',triax.porosity)
     if unb<stabThresh and triDiff<triThresh:
       break
 ############################################

@@ -105,11 +105,8 @@ class _TkAttr(object):
         # Check if we're in the creation thread.
         if threading.currentThread() == self._tk._creationThread:
             # We're in the creation thread; just call the event directly.
-            if self._tk._debug >= 8 or \
-               self._tk._debug >= 3 and self._attr.__name__ == 'call' and \
-               len(args) >= 1 and args[0] == 'after':
-                print('Calling event directly:', \
-                    self._attr.__name__, args, kwargs)
+            if self._tk._debug >= 8 or self._tk._debug >= 3 and self._attr.__name__ == 'call' and len(args) >= 1 and args[0] == 'after':
+                print('Calling event directly:', self._attr.__name__, args, kwargs)
             return self._attr(*args, **kwargs)
         else:
             # We're in a different thread than the creation thread; enqueue
@@ -162,8 +159,7 @@ def _CheckEvents(tk):
         while True:
             try:
                 # Get an event request from the queue.
-                method, args, kwargs, responseQueue = \
-                    tk.tk._eventQueue.get_nowait()
+                method, args, kwargs, responseQueue = tk.tk._eventQueue.get_nowait()
             except:
                 # No more events to process.
                 break
@@ -172,8 +168,7 @@ def _CheckEvents(tk):
                 # the result back to the caller via the response queue.
                 used = True
                 if tk.tk._debug >= 2:
-                    print('Calling event from main thread:', \
-                        method.__name__, args, kwargs)
+                    print('Calling event from main thread:', method.__name__, args, kwargs)
                 try:
                     responseQueue.put((False, method(*args, **kwargs)))
                 except SystemExit as ex:

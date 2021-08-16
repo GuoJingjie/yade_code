@@ -30,14 +30,8 @@ id_box = O.bodies.append(box((0,0,0),(2,2,.1),fixed=True,material=Mat))
 
 
 #create 2 clumps:
-clump1=O.bodies.appendClumped([\
-sphere([0,0,1], material=Mat, radius=0.5),\
-sphere([0.2,0,1], material=Mat, radius=0.5)\
-])
-clump2=O.bodies.appendClumped([\
-sphere([3,1,2], material=Mat, radius=0.5),\
-sphere([3.2,1,2], material=Mat, radius=0.5)\
-])
+clump1=O.bodies.appendClumped([ sphere([0,0,1], material=Mat, radius=0.5), sphere([0.2,0,1], material=Mat, radius=0.5) ])
+clump2=O.bodies.appendClumped([ sphere([3,1,2], material=Mat, radius=0.5), sphere([3.2,1,2], material=Mat, radius=0.5) ])
 
 #get clump ids:
 id_clump1 = clump1[0]

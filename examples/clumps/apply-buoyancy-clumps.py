@@ -113,11 +113,11 @@ O.engines=O.engines+[PyRunner(iterPeriod=100,command='applyBuoyancy()',label='bu
 
 #create 2 facets, that show water height:
 idsWaterFacets =  []
-idsWaterFacets.append(O.bodies.append(facet( \
-			[ boundaryMin, [boundaryMax[0],boundaryMin[1],boundaryMin[2]], [boundaryMax[0],boundaryMax[1],boundaryMin[2]] ], \
+idsWaterFacets.append(O.bodies.append(facet(
+			[ boundaryMin, [boundaryMax[0],boundaryMin[1],boundaryMin[2]], [boundaryMax[0],boundaryMax[1],boundaryMin[2]] ],
 			fixed=True,material=FrictMat(young=0),color=waterColor,wire=False)))#no interactions will appear
-idsWaterFacets.append(O.bodies.append(facet( \
-			[ [boundaryMax[0],boundaryMax[1],boundaryMin[2]], [boundaryMin[0],boundaryMax[1],boundaryMin[2]], boundaryMin ], \
+idsWaterFacets.append(O.bodies.append(facet(
+			[ [boundaryMax[0],boundaryMax[1],boundaryMin[2]], [boundaryMin[0],boundaryMax[1],boundaryMin[2]], boundaryMin ],
 			fixed=True,material=FrictMat(young=0),color=waterColor,wire=False)))#no interactions will appear
 
 #set velocity of incr. water level to the facets:
