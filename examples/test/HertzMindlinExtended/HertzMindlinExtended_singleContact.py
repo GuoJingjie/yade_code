@@ -15,8 +15,7 @@
 #   c1=c2=0.0: constant inter-particle friction coefficient
 
 
-from yade import pack,plot, polyhedra_utils
-import shutil, sys, imp
+from yade import plot
 import numpy as np
 
 from yade import qt
@@ -76,7 +75,7 @@ O.engines=[
 
 #------------------- Sphere which will contact ...  ----------------------
 
-O.bodies.append([sphere((L/5.0,L/2.0,-rad_p),rad_p, material = usedMat) ]) # this particles is fixed
+O.bodies.append([sphere((L/5.0,L/2.0,-rad_p),rad_p, material = usedMat) ]) 
 Body1 = O.bodies[-1]
 
 

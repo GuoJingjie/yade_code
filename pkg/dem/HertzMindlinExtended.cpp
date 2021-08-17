@@ -54,7 +54,7 @@ void Ip2_FrictMatCDM_FrictMatCDM_MindlinPhysCDM::go( const shared_ptr<Material>&
 	const Real Ga = Ea/(2*(1+Va));
 	const Real Gb = Eb/(2*(1+Vb));
 	//Real V = (Va+Vb)/2; // average of poisson's ratio
-	const Real E = Ea*Eb/((1.-std::pow(Va,2))*Eb+(1.-std::pow(Vb,2))*Ea); // equivalent Young's modulus
+	const Real E = Ea*Eb/((1.-math::pow(Va,2))*Eb+(1.-math::pow(Vb,2))*Ea); // equivalent Young's modulus
 	
 	//CHANGED use equivalent radius from geometry!!
 	const Real Da = scg->refR1>0 ? scg->refR1 : scg->refR2; 
@@ -65,7 +65,7 @@ void Ip2_FrictMatCDM_FrictMatCDM_MindlinPhysCDM::go( const shared_ptr<Material>&
 	//Real Kso = 2*sqrt(4*R)*G/(2-V); // coefficient for shear stiffness
 	//CHANGED
 	const Real Kso = 8*sqrt(R)/( (2-Va)/Ga + (2-Vb)/Gb); // coefficient for shear stiffness
-	const Real frictionAngle = (!frictAngle) ? std::min(fa,fb) : (*frictAngle)(mat1->id,mat2->id,mat1->frictionAngle,mat2->frictionAngle);
+	const Real frictionAngle = (!frictAngle) ? math::min(fa,fb) : (*frictAngle)(mat1->id,mat2->id,mat1->frictionAngle,mat2->frictionAngle);
 
 
 	/* pass values calculated from above to MindlinPhys */
@@ -77,16 +77,16 @@ void Ip2_FrictMatCDM_FrictMatCDM_MindlinPhysCDM::go( const shared_ptr<Material>&
 	//parameters for conical damage model
 	contactPhysics->R=R;//save current contact radius, will increase during yielding
 	contactPhysics->radius=R;//HERE Rmin is stored!! will not be changed during contact lifetime
-	contactPhysics->sigmaMax=std::min(mat1->sigmaMax,mat2->sigmaMax);
-	contactPhysics->alphaFac=(1.0-std::sin(std::min(mat1->alpha,mat2->alpha)))/std::sin(std::min(mat1->alpha,mat2->alpha));
+	contactPhysics->sigmaMax=math::min(mat1->sigmaMax,mat2->sigmaMax);
+	contactPhysics->alphaFac=(1.0-math::sin(math::min(mat1->alpha,mat2->alpha)))/math::sin(math::min(mat1->alpha,mat2->alpha));
     //parameter for stress dependent interparticle friction coefficient
-	contactPhysics->tangensOfFrictionAngle = std::tan(frictionAngle); //current value of friction coefficient is stored here, will change
-	contactPhysics->mu0=std::tan(frictionAngle); // parameter for stress dependent interparticle friction coefficient, will not change during contact lifetime
-	contactPhysics->c1=std::min(mat1->c1,mat2->c1); 
-	contactPhysics->c2=std::min(mat1->c2,mat2->c2);
+	contactPhysics->tangensOfFrictionAngle = math::tan(frictionAngle); //current value of friction coefficient is stored here, will change
+	contactPhysics->mu0=math::tan(frictionAngle); // parameter for stress dependent interparticle friction coefficient, will not change during contact lifetime
+	contactPhysics->c1=math::min(mat1->c1,mat2->c1); 
+	contactPhysics->c2=math::min(mat1->c2,mat2->c2);
 
 	
-	if (std::min(mat1->alpha,mat2->alpha) <= 0 or std::min(mat1->alpha,mat2->alpha)>=Mathr::PI/2.0) throw  std::invalid_argument("Ip2_FrictMatCDM_FrictMatCDM_MindlinPhysCDM: alpha must in (0,pi/2) radians ,NOT equal to 0 or pi/2");
+	if (math::min(mat1->alpha,mat2->alpha) <= 0 or math::min(mat1->alpha,mat2->alpha)>=Mathr::PI/2.0) throw  std::invalid_argument("Ip2_FrictMatCDM_FrictMatCDM_MindlinPhysCDM: alpha must in (0,pi/2) radians ,NOT equal to 0 or pi/2");
 	if (contactPhysics->mu0 <= 0) throw  std::invalid_argument("Ip2_FrictMatCDM_FrictMatCDM_MindlinPhysCDM: mu0/friction angle must be > 0");
 	if (contactPhysics->sigmaMax <= 0) throw std::invalid_argument("Ip2_FrictMatCDM_FrictMatCDM_MindlinPhysCDM: sigmaMax must be > 0");
 	if (contactPhysics->sigmaMax >= E) throw  std::invalid_argument("Ip2_FrictMat_FrictMatCDM_MindlinPhysCDM: sigmaMax must be < Young's modulus!");
@@ -146,7 +146,7 @@ void Ip2_FrictMat_FrictMatCDM_MindlinPhysCDM::go( const shared_ptr<Material>& b1
 	const Real Ga = Ea/(2*(1+Va));
 	const Real Gb = Eb/(2*(1+Vb));
 	//Real V = (Va+Vb)/2; // average of poisson's ratio
-	const Real E = Ea*Eb/((1.-std::pow(Va,2))*Eb+(1.-std::pow(Vb,2))*Ea); //equivalent Young's modulus
+	const Real E = Ea*Eb/((1.-math::pow(Va,2))*Eb+(1.-math::pow(Vb,2))*Ea); //equivalent Young's modulus
 	
 	const Real Da = scg->refR1>0 ? scg->refR1 : scg->refR2; 
 	const Real Db = scg->refR2; 
@@ -154,7 +154,7 @@ void Ip2_FrictMat_FrictMatCDM_MindlinPhysCDM::go( const shared_ptr<Material>& b1
 
 	const Real Kno = 4./3.*E*sqrt(R); // coefficient for normal stiffness
 	const Real Kso = 8*sqrt(R)/( (2-Va)/Ga + (2-Vb)/Gb); // coefficient for shear stiffness
-	const Real frictionAngle = (!frictAngle) ? std::min(fa,fb) : (*frictAngle)(matFrictMat->id,matFrictMatCDM->id,matFrictMat->frictionAngle,matFrictMatCDM->frictionAngle);
+	const Real frictionAngle = (!frictAngle) ? math::min(fa,fb) : (*frictAngle)(matFrictMat->id,matFrictMatCDM->id,matFrictMat->frictionAngle,matFrictMatCDM->frictionAngle);
 
 
 	/* pass values calculated from above to MindlinPhys */
@@ -166,11 +166,11 @@ void Ip2_FrictMat_FrictMatCDM_MindlinPhysCDM::go( const shared_ptr<Material>& b1
 	contactPhysics->R=R;//save current contact radius, will increase during yielding
 	contactPhysics->radius=R;//HERE Rmin is stored!! will not be changed during contact lifetime
 	contactPhysics->sigmaMax=matFrictMatCDM->sigmaMax;
-	contactPhysics->alphaFac=(1.0-std::sin(matFrictMatCDM->alpha))/std::sin(matFrictMatCDM->alpha);
+	contactPhysics->alphaFac=(1.0-math::sin(matFrictMatCDM->alpha))/math::sin(matFrictMatCDM->alpha);
     //parameter for stress dependent interparticle friction coefficient
 	//friction coeff is ALWAYS constant!! 
-	contactPhysics->tangensOfFrictionAngle = std::tan(frictionAngle); 
-	contactPhysics->mu0=std::tan(frictionAngle); 
+	contactPhysics->tangensOfFrictionAngle = math::tan(frictionAngle); 
+	contactPhysics->mu0=math::tan(frictionAngle); 
 	contactPhysics->c1=0.0;
 	contactPhysics->c2=0.0;
 
@@ -261,15 +261,15 @@ bool Law2_ScGeom_MindlinPhysCDM_HertzMindlinCDM::go(shared_ptr<IGeom>& ig, share
 	//reformulated formula
 	phys->isYielding=false;
 	//check yield condition
-	if (2.0 * phys->E / Mathr::PI *std::pow(uN / phys->R, 0.5) > phys->sigmaMax){
+	if (2.0 * phys->E / Mathr::PI *math::pow(uN / phys->R, 0.5) > phys->sigmaMax){
 	  phys->isYielding=true;
-	  Real hfac = std::pow(  Mathr::PI * phys->sigmaMax / 2.0 / phys->E , 2.0);
+	  Real hfac = math::pow(  Mathr::PI * phys->sigmaMax / 2.0 / phys->E , 2.0);
 	  phys->R =  (uDEM + phys->radius*phys->alphaFac) / ( hfac + phys->alphaFac);
 	  uN = uDEM + (phys->radius-phys->R) * phys->alphaFac;//adapted elastic overlap
 	}
 	
 	// here we store the value of kn to compute the time step
-	phys->kn = 4./3.0 * phys->E * std::pow(phys->R * uN, 0.5); 
+	phys->kn = 4./3.0 * phys->E * math::pow(phys->R * uN, 0.5); 
 	Real Fn = phys->kn *uN; // normal Force (scalar)	
 	phys->normalForce = Fn*scg->normal; // normal Force (vector)
 
@@ -277,7 +277,7 @@ bool Law2_ScGeom_MindlinPhysCDM_HertzMindlinCDM::go(shared_ptr<IGeom>& ig, share
 	/* SHEAR FORCE */
 	/***************/
 	
-        phys->ks = 8.0 * phys->G *std::pow(phys->R * uN, 0.5);//adapted tangential stiffness
+        phys->ks = 8.0 * phys->G *math::pow(phys->R * uN, 0.5);//adapted tangential stiffness
 	// 1. Rotate shear force
 	Vector3r& shearElastic = scg->rotate(phys->shearElastic);
 	// 2. Get shear force (incrementally)

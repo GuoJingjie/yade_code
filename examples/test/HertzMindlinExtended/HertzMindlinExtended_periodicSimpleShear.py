@@ -60,6 +60,7 @@ GeomFunctorList=[Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom(hertzian=Tr
 
 
 
+
 # the "if 0:" block will be never executed, therefore the "else:" block will be
 # to use cloud instead of regular packing, change to "if 1:" or something similar
 if 0:
