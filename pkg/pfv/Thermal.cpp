@@ -6,9 +6,11 @@
 *  GNU General Public License v2 or later. See file LICENSE for details. *
 *************************************************************************/
 /* This engine is under active development. Experimental only */
-/* Thermal Engine was developed with funding provided by the Chateaubriand Fellowship */
+/* Thermal Engine was developed with funding provided by the Chateaubriand Fellowship and Laboratoire 3SR */
 
 /* Theoretical framework and experimental validation presented in:
+
+Caulk, R., Scholtès, L., Krzaczek, M., & Chareyre, B. (2020). A pore-scale thermo–hydro-mechanical model for particulate systems. Computer Methods in Applied Mechanics and Engineering, 372, 113292. 
 
 Caulk, R. and Chareyre, B. (2019) An open framework for the simulation of thermal-hydraulic-mechanical processes in discrete element systems. Thermal Process Engineering: Proceedings of DEM8, Enschede Netherlands, July 2019.
 
@@ -512,7 +514,9 @@ void ThermalEngine::computeFluidFluidConduction()
 	/* Parallel version */
 	Tesselation& Tes = flow->solver->T[flow->solver->currentTes];
 	const long   sizeFacets = Tes.facetCells.size();
-	//	#pragma omp parallel for  //FIXME: does not like running in parallel for some reason
+	#ifdef YADE_OPENMP
+	#pragma omp parallel for  
+	#endif
 	for (long i = 0; i < sizeFacets; i++) {
 		CVector                    fluidSurfK;
 		CVector                    poreVector;
@@ -542,9 +546,18 @@ void ThermalEngine::computeFluidFluidConduction()
 		if (math::isnan(conductionEnergy)) conductionEnergy = 0;
 		cell->info().stabilityCoefficient += thermalResist;
 		//cout << "conduction distance" << distance << endl;
-		if (!cell->info().Tcondition && !math::isnan(conductionEnergy)) cell->info().internalEnergy -= conductionEnergy;
-		if (!neighborCell->info().Tcondition && !math::isnan(conductionEnergy)) neighborCell->info().internalEnergy += conductionEnergy;
-		//cout << "added conduction energy"<< conductionEnergy << endl;
+		if (!cell->info().Tcondition && !math::isnan(conductionEnergy)) {
+#ifdef YADE_OPENMP
+#pragma omp atomic
+#endif
+			cell->info().internalEnergy -= conductionEnergy;
+		}
+		if (!neighborCell->info().Tcondition && !math::isnan(conductionEnergy)) {
+#ifdef YADE_OPENMP
+#pragma omp atomic
+#endif
+		neighborCell->info().internalEnergy += conductionEnergy;
+		}
 	}
 
 	/* non parallel version */
