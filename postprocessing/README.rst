@@ -1,7 +1,6 @@
 The postprocessing directory contains subdirectories categorized as per target of postprocessing. Example subdirectories:
 
 * image
-* paraview
 * txt
 * vtk
 
