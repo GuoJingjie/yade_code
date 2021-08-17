@@ -18,7 +18,8 @@ namespace yade { // Cannot have #include directive inside.
 
 class Ig2_Facet_Sphere_ScGeom : public IGeomFunctor {
 private:
-    const Real hertzFac = 1e8;
+	const Real hertzFac = 1e8;
+
 public:
 	virtual bool
 	             go(const shared_ptr<Shape>&       cm1,
@@ -77,7 +78,8 @@ REGISTER_SERIALIZABLE(Ig2_Facet_Sphere_ScGeom6D);
 
 class Ig2_Wall_Sphere_ScGeom : public IGeomFunctor {
 private:
-    const Real hertzFac = 1e8;
+	const Real hertzFac = 1e8;
+
 public:
 	virtual bool
 	go(const shared_ptr<Shape>&       cm1,
