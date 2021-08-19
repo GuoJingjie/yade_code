@@ -55,7 +55,118 @@ public:
 		REC_HERTZMINDLIN
 	};
 	void action() override;
+	void action_01(); // about 600 lines of code, with VTK includes it is large anyway.
+	void action_02(); // about 600 lines of code, with VTK includes it is large anyway.
+	void action_03(); // about 600 lines of code, with VTK includes it is large anyway.
+	//void action_04(); // add if necessary postprocessing/vtk/VTKRecorder_04.cpp
 	void addWallVTK(vtkSmartPointer<vtkQuad>& boxes, vtkSmartPointer<vtkPointsReal>& boxesPos, Vector3r& W1, Vector3r& W2, Vector3r& W3, Vector3r& W4);
+
+private:
+	vector<bool>                            recActive;
+	vtkSmartPointer<vtkPointsReal>          spheresPos;
+	vtkSmartPointer<vtkCellArray>           spheresCells;
+	vtkSmartPointer<vtkDoubleArrayFromReal> radii;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresSigI;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresSigII;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresSigIII;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresDirI;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresDirII;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresDirIII;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresMass;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresId;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresTemp;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresRhoSPH;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresPressSPH;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresCoordNumbSPH;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresRealRad;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresLiqVol;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresLiqVolIter;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresLiqVolTotal;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresMask;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresCoordNumb;
+	vtkSmartPointer<vtkDoubleArrayFromReal> clumpId;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresColors;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresLinVelVec;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresLinVelLen;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresAngVelVec;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresAngVelLen;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresNormalStressVec;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresShearStressVec;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresNormalStressNorm;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresLubricationNormalContactStress;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresLubricationShearContactStress;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresLubricationNormalLubricationStress;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresLubricationShearLubricationStress;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresLubricationNormalPotentialStress;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresMaterialId;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresForceVec;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresForceLen;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresTorqueVec;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresTorqueLen;
+	vtkSmartPointer<vtkPointsReal>          facetsPos;
+	vtkSmartPointer<vtkCellArray>           facetsCells;
+	vtkSmartPointer<vtkDoubleArrayFromReal> facetsColors;
+	vtkSmartPointer<vtkDoubleArrayFromReal> facetsStressVec;
+	vtkSmartPointer<vtkDoubleArrayFromReal> facetsStressLen;
+	vtkSmartPointer<vtkDoubleArrayFromReal> facetsMaterialId;
+	vtkSmartPointer<vtkDoubleArrayFromReal> facetsMask;
+	vtkSmartPointer<vtkDoubleArrayFromReal> facetsForceVec;
+	vtkSmartPointer<vtkDoubleArrayFromReal> facetsForceLen;
+	vtkSmartPointer<vtkDoubleArrayFromReal> facetsTorqueVec;
+	vtkSmartPointer<vtkDoubleArrayFromReal> facetsTorqueLen;
+	vtkSmartPointer<vtkDoubleArrayFromReal> facetsCoordNumb;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresSubdomain;
+	vtkSmartPointer<vtkPointsReal>          boxesPos;
+	vtkSmartPointer<vtkCellArray>           boxesCells;
+	vtkSmartPointer<vtkDoubleArrayFromReal> boxesColors;
+	vtkSmartPointer<vtkDoubleArrayFromReal> boxesStressVec;
+	vtkSmartPointer<vtkDoubleArrayFromReal> boxesStressLen;
+	vtkSmartPointer<vtkDoubleArrayFromReal> boxesMaterialId;
+	vtkSmartPointer<vtkDoubleArrayFromReal> boxesMask;
+	vtkSmartPointer<vtkDoubleArrayFromReal> boxesForceVec;
+	vtkSmartPointer<vtkDoubleArrayFromReal> boxesForceLen;
+	vtkSmartPointer<vtkDoubleArrayFromReal> boxesTorqueVec;
+	vtkSmartPointer<vtkDoubleArrayFromReal> boxesTorqueLen;
+	vtkSmartPointer<vtkPointsReal>          intrBodyPos;
+	vtkSmartPointer<vtkCellArray>           intrCells;
+	vtkSmartPointer<vtkDoubleArrayFromReal> intrForceN;
+	vtkSmartPointer<vtkDoubleArrayFromReal> intrAbsForceT;
+	vtkSmartPointer<vtkPointsReal>          pericellPoints;
+	vtkSmartPointer<vtkCellArray>           pericellHexa;
+	vtkSmartPointer<vtkDoubleArrayFromReal> cpmDamage;
+	vtkSmartPointer<vtkDoubleArrayFromReal> cpmStress;
+	vtkSmartPointer<vtkDoubleArrayFromReal> nbCracks;
+	vtkSmartPointer<vtkDoubleArrayFromReal> jcfpmDamage;
+	vtkSmartPointer<vtkDoubleArrayFromReal> intrIsCohesive;
+	vtkSmartPointer<vtkDoubleArrayFromReal> intrIsOnJoint;
+	vtkSmartPointer<vtkDoubleArrayFromReal> eventNumber;
+	vtkSmartPointer<vtkPointsReal>          crackPos;
+	vtkSmartPointer<vtkCellArray>           crackCells;
+	vtkSmartPointer<vtkDoubleArrayFromReal> crackIter;
+	vtkSmartPointer<vtkDoubleArrayFromReal> crackTime;
+	vtkSmartPointer<vtkDoubleArrayFromReal> crackType;
+	vtkSmartPointer<vtkDoubleArrayFromReal> crackSize;
+	vtkSmartPointer<vtkDoubleArrayFromReal> crackNorm;
+	vtkSmartPointer<vtkDoubleArrayFromReal> crackNrg;
+	vtkSmartPointer<vtkDoubleArrayFromReal> crackOnJnt;
+	vtkSmartPointer<vtkPointsReal>          momentPos;
+	vtkSmartPointer<vtkCellArray>           momentCells;
+	vtkSmartPointer<vtkDoubleArrayFromReal> momentiter;
+	vtkSmartPointer<vtkDoubleArrayFromReal> momenttime;
+	vtkSmartPointer<vtkDoubleArrayFromReal> momentSize;
+	vtkSmartPointer<vtkDoubleArrayFromReal> momentEventNum;
+	vtkSmartPointer<vtkDoubleArrayFromReal> momentNumInts;
+	vtkSmartPointer<vtkDoubleArrayFromReal> liqVol;
+	vtkSmartPointer<vtkDoubleArrayFromReal> liqVolNorm;
+	vtkSmartPointer<vtkDoubleArrayFromReal> wpmNormalForce;
+	vtkSmartPointer<vtkDoubleArrayFromReal> wpmLimitFactor;
+	vtkSmartPointer<vtkDoubleArrayFromReal> intrBrokenHertz;
+	vtkSmartPointer<vtkDoubleArray>         intrDisp;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresRadiiChange;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresSuction;
+	vtkSmartPointer<vtkDoubleArrayFromReal> spheresIncidentCells;
+
+public:
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(VTKRecorder,PeriodicEngine,"Engine recording snapshots of simulation into series of \\*.vtu files, readable by VTK-based postprocessing programs such as Paraview. Both bodies (spheres and facets) and interactions can be recorded, with various vector/scalar quantities that are defined on them.\n\n:yref:`PeriodicEngine.initRun` is initialized to ``True`` automatically.",
 		((bool,compress,false,,"Compress output XML files [experimental]."))
