@@ -8,7 +8,7 @@ if ('PFVFLOW' in features):
 	errors=0
 	errMsg=""
 	toleranceWarning =0.01
-	toleranceCritical=0.10
+	toleranceCritical=0.1005
 
 	from yade import pack
 	num_spheres=100# number of spheres
