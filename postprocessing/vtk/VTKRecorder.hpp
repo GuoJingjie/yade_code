@@ -55,10 +55,12 @@ public:
 		REC_HERTZMINDLIN
 	};
 	void action() override;
-	void action_01(); // about 600 lines of code, with VTK includes it is large anyway.
-	void action_02(); // about 600 lines of code, with VTK includes it is large anyway.
-	void action_03(); // about 600 lines of code, with VTK includes it is large anyway.
-	//void action_04(); // add if necessary postprocessing/vtk/VTKRecorder_04.cpp
+	void action_01();
+	void action_02();
+	void action_03();
+//	void action_04();
+	void action_05();
+//	void action_06();
 	void addWallVTK(vtkSmartPointer<vtkQuad>& boxes, vtkSmartPointer<vtkPointsReal>& boxesPos, Vector3r& W1, Vector3r& W2, Vector3r& W3, Vector3r& W4);
 
 private:
