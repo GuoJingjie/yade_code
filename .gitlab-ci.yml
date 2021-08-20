@@ -9,6 +9,7 @@
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-stretch
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-buster
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
+# image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
 # image: registry.gitlab.com/yade-dev/docker-yade:suse15
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-i386
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-mips64el # crashes, as predicted by warnings -Wcast-align
@@ -232,6 +233,11 @@ make_bullseye:
   <<: *make_definition
   <<: *artifacts_definition
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
+
+make_bookworm:
+  <<: *make_definition
+  <<: *artifacts_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
 
 make_archlinux:
   <<: *make_definition
@@ -546,6 +552,13 @@ test_bullseye:
     - make_bullseye
   needs: ["make_bullseye"]
 
+test_bookworm:
+  <<: *test_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
+  dependencies:
+    - make_bookworm
+  needs: ["make_bookworm"]
+
 test_archlinux:
   <<: *test_definition
   image: registry.gitlab.com/yade-dev/docker-yade:archlinux-current
@@ -770,6 +783,14 @@ check_buster:
   dependencies:
     - make_buster
   needs: ["make_buster"]
+
+check_bookworm:
+  <<: *check_definition
+  before_script:
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
+  dependencies:
+    - make_bookworm
+  needs: ["make_bookworm"]
 
 check_bullseye:
   <<: *check_definition
@@ -997,12 +1018,12 @@ pages:
   tags:
     - fast
 
-deb_bullseye:
+deb_stretch:
   <<: *deb_definition
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-stretch
   before_script:
     - rm -rf ./deb
-    - ./scripts/ppa_ci/builddeb.py -d "bullseye"
+    - ./scripts/ppa_ci/builddeb.py -d "stretch"
 
 deb_buster:
   <<: *deb_definition
@@ -1011,12 +1032,19 @@ deb_buster:
     - rm -rf ./deb
     - ./scripts/ppa_ci/builddeb.py -d "buster"
 
-deb_stretch:
+deb_bullseye:
   <<: *deb_definition
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-stretch
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
   before_script:
     - rm -rf ./deb
-    - ./scripts/ppa_ci/builddeb.py -d "stretch"
+    - ./scripts/ppa_ci/builddeb.py -d "bullseye"
+
+deb_bookworm:
+  <<: *deb_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
+  before_script:
+    - rm -rf ./deb
+    - ./scripts/ppa_ci/builddeb.py -d "bookworm"
 
 deb_xenial:
   <<: *deb_definition
