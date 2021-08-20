@@ -1165,10 +1165,6 @@ ENDFOREACH()
 SET(${result} ${dirlist})
 endmacro()
 
-IF(ENABLE_GUI)
-SET(SRC_LIB "${SRC_LIB};lib/opengl/SnapshotEngine.cpp")
-ENDIF(ENABLE_GUI)
-
 SET(SRC_LIB "${SRC_LIB};lib/base/Math.cpp;lib/high-precision/RealHPConfig.cpp;lib/factory/ClassFactory.cpp;lib/factory/DynLibManager.cpp;lib/base/Logging.cpp;lib/compatibility/LapackCompatibility.cpp;lib/compatibility/VTKCompatibility.cpp")
 SET(SRC_LIB "${SRC_LIB};lib/serialization/Serializable.cpp;lib/pyutil/gil.cpp;core/main/pyboot.cpp;${GUI_SRC_LIB};${CGAL_SRC_LIB}")
 IF(ENABLE_POTENTIAL_PARTICLES OR ENABLE_POTENTIAL_BLOCKS)
