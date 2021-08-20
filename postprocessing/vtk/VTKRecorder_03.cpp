@@ -36,6 +36,9 @@
 #include <pkg/dem/Lubrication.hpp>
 #include <pkg/dem/Shop.hpp>
 #include <pkg/dem/WirePM.hpp>
+#ifdef YADE_LIQMIGRATION
+#include <pkg/dem/ViscoelasticCapillarPM.hpp>
+#endif
 #include <boost/fusion/include/pair.hpp>
 #include <boost/fusion/support/pair.hpp>
 #include <boost/unordered_map.hpp>

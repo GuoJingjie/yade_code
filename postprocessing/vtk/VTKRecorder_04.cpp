@@ -34,6 +34,9 @@
 #include <pkg/dem/ConcretePM.hpp>
 #include <pkg/dem/JointedCohesiveFrictionalPM.hpp>
 #include <pkg/pfv/PartialSatClayEngine.hpp>
+#ifdef YADE_LIQMIGRATION
+#include <pkg/dem/ViscoelasticCapillarPM.hpp>
+#endif
 #include <boost/fusion/include/pair.hpp>
 #include <boost/fusion/support/pair.hpp>
 #include <boost/unordered_map.hpp>
