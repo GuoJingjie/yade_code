@@ -13,6 +13,9 @@
 #define YADE_VTK_MULTIBLOCK
 #endif
 
+class vtkDataCompressor;
+class vtkUnstructuredGrid;
+
 namespace yade { // Cannot have #include directive inside.
 
 class VTKRecorder : public PeriodicEngine {
@@ -61,7 +64,7 @@ public:
 	void action_03();
 	void action_04();
 	void action_05();
-	//	void action_06();
+	void action_06();
 	void addWallVTK(vtkSmartPointer<vtkQuad>& boxes, vtkSmartPointer<vtkPointsReal>& boxesPos, Vector3r& W1, Vector3r& W2, Vector3r& W3, Vector3r& W4);
 
 private:
@@ -175,6 +178,9 @@ private:
 	std::vector<Matrix3r>                   NLStresses;
 	std::vector<Matrix3r>                   SLStresses;
 	std::vector<Matrix3r>                   NPStresses;
+	vtkSmartPointer<vtkDataCompressor>      compressor;
+	vtkSmartPointer<vtkUnstructuredGrid>    spheresUg;
+	vtkSmartPointer<vtkUnstructuredGrid>    facetsUg;
 
 public:
 	// clang-format off
