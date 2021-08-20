@@ -35,7 +35,6 @@ namespace yade { // Cannot have #include directive inside.
 
 void VTKRecorder::action_02()
 {
-
 	spheresNormalStressVec = vtkSmartPointer<vtkDoubleArrayFromReal>::New();
 	spheresNormalStressVec->SetNumberOfComponents(3);
 	spheresNormalStressVec->SetName("normalStress");

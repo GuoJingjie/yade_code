@@ -43,9 +43,9 @@ void VTKRecorder::action()
 	action_01();
 	action_02();
 	action_03();
-//	action_04();
+	action_04();
 	action_05();
-//	action_06();
+	//	action_06();
 };
 
 void VTKRecorder::action_01()

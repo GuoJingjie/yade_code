@@ -67,7 +67,6 @@ namespace yade { // Cannot have #include directive inside.
 
 void VTKRecorder::action_05()
 {
-
 	vtkSmartPointer<vtkDataCompressor> compressor;
 	if (compress) compressor = vtkSmartPointer<vtkZLibDataCompressor>::New();
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <lib/compatibility/VTKCompatibility.hpp> // fix InsertNextTupleValue → InsertNextTuple name change (and others in the future)
 #include <pkg/common/PeriodicEngines.hpp>
+#include <pkg/dem/Shop.hpp>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wsuggest-override"
@@ -58,9 +59,9 @@ public:
 	void action_01();
 	void action_02();
 	void action_03();
-//	void action_04();
+	void action_04();
 	void action_05();
-//	void action_06();
+	//	void action_06();
 	void addWallVTK(vtkSmartPointer<vtkQuad>& boxes, vtkSmartPointer<vtkPointsReal>& boxesPos, Vector3r& W1, Vector3r& W2, Vector3r& W3, Vector3r& W4);
 
 private:
@@ -167,6 +168,13 @@ private:
 	vtkSmartPointer<vtkDoubleArrayFromReal> spheresRadiiChange;
 	vtkSmartPointer<vtkDoubleArrayFromReal> spheresSuction;
 	vtkSmartPointer<vtkDoubleArrayFromReal> spheresIncidentCells;
+	std::vector<Shop::bodyState>            bodyStates;
+	std::vector<Matrix3r>                   bStresses;
+	std::vector<Matrix3r>                   NCStresses;
+	std::vector<Matrix3r>                   SCStresses;
+	std::vector<Matrix3r>                   NLStresses;
+	std::vector<Matrix3r>                   SLStresses;
+	std::vector<Matrix3r>                   NPStresses;
 
 public:
 	// clang-format off
