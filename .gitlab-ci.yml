@@ -328,7 +328,7 @@ make_debug:
     - export CXXFLAGS="-O2 $CXXFLAGS"
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
 
-make_as_i386:
+make_asan_i386:
   <<: *make_definition
   <<: *skip_WIP_and_Draft
   before_script:
