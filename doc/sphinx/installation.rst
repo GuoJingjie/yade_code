@@ -58,6 +58,11 @@ To install the daily-version you need to add the repository to your
 	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ bullseye main" >> /etc/apt/sources.list'
 
 
+- Debian 12 **bookworm**::
+
+	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ bookworm main" >> /etc/apt/sources.list'
+
+
 - Ubuntu 16.04 **xenial**::
 
 	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ xenial main" >> /etc/apt/sources.list'
@@ -125,6 +130,9 @@ Docker images are based on supported distributions:
 
 	docker run -it registry.gitlab.com/yade-dev/docker-prod:debian-bullseye
 
+- Debian 12 **bookworm**::
+
+	docker run -it registry.gitlab.com/yade-dev/docker-prod:debian-bookworm
 
 - Ubuntu 16.04 **xenial**::
 
