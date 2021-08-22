@@ -34,7 +34,7 @@
 #include <pkg/dem/HertzMindlin.hpp>
 #include <pkg/dem/JointedCohesiveFrictionalPM.hpp>
 #include <pkg/dem/Lubrication.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <preprocessing/dem/Shop.hpp>
 #include <pkg/dem/WirePM.hpp>
 #ifdef YADE_LIQMIGRATION
 #include <pkg/dem/ViscoelasticCapillarPM.hpp>

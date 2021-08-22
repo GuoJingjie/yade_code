@@ -2,7 +2,7 @@
 #pragma once
 #include <core/Scene.hpp>
 #include <pkg/common/BoundaryController.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <preprocessing/dem/Shop.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 

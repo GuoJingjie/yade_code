@@ -1,7 +1,7 @@
 #pragma once
 #include <lib/compatibility/VTKCompatibility.hpp> // fix InsertNextTupleValue → InsertNextTuple name change (and others in the future)
 #include <pkg/common/PeriodicEngines.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <preprocessing/dem/Shop.hpp>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wsuggest-override"

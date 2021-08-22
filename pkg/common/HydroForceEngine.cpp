@@ -6,7 +6,7 @@
 #include <lib/smoothing/LinearInterpolate.hpp>
 #include <core/Scene.hpp>
 #include <pkg/common/Sphere.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <preprocessing/dem/Shop.hpp>
 
 #include <core/IGeom.hpp>
 #include <core/IPhys.hpp>

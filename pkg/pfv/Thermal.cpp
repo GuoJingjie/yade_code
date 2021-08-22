@@ -24,7 +24,7 @@ Caulk, R. and Chareyre, B. (2019) An open framework for the simulation of therma
 #include <core/Scene.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <pkg/dem/FrictPhys.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <preprocessing/dem/Shop.hpp>
 #include <pkg/pfv/Thermal.hpp>
 //YADE_PLUGIN((ThermalState));
 //ThermalState::~ThermalState(){};

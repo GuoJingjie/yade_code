@@ -15,7 +15,7 @@
 #include <pkg/dem/DemXDofGeom.hpp>
 #include <pkg/dem/FrictPhys.hpp>
 #include <pkg/dem/ScGeom.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <preprocessing/dem/Shop.hpp>
 #include <pkg/dem/ViscoelasticPM.hpp>
 #ifdef YADE_MPI
 #include <core/Subdomain.hpp>

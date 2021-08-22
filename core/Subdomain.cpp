@@ -11,7 +11,7 @@
 #include <core/MPIBodyContainer.hpp>
 #include <core/State.hpp>
 #include <pkg/common/Sphere.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <preprocessing/dem/Shop.hpp>
 #include <boost/iostreams/device/array.hpp>
 #include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/iostreams/stream.hpp>

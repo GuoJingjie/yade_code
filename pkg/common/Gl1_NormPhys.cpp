@@ -5,7 +5,7 @@
 #include <pkg/common/NormShearPhys.hpp>
 #include <pkg/common/OpenGLRenderer.hpp>
 #include <pkg/dem/DemXDofGeom.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <preprocessing/dem/Shop.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 
