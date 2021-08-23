@@ -22,6 +22,7 @@ class SimpleTests(unittest.TestCase):
 		self.printedAlready=set()
 		self.nonBoostMPFR=False # I was testing non-boost MPFR before: /usr/include/eigen3/unsupported/Eigen/MPRealSupport. Might come handy later.
 		# If failures appear and function is not broken then increase tolerance a little.
+		# yapf: disable
 		self.defaultTolerances={
 			#  function decimal places : tolerance factor. Each "10" corresponds to single wrong decimal place. But they are approximate and rounded up.
 			#
@@ -90,6 +91,7 @@ class SimpleTests(unittest.TestCase):
 			 , "logE2"     : {"6":1   , "15":1   , "18":1    , "33":1      , "100":1     , "150" :1     , "100_b" :1       , "150_b" :50     }
 			 , "catalan"   : {"6":1   , "15":1   , "18":1    , "33":1      , "100":1     , "150" :1     , "100_b" :1       , "150_b" :50     }
 			 }
+		# yapf: enable
 		self.testLevelsHP = mth.RealHPConfig.getSupportedByMinieigen()
 		self.baseDigits   = mth.RealHPConfig.getDigits10(1)
 		self.use33or30    = (33 if mth.RealHPConfig.isFloat128Present else 30)
@@ -511,6 +513,12 @@ class SimpleTests(unittest.TestCase):
 		self.assertEqual(HPn.CGAL_simpleTest(),MPn.mpf("3.0"))
 
 	def twoArgMathCheck(self,HPn,MPn,r1,r2):
+		# same order of complex functions as in lib/high-precision/MathComplexFunctions.hpp , py/high-precision/_math.cpp
+		self.checkRelativeComplexError(HPn.conj (MPn.mpc(r1,r2)),MPn.conj(MPn.mpc(r1,r2)),functionName="cconj")
+		self.checkRelativeComplexError(HPn.real (MPn.mpc(r1,r2)),r1,functionName="creal")
+		self.checkRelativeComplexError(HPn.imag (MPn.mpc(r1,r2)),r2,functionName="cimag")
+		self.checkRelativeComplexError(HPn.abs  (MPn.mpc(r1,r2)),abs(MPn.mpc(r1,r2)),functionName="cabs")
+
 		self.checkRelativeComplexError(HPn.sin (MPn.mpc(r1,r2)),MPn.sin (MPn.mpc(r1,r2)),functionName="csin")
 		self.checkRelativeComplexError(HPn.sinh(MPn.mpc(r1,r2)),MPn.sinh(MPn.mpc(r1,r2)),functionName="csinh")
 		self.checkRelativeComplexError(HPn.cos (MPn.mpc(r1,r2)),MPn.cos (MPn.mpc(r1,r2)),functionName="ccos")
@@ -521,11 +529,7 @@ class SimpleTests(unittest.TestCase):
 		self.checkRelativeComplexError(HPn.exp(MPn.mpc(r1,r2)),MPn.exp(MPn.mpc(r1,r2)),functionName="cexp")
 		self.checkRelativeComplexError(HPn.log(MPn.mpc(r1,r2)),MPn.log(MPn.mpc(r1,r2)),functionName="clog")
 
-		self.checkRelativeComplexError(HPn.abs  (MPn.mpc(r1,r2)),abs(MPn.mpc(r1,r2)),functionName="cabs")
-		self.checkRelativeComplexError(HPn.conj (MPn.mpc(r1,r2)),MPn.conj(MPn.mpc(r1,r2)),functionName="cconj")
-		self.checkRelativeComplexError(HPn.real (MPn.mpc(r1,r2)),r1,functionName="creal")
-		self.checkRelativeComplexError(HPn.imag (MPn.mpc(r1,r2)),r2,functionName="cimag")
-
+		# Other, non complex functions
 		self.checkRelativeError(HPn.atan2(r1,r2),MPn.atan2(r1,r2),functionName="atan2")
 		self.checkRelativeError(HPn.fmod(abs(r1),abs(r2)),MPn.fmod(abs(r1),abs(r2)),functionName="fmod")
 		self.checkRelativeError(HPn.hypot(r1,r2),MPn.hypot(r1,r2),functionName="hypot")

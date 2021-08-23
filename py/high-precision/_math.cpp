@@ -16,6 +16,8 @@
 
 #include <lib/base/Logging.hpp>
 #include <lib/high-precision/Constants.hpp>
+#include <lib/high-precision/MathComplexFunctions.hpp>
+#include <lib/high-precision/MathSpecialFunctions.hpp>
 #include <lib/high-precision/Real.hpp>
 #include <lib/high-precision/RealHPConfig.hpp>
 #include <lib/high-precision/RealIO.hpp>
@@ -403,9 +405,38 @@ template <int N, bool registerConverters> struct RegisterRealHPMath {
 		                "one ``Complex`` variable to test reading from and writing to it.");
 
 		/********************************************************************************************/
+		/**********************                complex functions               **********************/
+		/********************************************************************************************/
+		// complex functions must be registered first, so that python will properly discover overloads
+
+		/********************************************************************************************/
+		/**********************          complex conj, abs, real, imag         **********************/
+		/********************************************************************************************/
+		// complex functions must be registered first, so that python will properly discover overloads
+
+		py::def("conj",
+		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::conj),
+		        (py::arg("x")),
+		        R"""(:return: the complex conjugation a ``Complex`` argument. Depending on compilation options wraps ``::boost::multiprecision::conj(…)`` or `std::conj(…) <https://en.cppreference.com/w/cpp/numeric/complex/conj>`__ function.)""");
+		py::def("real",
+		        static_cast<RealHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::real),
+		        (py::arg("x")),
+		        R"""(:return: the real part of a ``Complex`` argument. Depending on compilation options wraps ``::boost::multiprecision::real(…)`` or `std::real(…) <https://en.cppreference.com/w/cpp/numeric/complex/real2>`__ function.)""");
+		py::def("imag",
+		        static_cast<RealHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::imag),
+		        (py::arg("x")),
+		        R"""(:return: the imag part of a ``Complex`` argument. Depending on compilation options wraps ``::boost::multiprecision::imag(…)`` or `std::imag(…) <https://en.cppreference.com/w/cpp/numeric/complex/imag2>`__ function.)""");
+		py::def("abs",
+		        // note …<ComplexHP<N>> at the end, to help compiler in the template overload resolution.
+		        static_cast<RealHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::abs<ComplexHP<N>>),
+		        (py::arg("x")),
+		        R"""(:return: the ``Real`` absolute value of the ``Complex`` argument. Depending on compilation options wraps ``::boost::multiprecision::abs(…)`` or `std::abs(…) <https://en.cppreference.com/w/cpp/numeric/complex/abs>`__ function.)""");
+
+		/********************************************************************************************/
 		/**********************        complex trigonometric functions         **********************/
 		/********************************************************************************************/
 		// complex functions must be registered first, so that python will properly discover overloads
+
 		py::def("sin",
 		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::sin),
 		        (py::arg("x")),
@@ -431,6 +462,27 @@ template <int N, bool registerConverters> struct RegisterRealHPMath {
 		        (py::arg("x")),
 		        R"""(:return: ``Complex`` the hyperbolic tangent of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::tanh(…)`` or `std::tanh(…) <https://en.cppreference.com/w/cpp/numeric/complex/tanh>`__ function.)""");
 
+// TODO: asin asinh acos acosh atan atanh
+
+		/********************************************************************************************/
+		/**********************        complex logarithm and exponential        *********************/
+		/********************************************************************************************/
+		// complex functions must be registered first, so that python will properly discover overloads
+
+		py::def("exp",
+		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::exp),
+		        (py::arg("x")),
+		        R"""(:return: the base `e` exponential of a ``Complex`` argument. Depending on compilation options wraps ``::boost::multiprecision::exp(…)`` or `std::exp(…) <https://en.cppreference.com/w/cpp/numeric/complex/exp>`__ function.)""");
+		py::def("log",
+		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::log),
+		        (py::arg("x")),
+		        R"""(:return: the ``Complex`` natural (base `e`) logarithm of a complex value z with a branch cut along the negative real axis. Depending on compilation options wraps ``::boost::multiprecision::log(…)`` or `std::log(…) <https://en.cppreference.com/w/cpp/numeric/complex/log>`__ function.)""");
+
+// TODO: log10, pow, sqrt
+
+		/********************************************************************************************/
+		/**********************                 real functions                 **********************/
+		/********************************************************************************************/
 
 		/********************************************************************************************/
 		/**********************            trigonometric functions             **********************/
@@ -496,20 +548,6 @@ template <int N, bool registerConverters> struct RegisterRealHPMath {
 
 
 		/********************************************************************************************/
-		/**********************        complex logarithm and exponential        *********************/
-		/********************************************************************************************/
-		// complex functions must be registered first, so that python will properly discover overloads
-		py::def("exp",
-		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::exp),
-		        (py::arg("x")),
-		        R"""(:return: the base `e` exponential of a ``Complex`` argument. Depending on compilation options wraps ``::boost::multiprecision::exp(…)`` or `std::exp(…) <https://en.cppreference.com/w/cpp/numeric/complex/exp>`__ function.)""");
-		py::def("log",
-		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::log),
-		        (py::arg("x")),
-		        R"""(:return: the ``Complex`` natural (base `e`) logarithm of a complex value z with a branch cut along the negative real axis. Depending on compilation options wraps ``::boost::multiprecision::log(…)`` or `std::log(…) <https://en.cppreference.com/w/cpp/numeric/complex/log>`__ function.)""");
-
-
-		/********************************************************************************************/
 		/**********************   logarithm, exponential and power functions   **********************/
 		/********************************************************************************************/
 		py::def("log",
@@ -572,30 +610,6 @@ template <int N, bool registerConverters> struct RegisterRealHPMath {
 		        static_cast<RealHP<N> (*)(const RealHP<N>&, const RealHP<N>&)>(&::yade::math::hypot),
 		        (py::arg("x"), "y"),
 		        R"""(:return: ``Real`` the square root of the sum of the squares of ``x`` and ``y``, without undue overflow or underflow at intermediate stages of the computation. Depending on compilation options wraps ``::boost::multiprecision::hypot(…)`` or `std::hypot(…) <https://en.cppreference.com/w/cpp/numeric/math/hypot>`__ function.)""");
-
-
-		/********************************************************************************************/
-		/**********************         complex conj, abs, real, imag          *********************/
-		/********************************************************************************************/
-		// complex functions must be registered first, so that python will properly discover overloads
-		py::def("conj",
-		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::conj),
-		        (py::arg("x")),
-		        R"""(:return: the complex conjugation a ``Complex`` argument. Depending on compilation options wraps ``::boost::multiprecision::conj(…)`` or `std::conj(…) <https://en.cppreference.com/w/cpp/numeric/complex/conj>`__ function.)""");
-		py::def("abs",
-		        // note …<ComplexHP<N>> at the end, to help compiler in the template overload resolution.
-		        static_cast<RealHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::abs<ComplexHP<N>>),
-		        (py::arg("x")),
-		        R"""(:return: the ``Real`` absolute value of the ``Complex`` argument. Depending on compilation options wraps ``::boost::multiprecision::abs(…)`` or `std::abs(…) <https://en.cppreference.com/w/cpp/numeric/complex/abs>`__ function.)""");
-		py::def("real",
-		        static_cast<RealHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::real),
-		        (py::arg("x")),
-		        R"""(:return: the real part of a ``Complex`` argument. Depending on compilation options wraps ``::boost::multiprecision::real(…)`` or `std::real(…) <https://en.cppreference.com/w/cpp/numeric/complex/real2>`__ function.)""");
-		py::def("imag",
-		        static_cast<RealHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::imag),
-		        (py::arg("x")),
-		        R"""(:return: the imag part of a ``Complex`` argument. Depending on compilation options wraps ``::boost::multiprecision::imag(…)`` or `std::imag(…) <https://en.cppreference.com/w/cpp/numeric/complex/imag2>`__ function.)""");
-
 
 		/********************************************************************************************/
 		/**********************    min, max, abs, sign, floor, ceil, etc...    **********************/

@@ -45,15 +45,24 @@ namespace math {
 	// Add more complex functions as necessary, but remember to add them in py/high-precision/_math.cpp and py/tests/testMath.py
 	// Note: most of the functions above can be converted to accept complex by changing levelOfRealHP<> → levelOfHP<>, provided that a complex version exists.
 	// The check involving int Level = levelOfComplexHP<Cc> is necessary to make sure that function is called only with yade Complex supported HP types.
-	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline Cc conj(const Cc& a) { return ::std::conj(static_cast<const UnderlyingHP<Cc>&>(a)); }
+	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline Cc conj(const Cc& a)
+	{
+		using ::std::conj;
+		using YADE_REAL_MATH_NAMESPACE::conj;
+		return conj(static_cast<const UnderlyingHP<Cc>&>(a));
+	}
 
 	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline RealHP<Level> real(const Cc& a)
 	{
-		return ::std::real(static_cast<const UnderlyingHP<Cc>&>(a));
+		using ::std::real;
+		using YADE_REAL_MATH_NAMESPACE::real;
+		return real(static_cast<const UnderlyingHP<Cc>&>(a));
 	}
 	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline RealHP<Level> imag(const Cc& a)
 	{
-		return ::std::imag(static_cast<const UnderlyingHP<Cc>&>(a));
+		using ::std::imag;
+		using YADE_REAL_MATH_NAMESPACE::imag;
+		return imag(static_cast<const UnderlyingHP<Cc>&>(a));
 	}
 	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline typename boost::enable_if_c<isComplexHP<Cc>, RealHP<Level>>::type abs(const Cc& a)
 	{

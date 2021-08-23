@@ -8,6 +8,7 @@
 
 // compilation wall clock time: 0:24.22 → split into two files → 0:16.20
 #include <lib/high-precision/Real.hpp>
+#include <lib/high-precision/MathComplexFunctions.hpp>
 #include <lib/high-precision/ToFromPythonConverter.hpp>
 using namespace ::yade::MathEigenTypes;
 // define this for compatibility with minieigen.
