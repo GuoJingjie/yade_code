@@ -49,9 +49,8 @@
 
 
 // RealHP<…> note:
-//   If RealHP<N> is supported then ThinRealWrapper needs explicit conversion operators to all other higher precision types, so provide them here.
-//   These include headers are necessary to make it work.
-//   If other types (e.g. boost quad_double) appear, they will have to be added here.
+//   If RealHP<N> is supported then ThinRealWrapper needs explicit conversion operators to all other higher precision real types, so provide them here.
+//   These include headers are necessary to make it work. If other types (e.g. boost quad_double) appear, they will have to be added here.
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 #ifdef YADE_MPFR
 #include <boost/multiprecision/mpfr.hpp>

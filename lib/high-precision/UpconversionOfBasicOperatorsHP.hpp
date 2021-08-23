@@ -32,6 +32,12 @@ This also works for ComplexHP<…> mixed with RealHP<…>.
 
 This is done with maximum possible efficiency: the conversions are performed only when necessary, otherwise the const reference is used.
 
+But there is a FIXME, see note at the end of this file. Until a bug in boost is fixed one must call directly opAdd, opSub, opMult, opDiv.
+And only with MPFR. The complex_adaptor< cpp_bin_float , … > from boost is missing the necessary complex conversions.
+
+Concluding: the idea of this include header was nice. But until this (*) is fixed in boost one has to convert manually between complex types.
+(*) see line 973 in py/high-precision/_math.cpp
+
 */
 
 /*************************************************************************/
@@ -49,37 +55,33 @@ namespace math {
 		// Because in such case no casting occurs at all. The CastA and CastB make sure to use this whenever possible.
 		template <typename A, typename B, int LevelA = levelOfHP<A>, int LevelB = levelOfHP<B>>
 		using CastA = typename std::conditional<
-		        ((LevelA > LevelB) and (boost::is_complex<A>::value == boost::is_complex<SelectHigherHP<A, B>>::value)),
+		        ((LevelA > LevelB) and (::yade::math::isComplex<A> == ::yade::math::isComplex<SelectHigherHP<A, B>>)),
 		        const SelectHigherHP<A, B>&,
 		        const SelectHigherHP<A, B>>::type;
 		template <typename A, typename B, int LevelA = levelOfHP<A>, int LevelB = levelOfHP<B>>
 		using CastB = typename std::conditional<
-		        ((LevelA < LevelB) and (boost::is_complex<B>::value == boost::is_complex<SelectHigherHP<A, B>>::value)),
+		        ((LevelA < LevelB) and (::yade::math::isComplex<B> == ::yade::math::isComplex<SelectHigherHP<A, B>>)),
 		        const SelectHigherHP<A, B>&,
 		        const SelectHigherHP<A, B>>::type;
 
 		// This template makes sure that if any of the two arguments is ComplexHP<…>, then the return type is also complex.
 		template <typename A, typename B, int Level>
 		using SelectMaybeComplexHP =
-		        typename std::conditional<(boost::is_complex<A>::value or boost::is_complex<B>::value), ComplexHP<Level>, RealHP<Level>>::type;
+		        typename std::conditional<(::yade::math::isComplex<A> or ::yade::math::isComplex<B>), ComplexHP<Level>, RealHP<Level>>::type;
 
 		template <typename A, typename B, int LevelA = levelOfHP<A>, int LevelB = levelOfHP<B>>
 		using MaybeComplexA = typename std::conditional<
-		        ((LevelA > LevelB) and (boost::is_complex<A>::value == boost::is_complex<SelectMaybeComplexHP<A, B, LevelA>>::value)),
+		        ((LevelA > LevelB) and (::yade::math::isComplex<A> == ::yade::math::isComplex<SelectMaybeComplexHP<A, B, LevelA>>)),
 		        const SelectMaybeComplexHP<A, B, LevelA>&,
 		        const SelectMaybeComplexHP<A, B, LevelA>>::type;
 
 		template <typename A, typename B, int LevelA = levelOfHP<A>, int LevelB = levelOfHP<B>>
 		using MaybeComplexB = typename std::conditional<
-		        ((LevelA < LevelB) and (boost::is_complex<B>::value == boost::is_complex<SelectMaybeComplexHP<A, B, LevelB>>::value)),
+		        ((LevelA < LevelB) and (::yade::math::isComplex<B> == ::yade::math::isComplex<SelectMaybeComplexHP<A, B, LevelB>>)),
 		        const SelectMaybeComplexHP<A, B, LevelB>&,
 		        const SelectMaybeComplexHP<A, B, LevelB>>::type;
 
-		// Older compilers do not have std::void_t, this small helper type is used by HasPlus, HasMinus, etc, below.
-		template <typename... Ts> struct make_void {
-			typedef void type;
-		};
-		template <typename... Ts> using void_type = typename make_void<Ts...>::type;
+		// using void_type declared in RealHP.hpp
 
 		// These templates are used to find out if there exists an operator+ between types A and B. So basically it is designed to catch the example written at the start of this file:
 		//
@@ -130,33 +132,60 @@ namespace math {
 //   first promote RealHP   <N1> → ComplexHP<N1>
 //   then  promote ComplexHP<N1> → ComplexHP<N2>
 
-template <typename A, typename B>
-typename boost::enable_if<math::detail::NeedsBasicPlusOperatorHP<A, B>, math::SelectHigherHP<A, B>>::type operator+(const A& a, const B& b)
+template <typename A, typename B> typename math::SelectHigherHP<A, B> opAdd(const A& a, const B& b)
 {
 	return static_cast<math::detail::CastA<A, B>>(static_cast<math::detail::MaybeComplexA<A, B>>(a))
 	        + static_cast<math::detail::CastB<A, B>>(static_cast<math::detail::MaybeComplexB<A, B>>(b));
 }
 
-template <typename A, typename B>
-typename boost::enable_if<math::detail::NeedsBasicMinusOperatorHP<A, B>, math::SelectHigherHP<A, B>>::type operator-(const A& a, const B& b)
+template <typename A, typename B> typename math::SelectHigherHP<A, B> opSub(const A& a, const B& b)
 {
 	return static_cast<math::detail::CastA<A, B>>(static_cast<math::detail::MaybeComplexA<A, B>>(a))
 	        - static_cast<math::detail::CastB<A, B>>(static_cast<math::detail::MaybeComplexB<A, B>>(b));
 }
 
-template <typename A, typename B>
-typename boost::enable_if<math::detail::NeedsBasicMultOperatorHP<A, B>, math::SelectHigherHP<A, B>>::type operator*(const A& a, const B& b)
+template <typename A, typename B> typename math::SelectHigherHP<A, B> opMult(const A& a, const B& b)
 {
 	return static_cast<math::detail::CastA<A, B>>(static_cast<math::detail::MaybeComplexA<A, B>>(a))
 	        * static_cast<math::detail::CastB<A, B>>(static_cast<math::detail::MaybeComplexB<A, B>>(b));
 }
 
-template <typename A, typename B>
-typename boost::enable_if<math::detail::NeedsBasicDivOperatorHP<A, B>, math::SelectHigherHP<A, B>>::type operator/(const A& a, const B& b)
+template <typename A, typename B> typename math::SelectHigherHP<A, B> opDiv(const A& a, const B& b)
 {
 	return static_cast<math::detail::CastA<A, B>>(static_cast<math::detail::MaybeComplexA<A, B>>(a))
 	        / static_cast<math::detail::CastB<A, B>>(static_cast<math::detail::MaybeComplexB<A, B>>(b));
 }
+
+// FIXME : in boost there are down-converting operators provided by mpc_complex (maybe also complex_adaptor), and NeedsBasic***OperatorHP can't work
+//         in such scenario. Unfortunately there is no way I can fix this on my end. I need to report a bug to boost and wait till they fix it.
+//
+// FIXME : so for now, to really have up-converting operators one must call directly opAdd, opSub, opMult, opDiv. Which kind of defeats the idea.
+//         but let sit it here until someday they bug in boost gets fixed.
+//
+template <typename A, typename B>
+typename boost::enable_if<math::detail::NeedsBasicPlusOperatorHP<A, B>, math::SelectHigherHP<A, B>>::type operator+(const A& a, const B& b)
+{
+	return opAdd(a, b);
+}
+
+template <typename A, typename B>
+typename boost::enable_if<math::detail::NeedsBasicMinusOperatorHP<A, B>, math::SelectHigherHP<A, B>>::type operator-(const A& a, const B& b)
+{
+	return opSub(a, b);
+}
+
+template <typename A, typename B>
+typename boost::enable_if<math::detail::NeedsBasicMultOperatorHP<A, B>, math::SelectHigherHP<A, B>>::type operator*(const A& a, const B& b)
+{
+	return opMult(a, b);
+}
+
+template <typename A, typename B>
+typename boost::enable_if<math::detail::NeedsBasicDivOperatorHP<A, B>, math::SelectHigherHP<A, B>>::type operator/(const A& a, const B& b)
+{
+	return opDiv(a, b);
+}
+
 
 } // namespace yade
 

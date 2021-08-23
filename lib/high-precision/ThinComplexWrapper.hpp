@@ -21,7 +21,20 @@
 // it is possible to #define YADE_IGNORE_IEEE_INFINITY_NAN  ← about that see https://www.boost.org/doc/libs/1_71_0/libs/utility/operators.htm#ordering
 
 // ComplexHP<…> note:
-//   If ComplexHP<N> is supported then ThinComplexWrapper needs explicit conversion operators to all other higher precision types, so provide them here.
+//   If ComplexHP<N> is supported then ThinComplexWrapper needs explicit conversion operators to all other higher precision complex types, so provide them here.
+//   These include headers are necessary to make it work. If other types (e.g. complex quad_double) appear, they will have to be added here.
+#ifndef YADE_DISABLE_REAL_MULTI_HP
+#ifdef YADE_MPFR
+#include <boost/multiprecision/mpc.hpp>
+#else
+#include <boost/multiprecision/cpp_complex.hpp>
+#endif
+// clang currently does not support float128   https://github.com/boostorg/math/issues/181
+// another similar include is in RealHP.hpp, all other checks if we have float128 should be #ifdef BOOST_MP_FLOAT128_HPP or yade::math::isFloat128<T>
+#ifndef __clang__
+#include <boost/multiprecision/complex128.hpp>
+#endif
+#endif
 
 namespace yade {
 namespace math {
@@ -138,20 +151,27 @@ namespace math {
 // If ComplexHP<N> is supported then ThinComplexWrapper needs explicit conversion operators to all other higher precision types, so provide them here.
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 #ifdef YADE_MPFR
-		template <unsigned int Dec> using HPBackend = boost::multiprecision::mpfr_float_backend<Dec>;
-#else
-		template <unsigned int Dec> using HPBackend = boost::multiprecision::cpp_bin_float<Dec>;
-#endif
 		template <unsigned int Num>
-		explicit operator ::std::complex<::boost::multiprecision::number<HPBackend<Num>, boost::multiprecision::et_off>>() const
+		explicit operator ::boost::multiprecision::number<::boost::multiprecision::mpc_complex_backend<Num>, boost::multiprecision::et_off>() const
 		{
-			return static_cast<::std::complex<::boost::multiprecision::number<HPBackend<Num>, boost::multiprecision::et_off>>>(val);
+			return static_cast<::boost::multiprecision::number<::boost::multiprecision::mpc_complex_backend<Num>, boost::multiprecision::et_off>>(
+			        val);
 		}
+#else
+		template <unsigned Digits, ::boost::multiprecision::backends::digit_base_type DigitBase, class Alloc, class Exp, Exp MinEx, Exp MaxEx>
+		explicit operator ::boost::multiprecision::number<
+		        ::boost::multiprecision::backends::complex_adaptor<
+		                ::boost::multiprecision::backends::cpp_bin_float<Digits, DigitBase, Alloc, Exp, MinEx, MaxEx>>,
+		        boost::multiprecision::et_off>() const
+		{
+			return static_cast<::boost::multiprecision::number<
+			        ::boost::multiprecision::backends::complex_adaptor<
+			                ::boost::multiprecision::backends::cpp_bin_float<Digits, DigitBase, Alloc, Exp, MinEx, MaxEx>>,
+			        boost::multiprecision::et_off>>(val);
+		}
+#endif
 #ifdef BOOST_MP_FLOAT128_HPP
-		explicit operator ::std::complex<::boost::multiprecision::float128>() const
-		{
-			return static_cast<::std::complex<::boost::multiprecision::float128>>(val);
-		}
+		explicit operator ::boost::multiprecision::complex128() const { return static_cast<::boost::multiprecision::complex128>(val); }
 #endif
 #endif
 		explicit operator const WrappedComplex&() const { return val; }

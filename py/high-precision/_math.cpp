@@ -946,11 +946,11 @@ template <int N1> struct TestRealHP2 {
 		{
 			RealHP<N1> a  = static_cast<RealHP<N1>>(-1.25);
 			RealHP<N2> b  = static_cast<RealHP<N2>>(2.5);
-			auto       c1 = a + b;
-			auto       c2 = a - b;
-			auto       c3 = a * b;
-			auto       c4 = a / b;
-			if (c1 != RealHP<N>(1.25)) // NOTE: might want later to replace these if with BOOST_ASSERT
+			auto       c1 = opAdd(a, b);  // a + b;
+			auto       c2 = opSub(a, b);  // a - b;
+			auto       c3 = opMult(a, b); // a * b;
+			auto       c4 = opDiv(a, b);  // a / b;
+			if (c1 != RealHP<N>(1.25))    // NOTE: might want later to replace these if with BOOST_ASSERT
 				throw std::runtime_error(("TestRealHP error: Fatal r1" + info).c_str());
 			if (c2 != RealHP<N>(-3.75)) throw std::runtime_error(("TestRealHP error: Fatal r2" + info).c_str());
 			if (c3 != RealHP<N>(-3.125)) throw std::runtime_error(("TestRealHP error: Fatal r3" + info).c_str());
@@ -959,16 +959,57 @@ template <int N1> struct TestRealHP2 {
 			auto       d2 = b;
 			RealHP<N2> d3 = RealHP<N2>(a);
 			RealHP<N1> d4 = RealHP<N1>(b);
-			auto       d5 = d1 + d2 + d3 + d4;
+			auto       d5 = opAdd(opAdd(opAdd(d1, d2), d3), d4); // d1 + d2 + d3 + d4;
 			if (d5 != RealHP<N>(2.5)) throw std::runtime_error(("TestRealHP error: Fatal r5" + info).c_str());
 		}
+// NOTE: only mpc_complex_backend / MPFR supports the complex precision conversions (im)properly (*).
+//       The complex_adaptor< cpp_bin_float , … > produces an error about a missing up-conversion from ComplexHP<1> to ComplexHP<2>.
+//
+// Four  ↓ bug reports to boost :(
+// TODO (1): submit a bug report to boost about following error:
+/*
+py/high-precision/_math.cpp:1048:109  required from here
+boost/multiprecision/number.hpp:122:27: error: no matching function for call to ‘
+generic_interconvert(
+	boost::multiprecision::backends::complex_adaptor<
+		boost::multiprecision::backends::cpp_bin_float<360, boost::multiprecision::backends::digit_base_10, void, int, 0, 0>
+	>&
+	,
+	const boost::multiprecision::backends::complex_adaptor<
+		boost::multiprecision::backends::cpp_bin_float<180, boost::multiprecision::backends::digit_base_10, void, int, 0, 0>
+	>&
+	, boost::multiprecision::number_category<
+		boost::multiprecision::backends::complex_adaptor<
+			boost::multiprecision::backends::cpp_bin_float<360, boost::multiprecision::backends::digit_base_10, void, int, 0, 0>
+		>
+	>
+	, boost::multiprecision::number_category<
+		boost::multiprecision::backends::complex_adaptor<
+			boost::multiprecision::backends::cpp_bin_float<180, boost::multiprecision::backends::digit_base_10, void, int, 0, 0> 
+		>
+	>
+)
+’
+
+
+(*) the mpc_complex_backend ComplexHP conversions are problematic because we have to use opAdd, opSub, opMult, opDiv instead of + - * /
+    because the + - * / are provided by mpc_complex_backend, but with allowed down-conversions :/
+// TODO (2): submit a bug report about these mentioned above down-converting operators + - * /
+
+// TODO (3): So this amounts to the need of two separate bug reports in boost.
+//       ... or drop UpconversionOfBasicOperatorsHP it seems to be more trouble than it's worth. Maybe it won't be used anyway.
+
+*/
+#ifdef YADE_MPFR
+// TODO (4): ehh. There is also missing complex generic_interconvert between complex128 ↔ mpc_complex_backend, that would be a third bug report to boost
+#if ((YADE_REAL_BIT == 80) or (YADE_REAL_BIT > 128))
 		{
 			ComplexHP<N1> a  = ComplexHP<N1>(-1.25, 0.5);
 			ComplexHP<N2> b  = ComplexHP<N2>(1.0, 1.0);
-			auto          c1 = a + b;
-			auto          c2 = a - b;
-			auto          c3 = a * b;
-			auto          c4 = a / b;
+			auto          c1 = opAdd(a, b);  // a + b;
+			auto          c2 = opSub(a, b);  // a - b;
+			auto          c3 = opMult(a, b); // a * b;
+			auto          c4 = opDiv(a, b);  // a / b;
 			if (c1 != ComplexHP<N>(-0.25, 1.5)) throw std::runtime_error(("TestRealHP error: Fatal c1" + info).c_str());
 			if (c2 != ComplexHP<N>(-2.25, -0.5)) throw std::runtime_error(("TestRealHP error: Fatal c2" + info).c_str());
 			if (c3 != ComplexHP<N>(-1.75, -0.75)) throw std::runtime_error(("TestRealHP error: Fatal c3" + info).c_str());
@@ -978,20 +1019,20 @@ template <int N1> struct TestRealHP2 {
 			// down-converting requires extra casting
 			ComplexHP<N2> d3 = ComplexHP<N2>(RealHP<N2>(a.real()), RealHP<N2>(a.imag()));
 			ComplexHP<N1> d4 = ComplexHP<N1>(RealHP<N1>(b.real()), RealHP<N1>(b.imag()));
-			auto          d5 = d1 + d2 + d3 + d4;
+			auto          d5 = opAdd(opAdd(opAdd(d1, d2), d3), d4); // d1 + d2 + d3 + d4;
 			if (d5 != ComplexHP<N>(-0.5, 3.0)) throw std::runtime_error(("TestRealHP error: Fatal c5" + info).c_str());
 		}
 		{
 			ComplexHP<N1> a  = ComplexHP<N1>(-1.25, 0.5);
 			RealHP<N2>    b  = RealHP<N2>(1.0);
-			auto          c1 = a + b;
-			auto          c2 = a - b;
-			auto          c3 = a * b;
-			auto          c4 = a / b;
-			auto          c5 = b + a;
-			auto          c6 = b - a;
-			auto          c7 = b * a;
-			auto          c8 = b / a;
+			auto          c1 = opAdd(a, b);  // a + b;
+			auto          c2 = opSub(a, b);  // a - b;
+			auto          c3 = opMult(a, b); // a * b;
+			auto          c4 = opDiv(a, b);  // a / b;
+			auto          c5 = opAdd(b, a);  // b + a;
+			auto          c6 = opSub(b, a);  // b - a;
+			auto          c7 = opMult(b, a); // b * a;
+			auto          c8 = opDiv(b, a);  // b / a;
 			if (c1 != ComplexHP<N>(-0.25, 0.5)) throw std::runtime_error(("TestRealHP error: Fatal cr1" + info).c_str());
 			if (c2 != ComplexHP<N>(-2.25, 0.5)) throw std::runtime_error(("TestRealHP error: Fatal cr2" + info).c_str());
 			if (c3 != ComplexHP<N>(-1.25, 0.5)) throw std::runtime_error(("TestRealHP error: Fatal cr3" + info).c_str());
@@ -1006,9 +1047,9 @@ template <int N1> struct TestRealHP2 {
 			// down-converting requires extra casting
 			ComplexHP<N2> d3 = ComplexHP<N2>(RealHP<N2>(a.real()), RealHP<N2>(a.imag()));
 			RealHP<N1>    d4 = RealHP<N1>(b);
-			auto          d5 = d1 + d2 + d4 + d3;
+			auto          d5 = opAdd(opAdd(opAdd(d1, d2), d4), d3); // d1 + d2 + d4 + d3;
 			if (d5 != ComplexHP<N>(-0.5, 1.0)) throw std::runtime_error(("TestRealHP error: Fatal cr9" + info).c_str());
-			auto d6 = d1 + d2 + d3 + d4;
+			auto d6 = opAdd(opAdd(opAdd(d1, d2), d3), d4); // d1 + d2 + d3 + d4;
 			if (d6 != ComplexHP<N>(-0.5, 1.0)) throw std::runtime_error(("TestRealHP error: Fatal cr10" + info).c_str());
 
 			static_assert(std::is_same<ComplexHP<N>, decltype(c1)>::value, "Assert error c1");
@@ -1026,6 +1067,8 @@ template <int N1> struct TestRealHP2 {
 			static_assert(std::is_same<ComplexHP<N>, decltype(d5)>::value, "Assert error d5");
 			static_assert(std::is_same<ComplexHP<N>, decltype(d6)>::value, "Assert error d6");
 		}
+#endif
+#endif
 	}
 };
 
