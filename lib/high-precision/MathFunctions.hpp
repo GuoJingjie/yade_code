@@ -57,41 +57,41 @@ namespace math {
 	// typename RC is a type which can be Real or Complex, Rr → only Real, Cc → only Complex.
 	// The check involving int Level = levelOfHP<RC> is necessary to make sure that function is called only with yade supported HP types.
 	// int Level is the N in RealHP<N>.
-	template <typename RC, int Level = levelOfHP<RC>> inline RC sin(const RC& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type sin(const Rr& a)
 	{
 		using ::std::sin;
 		using YADE_REAL_MATH_NAMESPACE::sin;
-		return sin(static_cast<const UnderlyingHP<RC>&>(a));
+		return sin(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
-	template <typename RC, int Level = levelOfHP<RC>> inline RC sinh(const RC& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type sinh(const Rr& a)
 	{
 		using ::std::sinh;
 		using YADE_REAL_MATH_NAMESPACE::sinh;
-		return sinh(static_cast<const UnderlyingHP<RC>&>(a));
+		return sinh(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
-	template <typename RC, int Level = levelOfHP<RC>> inline RC cos(const RC& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type cos(const Rr& a)
 	{
 		using ::std::cos;
 		using YADE_REAL_MATH_NAMESPACE::cos;
-		return cos(static_cast<const UnderlyingHP<RC>&>(a));
+		return cos(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
-	template <typename RC, int Level = levelOfHP<RC>> inline RC cosh(const RC& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type cosh(const Rr& a)
 	{
 		using ::std::cosh;
 		using YADE_REAL_MATH_NAMESPACE::cosh;
-		return cosh(static_cast<const UnderlyingHP<RC>&>(a));
+		return cosh(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
-	template <typename RC, int Level = levelOfHP<RC>> inline RC tan(const RC& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type tan(const Rr& a)
 	{
 		using ::std::tan;
 		using YADE_REAL_MATH_NAMESPACE::tan;
-		return tan(static_cast<const UnderlyingHP<RC>&>(a));
+		return tan(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
-	template <typename RC, int Level = levelOfHP<RC>> inline RC tanh(const RC& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type tanh(const Rr& a)
 	{
 		using ::std::tanh;
 		using YADE_REAL_MATH_NAMESPACE::tanh;
-		return tanh(static_cast<const UnderlyingHP<RC>&>(a));
+		return tanh(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
 	// add more Real or Complex functions as necessary, but remember to add them in py/high-precision/_math.cpp, py/tests/testMath.py and py/tests/testMathHelper.py
 
@@ -99,37 +99,37 @@ namespace math {
 	/**********************      Real inverse trigonometric functions      **********************/
 	/********************************************************************************************/
 	// The check involving int Level = levelOfRealHP<Rr> is necessary to make sure that function is called only with yade Real supported HP types.
-	template <typename Rr, int Level = levelOfRealHP<Rr>> inline Rr asin(const Rr& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type asin(const Rr& a)
 	{
 		using ::std::asin;
 		using YADE_REAL_MATH_NAMESPACE::asin;
 		return asin(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
-	template <typename Rr, int Level = levelOfRealHP<Rr>> inline Rr asinh(const Rr& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type asinh(const Rr& a)
 	{
 		using ::std::asinh;
 		using YADE_REAL_MATH_NAMESPACE::asinh;
 		return asinh(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
-	template <typename Rr, int Level = levelOfRealHP<Rr>> inline Rr acos(const Rr& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type acos(const Rr& a)
 	{
 		using ::std::acos;
 		using YADE_REAL_MATH_NAMESPACE::acos;
 		return acos(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
-	template <typename Rr, int Level = levelOfRealHP<Rr>> inline Rr acosh(const Rr& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type acosh(const Rr& a)
 	{
 		using ::std::acosh;
 		using YADE_REAL_MATH_NAMESPACE::acosh;
 		return acosh(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
-	template <typename Rr, int Level = levelOfRealHP<Rr>> inline Rr atan(const Rr& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type atan(const Rr& a)
 	{
 		using ::std::atan;
 		using YADE_REAL_MATH_NAMESPACE::atan;
 		return atan(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
-	template <typename Rr, int Level = levelOfRealHP<Rr>> inline Rr atanh(const Rr& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type atanh(const Rr& a)
 	{
 		using ::std::atanh;
 		using YADE_REAL_MATH_NAMESPACE::atanh;
@@ -148,13 +148,13 @@ namespace math {
 	// Add more functions as necessary, but remember to add them in py/high-precision/_math.cpp, py/tests/testMath.py and py/tests/testMathHelper.py
 	// They can be converted to accept complex by changing levelOfRealHP<> → levelOfHP<>, provided that a complex version exists.
 	// But remember to add tests for complex versions in py/high-precision/_math.cpp, py/tests/testMath.py and py/tests/testMathHelper.py
-	template <typename RC, int Level = levelOfHPAllow<RC, int>> inline PromoteHP<RC> log(const RC& a)
+	template <typename Rr, int Level = levelOfRealHPAllow<Rr, int>> inline typename boost::enable_if_c<isRealHP<PromoteHP<Rr>>, PromoteHP<Rr>>::type log(const Rr& a)
 	{
 		using ::std::log;
 		using YADE_REAL_MATH_NAMESPACE::log;
-		return log(static_cast<const UnderlyingHP<RC>&>(a));
+		return log(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
-	template <typename Rr, int Level = levelOfRealHP<Rr>> inline Rr log10(const Rr& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type log10(const Rr& a)
 	{
 		using ::std::log10;
 		using YADE_REAL_MATH_NAMESPACE::log10;
@@ -197,11 +197,11 @@ namespace math {
 		using YADE_REAL_MATH_NAMESPACE::frexp;
 		return frexp(static_cast<const UnderlyingHP<Rr>&>(a), b);
 	}
-	template <typename RC, int Level = levelOfHP<RC>> inline RC exp(const RC& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type exp(const Rr& a)
 	{
 		using ::std::exp;
 		using YADE_REAL_MATH_NAMESPACE::exp;
-		return exp(static_cast<const UnderlyingHP<RC>&>(a));
+		return exp(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
 	template <typename Rr, int Level = levelOfRealHP<Rr>> inline Rr exp2(const Rr& a)
 	{
@@ -216,7 +216,7 @@ namespace math {
 		return expm1(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
 	template <typename A, typename B, int Level = levelOfRealHPAllow<A, int>, typename Rr = PromoteHP<A>>
-	inline typename boost::enable_if<std::is_convertible<typename std::decay<B>::type, Rr>, Rr>::type pow(const A& a, const B& b)
+	inline typename boost::enable_if<std::is_convertible<B, Rr>, Rr>::type pow(const A& a, const B& b)
 	{
 		using ::std::pow;
 		using YADE_REAL_MATH_NAMESPACE::pow;
@@ -271,12 +271,11 @@ namespace math {
 	{
 		return min(static_cast<const UnderlyingHP<Rr>&>(a), static_cast<const UnderlyingHP<Rr>&>(b));
 	}
-	// allow here Complex also
-	template <typename RC, int Level = levelOfHP<RC>> inline RealHP<Level> abs(const RC& a)
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline typename boost::enable_if_c<isRealHP<Rr>, Rr>::type abs(const Rr& a)
 	{
 		using ::std::abs;
 		using YADE_REAL_MATH_NAMESPACE::abs;
-		return abs(static_cast<const UnderlyingHP<RC>&>(a));
+		return abs(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
 	template <typename Rr, int Level = levelOfRealHP<Rr>> inline Rr fabs(const Rr& a) { return ::yade::math::abs(a); }
 
@@ -340,23 +339,6 @@ namespace math {
 		return fpclassify(static_cast<const UnderlyingHP<Rr>&>(a));
 	}
 #endif
-
-	/********************************************************************************************/
-	/**********************            Complex conj, real, imag             *********************/
-	/********************************************************************************************/
-	// Add more complex functions as necessary, but remember to add them in py/high-precision/_math.cpp and py/tests/testMath.py
-	// Note: most of the functions above can be converted to accept complex by changing levelOfRealHP<> → levelOfHP<>, provided that a complex version exists.
-	// The check involving int Level = levelOfComplexHP<Cc> is necessary to make sure that function is called only with yade Complex supported HP types.
-	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline Cc conj(const Cc& a) { return ::std::conj(static_cast<const UnderlyingHP<Cc>&>(a)); }
-
-	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline RealHP<Level> real(const Cc& a)
-	{
-		return ::std::real(static_cast<const UnderlyingHP<Cc>&>(a));
-	}
-	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline RealHP<Level> imag(const Cc& a)
-	{
-		return ::std::imag(static_cast<const UnderlyingHP<Cc>&>(a));
-	}
 
 	/********************************************************************************************/
 	/**********************        integer division and remainder          **********************/
