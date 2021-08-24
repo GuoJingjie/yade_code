@@ -50,7 +50,11 @@ class NewtonIntegrator : public FieldApplier {
 	Matrix3r dVelGrad;
 	Vector3r dSpin;
 
-public:
+        Vector3r computeAccelWithoutGravity(const Vector3r& force, const Real& mass, int blockedDOFs);
+        Vector3r addGravity(int blockedDOFs);
+
+
+public:   
 	bool densityScaling;     // internal for density scaling
 	Real updatingDispFactor; //(experimental) Displacement factor used to trigger bound update: the bound is updated only if updatingDispFactor*disp>sweepDist when >0, else all bounds are updated.
 	// function to save maximum velocity, for the verlet-distance optimization
@@ -78,6 +82,7 @@ public:
 		// energy tracking
 		((int,nonviscDampIx,-1,(Attr::hidden|Attr::noSave),"Index of the energy dissipated using the non-viscous damping (:yref:`damping<NewtonIntegrator.damping>`)."))
 		((bool,kinSplit,false,,"Whether to separately track translational and rotational kinetic energy."))
+                ((bool,dampGravity,true,,"By default, numerical damping applies to ALL forces, even gravity. If this option is set to false, then the gravity forces calculated based on NewtonIntegrator.gravity are excluded from the damping calculation. This option has no effect on gravity forces added by GravityEngine. "))
 		((int,kinEnergyIx,-1,(Attr::hidden|Attr::noSave),"Index for kinetic energy in scene->energies."))
 		((int,kinEnergyTransIx,-1,(Attr::hidden|Attr::noSave),"Index for translational kinetic energy in scene->energies."))
 		((int,kinEnergyRotIx,-1,(Attr::hidden|Attr::noSave),"Index for rotational kinetic energy in scene->energies."))

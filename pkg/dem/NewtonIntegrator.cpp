@@ -34,6 +34,25 @@ void NewtonIntegrator::cundallDamp2nd(const Real& dt, const Vector3r& vel, Vecto
 		accel[i] *= 1 - damping * math::sign(accel[i] * (vel[i] + 0.5 * dt * accel[i]));
 }
 
+
+Vector3r NewtonIntegrator::computeAccelWithoutGravity(const Vector3r& force, const Real& mass, int blockedDOFs)
+{
+	if (blockedDOFs == 0) return (force / mass);
+	Vector3r ret(Vector3r::Zero());
+	for (int i = 0; i < 3; i++)
+		if (!(blockedDOFs & State::axisDOF(i, false))) ret[i] += force[i] / mass;
+	return ret;
+}
+Vector3r NewtonIntegrator::addGravity(int blockedDOFs)
+{
+	if (blockedDOFs == 0) return ( gravity);
+	Vector3r ret(Vector3r::Zero());
+	for (int i = 0; i < 3; i++)
+		if (!(blockedDOFs & State::axisDOF(i, false))) ret[i] = gravity[i];
+	return ret;
+}
+
+  
 Vector3r NewtonIntegrator::computeAccel(const Vector3r& force, const Real& mass, int blockedDOFs)
 {
 	if (blockedDOFs == 0) return (force / mass + gravity);
@@ -224,10 +243,26 @@ void NewtonIntegrator::action()
 
 		// for particles not totally blocked, compute accelerations; otherwise, the computations would be useless
 		if (state->blockedDOFs != State::DOF_ALL) {
+
+		         
 			// linear acceleration
-			Vector3r linAccel = computeAccel(f, state->mass, state->blockedDOFs);
-			if (densityScaling) linAccel *= state->densityScaling;
-			if (state->isDamped) cundallDamp2nd(dt, fluctVel, linAccel);
+		        Vector3r linAccel;
+            		if (dampGravity)
+			  {
+			    //original way, gravity is added before damping, so gravity is damped			
+			    linAccel= computeAccel(f, state->mass, state->blockedDOFs);
+			    if (densityScaling) linAccel *= state->densityScaling;
+			    if (state->isDamped) cundallDamp2nd(dt, fluctVel, linAccel);
+			  }
+			else
+			  {
+			    //new option, gravity is added after damping, so gravity is not damped
+			    linAccel= computeAccelWithoutGravity(f, state->mass, state->blockedDOFs);
+			    if (state->isDamped) cundallDamp2nd(dt, fluctVel, linAccel);
+			    linAccel += addGravity(state->blockedDOFs);
+			    if (densityScaling) linAccel *= state->densityScaling;
+			  }
+			  
 			//This is the convective term, appearing in the time derivation of Cundall/Thornton expression (dx/dt=velGrad*pos -> d²x/dt²=dvelGrad/dt*pos+velGrad*vel), negligible in many cases but not for high speed large deformations (gaz or turbulent flow).
 			if (isPeriodic && homoDeform > 1) linAccel += prevVelGrad * state->vel;
 			//finally update velocity
