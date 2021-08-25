@@ -7,6 +7,8 @@
 
 #include "_RealHPDiagnostics.hpp"
 #include <lib/base/LoggingUtils.hpp>
+#include <lib/high-precision/MathComplexFunctions.hpp>
+#include <lib/high-precision/MathSpecialFunctions.hpp>
 #include <lib/high-precision/Real.hpp>
 #include <lib/high-precision/RealHPConfig.hpp>
 #include <lib/high-precision/RealIO.hpp>
@@ -322,7 +324,7 @@ private:
 	const RealHP<minHP>                 minX;
 	const RealHP<minHP>                 maxX;
 	const std::set<int>&                testSet;
-	bool                                first { true };
+	bool                                firstHighestN { true };
 	bool                                collectArgs { false };
 	bool                                extraChecks { false };
 	FuncErrors                          empty;
@@ -362,9 +364,11 @@ public:
 		for (auto N : testSet)
 			if (N != *testSet.rbegin()) empty[N] = Error { {}, 0 };
 	}
+	void                      startingHighestNWithReferenceResults() { firstHighestN = true; }
+	template <int testN> void finishedThisN() { firstHighestN = false; }
+
 	void prepare()
 	{
-		first = true;
 		for (auto& a : minHPArgs)
 			a = Eigen::internal::random<minHP>(minX, maxX);
 		if (not useRandomArgs) {
@@ -391,7 +395,7 @@ public:
 	void amend(const std::string& funcName, const RealHP<testN>& funcValue, const std::vector<Domain>& domains, const std::array<RealHP<testN>, 3>& args)
 	{
 		if (results.count(funcName) == 0) results[funcName] = empty;
-		if (first) { // store results for the highest N
+		if (firstHighestN) { // store results for the highest N
 			reference[funcName] = static_cast<RealHP<maxN>>(funcValue);
 		} else if (math::isfinite(funcValue) and math::isfinite(reference[funcName])) {
 			auto ulpError
@@ -483,7 +487,6 @@ public:
 #undef CHECK_FUN_R_2
 #undef CHECK_FUN_R_3
 		// clang-format on
-		first = false;
 	}
 	template <int testN> void checkComplexFunctions()
 	{
@@ -500,7 +503,7 @@ public:
 //                ↓ R - Real, C - Complex
 #define CHECK_FUN_C_2(f, d1, d2)     amend<testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2))), { d1, d2 }, args)
 
-		// FIXING now: skip complex checks until I update ComplexHP<N> to take into account suggestions from https://github.com/boostorg/multiprecision/issues/262
+		// FIXED: now complex checks until are updated and ComplexHP<N> takes into account suggestions from https://github.com/boostorg/multiprecision/issues/262#issuecomment-668691637
 		CHECK_FUN_C_2(sin  , Domain::All, Domain::All);          // all
 		CHECK_FUN_C_2(cos  , Domain::All, Domain::All);          // all
 		CHECK_FUN_C_2(tan  , Domain::All, Domain::All);          // all
@@ -510,7 +513,6 @@ public:
 
 #undef CHECK_FUN_C_2
 		// clang-format on
-		first = false;
 	}
 	py::dict getResult()
 	{
@@ -540,6 +542,8 @@ template <int minHP> struct TestLoop {
 	{
 		tb.template checkRealFunctions<Nmpl::value>();
 		tb.template checkComplexFunctions<Nmpl::value>();
+
+		tb.template finishedThisN<Nmpl::value>();
 	}
 };
 
@@ -557,8 +561,11 @@ runTest(int                  testCount,
 	TestBits<minHP> testHelper(testCount, minX, maxX, useRandomArgs, testSet, collectArgs, extraChecks);
 	TestLoop<minHP> testLoop(testHelper);
 	while (testCount-- > 0) {
+		testHelper.startingHighestNWithReferenceResults();
+		// → afterwards calls finishedThisN(), but must be inside the TestLoop called from boost::mpl::for_each below.
 		testHelper.prepare();
 		boost::mpl::for_each<boost::mpl::reverse<math::RealHPConfig::SupportedByMinieigen>::type>(testLoop);
+
 		if (((testCount % printEveryNth) == 0) and (testCount != 0))
 			LOG_INFO("minHP = " << minHP << ", testCount = " << testCount << "\n" << py::extract<std::string>(py::str(testHelper.getResult()))());
 	}
