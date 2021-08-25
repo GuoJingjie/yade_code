@@ -96,7 +96,7 @@ namespace math {
 		return imag(static_cast<const UnderlyingHP<Cc>&>(a));
 	}
 	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline typename boost::enable_if_c<isComplexHP<Cc>, RealHP<Level>>::type abs(const Cc& a)
-	{
+	{ // # Warning: C++ std::norm is squared length. In python/mpmath norm is C++ std::abs == length.
 		using ::std::abs;
 		using YADE_REAL_MATH_NAMESPACE::abs;
 		return abs(static_cast<const UnderlyingHP<Cc>&>(a));
@@ -112,7 +112,8 @@ namespace math {
 		return arg(static_cast<const UnderlyingHP<Cc>&>(a));
 	}
 	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline RealHP<Level> norm(const Cc& a)
-	{ // note: Returns the squared magnitude of the complex number z, see https://en.cppreference.com/w/cpp/numeric/complex/norm
+	{       // note: Returns the squared magnitude of the complex number z, see https://en.cppreference.com/w/cpp/numeric/complex/norm
+		// # Warning: C++ norm is squared length. In python/mpmath norm is C++ abs == length.
 		using ::std::norm;
 		using YADE_REAL_MATH_NAMESPACE::norm;
 		return norm(static_cast<const UnderlyingHP<Cc>&>(a));

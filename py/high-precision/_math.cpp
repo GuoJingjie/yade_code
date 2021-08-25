@@ -440,7 +440,7 @@ template <int N, bool registerConverters> struct RegisterRealHPMath {
 		        static_cast<RealHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::arg),
 		        (py::arg("x")),
 		        R"""(:return: ``Real`` the arg (Phase angle of complex in radians) of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::arg(…)`` or `std::arg(…) <https://en.cppreference.com/w/cpp/numeric/complex/arg>`__ function.)""");
-		py::def("norm",
+		py::def("squaredNorm", // # Warning: C++ std::norm is squared length. In python/mpmath norm is C++ abs == length.
 		        static_cast<RealHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::norm),
 		        (py::arg("x")),
 		        R"""(:return: ``Real`` the norm (squared magnitude) of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::norm(…)`` or `std::norm(…) <https://en.cppreference.com/w/cpp/numeric/complex/norm>`__ function.)""");

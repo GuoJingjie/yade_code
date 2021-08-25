@@ -35,7 +35,7 @@ class SimpleTests(unittest.TestCase):
 		 #  function decimal places : tolerance factor. Each "10" corresponds to single wrong decimal place. But they are approximate and rounded up.
 		 #
 		 #                 float   double    long double float128        MPFR_100        MPFR_150     cpp_bin_float_100  cpp_bin_float_150
-		 #
+		 # Real C++ functions
 		    "acos"      : {"6": 100 , "15": 100 , "18": 100  , "33": 1000   , "100": 1000  , "150" : 1000  , "100_b" : 1000    , "150_b" : 1000   }
 		  , "atanh"     : {"6": 100 , "15": 100 , "18": 100  , "33": 1000   , "100": 1000  , "150" : 1000  , "100_b" : 1000    , "150_b" : 1000   }
 		  , "atan"      : {"6": 1   , "15": 1   , "18": 1    , "33": 1      , "100": 1     , "150" : 1     , "100_b" : 1       , "150_b" : 50     }
@@ -50,22 +50,12 @@ class SimpleTests(unittest.TestCase):
 		  , "tan"       : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
 		  , "tanh"      : {"6": 1   , "15": 1   , "18": 1    , "33": 1      , "100": 1     , "150" : 1     , "100_b" : 1       , "150_b" : 50     }
 
-		  , "csin"      : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
-		  , "ccos"      : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
-		  , "ctan"      : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
-
-		  , "cexp"      : {"6": 10  , "15": 10  , "18": 10   , "33": 10     , "100": 10    , "150" : 10    , "100_b" : 100     , "150_b" : 100    }
 		  , "exp"       : {"6": 10  , "15": 10  , "18": 10   , "33": 10     , "100": 10    , "150" : 10    , "100_b" : 100     , "150_b" : 100    }
 		  , "exp2"      : {"6": 10  , "15": 10  , "18": 10   , "33": 10     , "100": 10    , "150" : 10    , "100_b" : 100     , "150_b" : 100    }
 		  , "expm1"     : {"6": 10  , "15": 10  , "18": 10   , "33": 10     , "100": 10    , "150" : 10    , "100_b" : 100     , "150_b" : 100    }
 		  , "cosh"      : {"6": 10  , "15": 10  , "18": 10   , "33": 10     , "100": 10    , "150" : 10    , "100_b" : 100     , "150_b" : 100    }
 		  , "sinh"      : {"6": 10  , "15": 10  , "18": 10   , "33": 10     , "100": 10    , "150" : 10    , "100_b" : 100     , "150_b" : 100    }
 
-		  , "ccosh"     : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
-		  , "csinh"     : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
-		  , "ctanh"     : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
-
-		  , "clog"      : {"6": 1000, "15": 1000, "18": 100  , "33": 100    , "100": 100   , "150" : 100   , "100_b" : 100     , "150_b" : 100    }
 		  , "log"       : {"6": 1000, "15": 1000, "18": 100  , "33": 100    , "100": 100   , "150" : 100   , "100_b" : 100     , "150_b" : 100    }
 		  , "log10"     : {"6": 1000, "15": 1000, "18": 100  , "33": 100    , "100": 100   , "150" : 100   , "100_b" : 100     , "150_b" : 100    }
 		  , "log1p"     : {"6": 1000, "15": 1000, "18": 100  , "33": 100    , "100": 100   , "150" : 100   , "100_b" : 100     , "150_b" : 100    }
@@ -84,6 +74,38 @@ class SimpleTests(unittest.TestCase):
 		  , "remainder" : {"6": 100 , "15": 5000, "18": 5000 , "33": 10000  , "100": 10000 , "150" : 100000, "100_b" : 10000   , "150_b" : 10000  }
 		  , "remquo"    : {"6": 100 , "15": 5000, "18": 5000 , "33": 10000  , "100": 10000 , "150" : 100000, "100_b" : 10000   , "150_b" : 10000  }
 		  , "fma"       : {"6": 10  , "15": 100 , "18": 10   , "33": 10     , "100": 100   , "150" : 100   , "100_b" : 100     , "150_b" : 1000   }
+
+		# Same order of functions as in #include <lib/high-precision/MathComplexFunctions.hpp>
+		# Complex C++ functions. Start names with "Complex " so that they can sit in the same defaultTolerances dictionary
+		  , "Complex conj" : {"6": 1   , "15": 1   , "18": 1    , "33": 1      , "100": 1     , "150" : 1     , "100_b" : 1       , "150_b" : 1      }
+		  , "Complex real" : {"6": 1   , "15": 1   , "18": 1    , "33": 1      , "100": 1     , "150" : 1     , "100_b" : 1       , "150_b" : 1      }
+		  , "Complex imag" : {"6": 1   , "15": 1   , "18": 1    , "33": 1      , "100": 1     , "150" : 1     , "100_b" : 1       , "150_b" : 1      }
+		  , "Complex abs"  : {"6": 1   , "15": 1   , "18": 1    , "33": 1      , "100": 1     , "150" : 1     , "100_b" : 1       , "150_b" : 1      }
+
+		  , "Complex arg"  : {"6": 1   , "15": 1   , "18": 2    , "33": 4      , "100": 8     , "150" : 8     , "100_b" : 8       , "150_b" : 8      }
+		  , "Complex norm" : {"6": 1   , "15": 1   , "18": 2    , "33": 4      , "100": 8     , "150" : 8     , "100_b" : 8       , "150_b" : 8      }
+		  , "Complex proj" : {"6": 1   , "15": 1   , "18": 2    , "33": 4      , "100": 8     , "150" : 8     , "100_b" : 8       , "150_b" : 8      }
+		  , "Complex polar": {"6": 1   , "15": 1   , "18": 2    , "33": 4      , "100": 8     , "150" : 8     , "100_b" : 8       , "150_b" : 8      }
+
+		  , "Complex sin"  : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+		  , "Complex sinh" : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+		  , "Complex cos"  : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+		  , "Complex cosh" : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+		  , "Complex tan"  : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+		  , "Complex tanh" : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+
+		  , "Complex asin" : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+		  , "Complex asinh": {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+		  , "Complex acos" : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+		  , "Complex acosh": {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+		  , "Complex atan" : {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+		  , "Complex atanh": {"6": 100 , "15": 100 , "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+
+		  , "Complex exp"  : {"6": 10  , "15": 10  , "18": 10   , "33": 10     , "100": 10    , "150" : 10    , "100_b" : 100     , "150_b" : 100    }
+		  , "Complex log"  : {"6": 1000, "15": 1000, "18": 100  , "33": 100    , "100": 100   , "150" : 100   , "100_b" : 100     , "150_b" : 100    }
+		  , "Complex log10": {"6": 1000, "15": 1000, "18": 100  , "33": 100    , "100": 100   , "150" : 100   , "100_b" : 100     , "150_b" : 100    }
+		  , "Complex pow"  : {"6": 1000, "15": 1000, "18": 100  , "33": 100    , "100": 100   , "150" : 100   , "100_b" : 100     , "150_b" : 100    }
+		  , "Complex sqrt" : {"6": 1000, "15": 1000, "18": 100  , "33": 100    , "100": 100   , "150" : 100   , "100_b" : 100     , "150_b" : 100    }
 
 		 # these are not tolerances. These are EigenCostRealHP from lib/high-precision/EigenNumTraits.hpp
 		  , "read"      : {"6": 1   , "15": 1   , "18": 1    , "33": 1      , "100": 10000 , "150" : 10000 , "100_b" : 10000   , "150_b" : 10000  }
@@ -587,20 +609,37 @@ class SimpleTests(unittest.TestCase):
 
 	def twoArgMathCheck(self, HPn, MPn, r1, r2):
 		# same order of complex functions as in lib/high-precision/MathComplexFunctions.hpp , py/high-precision/_math.cpp
-		self.checkRelativeComplexError(HPn.conj(MPn.mpc(r1, r2)), MPn.conj(MPn.mpc(r1, r2)), functionName="cconj")
-		self.checkRelativeComplexError(HPn.real(MPn.mpc(r1, r2)), r1, functionName="creal")
-		self.checkRelativeComplexError(HPn.imag(MPn.mpc(r1, r2)), r2, functionName="cimag")
-		self.checkRelativeComplexError(HPn.abs(MPn.mpc(r1, r2)), abs(MPn.mpc(r1, r2)), functionName="cabs")
+		self.checkRelativeComplexError(HPn.conj(MPn.mpc(r1, r2)), MPn.conj(MPn.mpc(r1, r2)), functionName="Complex conj")
+		self.checkRelativeComplexError(HPn.real(MPn.mpc(r1, r2)), r1, functionName="Complex real")
+		self.checkRelativeComplexError(HPn.imag(MPn.mpc(r1, r2)), r2, functionName="Complex imag")
+		self.checkRelativeComplexError(HPn.abs(MPn.mpc(r1, r2)), abs(MPn.mpc(r1, r2)), functionName="Complex abs")
 
-		self.checkRelativeComplexError(HPn.sin(MPn.mpc(r1, r2)), MPn.sin(MPn.mpc(r1, r2)), functionName="csin")
-		self.checkRelativeComplexError(HPn.sinh(MPn.mpc(r1, r2)), MPn.sinh(MPn.mpc(r1, r2)), functionName="csinh")
-		self.checkRelativeComplexError(HPn.cos(MPn.mpc(r1, r2)), MPn.cos(MPn.mpc(r1, r2)), functionName="ccos")
-		self.checkRelativeComplexError(HPn.cosh(MPn.mpc(r1, r2)), MPn.cosh(MPn.mpc(r1, r2)), functionName="ccosh")
-		self.checkRelativeComplexError(HPn.tan(MPn.mpc(r1, r2)), MPn.tan(MPn.mpc(r1, r2)), functionName="ctan")
-		self.checkRelativeComplexError(HPn.tanh(MPn.mpc(r1, r2)), MPn.tanh(MPn.mpc(r1, r2)), functionName="ctanh")
+		self.checkRelativeError(HPn.arg(MPn.mpc(r1, r2)), MPn.phase(MPn.mpc(r1, r2)), functionName="Complex arg")
+		self.checkRelativeError(HPn.squaredNorm(MPn.mpc(r1, r2)), MPn.norm(MPn.mpc(r1, r2)) * MPn.norm(MPn.mpc(r1, r2)), functionName="Complex norm")
+		# for now skip testing C++ std::proj, see note in py/tests/testMathHelper.py
+		self.checkRelativeComplexError(HPn.polar(r1, r2), MPn.rect(r1, r2), functionName="Complex polar")
 
-		self.checkRelativeComplexError(HPn.exp(MPn.mpc(r1, r2)), MPn.exp(MPn.mpc(r1, r2)), functionName="cexp")
-		self.checkRelativeComplexError(HPn.log(MPn.mpc(r1, r2)), MPn.log(MPn.mpc(r1, r2)), functionName="clog")
+		self.checkRelativeComplexError(HPn.sin(MPn.mpc(r1, r2)), MPn.sin(MPn.mpc(r1, r2)), functionName="Complex sin")
+		self.checkRelativeComplexError(HPn.sinh(MPn.mpc(r1, r2)), MPn.sinh(MPn.mpc(r1, r2)), functionName="Complex sinh")
+		self.checkRelativeComplexError(HPn.cos(MPn.mpc(r1, r2)), MPn.cos(MPn.mpc(r1, r2)), functionName="Complex cos")
+		self.checkRelativeComplexError(HPn.cosh(MPn.mpc(r1, r2)), MPn.cosh(MPn.mpc(r1, r2)), functionName="Complex cosh")
+		self.checkRelativeComplexError(HPn.tan(MPn.mpc(r1, r2)), MPn.tan(MPn.mpc(r1, r2)), functionName="Complex tan")
+		self.checkRelativeComplexError(HPn.tanh(MPn.mpc(r1, r2)), MPn.tanh(MPn.mpc(r1, r2)), functionName="Complex tanh")
+
+		self.checkRelativeComplexError(HPn.asin(MPn.mpc(r1, r2)), MPn.asin(MPn.mpc(r1, r2)), functionName="Complex asin")
+		self.checkRelativeComplexError(HPn.asinh(MPn.mpc(r1, r2)), MPn.asinh(MPn.mpc(r1, r2)), functionName="Complex asinh")
+		self.checkRelativeComplexError(HPn.acos(MPn.mpc(r1, r2)), MPn.acos(MPn.mpc(r1, r2)), functionName="Complex acos")
+		self.checkRelativeComplexError(HPn.acosh(MPn.mpc(r1, r2)), MPn.acosh(MPn.mpc(r1, r2)), functionName="Complex acosh")
+		self.checkRelativeComplexError(HPn.atan(MPn.mpc(r1, r2)), MPn.atan(MPn.mpc(r1, r2)), functionName="Complex atan")
+		self.checkRelativeComplexError(HPn.atanh(MPn.mpc(r1, r2)), MPn.atanh(MPn.mpc(r1, r2)), functionName="Complex atanh")
+
+		self.checkRelativeComplexError(HPn.exp(MPn.mpc(r1, r2)), MPn.exp(MPn.mpc(r1, r2)), functionName="Complex exp")
+		self.checkRelativeComplexError(HPn.log(MPn.mpc(r1, r2)), MPn.log(MPn.mpc(r1, r2)), functionName="Complex log")
+		self.checkRelativeComplexError(HPn.log10(MPn.mpc(r1, r2)), MPn.log10(MPn.mpc(r1, r2)), functionName="Complex log10")
+		self.checkRelativeComplexError(
+		        HPn.pow(MPn.mpc(r1, r2), MPn.mpc(r1 + r2, r1 - r2)), (MPn.mpc(r1, r2)**MPn.mpc(r1 + r2, r1 - r2)), functionName="Complex pow"
+		)
+		self.checkRelativeComplexError(HPn.sqrt(MPn.mpc(r1, r2)), MPn.sqrt(MPn.mpc(r1, r2)), functionName="Complex sqrt")
 
 		# Other, non complex functions
 		self.checkRelativeError(HPn.atan2(r1, r2), MPn.atan2(r1, r2), functionName="atan2")
