@@ -103,7 +103,7 @@ namespace math {
 	}
 
 	/********************************************************************************************/
-	/**********************       Complex arg, norm, proj, polar, ""_i      *********************/
+	/**********************          Complex arg, norm, proj, polar         *********************/
 	/********************************************************************************************/
 	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline RealHP<Level> arg(const Cc& a)
 	{
@@ -131,7 +131,7 @@ namespace math {
 	}
 
 	/********************************************************************************************/
-	/**********************     Real or Complex trigonometric functions    **********************/
+	/**********************         Complex trigonometric functions        **********************/
 	/********************************************************************************************/
 	// typename RC is a type which can be Real or Complex, Rr → only Real, Cc → only Complex.
 	// The check involving int Level = levelOfComplexHP<Cc> is necessary to make sure that function is called only with yade supported HP types.
@@ -175,7 +175,7 @@ namespace math {
 	// add more Real or Complex functions as necessary, but remember to add them in py/high-precision/_math.cpp, py/tests/testMath.py and py/tests/testMathHelper.py
 
 	/********************************************************************************************/
-	/**********************      Real inverse trigonometric functions      **********************/
+	/**********************     Complex inverse trigonometric functions    **********************/
 	/********************************************************************************************/
 	// The check involving int Level = levelOfComplexHP<Cc> is necessary to make sure that function is called only with yade Real supported HP types.
 	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline typename boost::enable_if_c<isComplexHP<Cc>, Cc>::type asin(const Cc& a)

@@ -433,6 +433,27 @@ template <int N, bool registerConverters> struct RegisterRealHPMath {
 		        R"""(:return: the ``Real`` absolute value of the ``Complex`` argument. Depending on compilation options wraps ``::boost::multiprecision::abs(…)`` or `std::abs(…) <https://en.cppreference.com/w/cpp/numeric/complex/abs>`__ function.)""");
 
 		/********************************************************************************************/
+		/**********************          Complex arg, norm, proj, polar         *********************/
+		/********************************************************************************************/
+		// complex functions must be registered first, so that python will properly discover overloads
+		py::def("arg",
+		        static_cast<RealHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::arg),
+		        (py::arg("x")),
+		        R"""(:return: ``Real`` the arg (Phase angle of complex in radians) of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::arg(…)`` or `std::arg(…) <https://en.cppreference.com/w/cpp/numeric/complex/arg>`__ function.)""");
+		py::def("norm",
+		        static_cast<RealHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::norm),
+		        (py::arg("x")),
+		        R"""(:return: ``Real`` the norm (squared magnitude) of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::norm(…)`` or `std::norm(…) <https://en.cppreference.com/w/cpp/numeric/complex/norm>`__ function.)""");
+		py::def("proj",
+		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::proj),
+		        (py::arg("x")),
+		        R"""(:return: ``Complex`` the proj (projection of the complex number onto the Riemann sphere) of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::proj(…)`` or `std::proj(…) <https://en.cppreference.com/w/cpp/numeric/complex/proj>`__ function.)""");
+		py::def("polar",
+		        static_cast<ComplexHP<N> (*)(const RealHP<N>&, const RealHP<N>&)>(&::yade::math::polar),
+		        (py::arg("x")),
+		        R"""(:return: ``Complex`` the polar (Complex from polar components) of the ``Real`` rho (length), ``Real`` theta (angle) arguments in radians. Depending on compilation options wraps ``::boost::multiprecision::polar(…)`` or `std::polar(…) <https://en.cppreference.com/w/cpp/numeric/complex/polar>`__ function.)""");
+
+		/********************************************************************************************/
 		/**********************        complex trigonometric functions         **********************/
 		/********************************************************************************************/
 		// complex functions must be registered first, so that python will properly discover overloads
@@ -462,10 +483,38 @@ template <int N, bool registerConverters> struct RegisterRealHPMath {
 		        (py::arg("x")),
 		        R"""(:return: ``Complex`` the hyperbolic tangent of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::tanh(…)`` or `std::tanh(…) <https://en.cppreference.com/w/cpp/numeric/complex/tanh>`__ function.)""");
 
-// TODO: asin asinh acos acosh atan atanh
+		/********************************************************************************************/
+		/**********************     Complex inverse trigonometric functions    **********************/
+		/********************************************************************************************/
+		// complex functions must be registered first, so that python will properly discover overloads
+
+		py::def("asin",
+		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::asin),
+		        (py::arg("x")),
+		        R"""(:return: ``Complex`` the arc-sine of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::asin(…)`` or `std::asin(…) <https://en.cppreference.com/w/cpp/numeric/complex/asin>`__ function.)""");
+		py::def("asinh",
+		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::asinh),
+		        (py::arg("x")),
+		        R"""(:return: ``Complex`` the arc-hyperbolic sine of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::asinh(…)`` or `std::asinh(…) <https://en.cppreference.com/w/cpp/numeric/complex/asinh>`__ function.)""");
+		py::def("acos",
+		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::acos),
+		        (py::arg("x")),
+		        R"""(:return: ``Complex`` the arc-cosine of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::acos(…)`` or `std::acos(…) <https://en.cppreference.com/w/cpp/numeric/complex/acos>`__ function.)""");
+		py::def("acosh",
+		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::acosh),
+		        (py::arg("x")),
+		        R"""(:return: ``Complex`` the arc-hyperbolic cosine of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::acosh(…)`` or `std::acosh(…) <https://en.cppreference.com/w/cpp/numeric/complex/acosh>`__ function.)""");
+		py::def("atan",
+		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::atan),
+		        (py::arg("x")),
+		        R"""(:return: ``Complex`` the arc-tangent of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::atan(…)`` or `std::atan(…) <https://en.cppreference.com/w/cpp/numeric/complex/atan>`__ function.)""");
+		py::def("atanh",
+		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::atanh),
+		        (py::arg("x")),
+		        R"""(:return: ``Complex`` the arc-hyperbolic tangent of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::atanh(…)`` or `std::atanh(…) <https://en.cppreference.com/w/cpp/numeric/complex/atanh>`__ function.)""");
 
 		/********************************************************************************************/
-		/**********************        complex logarithm and exponential        *********************/
+		/**********************   logarithm, exponential and power functions   **********************/
 		/********************************************************************************************/
 		// complex functions must be registered first, so that python will properly discover overloads
 
@@ -477,8 +526,18 @@ template <int N, bool registerConverters> struct RegisterRealHPMath {
 		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::log),
 		        (py::arg("x")),
 		        R"""(:return: the ``Complex`` natural (base `e`) logarithm of a complex value z with a branch cut along the negative real axis. Depending on compilation options wraps ``::boost::multiprecision::log(…)`` or `std::log(…) <https://en.cppreference.com/w/cpp/numeric/complex/log>`__ function.)""");
-
-// TODO: log10, pow, sqrt
+		py::def("log10",
+		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::log10),
+		        (py::arg("x")),
+		        R"""(:return: the ``Complex``  (base `10`) logarithm of a complex value z with a branch cut along the negative real axis. Depending on compilation options wraps ``::boost::multiprecision::log10(…)`` or `std::log10(…) <https://en.cppreference.com/w/cpp/numeric/complex/log10>`__ function.)""");
+		py::def("pow",
+		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&,const ComplexHP<N>&)>(&::yade::math::pow),
+		        (py::arg("x")),
+		        R"""(:return: the ``Complex`` complex arg1 raised to the ``Complex`` power arg2. Depending on compilation options wraps ``::boost::multiprecision::pow(…)`` or `std::pow(…) <https://en.cppreference.com/w/cpp/numeric/complex/pow>`__ function.)""");
+		py::def("sqrt",
+		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::sqrt),
+		        (py::arg("x")),
+		        R"""(:return: the ``Complex`` square root of ``Complex`` argument. Depending on compilation options wraps ``::boost::multiprecision::sqrt(…)`` or `std::sqrt(…) <https://en.cppreference.com/w/cpp/numeric/complex/sqrt>`__ function.)""");
 
 		/********************************************************************************************/
 		/**********************                 real functions                 **********************/
