@@ -508,6 +508,8 @@ public:
 //                ↓ R - Real, C - Complex
 #define CHECK_FUN_C_2(f, d1, d2)     amend             <testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2))), { d1, d2 }, args)
 #define CHECK_FUN_C2R(f, d1, d2)     amendComplexToReal<testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2))), { d1, d2 }, args)
+#define CHECK_FUN_C_4(f, d1, d2, d3) amend             <testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2)),ComplexHP<testN>(applyDomain<testN>(args[2], d3), applyDomain<testN>(args[0], d1))), { d1, d2, d3 }, args)
+// Note: ↑ uses {a0,a1},{a2,a0}; Domain {d1,d2},{d3,d1} Might need to be improved later to use a3,d4.
 
 		// FIXED: now complex checks are updated and ComplexHP<N> takes into account suggestions from https://github.com/boostorg/multiprecision/issues/262#issuecomment-668691637
 		CHECK_FUN_C_2(conj , Domain::All, Domain::All);          // all
@@ -522,15 +524,21 @@ public:
 		CHECK_FUN_C_2(tan  , Domain::All, Domain::All);          // all
 		CHECK_FUN_C_2(tanh , Domain::All, Domain::All);          // all
 
-		CHECK_FUN_C_2(asin  , Domain::All, Domain::All);          // all
-		CHECK_FUN_C_2(asinh , Domain::All, Domain::All);          // all
-		CHECK_FUN_C_2(acos  , Domain::All, Domain::All);          // all
-		CHECK_FUN_C_2(acosh , Domain::All, Domain::All);          // all
-		CHECK_FUN_C_2(atan  , Domain::All, Domain::All);          // all
-		CHECK_FUN_C_2(atanh , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(asin , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(asinh, Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(acos , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(acosh, Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(atan , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(atanh, Domain::All, Domain::All);          // all
 
+		CHECK_FUN_C_2(exp  , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(log  , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(log10, Domain::All, Domain::All);          // all
+		CHECK_FUN_C_4(pow  , Domain::All, Domain::All, Domain::All); // all
+		CHECK_FUN_C_2(sqrt , Domain::All, Domain::All);          // all
 #undef CHECK_FUN_C_2
 #undef CHECK_FUN_C2R
+#undef CHECK_FUN_C_4
 		// clang-format on
 	}
 	py::dict getResult()

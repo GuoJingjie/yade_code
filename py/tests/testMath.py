@@ -483,9 +483,11 @@ class SimpleTests(unittest.TestCase):
 						tolerateErrorULP = 2e8
 
 				boostVer=yade.libVersions.getVersion('boost')
-				if((func in ["complex acos real","complex acos imag","complex asin real","complex asin imag","complex asinh real","complex asinh imag","complex atan imag","complex atanh real"])):
+				if((func in ["complex acos real","complex acos imag","complex asin real","complex asin imag","complex asinh real","complex asinh imag","complex atan imag","complex atanh real","complex pow real","complex pow imag"])):
 					# FIXME: these also need to be reported. But that's a smaller error anyway. the tan, tanh had error 1e38 ULP.
-					tolerateErrorULP = 5e6
+					tolerateErrorULP = 1e6
+					if(func == "complex atan imag"):
+						tolerateErrorULP = 5e6
 
 				# DONE: file a bug report about higher precision versions of these two functions. They have large error: log2(300000000)≈28.1 incorrect bits.
 				#       https://github.com/boostorg/multiprecision/issues/262

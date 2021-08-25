@@ -186,7 +186,7 @@ namespace math {
 		return log10(static_cast<const UnderlyingHP<Cc>&>(a));
 	}
 	template <typename A, typename B, int Level = levelOfComplexHP<A>, typename Cc = PromoteHP<A>>
-	inline typename boost::enable_if_c<(std::is_convertible<B, Cc>::value and isComplexHP<A::type>), Cc>::type pow(const A& a, const B& b)
+	inline typename boost::enable_if_c<(std::is_convertible<B, Cc>::value and isComplexHP<A>), Cc>::type pow(const A& a, const B& b)
 	{
 		using ::std::pow;
 		using YADE_REAL_MATH_NAMESPACE::pow;
