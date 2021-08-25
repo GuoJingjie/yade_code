@@ -469,6 +469,13 @@ class SimpleTests(unittest.TestCase):
 					N = self.bitsToLevelHP(bits)
 					print("\033[93mWarning:\033[0m ULP error of\033[91m",func,"\033[0musing RealHP<",N,">, ",bits,"bits, with arg:",testULP[func][bits][0],"is ULP=\033[93m",ulp,"\033[0m")
 
+	def getBoostComplexTolerance(self, func, tol):
+		listFuncs = {"complex acos real" : 3e5,"complex acos imag":1e5,"complex asin real":3e5,"complex asin imag":3e5,"complex asinh real":1e5,"complex asinh imag":3e5,"complex atan imag":5e6,"complex atanh real":4e5,"complex pow real":1e6,"complex pow imag":1e6}
+		if((func in listFuncs)):
+			# FIXME: these also need to be reported. But that's a smaller error anyway. the tan, tanh had error 1e38 ULP.
+			tol = listFuncs[func]
+		return tol
+
 	def processRealHPResults(self,testULP):
 		for func in testULP:
 			for bits in testULP[func]:
@@ -483,11 +490,7 @@ class SimpleTests(unittest.TestCase):
 						tolerateErrorULP = 2e8
 
 				boostVer=yade.libVersions.getVersion('boost')
-				if((func in ["complex acos real","complex acos imag","complex asin real","complex asin imag","complex asinh real","complex asinh imag","complex atan imag","complex atanh real","complex pow real","complex pow imag"])):
-					# FIXME: these also need to be reported. But that's a smaller error anyway. the tan, tanh had error 1e38 ULP.
-					tolerateErrorULP = 1e6
-					if(func == "complex atan imag"):
-						tolerateErrorULP = 5e6
+				tolerateErrorULP = self.getBoostComplexTolerance(func, tolerateErrorULP)
 
 				# DONE: file a bug report about higher precision versions of these two functions. They have large error: log2(300000000)≈28.1 incorrect bits.
 				#       https://github.com/boostorg/multiprecision/issues/262
@@ -498,6 +501,8 @@ class SimpleTests(unittest.TestCase):
 					pass
 				else:
 					ulp = testULP[func][bits][1]
+					if(ulp > tolerateErrorULP):
+						print("\n\033[91mError with: ",func,"\033[0m having ULP=",ulp)
 					self.assertLessEqual(ulp,tolerateErrorULP)
 
 	def testCgalNumTraits(self):
