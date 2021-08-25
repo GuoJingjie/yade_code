@@ -485,9 +485,14 @@ class SimpleTests(unittest.TestCase):
 				#       https://github.com/boostorg/multiprecision/issues/262
 				#       https://github.com/boostorg/multiprecision/issues/264
 				# when it's fixed we can check boost version and skip this line below.
-				if((func in ["complex tan real","complex tanh imag"])):
-					#tolerateErrorULP = 600000000
-					pass
+				boostVer=yade.libVersions.getVersion('boost')
+				if((func in ["complex acos real","complex acos imag","complex asin real","complex asin imag","complex asinh real","complex asinh imag","complex atan imag","complex atanh real","complex tan real","complex tanh imag"])):
+					if(boostVer < (1,76,0)):
+						# for older boost there's nothing we can do. We have a large error.
+						pass
+					else:
+						# for new boost we have small error tolerance.
+						tolerateErrorULP = 8
 				else:
 					ulp = testULP[func][bits][1]
 					self.assertLessEqual(ulp,tolerateErrorULP)

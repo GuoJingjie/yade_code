@@ -15,6 +15,11 @@
 //     https://www.boost.org/doc/libs/1_71_0/libs/math/doc/html/math_toolkit/overview_tr1.html
 //#include <boost/math/tr1.hpp>
 
+// All functions have to be tested in:
+// * py/high-precision/_math.cpp
+// * py/tests/testMath.py
+// * py/tests/testMathHelper.py
+
 #ifndef YADE_THIN_REAL_WRAPPER_MATH_COMPLEX_FUNCIONS_HPP
 #define YADE_THIN_REAL_WRAPPER_MATH_COMPLEX_FUNCIONS_HPP
 

@@ -419,6 +419,11 @@ public:
 		amend<testN>("complex " + funcName + " real", funcValue.real(), dom, args);
 		amend<testN>("complex " + funcName + " imag", funcValue.imag(), dom, args);
 	}
+	template <int testN>
+	void amendComplexToReal(const std::string& funcName, const RealHP<testN>& funcValue, const std::vector<Domain>& dom, const std::array<RealHP<testN>, 3>& args)
+	{
+		amend<testN>("complex " + funcName + " c2r", funcValue, dom, args);
+	}
 	template <int testN> void checkRealFunctions()
 	{
 		if (testSet.find(testN) == testSet.end()) // skip N that were not requested to be tested.
@@ -501,17 +506,31 @@ public:
 		// clang-format off
 // Add here tests of more functions as necessary. Make sure to use proper domain.
 //                ↓ R - Real, C - Complex
-#define CHECK_FUN_C_2(f, d1, d2)     amend<testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2))), { d1, d2 }, args)
+#define CHECK_FUN_C_2(f, d1, d2)     amend             <testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2))), { d1, d2 }, args)
+#define CHECK_FUN_C2R(f, d1, d2)     amendComplexToReal<testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2))), { d1, d2 }, args)
 
-		// FIXED: now complex checks until are updated and ComplexHP<N> takes into account suggestions from https://github.com/boostorg/multiprecision/issues/262#issuecomment-668691637
+		// FIXED: now complex checks are updated and ComplexHP<N> takes into account suggestions from https://github.com/boostorg/multiprecision/issues/262#issuecomment-668691637
+		CHECK_FUN_C_2(conj , Domain::All, Domain::All);          // all
+		CHECK_FUN_C2R(real , Domain::All, Domain::All);          // all
+		CHECK_FUN_C2R(imag , Domain::All, Domain::All);          // all
+		CHECK_FUN_C2R(abs  , Domain::All, Domain::All);          // all
+
 		CHECK_FUN_C_2(sin  , Domain::All, Domain::All);          // all
-		CHECK_FUN_C_2(cos  , Domain::All, Domain::All);          // all
-		CHECK_FUN_C_2(tan  , Domain::All, Domain::All);          // all
 		CHECK_FUN_C_2(sinh , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(cos  , Domain::All, Domain::All);          // all
 		CHECK_FUN_C_2(cosh , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(tan  , Domain::All, Domain::All);          // all
 		CHECK_FUN_C_2(tanh , Domain::All, Domain::All);          // all
 
+		CHECK_FUN_C_2(asin  , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(asinh , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(acos  , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(acosh , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(atan  , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(atanh , Domain::All, Domain::All);          // all
+
 #undef CHECK_FUN_C_2
+#undef CHECK_FUN_C2R
 		// clang-format on
 	}
 	py::dict getResult()
