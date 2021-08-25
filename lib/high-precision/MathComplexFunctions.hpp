@@ -56,7 +56,6 @@ namespace math {
 		using YADE_REAL_MATH_NAMESPACE::conj;
 		return conj(static_cast<const UnderlyingHP<Cc>&>(a));
 	}
-
 	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline RealHP<Level> real(const Cc& a)
 	{
 		using ::std::real;
@@ -76,6 +75,45 @@ namespace math {
 		return abs(static_cast<const UnderlyingHP<Cc>&>(a));
 	}
 
+	/********************************************************************************************/
+	/**********************       Complex arg, norm, proj, polar, ""_i      *********************/
+	/********************************************************************************************/
+	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline RealHP<Level> arg(const Cc& a)
+	{
+		using ::std::arg;
+		using YADE_REAL_MATH_NAMESPACE::arg;
+		return arg(static_cast<const UnderlyingHP<Cc>&>(a));
+	}
+	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline RealHP<Level> norm(const Cc& a)
+	{ // note: Returns the squared magnitude of the complex number z, see https://en.cppreference.com/w/cpp/numeric/complex/norm
+		using ::std::norm;
+		using YADE_REAL_MATH_NAMESPACE::norm;
+		return norm(static_cast<const UnderlyingHP<Cc>&>(a));
+	}
+	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline Cc proj(const Cc& a)
+	{
+		using ::std::proj;
+		using YADE_REAL_MATH_NAMESPACE::proj;
+		return proj(static_cast<const UnderlyingHP<Cc>&>(a));
+	}
+	template <typename Rr, int Level = levelOfRealHP<Rr>> inline ComplexHP<Level> polar(const Rr& rho, const Rr& theta)
+	{ // https://en.cppreference.com/w/cpp/numeric/complex/polar
+		using ::std::polar;
+		using YADE_REAL_MATH_NAMESPACE::polar;
+		return polar(static_cast<const UnderlyingHP<Rr>&>(rho), static_cast<const UnderlyingHP<Rr>&>(theta));
+	}
+
+	// https://en.cppreference.com/w/cpp/numeric/complex/operator%22%22i , that is C++14 native operator ""i.
+	// But operator "" literal without starting _ are reserved for C++ standard. Se we provide here ""_i.
+	// And you can write:
+	//   auto a = Real(5)_i; // and have a Complex number 5i
+	//   auto b = 5_i;       // and have a std::complex<double> 5i
+	//   Real c = 5_i;       // and have a std::complex<double> 5i converted to Complex 5i.
+	/*	template <typename Rr, int Level = levelOfRealHP<Rr>> constexpr inline ComplexHP<Level> operator""_i(const Rr& a)
+	{
+		return ComplexHP<Level> { RealHP<Level> { 0 }, a };
+	}
+*/
 	/********************************************************************************************/
 	/**********************     Real or Complex trigonometric functions    **********************/
 	/********************************************************************************************/

@@ -420,7 +420,8 @@ public:
 		amend<testN>("complex " + funcName + " imag", funcValue.imag(), dom, args);
 	}
 	template <int testN>
-	void amendComplexToReal(const std::string& funcName, const RealHP<testN>& funcValue, const std::vector<Domain>& dom, const std::array<RealHP<testN>, 3>& args)
+	void amendComplexToReal(
+	        const std::string& funcName, const RealHP<testN>& funcValue, const std::vector<Domain>& dom, const std::array<RealHP<testN>, 3>& args)
 	{
 		amend<testN>("complex " + funcName + " c2r", funcValue, dom, args);
 	}
@@ -506,9 +507,10 @@ public:
 		// clang-format off
 // Add here tests of more functions as necessary. Make sure to use proper domain.
 //                ↓ R - Real, C - Complex
-#define CHECK_FUN_C_2(f, d1, d2)     amend             <testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2))), { d1, d2 }, args)
-#define CHECK_FUN_C2R(f, d1, d2)     amendComplexToReal<testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2))), { d1, d2 }, args)
-#define CHECK_FUN_C_4(f, d1, d2, d3) amend             <testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2)),ComplexHP<testN>(applyDomain<testN>(args[2], d3), applyDomain<testN>(args[0], d1))), { d1, d2, d3 }, args)
+#define CHECK_FUN_C_2(f, d1, d2)     amend             <testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1) ,               applyDomain<testN>(args[1], d2))), { d1, d2 }, args)
+#define CHECK_FUN_C_4(f, d1, d2, d3) amend             <testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1) ,               applyDomain<testN>(args[1], d2)),ComplexHP<testN>(applyDomain<testN>(args[2], d3), applyDomain<testN>(args[0], d1))), { d1, d2, d3 }, args)
+#define CHECK_FUN_C2R(f, d1, d2)     amendComplexToReal<testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1) ,               applyDomain<testN>(args[1], d2))), { d1, d2 }, args)
+#define CHECK_FUN_R2C(f, d1, d2)     amend             <testN>(#f, math::f(   RealHP<testN>(applyDomain<testN>(args[0], d1)), RealHP<testN>(applyDomain<testN>(args[1], d2))), { d1, d2 }, args)
 // Note: ↑ uses {a0,a1},{a2,a0}; Domain {d1,d2},{d3,d1} Might need to be improved later to use a3,d4.
 
 		// FIXED: now complex checks are updated and ComplexHP<N> takes into account suggestions from https://github.com/boostorg/multiprecision/issues/262#issuecomment-668691637
@@ -516,6 +518,11 @@ public:
 		CHECK_FUN_C2R(real , Domain::All, Domain::All);          // all
 		CHECK_FUN_C2R(imag , Domain::All, Domain::All);          // all
 		CHECK_FUN_C2R(abs  , Domain::All, Domain::All);          // all
+
+		CHECK_FUN_C2R(arg  , Domain::All, Domain::All);          // all
+		CHECK_FUN_C2R(norm , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(proj , Domain::All, Domain::All);          // all
+		CHECK_FUN_R2C(polar, Domain::All, Domain::All);          // all
 
 		CHECK_FUN_C_2(sin  , Domain::All, Domain::All);          // all
 		CHECK_FUN_C_2(sinh , Domain::All, Domain::All);          // all
@@ -537,10 +544,24 @@ public:
 		CHECK_FUN_C_4(pow  , Domain::All, Domain::All, Domain::All); // all
 		CHECK_FUN_C_2(sqrt , Domain::All, Domain::All);          // all
 #undef CHECK_FUN_C_2
-#undef CHECK_FUN_C2R
 #undef CHECK_FUN_C_4
+#undef CHECK_FUN_C2R
+#undef CHECK_FUN_R2C
 		// clang-format on
 	}
+	/*
+	template <int testN> void checkLiterals()
+	{
+		// test here operator ""_i to obtain a complex number.
+		auto          a1 = RealHP<testN>(5) _i;
+		auto          a2 = 5.0_i;
+		RealHP<testN> a3 = 5i;
+		amend(R"""(operator ""_i)""", a1, { Domain::All }, std::array<RealHP<testN>, 3> { 5, 0, 0 });
+		amend(R"""(operator ""_i)""", a2, { Domain::All }, std::array<RealHP<testN>, 3> { 5, 0, 0 });
+		amend(R"""(operator ""_i)""", a3, { Domain::All }, std::array<RealHP<testN>, 3> { 5, 0, 0 });
+	}
+*/
+
 	py::dict getResult()
 	{
 		py::dict ret {};
@@ -569,6 +590,7 @@ template <int minHP> struct TestLoop {
 	{
 		tb.template checkRealFunctions<Nmpl::value>();
 		tb.template checkComplexFunctions<Nmpl::value>();
+//		tb.template checkLiterals<Nmpl::value>();
 
 		tb.template finishedThisN<Nmpl::value>();
 	}
