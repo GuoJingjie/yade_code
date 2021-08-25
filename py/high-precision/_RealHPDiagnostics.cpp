@@ -549,19 +549,51 @@ public:
 #undef CHECK_FUN_R2C
 		// clang-format on
 	}
-	/*
 	template <int testN> void checkLiterals()
 	{
+		{ // test native C++14 operator""i
+			using namespace std::complex_literals;
+			auto a1 = 5i;
+			auto a2 = 5.0i;
+			static_assert(std::is_same<std::complex<double>, decltype(a1)>::value, "Assert error a1");
+			static_assert(std::is_same<std::complex<double>, decltype(a2)>::value, "Assert error a1");
+			
+			std::complex<double> ref{0,5};
+			if(a1 != ref or a2 != ref)
+				throw std::runtime_error("checkLiterals error 1");
+		}
 		// test here operator ""_i to obtain a complex number.
-		auto          a1 = RealHP<testN>(5) _i;
-		auto          a2 = 5.0_i;
-		RealHP<testN> a3 = 5i;
-		amend(R"""(operator ""_i)""", a1, { Domain::All }, std::array<RealHP<testN>, 3> { 5, 0, 0 });
-		amend(R"""(operator ""_i)""", a2, { Domain::All }, std::array<RealHP<testN>, 3> { 5, 0, 0 });
-		amend(R"""(operator ""_i)""", a3, { Domain::All }, std::array<RealHP<testN>, 3> { 5, 0, 0 });
-	}
-*/
+		{
+			auto    b1 = 5_i;
+			auto    b2 = 5.0_i;
+			Complex b3 = 5_i;
+			Complex b4 = 5.0_i;
 
+			static_assert(std::is_same<Complex, decltype(b1)>::value, "Assert error b1");
+			static_assert(std::is_same<Complex, decltype(b2)>::value, "Assert error b2");
+			static_assert(std::is_same<Complex, decltype(b3)>::value, "Assert error b3");
+			static_assert(std::is_same<Complex, decltype(b4)>::value, "Assert error b4");
+
+			Complex ref{0,5};
+			if(b1 != ref or b2 != ref or b3 != ref or b4 != ref)
+				throw std::runtime_error("checkLiterals error 2");
+		}
+		{
+			auto    b1 = -5_i;
+			auto    b2 = -5.0_i;
+			Complex b3 = -5_i;
+			Complex b4 = -5.0_i;
+
+			static_assert(std::is_same<Complex, decltype(b1)>::value, "Assert error -b1");
+			static_assert(std::is_same<Complex, decltype(b2)>::value, "Assert error -b2");
+			static_assert(std::is_same<Complex, decltype(b3)>::value, "Assert error -b3");
+			static_assert(std::is_same<Complex, decltype(b4)>::value, "Assert error -b4");
+
+			Complex ref{0,-5};
+			if(b1 != ref or b2 != ref or b3 != ref or b4 != ref)
+				throw std::runtime_error("checkLiterals error 3");
+		}
+	}
 	py::dict getResult()
 	{
 		py::dict ret {};
@@ -590,7 +622,7 @@ template <int minHP> struct TestLoop {
 	{
 		tb.template checkRealFunctions<Nmpl::value>();
 		tb.template checkComplexFunctions<Nmpl::value>();
-//		tb.template checkLiterals<Nmpl::value>();
+		tb.template checkLiterals<Nmpl::value>();
 
 		tb.template finishedThisN<Nmpl::value>();
 	}

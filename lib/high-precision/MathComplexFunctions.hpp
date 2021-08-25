@@ -42,6 +42,33 @@ struct MathComplexFunctions {
 #endif
 
 namespace yade {
+
+namespace complex_literals {
+
+	// https://en.cppreference.com/w/cpp/numeric/complex/operator%22%22i , that is C++14 native operator ""i.
+	// But operator "" literal without starting _ are reserved for C++ standard. Se we provide here ""_i.
+	// And you can write:
+	//   using namespace std::complex_literals;
+	//   auto    a = 5i;        // and have a std::complex<double> 5i   , without '_' it's the natice C++14 literal.
+	//   auto    b = 5.0i;      // and have a std::complex<double> 5.0i
+
+	//   auto    a = 5_i;       // and have a      Complex         5_i  , with '_' it's our own custom literal.
+	//   auto    b = 5.0_i;     // and have a      Complex         5.0_i
+	//   Complex c = 5_i;       // and have a      Complex         5_i
+	//   Complex d = 5.0_i;     // and have a      Complex         5.0_i
+	//
+	// NOTE: https://stackoverflow.com/questions/16596864/c11-operator-with-double-parameter
+	//       Only two overloads:
+	//         * long double
+	//         * unsigned long long int
+	//       Because these are literals. To be typed directly into the code: 5_i or 5.0_i. No ambiguity allowed.
+	inline Complex operator""_i(const long double a) { return Complex { Real { 0 }, static_cast<Real>(a) }; }
+	inline Complex operator""_i(const unsigned long long int a) { return Complex { Real { 0 }, static_cast<Real>(a) }; }
+
+} // namespace complex_literals
+
+using namespace complex_literals;
+
 namespace math {
 
 	/********************************************************************************************/
@@ -103,17 +130,6 @@ namespace math {
 		return polar(static_cast<const UnderlyingHP<Rr>&>(rho), static_cast<const UnderlyingHP<Rr>&>(theta));
 	}
 
-	// https://en.cppreference.com/w/cpp/numeric/complex/operator%22%22i , that is C++14 native operator ""i.
-	// But operator "" literal without starting _ are reserved for C++ standard. Se we provide here ""_i.
-	// And you can write:
-	//   auto a = Real(5)_i; // and have a Complex number 5i
-	//   auto b = 5_i;       // and have a std::complex<double> 5i
-	//   Real c = 5_i;       // and have a std::complex<double> 5i converted to Complex 5i.
-	/*	template <typename Rr, int Level = levelOfRealHP<Rr>> constexpr inline ComplexHP<Level> operator""_i(const Rr& a)
-	{
-		return ComplexHP<Level> { RealHP<Level> { 0 }, a };
-	}
-*/
 	/********************************************************************************************/
 	/**********************     Real or Complex trigonometric functions    **********************/
 	/********************************************************************************************/
