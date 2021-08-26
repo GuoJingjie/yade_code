@@ -22,6 +22,10 @@ class SimpleTests(unittest.TestCase):
 	def hasMpfr(self):
 		return ('MPFR' in yade.config.features)
 
+	# flags: -Ofast -march=native -mtune=native -fno-associative-math -fno-finite-math-only -fsigned-zeros
+	def isFastNative(self):
+		return ('FAST_NATIVE' in yade.config.features)
+
 	def nowUsesBoostBinFloat(self, N):
 		return (not self.hasMpfr()) and ((yade.math.RealHPConfig.getDigits10(N) > 33) or (yade.math.RealHPConfig.getDigits10(N) in [24, 30]))
 
@@ -541,6 +545,8 @@ class SimpleTests(unittest.TestCase):
 					)
 
 	def getBoostComplexTolerance(self, func, tol, bits):
+		# g++ flags: -Ofast -march=native -mtune=native -fno-associative-math -fno-finite-math-only -fsigned-zeros
+		isFast = self.isFastNative()
 		mpfr = not self.nowUsesBoostBinFloat(self.bitsToLevelHP(bits))
 		longDouble = (bits == 64)  # C++ double has 53
 		# The self.defaultTolerances is about errors found on python side. This one is more precise about ULP errors found on C++ side.
