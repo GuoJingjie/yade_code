@@ -540,22 +540,43 @@ class SimpleTests(unittest.TestCase):
 					        testULP[func][bits][0], "is ULP=\033[93m", ulp, "\033[0m"
 					)
 
-	def getBoostComplexTolerance(self, func, tol):
-		# FIXME: these also need to be reported. But that's a smaller error anyway. the tan, tanh had error 1e38 ULP.
-		listFuncs = {
-		        "complex acos real": 3e5,
+	def getBoostComplexTolerance(self, func, tol, bits):
+		mpfr = not self.nowUsesBoostBinFloat(self.bitsToLevelHP(bits))
+		longDouble = (bits == 64)  # C++ double has 53
+		# The self.defaultTolerances is about errors found on python side. This one is more precise about ULP errors found on C++ side.
+		complexTolerancesInUnitsOfULP = {
 		        "complex acos imag": 1e5,
-		        "complex asin real": 3e5,
+		        "complex acos real": 3e5,
 		        "complex asin imag": 3e5,
-		        "complex asinh real": 1e5,
+		        "complex asin real": 3e5,
 		        "complex asinh imag": 3e5,
+		        "complex asinh real": 1e5,
 		        "complex atan imag": 5e6,
-		        "complex atanh real": 5e5,
-		        "complex pow real": 4e6,
-		        "complex pow imag": 4e6
+		        "complex atanh real": 5e5 if mpfr else 8e8,  # boost::cpp_bin_float has larger error
+		        "complex cos imag": 8 if mpfr else 2e5,
+		        "complex cos real": 8 if mpfr else 2e5,
+		        "complex cosh imag": 8 if mpfr else 8e4,
+		        "complex cosh real": 8 if mpfr else 2e5,
+		        "complex exp imag": 8 if mpfr else 7e4,
+		        "complex exp real": 8 if mpfr else 2e5,
+		        "complex polar imag": 8 if mpfr else 9e4,
+		        "complex polar real": 8 if mpfr else 2e5,
+		        "complex pow imag": 9e6 if longDouble else (4e6 if mpfr else 7e8),  # std::complex<long double> has largest error here
+		        "complex pow real": 4e6 if mpfr else 2e7,
+		        "complex sin imag": 8 if mpfr else 2e5,
+		        "complex sin real": 8 if mpfr else 2e5,
+		        "complex sinh imag": 8 if mpfr else 7e4,
+		        "complex sinh real": 8 if mpfr else 2e5,
+		        "complex tan imag": 8 if mpfr else 500,
+		        "complex tan real": 8 if mpfr else 500,
+		        "complex tanh imag": 8 if mpfr else 500,
+		        "complex tanh real": 8 if mpfr else 500,
 		}
-		if ((func in listFuncs)):
-			tol = listFuncs[func]
+		# FIXME: These tolerances ↑ also need to be reported to boost. But that's a smaller error anyway. the complex tan, tanh had error 1e38 ULP.
+		#        The values here are chosen only for std::complex<long double>, complex_adaptor<cpp_bin_float_45>, mpc_complex_150.
+		#        Other precisions may vary slightly.
+		if ((func in complexTolerancesInUnitsOfULP)):
+			tol = complexTolerancesInUnitsOfULP[func]
 		return tol
 
 	def processRealHPResults(self, testULP):
@@ -572,7 +593,7 @@ class SimpleTests(unittest.TestCase):
 						tolerateErrorULP = 2e8
 
 				boostVer = yade.libVersions.getVersion('boost')
-				tolerateErrorULP = self.getBoostComplexTolerance(func, tolerateErrorULP)
+				tolerateErrorULP = self.getBoostComplexTolerance(func, tolerateErrorULP, bits)
 
 				# DONE: file a bug report about higher precision versions of these two functions. They have large error: log2(300000000)≈28.1 incorrect bits.
 				#       https://github.com/boostorg/multiprecision/issues/262
