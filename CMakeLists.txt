@@ -533,9 +533,9 @@ ENDIF()
 FIND_PACKAGE(Mpmath)
 IF(ENABLE_REAL_HP AND (
     (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 9.2.1) OR ((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8.3.0) AND (ENABLE_MPFR) AND (REAL_PRECISION_BITS GREATER 128)) OR (ALLOW_CRASHES)))
- IF(Boost_MAJOR_VERSION EQUAL 1 AND Boost_MINOR_VERSION LESS 70) # mpc_complex_backend available since 1.68, but initially maybe have not been mature enough.
+ IF(Boost_MAJOR_VERSION EQUAL 1 AND Boost_MINOR_VERSION LESS 67)
     SET(REAL_MULTI_HP "OFF")
-    MESSAGE(STATUS "${Esc}[31mDisabling RealHP<N> because boost version < 1.70 is too old.${Esc}[0m")
+    MESSAGE(STATUS "${Esc}[31mDisabling RealHP<N> because boost version < 1.67 is too old.${Esc}[0m")
  ELSE()
   IF(MPMATH_FOUND)
     SET(REAL_MULTI_HP "ON")
@@ -567,6 +567,18 @@ IF(REAL_MULTI_HP)
 ELSE()
   ADD_DEFINITIONS("-DYADE_DISABLE_REAL_MULTI_HP")
   SET(DISABLED_FEATS "${DISABLED_FEATS} REAL_HP")
+ENDIF()
+
+IF(Boost_MAJOR_VERSION EQUAL 1 AND Boost_MINOR_VERSION LESS 71)
+  # Older boost versions don't have full complex high precision support for classes complex_adaptor<cpp_bin_float<…>> and mpc_complex_backend for MPFR.
+  # We #define that it's disabled and compile the older incomplete version of complex support
+  # and note this in CONFIGURED_FEATS so that the py/tests/testMath.py can detect this condition.
+  MESSAGE(STATUS "${Esc}[31mWarning: boost < 1.71 cannot use full implementation of Complex numbers from boost library. WIll use an incomplete implementation. ${Esc}[0m")
+  SET(CONFIGURED_FEATS "${CONFIGURED_FEATS} INCOMPLETE_COMPLEX")
+  ADD_DEFINITIONS("-DINCOMPLETE_COMPLEX")
+  SET(INCOMPLETE_COMPLEX "ON")
+ELSE()
+  SET(INCOMPLETE_COMPLEX "OFF")
 ENDIF()
 
 # if REAL_MULTI_HP is enabled then REAL_USE_MPMATH must be ON

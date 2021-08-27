@@ -1098,7 +1098,7 @@ generic_interconvert(
 */
 #ifdef YADE_MPFR
 // TODO (4): ehh. There is also missing complex generic_interconvert between complex128 ↔ mpc_complex_backend, that would be a third bug report to boost
-#if ((YADE_REAL_BIT == 80) or (YADE_REAL_BIT > 128))
+#if (((YADE_REAL_BIT == 80) or (YADE_REAL_BIT > 128)) and (not defined(INCOMPLETE_COMPLEX)))
 		{
 			ComplexHP<N1> a  = ComplexHP<N1>(-1.25, 0.5);
 			ComplexHP<N2> b  = ComplexHP<N2>(1.0, 1.0);

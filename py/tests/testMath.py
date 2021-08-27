@@ -19,6 +19,9 @@ class SimpleTests(unittest.TestCase):
 	def needsMpmathAtN(self, N):
 		return yade.math.needsMpmathAtN(N)
 
+	def incompleteComplex(self):
+		return ('INCOMPLETE_COMPLEX' in yade.config.features)
+
 	def hasMpfr(self):
 		return ('MPFR' in yade.config.features)
 
@@ -315,6 +318,9 @@ class SimpleTests(unittest.TestCase):
 			print(functionName.ljust(15) + " : " + a.__repr__())
 
 	def checkRelativeError(self, a, b, tol=None, functionName=None, isComplex=False):
+		if (functionName and self.incompleteComplex() and functionName[0:7] == "Complex"):
+			# don't check complex functions
+			return
 		MPn = self.getMpmath()
 		prevDps = MPn.mp.dps
 		if (self.testRecordingMode):
@@ -576,8 +582,10 @@ class SimpleTests(unittest.TestCase):
 		        "complex exp real": 8 if mpfr else 2e5,
 		        "complex polar imag": 8 if mpfr else 9e4,
 		        "complex polar real": 8 if mpfr else 2e5,
-		        "complex pow imag": 3e7 if isFast else (9e6 if longDouble else (4e6 if mpfr else 7e8)),  # std::complex<double> -Ofast has 3e7 error then std::complex<long double> has 9e6.
-		        "complex pow real": 4e6 if mpfr else 2e7,
+		        "complex pow imag": 3e7 if isFast else
+		                            (9e6 if longDouble else
+		                             (4e6 if mpfr else 7e8)),  # std::complex<double> -Ofast has 3e7 error then std::complex<long double> has 9e6.
+		        "complex pow real": 5e7 if self.incompleteComplex() else (4e6 if mpfr else 2e7),
 		        "complex sin imag": 8 if mpfr else 2e5,
 		        "complex sin real": 8 if mpfr else 2e5,
 		        "complex sinh imag": 8 if mpfr else 7e4,

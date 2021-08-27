@@ -43,11 +43,15 @@ struct ComplexHP {
 #include <boost/mpl/vector.hpp>
 #include <boost/utility/enable_if.hpp>
 #ifdef YADE_MPFR
-#include <boost/multiprecision/mpc.hpp>
 #include <boost/multiprecision/mpfr.hpp>
+#ifndef INCOMPLETE_COMPLEX
+#include <boost/multiprecision/mpc.hpp>
+#endif
 #else
 #include <boost/multiprecision/cpp_bin_float.hpp>
+#ifndef INCOMPLETE_COMPLEX
 #include <boost/multiprecision/cpp_complex.hpp>
+#endif
 #endif
 #if ((YADE_REAL_BIT <= 32) and (not defined(YADE_DISABLE_REAL_MULTI_HP)))
 #include "ThinComplexWrapper.hpp"
@@ -73,8 +77,10 @@ namespace math { // store info that ThinRealWrapper is not used.
 // clang currently does not support float128   https://github.com/boostorg/math/issues/181
 // another similar include is in ThinRealWrapper.hpp, all other checks if we have float128 should be #ifdef BOOST_MP_FLOAT128_HPP or yade::math::isFloat128<T>
 #if (((((YADE_REAL_BIT <= 64) and (not defined(YADE_DISABLE_REAL_MULTI_HP)))) or (YADE_REAL_BIT == 128)) and (not defined(__clang__)))
-#include <boost/multiprecision/complex128.hpp>
 #include <boost/multiprecision/float128.hpp>
+#ifndef INCOMPLETE_COMPLEX
+#include <boost/multiprecision/complex128.hpp>
+#endif
 #endif
 
 namespace yade {
@@ -92,6 +98,7 @@ namespace math {
 			using type = ThinComplexWrapper<std::complex<long double>>;
 		};
 #endif
+#ifndef INCOMPLETE_COMPLEX
 #if (((((YADE_REAL_BIT <= 64) and (not defined(YADE_DISABLE_REAL_MULTI_HP)))) or (YADE_REAL_BIT == 128)) and (not defined(__clang__)))
 		template <> struct MakeComplex<boost::multiprecision::float128> {
 			using type = boost::multiprecision::complex128;
@@ -99,9 +106,6 @@ namespace math {
 #endif
 		using ::boost::multiprecision::number;
 #ifdef YADE_MPFR
-		// if MPFR is available, then use it for higher types. YADE_MPFR is defined when yade links with MPFR after compilation. It is unrelated about how the Real type is defined by YADE_REAL_MPFR.
-		template <int DecPlaces> using RealHPBackend = boost::multiprecision::mpfr_float_backend<DecPlaces>;
-
 		// here MakeComplex allows creation of mpc_complex_backend types which use MPFR
 		using ::boost::multiprecision::expression_template_option;
 		using ::boost::multiprecision::mpc_complex_backend;
@@ -112,9 +116,6 @@ namespace math {
 			using type = number<mpc_complex_backend<Digits>, ExpressionTemplates>;
 		};
 #else
-		// otherwise use boost::cpp_bin_float
-		template <int DecPlaces> using RealHPBackend = boost::multiprecision::cpp_bin_float<DecPlaces>;
-
 		// here MakeComplex allows creation of complex_adaptor types which use cpp_bin_float
 		using ex_opt = ::boost::multiprecision::expression_template_option;
 		using ::boost::multiprecision::backends::complex_adaptor;
@@ -124,6 +125,14 @@ namespace math {
 		struct MakeComplex<number<cpp_bin_float<Digits, DigitBase, Alloc, Exp, MinEx, MaxEx>, ExpressionTemplates>> {
 			using type = number<complex_adaptor<cpp_bin_float<Digits, DigitBase, Alloc, Exp, MinEx, MaxEx>>, ExpressionTemplates>;
 		};
+#endif
+#endif
+#ifdef YADE_MPFR
+		// if MPFR is available, then use it for higher types. YADE_MPFR is defined when yade links with MPFR after compilation. It is unrelated about how the Real type is defined by YADE_REAL_MPFR.
+		template <int DecPlaces> using RealHPBackend = boost::multiprecision::mpfr_float_backend<DecPlaces>;
+#else
+		// otherwise use boost::cpp_bin_float
+		template <int DecPlaces> using RealHPBackend = boost::multiprecision::cpp_bin_float<DecPlaces>;
 #endif
 		// the NthLevelRealHP uses MPFR or boost::cpp_bin_float to declare type with requested precision
 		template <int Level>
