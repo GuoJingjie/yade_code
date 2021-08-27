@@ -7,6 +7,7 @@
 
 #include "_RealHPDiagnostics.hpp"
 #include <lib/base/LoggingUtils.hpp>
+#include <lib/high-precision/Constants.hpp>
 #include <lib/high-precision/MathComplexFunctions.hpp>
 #include <lib/high-precision/MathSpecialFunctions.hpp>
 #include <lib/high-precision/Real.hpp>
@@ -336,7 +337,7 @@ private:
 	// the start has to shifted by half { 0.5 } upwards from minX. Of course this arbitrary choice will be nullified by any non-symmetrical choice of minX…maxX.
 	RealHP<minHP> count { 0.5 };
 
-	enum struct Domain { All, PlusMinus1, AboveMinus1, Above1, Above0, NonZero };
+	enum struct Domain { All, PlusMinus1, AboveMinus1, Above1, Above0, NonZero, UIntAbove0, Int, ModuloPi, ModuloTwoPi };
 	template <int testN> auto applyDomain(const RealHP<testN>& x, const Domain& d)
 	{
 		switch (d) {
@@ -346,6 +347,10 @@ private:
 			case Domain::Above1: return math::abs(x) + 1;
 			case Domain::Above0: return math::abs(x);
 			case Domain::NonZero: return (x == 0) ? 1 : x; // extremely rare
+			case Domain::UIntAbove0: return /*static_cast<unsigned int>*/ (math::abs(math::floor(x)));
+			case Domain::Int: return /*static_cast<int>*/ (math::floor(x));
+			case Domain::ModuloPi: return math::fmod(math::abs(x), math::ConstantsHP<testN>::PI);
+			case Domain::ModuloTwoPi: return math::fmod(math::abs(x), math::ConstantsHP<testN>::TWO_PI);
 			default: throw std::runtime_error("applyDomain : unrecognized domain selected to use.");
 		};
 	}
@@ -549,6 +554,42 @@ public:
 #undef CHECK_FUN_R2C
 		// clang-format on
 	}
+	template <int testN> void checkSpecialFunctions()
+	{
+		if (testSet.find(testN) == testSet.end()) // skip N that were not requested to be tested.
+			return;
+		std::array<RealHP<testN>, 3> args {};
+		for (int i = 0; i < 3; ++i) {
+			args[i] = static_cast<RealHP<testN>>(minHPArgs[i]); // Prepare the random numbers with correct precision.
+			if (extraChecks)                                    // Will throw in case of error. Just an extra check.
+				DecomposedReal::veryEqual(minHPArgs[i], args[i]);
+		}
+
+		// Here the functions to test are special also in the sense of their arguments. We have 3 random arguments in args[0] args[1] args[2] to call them.
+		// Macros like in checkRealFunctions() checkComplexFunctions() won't do. Each call must be hand crafted.
+		{
+			int k = static_cast<int>(applyDomain<testN>(args[0], Domain::UIntAbove0));
+			amend<testN>("cylBesselJ", math::cylBesselJ(k, args[1]), { Domain::UIntAbove0, Domain::All }, args);
+		}
+		{
+			unsigned int a = static_cast<unsigned int>(applyDomain<testN>(args[0], Domain::UIntAbove0));
+			amend<testN>("factorial", math::factorial<RealHP<testN>>(a), { Domain::UIntAbove0 }, args);
+		}
+		{
+			unsigned int n = static_cast<unsigned int>(applyDomain<testN>(args[0], Domain::UIntAbove0));
+			unsigned int m = static_cast<unsigned int>(applyDomain<testN>(args[1], Domain::UIntAbove0));
+			amend<testN>("laguerre", math::laguerre(n, m, args[2]), { Domain::UIntAbove0, Domain::UIntAbove0, Domain::All }, args);
+		}
+		{
+			// We have only 3 args, but need 4. Let l == abs(m). Should be enough.
+			unsigned int  l     = static_cast<unsigned int>(applyDomain<testN>(args[0], Domain::UIntAbove0));
+			signed int    m     = static_cast<signed int>(applyDomain<testN>(args[0], Domain::Int)); // -l <= m <= l
+			RealHP<testN> theta = applyDomain<testN>(args[1], Domain::ModuloPi);
+			RealHP<testN> phi   = applyDomain<testN>(args[2], Domain::ModuloTwoPi);
+			amend<testN>(
+			        "sphericalHarmonic", math::sphericalHarmonic(l, m, theta, phi), { Domain::Int, Domain::ModuloPi, Domain::ModuloTwoPi }, args);
+		}
+	}
 	template <int testN> void checkLiterals()
 	{
 		{ // test native C++14 operator""i
@@ -591,8 +632,6 @@ public:
 			if (b1 != ref or b2 != ref or b3 != ref or b4 != ref) throw std::runtime_error("checkLiterals error 3");
 		}
 	}
-	template <int testN> void checkSpecialFunctions() { }
-
 	py::dict getResult()
 	{
 		py::dict ret {};
@@ -621,8 +660,8 @@ template <int minHP> struct TestLoop {
 	{
 		tb.template checkRealFunctions<Nmpl::value>();
 		tb.template checkComplexFunctions<Nmpl::value>();
-		tb.template checkLiterals<Nmpl::value>();
 		tb.template checkSpecialFunctions<Nmpl::value>();
+		tb.template checkLiterals<Nmpl::value>();
 
 		tb.template finishedThisN<Nmpl::value>();
 	}

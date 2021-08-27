@@ -540,6 +540,29 @@ template <int N, bool registerConverters> struct RegisterRealHPMath {
 		        R"""(:return: the ``Complex`` square root of ``Complex`` argument. Depending on compilation options wraps ``::boost::multiprecision::sqrt(…)`` or `std::sqrt(…) <https://en.cppreference.com/w/cpp/numeric/complex/sqrt>`__ function.)""");
 
 		/********************************************************************************************/
+		/**********************  Special Functions: bessel, factorial, etc ……  **********************/
+		/********************************************************************************************/
+		// complex functions must be registered first, so that python will properly discover overloads
+
+		// next are special real functions
+		py::def("cylBesselJ",
+		        static_cast<RealHP<N> (*)(int, const RealHP<N>&)>(&::yade::math::cylBesselJ),
+		        (py::arg("k"), "x"),
+		        R"""(:return: ``Real`` the Bessel Functions of the First Kind of the order ``k`` and the ``Real`` argument. See: <https://www.boost.org/doc/libs/1_77_0/libs/math/doc/html/math_toolkit/bessel/bessel_first.html>`__)""");
+		py::def("factorial",
+		        static_cast<RealHP<N> (*)(unsigned int)>(&::yade::math::factorial),
+		        (py::arg("x")),
+		        R"""(:return: ``Real`` the factorial of the ``Real`` argument. See: <https://www.boost.org/doc/libs/1_77_0/libs/math/doc/html/math_toolkit/factorials/sf_factorial.html>`__)""");
+		py::def("laguerre",
+		        static_cast<RealHP<N> (*)(unsigned int, unsigned int, const RealHP<N>&)>(&::yade::math::laguerre),
+		        (py::arg("n"), "m", "x"),
+		        R"""(:return: ``Real`` the Laguerre polynomial of the orders ``n``, ``m`` and the ``Real`` argument. See: <https://www.boost.org/doc/libs/1_77_0/libs/math/doc/html/math_toolkit/sf_poly/laguerre.html>`__)""");
+		py::def("sphericalHarmonic",
+		        static_cast<ComplexHP<N> (*)(unsigned int, signed int, const RealHP<N>&, const RealHP<N>&)>(&::yade::math::sphericalHarmonic),
+		        (py::arg("l"), "m", "theta", "phi"),
+		        R"""(:return: ``Real`` the spherical harmonic polynomial of the orders ``l`` (unsigned int), ``m`` (signed int) and the ``Real`` arguments ``theta`` and ``phi``. See: <https://www.boost.org/doc/libs/1_77_0/libs/math/doc/html/math_toolkit/sf_poly/sph_harm.html>`__)""");
+
+		/********************************************************************************************/
 		/**********************                 real functions                 **********************/
 		/********************************************************************************************/
 

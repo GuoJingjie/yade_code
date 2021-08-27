@@ -146,3 +146,7 @@ def log10(a):
 # skip pow        , for    testing std::pow I will use a**b
 def sqrt(a):
 	return (cmath.sqrt(a) if (a.__class__ == mpc) else math.sqrt(a))
+
+def factorial(a):
+	return math.factorial(a)
+

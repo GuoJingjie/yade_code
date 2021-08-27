@@ -111,6 +111,12 @@ class SimpleTests(unittest.TestCase):
 		  , "Complex pow"  : {"6": 1000, "15": 1000, "18": 100  , "33": 100    , "100": 100   , "150" : 100   , "100_b" : 100     , "150_b" : 100    }
 		  , "Complex sqrt" : {"6": 1000, "15": 1000, "18": 100  , "33": 100    , "100": 100   , "150" : 100   , "100_b" : 100     , "150_b" : 100    }
 
+		# MathSpecialFunctions
+		  , "cylBesselJ"        : {"6": 1000, "15": 1000, "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+		  , "factorial"         : {"6": 1   , "15": 1   , "18": 1    , "33": 1      , "100": 1     , "150" : 1     , "100_b" : 1       , "150_b" : 50     }
+		  , "laguerre"          : {"6": 1000, "15": 1000, "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+		  , "sphericalHarmonic" : {"6": 1000, "15": 1000, "18": 20000, "33": 4000   , "100": 80000 , "150" : 80000 , "100_b" : 800000  , "150_b" : 800000 }
+
 		 # these are not tolerances. These are EigenCostRealHP from lib/high-precision/EigenNumTraits.hpp
 		  , "read"      : {"6": 1   , "15": 1   , "18": 1    , "33": 1      , "100": 10000 , "150" : 10000 , "100_b" : 10000   , "150_b" : 10000  }
 		  , "add"       : {"6": 1   , "15": 1   , "18": 1    , "33": 2      , "100": 10000 , "150" : 10000 , "100_b" : 10000   , "150_b" : 10000  }
@@ -427,6 +433,9 @@ class SimpleTests(unittest.TestCase):
 
 		self.checkCgalNumTraits(HPn, MPn, r)
 
+		# One arg MathSpecialFunctions
+		self.checkRelativeError(HPn.factorial(int(abs(r))), MPn.factorial(int(abs(r))), functionName="factorial")
+
 	def checkCgalNumTraits(self, HPn, MPn, r):
 		if (HPn.testCgalNumTraits == False):
 			print("Skipping test of CgalNumTraits")
@@ -585,6 +594,19 @@ class SimpleTests(unittest.TestCase):
 			tol = complexTolerancesInUnitsOfULP[func]
 		return tol
 
+	def getMathSpecialTolerance(self, func, tol, bits):
+		# The self.defaultTolerances is about errors found on python side. This one is more precise about ULP errors found on C++ side.
+		mpfr = not self.nowUsesBoostBinFloat(self.bitsToLevelHP(bits))
+		tolerancesInUnitsOfULP = {
+		        "cylBesselJ": 6e5,
+		        "laguerre": 1e6,
+		        "complex sphericalHarmonic imag": 3e7,
+		        "complex sphericalHarmonic real": 3e7 if mpfr else 2e8,
+		}
+		if ((func in tolerancesInUnitsOfULP)):
+			tol = tolerancesInUnitsOfULP[func]
+		return tol
+
 	def processRealHPResults(self, testULP):
 		for func in testULP:
 			for bits in testULP[func]:
@@ -600,6 +622,8 @@ class SimpleTests(unittest.TestCase):
 
 				boostVer = yade.libVersions.getVersion('boost')
 				tolerateErrorULP = self.getBoostComplexTolerance(func, tolerateErrorULP, bits)
+
+				tolerateErrorULP = self.getMathSpecialTolerance(func, tolerateErrorULP, bits)
 
 				# DONE: file a bug report about higher precision versions of these two functions. They have large error: log2(300000000)≈28.1 incorrect bits.
 				#       https://github.com/boostorg/multiprecision/issues/262
@@ -668,6 +692,11 @@ class SimpleTests(unittest.TestCase):
 		)
 		self.checkRelativeComplexError(HPn.sqrt(MPn.mpc(r1, r2)), MPn.sqrt(MPn.mpc(r1, r2)), functionName="Complex sqrt")
 
+		# Two argument MathSpecialFunctions
+		if (self.needsMpmathAtN(self.currentN)):  # can test Bessel only if mpmath is available.
+			# first is yade.math function here ↓ , next is mpmath function here ↓
+			self.checkRelativeComplexError(HPn.cylBesselJ(int(abs(r1)), r2), MPn.besselj(int(abs(r1)), r2), functionName="cylBesselJ")
+
 		# Other, non complex functions
 		self.checkRelativeError(HPn.atan2(r1, r2), MPn.atan2(r1, r2), functionName="atan2")
 		self.checkRelativeError(HPn.fmod(abs(r1), abs(r2)), MPn.fmod(abs(r1), abs(r2)), functionName="fmod")
@@ -684,6 +713,20 @@ class SimpleTests(unittest.TestCase):
 
 	def threeArgMathCheck(self, HPn, MPn, r1, r2, r3):
 		self.checkRelativeError(HPn.fma(r1, r2, r3), (MPn.mpf(r1) * r2) + r3, functionName="fma")
+
+		# Three argument MathSpecialFunctions
+		if (yade.config.highPrecisionMpmath == True):  # can test Bessel and sphericalHarmonic only if mpmath is available.
+			# first is yade.math function here ↓ , next is mpmath function here ↓
+			self.checkRelativeComplexError(
+			        HPn.laguerre(int(abs(r1)), int(abs(r2)), r3), mpmath.laguerre(int(abs(r1)), int(abs(r2)), r3), functionName="laguerre"
+			)
+			theta = r2 % self.getMpmath().pi
+			phi = r2 % (self.getMpmath().pi * 2)
+			self.checkRelativeComplexError(
+			        HPn.sphericalHarmonic(int(abs(r1)), int(abs(r1)), theta, phi),
+			        mpmath.spherharm(int(abs(r1)), int(abs(r1)), theta, phi),
+			        functionName="sphericalHarmonic"
+			)
 
 	def testMathFunctions(self):
 		for N in self.testLevelsHP:
