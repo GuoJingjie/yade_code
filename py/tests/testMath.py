@@ -567,7 +567,7 @@ class SimpleTests(unittest.TestCase):
 		        "complex exp real": 8 if mpfr else 2e5,
 		        "complex polar imag": 8 if mpfr else 9e4,
 		        "complex polar real": 8 if mpfr else 2e5,
-		        "complex pow imag": 9e6 if longDouble else (4e6 if mpfr else 7e8),  # std::complex<long double> has largest error here
+		        "complex pow imag": 3e7 if isFast else (9e6 if longDouble else (4e6 if mpfr else 7e8)),  # std::complex<double> -Ofast has 3e7 error then std::complex<long double> has 9e6.
 		        "complex pow real": 4e6 if mpfr else 2e7,
 		        "complex sin imag": 8 if mpfr else 2e5,
 		        "complex sin real": 8 if mpfr else 2e5,
