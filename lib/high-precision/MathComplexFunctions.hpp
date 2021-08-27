@@ -20,8 +20,8 @@
 // * py/tests/testMath.py
 // * py/tests/testMathHelper.py
 
-#ifndef YADE_THIN_REAL_WRAPPER_MATH_COMPLEX_FUNCIONS_HPP
-#define YADE_THIN_REAL_WRAPPER_MATH_COMPLEX_FUNCIONS_HPP
+#ifndef YADE_MATH_COMPLEX_FUNCIONS_HPP
+#define YADE_MATH_COMPLEX_FUNCIONS_HPP
 
 #include <lib/high-precision/Real.hpp>
 

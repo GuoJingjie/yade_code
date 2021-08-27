@@ -450,7 +450,7 @@ template <int N, bool registerConverters> struct RegisterRealHPMath {
 		        R"""(:return: ``Complex`` the proj (projection of the complex number onto the Riemann sphere) of the ``Complex`` argument in radians. Depending on compilation options wraps ``::boost::multiprecision::proj(…)`` or `std::proj(…) <https://en.cppreference.com/w/cpp/numeric/complex/proj>`__ function.)""");
 		py::def("polar",
 		        static_cast<ComplexHP<N> (*)(const RealHP<N>&, const RealHP<N>&)>(&::yade::math::polar),
-		        (py::arg("x")),
+		        (py::arg("x"), "y"),
 		        R"""(:return: ``Complex`` the polar (Complex from polar components) of the ``Real`` rho (length), ``Real`` theta (angle) arguments in radians. Depending on compilation options wraps ``::boost::multiprecision::polar(…)`` or `std::polar(…) <https://en.cppreference.com/w/cpp/numeric/complex/polar>`__ function.)""");
 
 		/********************************************************************************************/
@@ -532,7 +532,7 @@ template <int N, bool registerConverters> struct RegisterRealHPMath {
 		        R"""(:return: the ``Complex``  (base `10`) logarithm of a complex value z with a branch cut along the negative real axis. Depending on compilation options wraps ``::boost::multiprecision::log10(…)`` or `std::log10(…) <https://en.cppreference.com/w/cpp/numeric/complex/log10>`__ function.)""");
 		py::def("pow",
 		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&,const ComplexHP<N>&)>(&::yade::math::pow),
-		        (py::arg("x")),
+		        (py::arg("x"), "pow"),
 		        R"""(:return: the ``Complex`` complex arg1 raised to the ``Complex`` power arg2. Depending on compilation options wraps ``::boost::multiprecision::pow(…)`` or `std::pow(…) <https://en.cppreference.com/w/cpp/numeric/complex/pow>`__ function.)""");
 		py::def("sqrt",
 		        static_cast<ComplexHP<N> (*)(const ComplexHP<N>&)>(&::yade::math::sqrt),

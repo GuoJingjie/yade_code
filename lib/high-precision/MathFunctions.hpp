@@ -17,8 +17,8 @@
 //     https://www.boost.org/doc/libs/1_71_0/libs/math/doc/html/math_toolkit/overview_tr1.html
 //#include <boost/math/tr1.hpp>
 
-#ifndef YADE_THIN_REAL_WRAPPER_MATH_FUNCIONS_HPP
-#define YADE_THIN_REAL_WRAPPER_MATH_FUNCIONS_HPP
+#ifndef YADE_MATH_REAL_FUNCIONS_HPP
+#define YADE_MATH_REAL_FUNCIONS_HPP
 
 #include <boost/config.hpp>
 #include <boost/math/complex.hpp>
@@ -383,6 +383,8 @@ namespace math {
 	/********************************************************************************************/
 	/**********************         special mathematical functions         **********************/
 	/********************************************************************************************/
+	// Only functions provided in std:: C++ headers are covered here. For others see lib/high-precision/MathSpecialFunctions.hpp
+
 	template <typename Rr, int Level = levelOfRealHP<Rr>> inline Rr erf(const Rr& a)
 	{
 		using ::std::erf;
@@ -403,6 +405,8 @@ namespace math {
 	}
 
 	// These will be available in C++17, we could use the ones from boost, if they become necessary.
+	// This kind of functions are covered (and added to) lib/high-precision/MathSpecialFunctions.hpp
+	//
 	//YADE_WRAP_FUNC_1(riemann_zeta)
 	//YADE_WRAP_FUNC_2(beta)
 	//YADE_WRAP_FUNC_2(cyl_bessel_i)
@@ -434,7 +438,7 @@ namespace math {
 	/********************************************************************************************/
 
 	// Some old C library functions need pointer to C-array, this is for compatibility between ThinRealWrapper and UnderlyingReal
-	// more static_asserts are at the end of py/high-precision/_math.cpp and in lib/high-precision/RealHP.hpp
+	// more static_asserts are at the end of py/high-precision/_RealHPDiagnostics.cpp and in lib/high-precision/RealHP.hpp
 	static_assert(sizeof(Real) == sizeof(UnderlyingReal), "This compiler introduced padding. This breaks binary compatibility");
 
 	template <typename Rr, int Level = levelOfRealHP<Rr>, typename boost::enable_if_c<IsWrapped<Rr>, int>::type = 0>

@@ -557,10 +557,9 @@ public:
 			auto a2 = 5.0i;
 			static_assert(std::is_same<std::complex<double>, decltype(a1)>::value, "Assert error a1");
 			static_assert(std::is_same<std::complex<double>, decltype(a2)>::value, "Assert error a1");
-			
-			std::complex<double> ref{0,5};
-			if(a1 != ref or a2 != ref)
-				throw std::runtime_error("checkLiterals error 1");
+
+			std::complex<double> ref { 0, 5 };
+			if (a1 != ref or a2 != ref) throw std::runtime_error("checkLiterals error 1");
 		}
 		// test here operator ""_i to obtain a complex number.
 		{
@@ -574,9 +573,8 @@ public:
 			static_assert(std::is_same<Complex, decltype(b3)>::value, "Assert error b3");
 			static_assert(std::is_same<Complex, decltype(b4)>::value, "Assert error b4");
 
-			Complex ref{0,5};
-			if(b1 != ref or b2 != ref or b3 != ref or b4 != ref)
-				throw std::runtime_error("checkLiterals error 2");
+			Complex ref { 0, 5 };
+			if (b1 != ref or b2 != ref or b3 != ref or b4 != ref) throw std::runtime_error("checkLiterals error 2");
 		}
 		{
 			auto    b1 = -5_i;
@@ -589,11 +587,12 @@ public:
 			static_assert(std::is_same<Complex, decltype(b3)>::value, "Assert error -b3");
 			static_assert(std::is_same<Complex, decltype(b4)>::value, "Assert error -b4");
 
-			Complex ref{0,-5};
-			if(b1 != ref or b2 != ref or b3 != ref or b4 != ref)
-				throw std::runtime_error("checkLiterals error 3");
+			Complex ref { 0, -5 };
+			if (b1 != ref or b2 != ref or b3 != ref or b4 != ref) throw std::runtime_error("checkLiterals error 3");
 		}
 	}
+	template <int testN> void checkSpecialFunctions() { }
+
 	py::dict getResult()
 	{
 		py::dict ret {};
@@ -623,6 +622,7 @@ template <int minHP> struct TestLoop {
 		tb.template checkRealFunctions<Nmpl::value>();
 		tb.template checkComplexFunctions<Nmpl::value>();
 		tb.template checkLiterals<Nmpl::value>();
+		tb.template checkSpecialFunctions<Nmpl::value>();
 
 		tb.template finishedThisN<Nmpl::value>();
 	}
