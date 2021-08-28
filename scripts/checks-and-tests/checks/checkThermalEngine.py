@@ -128,7 +128,7 @@ if ('THERMAL' in features):
 
   print('ftemp',ftemp,'btemp',btemp)
   ftolerance = 1
-  btolerance = 1.95 # see https://gitlab.com/yade-dev/trunk/-/jobs/1259015083
+  btolerance = 2.15 # see https://gitlab.com/yade-dev/trunk/-/jobs/1259015083
   ftarget = 44.97315073512225
   btarget = 29.372079897010256
   if abs(ftemp - ftarget)/ftarget > ftolerance:
