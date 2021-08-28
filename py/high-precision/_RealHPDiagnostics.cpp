@@ -592,16 +592,6 @@ public:
 	}
 	template <int testN> void checkLiterals()
 	{
-		{ // test native C++14 operator""i
-			using namespace std::complex_literals;
-			auto a1 = 5i;
-			auto a2 = 5.0i;
-			static_assert(std::is_same<std::complex<double>, decltype(a1)>::value, "Assert error a1");
-			static_assert(std::is_same<std::complex<double>, decltype(a2)>::value, "Assert error a1");
-
-			std::complex<double> ref { 0, 5 };
-			if (a1 != ref or a2 != ref) throw std::runtime_error("checkLiterals error 1");
-		}
 		// test here operator ""_i to obtain a complex number.
 		{
 			auto    b1 = 5_i;
@@ -631,6 +621,19 @@ public:
 			Complex ref { 0, -5 };
 			if (b1 != ref or b2 != ref or b3 != ref or b4 != ref) throw std::runtime_error("checkLiterals error 3");
 		}
+// We use 5_i for complex numbers. But newer g++ compilers actually provide also their own:
+#if (__GNUC__ > 8)
+		{ // test native C++14 operator""i
+			using namespace std::complex_literals;
+			auto a1 = 5i;
+			auto a2 = 5.0i;
+			static_assert(std::is_same<std::complex<double>, decltype(a1)>::value, "Assert error a1");
+			static_assert(std::is_same<std::complex<double>, decltype(a2)>::value, "Assert error a1");
+
+			std::complex<double> ref { 0, 5 };
+			if (a1 != ref or a2 != ref) throw std::runtime_error("checkLiterals error 1");
+		}
+#endif
 	}
 	py::dict getResult()
 	{
