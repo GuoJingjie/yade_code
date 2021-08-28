@@ -214,7 +214,6 @@ Some of them are only optional.
 * `eigen <http://eigen.tuxfamily.org>`_ algebra library (minimal required version 3.2.1)
 * `gdb <http://www.gnu.org/software/gdb>`_ debugger
 * `sqlite3 <http://www.sqlite.org>`_ database engine
-* `Loki <http://loki-lib.sf.net>`_ library
 * `VTK <http://www.vtk.org/>`_ library (optional but recommended)
 * `CGAL <http://www.cgal.org/>`_ library (optional)
 * `SuiteSparse <http://www.suitesparse.com>`_ sparse algebra library (fluid coupling, optional, requires eigen>=3.1)
@@ -224,6 +223,7 @@ Some of them are only optional.
 * `python3-mpi4py <https://bitbucket.org/mpi4py/>`_ MPI for Python (For MPI, optional)
 * `coin-or <https://github.com/coin-or/Clp>`_ COIN-OR Linear Programming Solver (For :yref:`PotentialBlock`, optional)
 * `mpfr <https://www.mpfr.org/>`_ in ``C++`` and `mpmath <http://mpmath.org/>`_ in ``python`` for high precision ``Real`` or for CGAL exact predicates (optional)
+* `mpc <http://www.multiprecision.org/mpc/`_ is an MPFR extension to complex numbers. It is used explicitly together with MPFR.
 
 Most of the list above is very likely already packaged for your distribution. In case you are confronted
 with some errors concerning not available packages (e.g., package libmetis-dev is not available) it may be necessary
@@ -246,7 +246,7 @@ need root privileges.
 		python3-pil libjs-jquery python3-sphinx python3-git libxmu-dev libxi-dev libcgal-dev \
 		help2man libbz2-dev zlib1g-dev libopenblas-dev libsuitesparse-dev \
 		libmetis-dev python3-bibtexparser python3-future coinor-clp coinor-libclp-dev \
-		python3-mpmath libmpfr-dev libmpfrc++-dev
+		python3-mpmath libmpfr-dev libmpfrc++-dev libmpc-dev
 
 * For **Ubuntu 16.04** ``libqglviewer-dev-qt5`` is to be replaced by ``libqglviewer-dev`` and ``python3-ipython`` by ``ipython3``.
 

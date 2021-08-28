@@ -36,7 +36,7 @@ Installation
 The precompiled Yade package uses ``double`` type by default. In order to use high precision type Yade has to be compiled and installed from source code by following the
 regular :ref:`installation instructions <install-from-source-code>`. With extra following caveats:
 
-1. Following packages are required to be installed: ``python3-mpmath`` ``libmpfr-dev`` ``libmpfrc++-dev`` (the ``mpfr`` related
+1. Following packages are required to be installed: ``python3-mpmath`` ``libmpfr-dev`` ``libmpfrc++-dev`` ``libmpc-dev`` (the ``mpfr`` and ``mpc`` related
    packages are necessary only to use ``boost::multiprecision::mpfr`` type). These packages are already listed in the :ref:`default requirements <prerequisites>`.
 
 2. A g++ compiler version 9.2.1 or higher is required. It shall be noted that upgrading only the compiler on an existing linux installation (an older one, in which packages for different versions of gcc were not introduced) is difficult and it is not recommended. A simpler solution is to upgrade entire linux installation.
