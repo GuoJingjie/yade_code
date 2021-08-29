@@ -1059,6 +1059,8 @@ template <int N1> struct TestRealHP2 {
 			if (d5 != RealHP<N>(2.5)) throw std::runtime_error(("TestRealHP error: Fatal r5" + info).c_str());
 		}
 
+#ifndef YADE_COMPLEX_MP
+// see comment in lib/high-precision/RealHP.hpp line 94 about MakeComplexStd, MakeComplexMpc and problems of MPFR mpc_complex with UpconversionOfBasicOperatorsHP.hpp
 		{
 			ComplexHP<N1> a  = ComplexHP<N1>(-1.25, 0.5);
 			ComplexHP<N2> b  = ComplexHP<N2>(1.0, 1.0);
@@ -1123,7 +1125,7 @@ template <int N1> struct TestRealHP2 {
 			static_assert(std::is_same<ComplexHP<N>, decltype(d5)>::value, "Assert error d5");
 			static_assert(std::is_same<ComplexHP<N>, decltype(d6)>::value, "Assert error d6");
 		}
-
+#endif
 	}
 };
 

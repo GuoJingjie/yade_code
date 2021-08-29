@@ -13,6 +13,7 @@
 #
 #  ENABLE_ASAN                : AddressSanitizer build, please see documentation (OFF by default)
 #  ENABLE_CGAL                : enable CGAL option (ON by default)
+#  ENABLE_COMPLEX_MP          : Requires boost >= 1.71: use boost::multiprecision for ComplexHP: (1) complex128 (2) mpc_complex (3) complex_adaptor (ON by default); Otherwise uses std::complex<…>.
 #  ENABLE_DEFORM              : enable constant volume deformation engine (OFF by default)
 #  ENABLE_FAST_NATIVE         : use max optimization, code runs only on the same processor type; speedup about 2%, and above 5% with clang compiler, which requires ENABLE_USEFUL_ERRORS=OFF (OFF by default)
 #  ENABLE_FEMLIKE             : enable meshed solids (FEM-like)
@@ -90,6 +91,7 @@ ENDIF (DISABLE_ALL)
 
 OPTION(ENABLE_ASAN "Enable AddressSanitizer build, please see documentation" ${DEFAULT_OFF})
 OPTION(ENABLE_CGAL "Enable CGAL" ${DEFAULT_ON})
+OPTION(ENABLE_COMPLEX_MP "Use boost::multiprecision for ComplexHP: (1) complex128 (2) mpc_complex MPFR (3) complex_adaptor<cpp_bin_float>, requires boost >= 1.71; Otherwise use std::complex<…>." ${DEFAULT_ON})
 OPTION(ENABLE_DEFORM "Enable Deformation Engine" ${DEFAULT_OFF})
 OPTION(ENABLE_FEMLIKE "Enable deformable solids" ${DEFAULT_ON})
 OPTION(ENABLE_GL2PS "Enable GL2PS" ${DEFAULT_ON})
@@ -570,16 +572,18 @@ ELSE()
 ENDIF()
 
 IF(Boost_MAJOR_VERSION EQUAL 1 AND Boost_MINOR_VERSION LESS 71)
-  # Older boost versions don't have full complex high precision support for classes complex_adaptor<cpp_bin_float<…>> and mpc_complex_backend for MPFR.
-  # We #define that it's disabled and compile the older incomplete version of complex support
-  # and note this in CONFIGURED_FEATS so that the py/tests/testMath.py can detect this condition.
-  MESSAGE(STATUS "${Esc}[31mWarning: boost < 1.71 cannot use full implementation of Complex numbers from boost library. WIll use an incomplete implementation. ${Esc}[0m")
-  SET(CONFIGURED_FEATS "${CONFIGURED_FEATS} INCOMPLETE_COMPLEX")
-  ADD_DEFINITIONS("-DINCOMPLETE_COMPLEX")
-  SET(INCOMPLETE_COMPLEX "ON")
-ELSE()
-  SET(INCOMPLETE_COMPLEX "OFF")
+  IF(ENABLE_COMPLEX_MP)
+    SET(ENABLE_COMPLEX_MP "OFF")
+  ENDIF(ENABLE_COMPLEX_MP)
+  MESSAGE(STATUS "${Esc}[31mWarning: boost < 1.71 cannot use boost::multiprecision for ComplexHP: (1) complex128 (2) mpc_complex MPFR (3) complex_adaptor<cpp_bin_float>. Will use std::complex<…>. ${Esc}[0m")
 ENDIF()
+
+IF(ENABLE_COMPLEX_MP)
+  SET(CONFIGURED_FEATS "${CONFIGURED_FEATS} COMPLEX_MP")
+  ADD_DEFINITIONS("-DYADE_COMPLEX_MP")
+ELSE(ENABLE_COMPLEX_MP)
+  SET(DISABLED_FEATS "${DISABLED_FEATS} COMPLEX_MP")
+ENDIF(ENABLE_COMPLEX_MP)
 
 # if REAL_MULTI_HP is enabled then REAL_USE_MPMATH must be ON
 IF(REAL_USE_MPMATH)

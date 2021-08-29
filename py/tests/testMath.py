@@ -20,7 +20,7 @@ class SimpleTests(unittest.TestCase):
 		return yade.math.needsMpmathAtN(N)
 
 	def incompleteComplex(self):
-		return ('INCOMPLETE_COMPLEX' in yade.config.features)
+		return ('COMPLEX_MP' not in yade.config.features)
 
 	def hasMpfr(self):
 		return ('MPFR' in yade.config.features)

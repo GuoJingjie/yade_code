@@ -81,11 +81,6 @@ using float_fast64_t = double;
 using float_fast80_t = long double;
 }
 #endif
-
-#if ((defined(INCOMPLETE_COMPLEX)) and (BOOST_VERSION >= 107100))
-#error "Full Complex support from boost >= 1.71, don't define INCOMPLETE_COMPLEX in CMakeLists.txt"
-#endif
-
 #include <cmath>
 #include <complex>
 #include <limits>
