@@ -11,6 +11,8 @@
 namespace forCtags {
 struct RealHP {
 }; // for ctags, but also see RealHPEigenCgal
+struct ComplexHP {
+};
 }
 
 // In this file following things are declared for the users:
@@ -35,16 +37,17 @@ struct RealHP {
 #error "This file cannot be included alone, include Real.hpp instead"
 #endif
 
+#include <boost/mpl/at.hpp>
 #include <boost/mpl/find.hpp>
 #include <boost/mpl/size.hpp>
 #include <boost/mpl/vector.hpp>
-#include <boost/mpl/at.hpp>
-#include <boost/type_traits/is_complex.hpp>
 #include <boost/utility/enable_if.hpp>
 #ifdef YADE_MPFR
+#include <boost/multiprecision/mpc.hpp>
 #include <boost/multiprecision/mpfr.hpp>
 #else
 #include <boost/multiprecision/cpp_bin_float.hpp>
+#include <boost/multiprecision/cpp_complex.hpp>
 #endif
 #if ((YADE_REAL_BIT <= 32) and (not defined(YADE_DISABLE_REAL_MULTI_HP)))
 #include "ThinComplexWrapper.hpp"
@@ -69,7 +72,8 @@ namespace math { // store info that ThinRealWrapper is not used.
 #endif
 // clang currently does not support float128   https://github.com/boostorg/math/issues/181
 // another similar include is in ThinRealWrapper.hpp, all other checks if we have float128 should be #ifdef BOOST_MP_FLOAT128_HPP or yade::math::isFloat128<T>
-#if ((((YADE_REAL_BIT <= 64) and (not defined(YADE_DISABLE_REAL_MULTI_HP)))) and (not defined(__clang__)))
+#if (((((YADE_REAL_BIT <= 64) and (not defined(YADE_DISABLE_REAL_MULTI_HP)))) or (YADE_REAL_BIT == 128)) and (not defined(__clang__)))
+#include <boost/multiprecision/complex128.hpp>
 #include <boost/multiprecision/float128.hpp>
 #endif
 
@@ -80,12 +84,46 @@ namespace math {
 	/*************************************************************************/
 	// Here is declared the 'ultimate' precision type called NthLevelRealHP. Depending on settings it can be MPFR or cpp_bin_float.
 	namespace detail {
+		template <typename T> struct MakeComplex {
+			using type = std::complex<T>;
+		};
+#if (defined(YADE_THIN_REAL_WRAPPER_HPP) and defined(YADE_THIN_COMPLEX_WRAPPER_HPP))
+		template <> struct MakeComplex<ThinRealWrapper<long double>> {
+			using type = ThinComplexWrapper<std::complex<long double>>;
+		};
+#endif
+#if (((((YADE_REAL_BIT <= 64) and (not defined(YADE_DISABLE_REAL_MULTI_HP)))) or (YADE_REAL_BIT == 128)) and (not defined(__clang__)))
+		template <> struct MakeComplex<boost::multiprecision::float128> {
+			using type = boost::multiprecision::complex128;
+		};
+#endif
+		using ::boost::multiprecision::number;
 #ifdef YADE_MPFR
 		// if MPFR is available, then use it for higher types. YADE_MPFR is defined when yade links with MPFR after compilation. It is unrelated about how the Real type is defined by YADE_REAL_MPFR.
-		template <int DecPlaces> using RealHPBackend = boost::multiprecision::mpfr_float_backend<DecPlaces, boost::multiprecision::allocate_stack>;
+		template <int DecPlaces> using RealHPBackend = boost::multiprecision::mpfr_float_backend<DecPlaces>;
+
+		// here MakeComplex allows creation of mpc_complex_backend types which use MPFR
+		using ::boost::multiprecision::expression_template_option;
+		using ::boost::multiprecision::mpc_complex_backend;
+		using ::boost::multiprecision::mpfr_allocation_type;
+		using ::boost::multiprecision::backends::mpfr_float_backend;
+		template <unsigned Digits, mpfr_allocation_type AllocationType, expression_template_option ExpressionTemplates>
+		struct MakeComplex<number<mpfr_float_backend<Digits, AllocationType>, ExpressionTemplates>> {
+			using type = number<mpc_complex_backend<Digits>, ExpressionTemplates>;
+		};
 #else
 		// otherwise use boost::cpp_bin_float
 		template <int DecPlaces> using RealHPBackend = boost::multiprecision::cpp_bin_float<DecPlaces>;
+
+		// here MakeComplex allows creation of complex_adaptor types which use cpp_bin_float
+		using ex_opt = ::boost::multiprecision::expression_template_option;
+		using ::boost::multiprecision::backends::complex_adaptor;
+		using ::boost::multiprecision::backends::cpp_bin_float;
+		using ::boost::multiprecision::backends::digit_base_type;
+		template <unsigned Digits, digit_base_type DigitBase, class Alloc, class Exp, Exp MinEx, Exp MaxEx, ex_opt ExpressionTemplates>
+		struct MakeComplex<number<cpp_bin_float<Digits, DigitBase, Alloc, Exp, MinEx, MaxEx>, ExpressionTemplates>> {
+			using type = number<complex_adaptor<cpp_bin_float<Digits, DigitBase, Alloc, Exp, MinEx, MaxEx>>, ExpressionTemplates>;
+		};
 #endif
 		// the NthLevelRealHP uses MPFR or boost::cpp_bin_float to declare type with requested precision
 		template <int Level>
@@ -156,7 +194,7 @@ namespace math {
 	// Extract UnderlyingReal (strip ThinRealWrapper) from type 'HP' which may be any of the RealHP<N> types.
 	// This implementation might be revised in the future if ThinRealWrapper or UnderlyingReal will acquire some new meaning. But interface shall remain the same.
 	template <typename HP> using UnderlyingRealHP    = typename std::conditional<IsWrapped<HP>, long double, HP>::type;
-	template <typename HP> using UnderlyingComplexHP = std::complex<UnderlyingRealHP<HP>>;
+	template <typename HP> using UnderlyingComplexHP = typename detail::MakeComplex<UnderlyingRealHP<HP>>::type;
 
 	/*************************************************************************/
 	/*************************      AND FINALLY     **************************/
@@ -185,35 +223,58 @@ namespace math {
 
 #else
 	// RealHP<…> won't work on this system, cmake sets YADE_DISABLE_REAL_MULTI_HP to use RealHP<1> for all precisions RealHP<N>.
-	template <int Level> using RealHP                     = Real;    // ignore Level
-	template <int Level> using ComplexHP                  = Complex; // ignore Level
+	template <int Level> using RealHP                     = Real;                      // ignore Level
+	template <int Level> using ComplexHP                  = UnderlyingComplexHP<Real>; // ignore Level
 #endif
 
 	/*************************************************************************/
 	/*************************   inspection of HP   **************************/
 	/*************************************************************************/
+	// boost::is_complex only checks for std::is_complex (confirmed by talking with boost devs). We need to check this ourselves.
+	// Like in https://github.com/BoostGSoC21/math/blob/develop/include/boost/math/fft/multiprecision_complex.hpp
+	//
+	// So this detail is to properly recognize various complex types with struct IsHPComplex
+	namespace detail {
+		// Older compilers do not have std::void_t, this small helper type is used by HasPlus, HasMinus, etc, below.
+		template <typename... Ts> struct make_void {
+			typedef void type;
+		};
+		template <typename... Ts> using void_type = typename make_void<Ts...>::type;
+
+		template <class, class = void> struct has_value_type : std::false_type {
+		};
+		template <class T> struct has_value_type<T, void_type<typename T::value_type>> : std::true_type {
+		};
+		template <typename T, bool = has_value_type<T>::value> struct IsHPComplex {
+			static constexpr bool value = false;
+		};
+		template <typename T> struct IsHPComplex<T, true> {
+			static constexpr bool value = std::is_same<typename MakeComplex<typename T::value_type>::type, typename std::decay<T>::type>::value;
+		};
+	} // namespace detail
+
 	// Now that 'RealHP<N>' and 'ComplexHP<N>' are defined we can use the SFINAE techniques to define 'levelOfRealHP', 'levelOfComplexHP' and 'levelOfHP'
 	// And make sure that they are  ⇒→ undefined ←⇐  when the argument is not from the RealHP<N> family.
 
-	template <typename HP, bool = boost::is_complex<HP>::value> struct InspectHP {
-		using RT                         = HP;
+	template <typename HP, bool = detail::IsHPComplex<HP>::value> struct InspectHP {
+		using RT                         = typename std::decay<HP>::type;
 		using Under                      = UnderlyingRealHP<RT>;
 		static const constexpr bool isHP = (levelOrZero<HP> != 0 and std::is_same<RealHP<levelOrZero<HP>>, typename std::decay<HP>::type>::value);
 	};
 	template <typename HP> struct InspectHP<HP, true> {
-		using RT                         = typename HP::value_type;
+		using RT                         = typename std::decay<typename HP::value_type>::type;
 		using Under                      = UnderlyingComplexHP<RT>;
 		static const constexpr bool isHP = (levelOrZero<RT> != 0 and std::is_same<ComplexHP<levelOrZero<RT>>, typename std::decay<HP>::type>::value);
 	};
 
-	template <typename HP> using RealOf                                                                                 = typename InspectHP<HP>::RT;
-	template <typename HP> using UnderlyingHP                                                                           = typename InspectHP<HP>::Under;
-	template <typename HP> const constexpr bool                                                             isHP        = InspectHP<HP>::isHP;
-	template <typename HP> const constexpr bool                                                             isReal      = not boost::is_complex<HP>::value;
-	template <typename HP> const constexpr bool                                                             isComplex   = not isReal<HP>;
-	template <typename HP> const constexpr bool                                                             isRealHP    = (isReal<HP> and isHP<HP>);
-	template <typename HP> const constexpr bool                                                             isComplexHP = (isComplex<HP> and isHP<HP>);
-	template <typename HP, typename boost::enable_if_c<isHP<HP>, int>::type = 0> const constexpr int        levelOfHP   = levelOrZero<RealOf<HP>>;
+	template <typename HP> using RealOf                                                                               = typename InspectHP<HP>::RT;
+	template <typename HP> using UnderlyingHP                                                                         = typename InspectHP<HP>::Under;
+	template <typename HP> const constexpr bool                                                             isHP      = InspectHP<HP>::isHP;
+	template <typename HP> const constexpr bool                                                             isReal    = not detail::IsHPComplex<HP>::value;
+	template <typename HP> const constexpr bool                                                             isComplex = not isReal<HP>;
+	template <typename HP> const constexpr bool                                                             isRealHP  = (isReal<HP> and isHP<HP>);
+	template <typename HP> const constexpr bool                                                             isComplexHP      = (isComplex<HP> and isHP<HP>);
+	template <typename HP, typename boost::enable_if_c<isHP<HP>, int>::type = 0> const constexpr int        levelOfHP        = levelOrZero<RealOf<HP>>;
 	template <typename HP, typename boost::enable_if_c<isRealHP<HP>, int>::type = 0> const constexpr int    levelOfRealHP    = levelOfHP<HP>;
 	template <typename HP, typename boost::enable_if_c<isComplexHP<HP>, int>::type = 0> const constexpr int levelOfComplexHP = levelOfHP<HP>;
 	// check if it's float128
@@ -253,10 +314,38 @@ namespace math {
 	// PromoteHP turns any non-HP type into RealHP<1>, otherwise it just keeps it as it is, be it Real or Complex.
 	template <typename HP, int Level = levelOrZero<RealOf<HP>>> using PromoteHP = typename std::conditional<(Level == 0), RealHP<1>, HP>::type;
 
+	/*************************************************************************/
+	/*************************       Complex        **************************/
+	/*************************************************************************/
+	template <typename Rr>
+	const constexpr bool isConstexprFloatingPoint = (std::numeric_limits<Rr>::digits10 <=
+#ifdef BOOST_MP_FLOAT128_HPP
+	                                                 33
+#else
+	                                                 15
+#endif
+	                                                 )
+	        and
+	        // 24 decimal places are used for RealHP<4> which cannot use constexpr when compiling yade with float, see lib/high-precision/RealHP.hpp:103
+	        (std::numeric_limits<Rr>::digits10 != 24);
+
+	using Complex = ComplexHP<1>;
 } // namespace math
 
 using math::ComplexHP;
 using math::RealHP;
+
+using Real    = math::Real;
+using Complex = math::Complex;
+
+static_assert(sizeof(Real) == sizeof(math::UnderlyingReal), "This compiler introduced padding, which breaks binary compatibility");
+static_assert(
+        (sizeof(Complex) == sizeof(std::complex<math::UnderlyingReal>))
+                or ((not math::isConstexprFloatingPoint<math::UnderlyingReal>)and(
+                        std::is_same<Complex, typename math::detail::MakeComplex<math::UnderlyingReal>::type>::value)),
+        "This compiler introduced padding, which breaks binary compatibility");
+
+// If necessary for debugging put here the static_assert tests from the end of py/high-precision/_math.cpp file
 
 } // namespace yade
 

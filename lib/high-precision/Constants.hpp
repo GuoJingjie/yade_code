@@ -48,43 +48,33 @@ struct Constants { // for ctags
 
 namespace yade {
 namespace math {
-	template <typename Rr>
-	const constexpr bool useConstexprConstants = (std::numeric_limits<Rr>::digits10 <=
-#ifdef BOOST_MP_FLOAT128_HPP
-	                                              33
-#else
-	                                              15
-#endif
-	                                              )
-	        and
-	        // 24 decimal places are used for RealHP<4> which cannot use constexpr when compiling yade with float, see lib/high-precision/RealHP.hpp:103
-	        (std::numeric_limits<Rr>::digits10 != 24);
+	template <typename Rr> const constexpr bool useConstexprConstants = isConstexprFloatingPoint<Rr>; // from RealHP.hpp
 
 	// constexpr whenever possible
 	template <int N> struct ConstexprConstantsHP {
-		static constexpr RealHP<N>    PI          = boost::math::constants::pi<RealHP<N>>();
-		static constexpr RealHP<N>    TWO_PI      = boost::math::constants::two_pi<RealHP<N>>();
-		static constexpr RealHP<N>    HALF_PI     = boost::math::constants::half_pi<RealHP<N>>();
-		static constexpr RealHP<N>    SQRT_TWO_PI = boost::math::constants::root_two_pi<RealHP<N>>();
-		static constexpr RealHP<N>    E           = boost::math::constants::e<RealHP<N>>();
-		static constexpr ComplexHP<N> I           = ComplexHP<N>(0, 1);
-		static const RealHP<N>        DEG_TO_RAD;
-		static const RealHP<N>        RAD_TO_DEG;
-		static const RealHP<N>        EPSILON;
-		static const RealHP<N>        MAX_REAL;
-		static constexpr RealHP<N>    ZERO_TOLERANCE = RealHP<N>(1e-20);
+		static constexpr RealHP<N> PI          = boost::math::constants::pi<RealHP<N>>();
+		static constexpr RealHP<N> TWO_PI      = boost::math::constants::two_pi<RealHP<N>>();
+		static constexpr RealHP<N> HALF_PI     = boost::math::constants::half_pi<RealHP<N>>();
+		static constexpr RealHP<N> SQRT_TWO_PI = boost::math::constants::root_two_pi<RealHP<N>>();
+		static constexpr RealHP<N> E           = boost::math::constants::e<RealHP<N>>();
+		static const ComplexHP<N>  I;
+		static const RealHP<N>     DEG_TO_RAD;
+		static const RealHP<N>     RAD_TO_DEG;
+		static const RealHP<N>     EPSILON;
+		static const RealHP<N>     MAX_REAL;
+		static constexpr RealHP<N> ZERO_TOLERANCE = RealHP<N>(1e-20);
 	};
-	template <int N> constexpr RealHP<N>    ConstexprConstantsHP<N>::PI;
-	template <int N> constexpr RealHP<N>    ConstexprConstantsHP<N>::TWO_PI;
-	template <int N> constexpr RealHP<N>    ConstexprConstantsHP<N>::HALF_PI;
-	template <int N> constexpr RealHP<N>    ConstexprConstantsHP<N>::SQRT_TWO_PI;
-	template <int N> constexpr RealHP<N>    ConstexprConstantsHP<N>::E;
-	template <int N> constexpr ComplexHP<N> ConstexprConstantsHP<N>::I;
-	template <int N> const RealHP<N>        ConstexprConstantsHP<N>::DEG_TO_RAD = ConstexprConstantsHP<N>::PI / RealHP<N>(180);
-	template <int N> const RealHP<N>        ConstexprConstantsHP<N>::RAD_TO_DEG = RealHP<N>(180) / ConstexprConstantsHP<N>::PI;
-	template <int N> const RealHP<N>        ConstexprConstantsHP<N>::EPSILON    = std::numeric_limits<RealHP<N>>::epsilon();
-	template <int N> const RealHP<N>        ConstexprConstantsHP<N>::MAX_REAL   = std::numeric_limits<RealHP<N>>::max();
-	template <int N> constexpr RealHP<N>    ConstexprConstantsHP<N>::ZERO_TOLERANCE;
+	template <int N> constexpr RealHP<N> ConstexprConstantsHP<N>::PI;
+	template <int N> constexpr RealHP<N> ConstexprConstantsHP<N>::TWO_PI;
+	template <int N> constexpr RealHP<N> ConstexprConstantsHP<N>::HALF_PI;
+	template <int N> constexpr RealHP<N> ConstexprConstantsHP<N>::SQRT_TWO_PI;
+	template <int N> constexpr RealHP<N> ConstexprConstantsHP<N>::E;
+	template <int N> const ComplexHP<N>  ConstexprConstantsHP<N>::I          = ComplexHP<N>(0, 1);
+	template <int N> const RealHP<N>     ConstexprConstantsHP<N>::DEG_TO_RAD = ConstexprConstantsHP<N>::PI / RealHP<N>(180);
+	template <int N> const RealHP<N>     ConstexprConstantsHP<N>::RAD_TO_DEG = RealHP<N>(180) / ConstexprConstantsHP<N>::PI;
+	template <int N> const RealHP<N>     ConstexprConstantsHP<N>::EPSILON    = std::numeric_limits<RealHP<N>>::epsilon();
+	template <int N> const RealHP<N>     ConstexprConstantsHP<N>::MAX_REAL   = std::numeric_limits<RealHP<N>>::max();
+	template <int N> constexpr RealHP<N> ConstexprConstantsHP<N>::ZERO_TOLERANCE;
 
 	// const everywhere
 	template <int N> struct ConstConstantsHP {

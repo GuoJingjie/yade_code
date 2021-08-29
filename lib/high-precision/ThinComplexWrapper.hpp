@@ -51,11 +51,10 @@ namespace math {
 		WrappedComplex val;
 
 		// detect types which are convertible to WrappedComplex
-		using NonComplex                                       = typename RealPart<WrappedComplex>::type;
-		template <typename OtherType> using ComplexConvert     = std::is_convertible<OtherType, WrappedComplex>;
-		template <typename OtherType> using NonComplexConvert  = std::is_convertible<OtherType, NonComplex>;
-		template <typename OtherType> using EnableIfIsComplex  = std::enable_if_t<boost::is_complex<OtherType>::value>;
-		template <typename OtherType> using EnableIfNonComplex = std::enable_if_t<(not boost::is_complex<OtherType>::value)>;
+		using NonComplex                                      = typename RealPart<WrappedComplex>::type;
+		template <typename OtherType> using ComplexConvert    = std::is_convertible<OtherType, WrappedComplex>;
+		template <typename OtherType> using NonComplexConvert = std::is_convertible<OtherType, NonComplex>;
+
 		template <typename OtherType>
 		using EnableIfConvertible = std::enable_if_t<(ComplexConvert<OtherType>::value) or (NonComplexConvert<OtherType>::value)>;
 		template <typename OtherType> using EnableIfNonComplexConvertible = std::enable_if_t<NonComplexConvert<OtherType>::value>;
@@ -139,7 +138,7 @@ namespace math {
 // If ComplexHP<N> is supported then ThinComplexWrapper needs explicit conversion operators to all other higher precision types, so provide them here.
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 #ifdef YADE_MPFR
-		template <unsigned int Dec> using HPBackend = boost::multiprecision::mpfr_float_backend<Dec, boost::multiprecision::allocate_stack>;
+		template <unsigned int Dec> using HPBackend = boost::multiprecision::mpfr_float_backend<Dec>;
 #else
 		template <unsigned int Dec> using HPBackend = boost::multiprecision::cpp_bin_float<Dec>;
 #endif
@@ -238,21 +237,13 @@ namespace math {
 		}
 
 		// member functions specific to Complex type, as in https://en.cppreference.com/w/cpp/numeric/complex
-		template <typename OtherType = WrappedComplex, typename = EnableIfIsComplex<OtherType>> value_type real() const { return val.real(); };
-		template <typename OtherType = WrappedComplex, typename = EnableIfIsComplex<OtherType>> value_type imag() const { return val.imag(); };
+		value_type real() const { return val.real(); };
+		value_type imag() const { return val.imag(); };
 	};
 
 } // namespace math
 } // namespace yade
 
-// properly inform boost::is_complex about ThinComplexWrapper
-namespace boost {
-template <class T> struct is_complex<::yade::math::ThinComplexWrapper<std::complex<T>>> : public true_type {
-};
-}
-
-static_assert(
-        boost::is_complex<::yade::math::ThinComplexWrapper<std::complex<::yade::math::UnderlyingReal>>>::value == true,
-        "ThinComplexWrapper<std::complex<UnderlyingReal>> is not recognized by boost::is_complex, please report a bug.");
+// NOTE: boost::is_complex only checks for std::complex type. Useless for us. We have to use yade::math::isComplex;
 
 #endif

@@ -193,7 +193,7 @@ namespace math {
 // these are used by py/high-precision/minieigen/visitors.hpp
 namespace yade {
 namespace minieigenHP {
-	template <typename Rr, typename boost::disable_if<boost::is_complex<Rr>, int>::type = 0, int Level = ::yade::math::levelOfRealHP<Rr>>
+	template <typename Rr, typename boost::disable_if_c<::yade::math::isComplex<Rr>, int>::type = 0, int Level = ::yade::math::levelOfRealHP<Rr>>
 	inline std::string numToStringHP(const Rr& num)
 	{
 		using R = typename std::decay<Rr>::type;
@@ -207,7 +207,7 @@ namespace minieigenHP {
 		}
 	}
 
-	template <typename Cc, typename boost::enable_if<boost::is_complex<Cc>, int>::type = 0, int Level = ::yade::math::levelOfComplexHP<Cc>>
+	template <typename Cc, typename boost::enable_if_c<::yade::math::isComplex<Cc>, int>::type = 0, int Level = ::yade::math::levelOfComplexHP<Cc>>
 	inline std::string numToStringHP(const Cc& num)
 	{
 		using C = typename std::decay<Cc>::type;

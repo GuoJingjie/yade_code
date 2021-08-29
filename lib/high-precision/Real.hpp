@@ -63,7 +63,7 @@
  *   https://www.boost.org/doc/libs/1_71_0/libs/math/doc/html/index.html
  *   https://www.boost.org/doc/libs/1_71_0/boost/math/tools/precision.hpp
  *   https://www.boost.org/doc/libs/1_71_0/libs/multiprecision/doc/html/index.html
- *   allocate_stack → faster calculations - allocates numbers on stack instead of on heap, this works only with relatively small precisions.
+ *   allocate_stack → faster calculations - allocates numbers on stack instead of on heap, this works only with relatively small precisions. Useless for higher precisions.
  *   et_on          → faster calculations, slower compilation → FIXME - compile error in Eigen::abs2(…)
  *   et_off         → slower calculations, faster compilation
  */
@@ -124,8 +124,6 @@ namespace math {
 /*************************************************************************/
 #elif YADE_REAL_BIT <= 128
 #include <boost/multiprecision/float128.hpp>
-// TODO: boost 1.68 has #include <boost/multiprecision/complex128.hpp>, which would simplify some things
-#include <quadmath.h>
 namespace yade {
 namespace math {
 	using UnderlyingReal = boost::multiprecision::float128;
@@ -139,9 +137,8 @@ namespace math {
 #include <boost/multiprecision/mpfr.hpp>
 namespace yade {
 namespace math {
-	template <unsigned int DecimalPlaces>
-	using UnderlyingRealBackend = boost::multiprecision::mpfr_float_backend<DecimalPlaces, boost::multiprecision::allocate_stack>;
-	using UnderlyingReal        = boost::multiprecision::number<UnderlyingRealBackend<YADE_REAL_DEC>, boost::multiprecision::et_off>;
+	template <unsigned int DecimalPlaces> using UnderlyingRealBackend = boost::multiprecision::mpfr_float_backend<DecimalPlaces>;
+	using UnderlyingReal = boost::multiprecision::number<UnderlyingRealBackend<YADE_REAL_DEC>, boost::multiprecision::et_off>;
 }
 }
 
@@ -185,8 +182,7 @@ namespace math {
 
 namespace yade {
 namespace math {
-	using Real    = ThinRealWrapper<UnderlyingReal>;
-	using Complex = ThinComplexWrapper<std::complex<UnderlyingReal>>;
+	using Real = ThinRealWrapper<UnderlyingReal>;
 }
 }
 
@@ -195,19 +191,11 @@ namespace math {
 
 namespace yade {
 namespace math {
-	using Real    = UnderlyingReal;
-	using Complex = std::complex<UnderlyingReal>;
+	using Real = UnderlyingReal;
 }
 }
 
 #endif
-
-namespace yade {
-using Complex = math::Complex;
-using Real    = math::Real;
-static_assert(sizeof(Real) == sizeof(math::UnderlyingReal), "This compiler introduced padding, which breaks binary compatibility");
-static_assert(sizeof(Complex) == sizeof(std::complex<math::UnderlyingReal>), "This compiler introduced padding, which breaks binary compatibility");
-}
 
 /*************************************************************************/
 /*************************      RealHP<…>       **************************/

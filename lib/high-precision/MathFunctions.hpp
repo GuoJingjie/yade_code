@@ -23,7 +23,6 @@
 #include <boost/config.hpp>
 #include <boost/math/complex.hpp>
 #include <boost/math/constants/constants.hpp>
-#include <boost/math/special_functions.hpp>
 #include <boost/math/tools/config.hpp>
 #include <boost/random.hpp>
 #include <cmath>
@@ -453,8 +452,8 @@ namespace math {
 	/********************************************************************************************/
 
 	// Some old C library functions need pointer to C-array, this is for compatibility between ThinRealWrapper and UnderlyingReal
+	// more static_asserts are at the end of py/high-precision/_math.cpp and in lib/high-precision/RealHP.hpp
 	static_assert(sizeof(Real) == sizeof(UnderlyingReal), "This compiler introduced padding. This breaks binary compatibility");
-	static_assert(sizeof(Complex) == sizeof(std::complex<UnderlyingReal>), "This compiler introduced padding, which breaks binary compatibility");
 
 	template <typename Rr, int Level = levelOfRealHP<Rr>, typename boost::enable_if_c<IsWrapped<Rr>, int>::type = 0>
 	static inline const UnderlyingRealHP<Rr>* constVectorData(const std::vector<Rr>& v)

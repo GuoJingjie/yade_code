@@ -124,7 +124,7 @@ namespace math {
 // If RealHP<N> is supported then ThinRealWrapper needs explicit conversion operators to all other higher precision types, so provide them here.
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 #ifdef YADE_MPFR
-		template <unsigned int Dec> using HPBackend = boost::multiprecision::mpfr_float_backend<Dec, boost::multiprecision::allocate_stack>;
+		template <unsigned int Dec> using HPBackend = boost::multiprecision::mpfr_float_backend<Dec>;
 #else
 		template <unsigned int Dec> using HPBackend = boost::multiprecision::cpp_bin_float<Dec>;
 #endif

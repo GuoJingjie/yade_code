@@ -354,8 +354,18 @@ py::list mpfrVer()
 	ret.append(boost::lexical_cast<std::string>(MPFR_VERSION_STRING));
 	return ret;
 }
+#include <mpc.h>
+py::list mpcVer()
+{
+	py::list ret;
+	ret.append(py::make_tuple(MPC_VERSION_MAJOR, MPC_VERSION_MINOR, MPC_VERSION_PATCHLEVEL));
+	ret.append(boost::lexical_cast<std::string>(MPC_VERSION_STRING));
+	return ret;
+}
+
 #else
 py::list mpfrVer() { return {}; }
+py::list mpcVer() { return {}; }
 #endif
 
 py::dict getAllVersionsCpp()
@@ -380,6 +390,7 @@ py::dict getAllVersionsCpp()
 	ret["clp"]         = clpVer();
 	ret["coinutils"]   = coinutilsVer();
 	ret["mpfr"]        = mpfrVer();
+	ret["mpc"]         = mpcVer();
 	return ret;
 }
 

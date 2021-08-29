@@ -198,6 +198,7 @@ bool isThisSystemLittleEndian()
 }
 
 template <int N> std::string      getDemangledName() { return boost::core::demangle(typeid(RealHP<N>).name()); };
+template <int N> std::string      getDemangledNameComplex() { return boost::core::demangle(typeid(ComplexHP<N>).name()); };
 template <int N> py::dict         getDecomposedReal(const RealHP<N>& arg) { return DecomposedReal(arg).getDict<RealHP<N>>(); }
 template <int N, int M> RealHP<M> toHP(const RealHP<N>& arg) { return static_cast<RealHP<M>>(arg); };
 
@@ -269,6 +270,10 @@ template <int N, bool /*registerConverters*/> struct RegisterRealBitDebug {
 		py::def("getDemangledName",
 		        static_cast<std::string (*)()>(&getDemangledName<N>),
 		        R"""(:return: ``string`` - the demangled C++ typnename of ``RealHP<N>``.)""");
+
+		py::def("getDemangledNameComplex",
+		        static_cast<std::string (*)()>(&getDemangledNameComplex<N>),
+		        R"""(:return: ``string`` - the demangled C++ typnename of ``ComplexHP<N>``.)""");
 
 		py::def("getDecomposedReal",
 		        static_cast<py::dict (*)(const RealHP<N>&)>(&getDecomposedReal<N>),
