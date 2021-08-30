@@ -124,12 +124,12 @@ int getMaxLevel() { return std::min(MAX_LOG_LEVEL, MAX_HARDCODED_LOG_LEVEL); }
 
 void testAllLevels()
 {
-	int                testInt = 0;
-	std::string        testStr = "test string";
-	Real               testReal(11);
-	Vector3r           testVec(1, 2, 3);
-	Matrix3r           testMat = (Matrix3r() << 1, 2, 3, 4, 5, 6, 7, 8, 9).finished();
-	std::complex<Real> testComplex(-1, 1);
+	int         testInt = 0;
+	std::string testStr = "test string";
+	Real        testReal(11);
+	Vector3r    testVec(1, 2, 3);
+	Matrix3r    testMat = (Matrix3r() << 1, 2, 3, 4, 5, 6, 7, 8, 9).finished();
+	Complex     testComplex(-1, 1);
 
 	LOG_0_NOFILTER("Test log level: LOG_0_NOFILTER, test int: " << testInt++);
 	LOG_1_FATAL("Test log level: LOG_1_FATAL, test int: " << testInt++);
@@ -177,12 +177,12 @@ void testAllLevels()
 
 void testOnceLevels()
 {
-	int                testInt = 0;
-	std::string        testStr = "test string";
-	Real               testReal(11);
-	Vector3r           testVec(1, 2, 3);
-	Matrix3r           testMat = (Matrix3r() << 1, 2, 3, 4, 5, 6, 7, 8, 9).finished();
-	std::complex<Real> testComplex(-1, 1);
+	int         testInt = 0;
+	std::string testStr = "test string";
+	Real        testReal(11);
+	Vector3r    testVec(1, 2, 3);
+	Matrix3r    testMat = (Matrix3r() << 1, 2, 3, 4, 5, 6, 7, 8, 9).finished();
+	Complex     testComplex(-1, 1);
 
 	LOG_ONCE_TRACE("\n\nTest print of ONCE_TRVARn macro family:\n\n");
 	for (int i = 0; i < 10; ++i) {
