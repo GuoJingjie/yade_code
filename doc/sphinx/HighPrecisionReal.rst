@@ -200,6 +200,12 @@ If a new mathematical function is needed it has to be added in the following pla
 
 The tests for a new function are to be added in :ysrc:`py/tests/testMath.py` in one of these functions: ``oneArgMathCheck(…):``, ``twoArgMathCheck(…):``, ``threeArgMathCheck(…):``. A table of approximate expected error tolerances in ``self.defaultTolerances`` is to be supplemented as well. To determine tolerances with better confidence it is recommended to temporarily increase number of tests in the :ysrccommit:`test loop<3c49f39078e5b82cf6522b7e8651d40895aac8ef/py/tests/testMath.py#L593>`. To determine tolerances for currently implemented functions a ``range(1000000)`` in the loop was used.
 
+.. note::
+	When passing arguments in ``C++`` in function calls it is preferred to use ``const Real&`` rather than to make a copy of the argument as ``Real``. The reason is following: in non high-precision
+	regular case both the ``double`` type and the reference have 8 bytes. However ``float128`` is 16 bytes large, while its reference is still only 8 bytes.
+	So for regular precision, there is no difference. For all higher precision types it is beneficial to use ``const Real&`` as the function argument. Also for ``const Vector3r&`` arguments
+	the speed gain is larger, even without high precision.
+
 .. _extraStringDigits:
 
 String conversions
