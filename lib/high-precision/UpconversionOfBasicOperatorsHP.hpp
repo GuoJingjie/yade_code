@@ -32,11 +32,8 @@ This also works for ComplexHP<…> mixed with RealHP<…>.
 
 This is done with maximum possible efficiency: the conversions are performed only when necessary, otherwise the const reference is used.
 
-But there is a FIXME, see note at the end of this file. Until a bug in boost is fixed one must call directly opAdd, opSub, opMult, opDiv.
-And only with MPFR. The complex_adaptor< cpp_bin_float , … > from boost is missing the necessary complex conversions.
-
-Concluding: the idea of this include header was nice. But until this (*) is fixed in boost one has to convert manually between complex types.
-(*) see line 973 in py/high-precision/_math.cpp
+Note: it isn't currently working with MPFR and mpc_complex types: https://github.com/boostorg/multiprecision/issues/363
+TODO: when it's fixed upstream use #ifdef on boost version to enable it in tests in py/high-precision/_RealHPDiagnostics.cpp and py/high-precision/_math.cpp:1062
 
 */
 
@@ -156,11 +153,12 @@ template <typename A, typename B> typename math::SelectHigherHP<A, B> opDiv(cons
 	        / static_cast<math::detail::CastB<A, B>>(static_cast<math::detail::MaybeComplexB<A, B>>(b));
 }
 
-// FIXME : in boost there are down-converting operators provided by mpc_complex (maybe also complex_adaptor), and NeedsBasic***OperatorHP can't work
-//         in such scenario. Unfortunately there is no way I can fix this on my end. I need to report a bug to boost and wait till they fix it.
+// FIXME : in boost there are down-converting operators provided by mpc_complex. Unfortunately there is no way I can fix this on my end.
+//         I need to report a bug to boost.
 //
-// FIXME : so for now, to really have up-converting operators one must call directly opAdd, opSub, opMult, opDiv. Which kind of defeats the idea.
-//         but let sit it here until someday they bug in boost gets fixed.
+// DONE  : bug reported: https://github.com/boostorg/multiprecision/issues/363
+//
+// TODO  : when it's fixed upstream use #ifdef on boost version to enable it in tests in py/high-precision/_RealHPDiagnostics.cpp and py/high-precision/_math.cpp:1062
 //
 template <typename A, typename B>
 typename boost::enable_if<math::detail::NeedsBasicPlusOperatorHP<A, B>, math::SelectHigherHP<A, B>>::type operator+(const A& a, const B& b)

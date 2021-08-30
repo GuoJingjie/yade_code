@@ -223,7 +223,7 @@ Some of them are only optional.
 * `python3-mpi4py <https://bitbucket.org/mpi4py/>`_ MPI for Python (For MPI, optional)
 * `coin-or <https://github.com/coin-or/Clp>`_ COIN-OR Linear Programming Solver (For :yref:`PotentialBlock`, optional)
 * `mpfr <https://www.mpfr.org/>`_ in ``C++`` and `mpmath <http://mpmath.org/>`_ in ``python`` for high precision ``Real`` or for CGAL exact predicates (optional)
-* `mpc <http://www.multiprecision.org/mpc/`_ is an MPFR extension to complex numbers. It is used explicitly together with MPFR.
+* `mpc <http://www.multiprecision.org/mpc/>`_ is an MPFR extension to complex numbers. It is used explicitly together with MPFR.
 
 Most of the list above is very likely already packaged for your distribution. In case you are confronted
 with some errors concerning not available packages (e.g., package libmetis-dev is not available) it may be necessary
@@ -327,6 +327,7 @@ The following cmake options are available: (see the `source code <https://gitlab
 	* YADE_VERSION: explicitly set version number (is defined from git-directory by default)
 	* ENABLE_ASAN: AddressSanitizer allows detection of memory errors, memory leaks, heap corruption errors and out-of-bounds accesses (but it is slow) 
 	* ENABLE_CGAL: enable CGAL option (ON by default)
+	* ENABLE_COMPLEX_MP: use `boost multiprecision complex <https://www.boost.org/doc/libs/1_77_0/libs/multiprecision/doc/html/boost_multiprecision/tut/complex.html>`__ for ``ComplexHP<N>``, otherwise use ``std::complex<RealHP<N>>``. See :ref:`high precision documentation<highPrecisionReal>` for additional details. (ON by default if possible: requires boost >= 1.71)
 	* ENABLE_DEFORM: enable constant volume deformation engine (OFF by default)
 	* ENABLE_FAST_NATIVE: use maximum optimization compiler flags including ``-Ofast`` and ``-mtune=native``. Note: ``native`` means that code will **only** run on the same processor type on which it was compiled. Observed speedup was 2% (below standard deviation measurement error) and above 5% if clang compiler was used. (OFF by default)
 	* ENABLE_FEMLIKE: enable meshed solids, FEM-like (OFF by default, experimental)

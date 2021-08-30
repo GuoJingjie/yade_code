@@ -193,7 +193,7 @@ Mathematical functions of all high precision types are wrapped using file :ysrc:
 
 If a new mathematical function is needed it has to be added in the following places:
 
-1. :ysrc:`lib/high-precision/MathFunctions.hpp`
+1. :ysrc:`lib/high-precision/MathFunctions.hpp` or :ysrc:`lib/high-precision/MathComplexFunctions.hpp` or :ysrc:`lib/high-precision/MathSpecialFunctions.hpp`, depending on function type.
 2. :ysrc:`py/high-precision/_math.cpp`, see :yref:`math module<yade.math>` for details.
 3. :ysrc:`py/tests/testMath.py`
 4. :ysrc:`py/tests/testMathHelper.py`
@@ -256,6 +256,21 @@ The difference between :yref:`toHPn<yade.math.toHP1>` and :yref:`Realn<yade.math
 
 .. warning::
 	I cannot stress this problem enough, please try running ``yade --check`` (or ``yade ./checkGravityRungeKuttaCashKarp54.py``) in precision different than ``double`` after changing :ysrccommit:`this line<e9f92ab12791fdd27b24989/scripts/checks-and-tests/checks/checkGravityRungeKuttaCashKarp54.py#L32>` into ``g = -9.81``. In this (particular and simple) case the ``getCurrentPos()`` :ysrccommit:`function<e9f92ab12791fdd27b24989/scripts/checks-and-tests/checks/checkGravityRungeKuttaCashKarp54.py#L102>` fails on the python side because low-precision ``g`` is multiplied by high-precision ``t``.
+
+Complex types
+----------------------------------------------
+
+Complex numbers are supported as well. All standard ``C++`` functions are available in :ysrc:`lib/high-precision/MathComplexFunctions.hpp` and also are exported to python
+in :ysrc:`py/high-precision/_math.cpp`. There is a cmake compilation option ``ENABLE_COMPLEX_MP`` which enables
+using `better complex <https://www.boost.org/doc/libs/1_77_0/libs/multiprecision/doc/html/boost_multiprecision/tut/complex.html>`__
+types from ``boost::multiprecision`` library for representing ``ComplexHP<N>`` family of types: ``complex128``, ``mpc_complex``, ``cpp_complex`` and ``complex_adaptor``.
+It is ON by default whenever possible: for boost version >= 1.71. For older boost the ``ComplexHP<N>`` types are represented by ``std::complex<RealHP<N>>`` instead, which has larger
+numerical errors in some mathematical functions.
+
+When using the ``ENABLE_COMPLEX_MP=ON`` (default) the previously mentioned :ysrc:`lib/high-precision/UpconversionOfBasicOperatorsHP.hpp` is not functional for complex types,
+it is a `reported <https://github.com/boostorg/multiprecision/issues/363>`__ problem with the boost library.
+
+When using MPFR type, the ``libmpc-dev`` package has to be installed (mentioned above).
 
 Eigen and CGAL
 ----------------------------------------------
