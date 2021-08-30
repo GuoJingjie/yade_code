@@ -128,7 +128,9 @@ namespace math {
 	{ // https://en.cppreference.com/w/cpp/numeric/complex/polar
 		using ::std::polar;
 		using YADE_REAL_MATH_NAMESPACE::polar;
-		return polar(static_cast<const UnderlyingHP<Rr>&>(rho), static_cast<const UnderlyingHP<Rr>&>(theta));
+		// Use tmp to ensure proper ComplexHP return type. Usually it's just optimised away. Rarely it fixes a problem with boost::multiprecision using a different complex type.
+		auto tmp = polar(static_cast<const UnderlyingHP<Rr>&>(rho), static_cast<const UnderlyingHP<Rr>&>(theta));
+		return { tmp.real(), tmp.imag() };
 	}
 
 	/********************************************************************************************/
