@@ -410,7 +410,7 @@ public:
 		amend<testN>("complex " + funcName + " real", funcValue.real(), dom, args);
 		amend<testN>("complex " + funcName + " imag", funcValue.imag(), dom, args);
 	}
-	template <int testN> void checkFunctions()
+	template <int testN> void checkRealFunctions()
 	{
 		if (testSet.find(testN) == testSet.end()) // skip N that were not requested to be tested.
 			return;
@@ -426,7 +426,6 @@ public:
 #define CHECK_FUN_R_1(f, domain)     amend<testN>(#f, math::f(                 applyDomain<testN>(args[0], domain)), { domain }, args)
 #define CHECK_FUN_R_2(f, d1, d2)     amend<testN>(#f, math::f(                 applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2) ), { d1, d2 }, args)
 #define CHECK_FUN_R_3(f, d1, d2, d3) amend<testN>(#f, math::f(                 applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2)  , applyDomain<testN>(args[2], d3)), { d1, d2, d3 }, args)
-#define CHECK_FUN_C_2(f, d1, d2)     amend<testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2))), { d1, d2 }, args)
 		CHECK_FUN_R_2(basicAdd , Domain::All, Domain::All);        // all
 		CHECK_FUN_R_2(basicSub , Domain::All, Domain::All);        // all
 		CHECK_FUN_R_2(basicDiv , Domain::All, Domain::NonZero);    // all
@@ -446,14 +445,6 @@ public:
 		CHECK_FUN_R_1(acosh, Domain::Above1);                      // x>1
 		CHECK_FUN_R_1(atanh, Domain::PlusMinus1);                  // -1,1
 		CHECK_FUN_R_2(atan2, Domain::All, Domain::All);            // all
-
-		// FIXME: skip complex checks until I update ComplexHP<N> to take into account suggestions from https://github.com/boostorg/multiprecision/issues/262
-		//CHECK_FUN_C_2(sin  , Domain::All, Domain::All);          // all
-		//CHECK_FUN_C_2(cos  , Domain::All, Domain::All);          // all
-		//CHECK_FUN_C_2(tan  , Domain::All, Domain::All);          // all
-		//CHECK_FUN_C_2(sinh , Domain::All, Domain::All);          // all
-		//CHECK_FUN_C_2(cosh , Domain::All, Domain::All);          // all
-		//CHECK_FUN_C_2(tanh , Domain::All, Domain::All);          // all
 
 		CHECK_FUN_R_1(log  , Domain::Above0);                      // x>0
 		CHECK_FUN_R_1(log10, Domain::Above0);                      // x>0
@@ -486,6 +477,32 @@ public:
 #undef CHECK_FUN_R_1
 #undef CHECK_FUN_R_2
 #undef CHECK_FUN_R_3
+		// clang-format on
+		first = false;
+	}
+	template <int testN> void checkComplexFunctions()
+	{
+		if (testSet.find(testN) == testSet.end()) // skip N that were not requested to be tested.
+			return;
+		std::array<RealHP<testN>, 3> args {};
+		for (int i = 0; i < 3; ++i) {
+			args[i] = static_cast<RealHP<testN>>(minHPArgs[i]); // Prepare the random numbers with correct precision.
+			if (extraChecks)                                    // Will throw in case of error. Just an extra check.
+				DecomposedReal::veryEqual(minHPArgs[i], args[i]);
+		}
+		// clang-format off
+// Add here tests of more functions as necessary. Make sure to use proper domain.
+//                ↓ R - Real, C - Complex
+#define CHECK_FUN_C_2(f, d1, d2)     amend<testN>(#f, math::f(ComplexHP<testN>(applyDomain<testN>(args[0], d1), applyDomain<testN>(args[1], d2))), { d1, d2 }, args)
+
+		// FIXING now: skip complex checks until I update ComplexHP<N> to take into account suggestions from https://github.com/boostorg/multiprecision/issues/262
+		CHECK_FUN_C_2(sin  , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(cos  , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(tan  , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(sinh , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(cosh , Domain::All, Domain::All);          // all
+		CHECK_FUN_C_2(tanh , Domain::All, Domain::All);          // all
+
 #undef CHECK_FUN_C_2
 		// clang-format on
 		first = false;
@@ -514,7 +531,11 @@ template <int minHP> struct TestLoop {
 	TestBits<minHP>& tb;
 	TestLoop(TestBits<minHP>& t)
 	        : tb(t) {};
-	template <typename Nmpl> void operator()(Nmpl) { tb.template checkFunctions<Nmpl::value>(); }
+	template <typename Nmpl> void operator()(Nmpl)
+	{
+		tb.template checkRealFunctions<Nmpl::value>();
+		tb.template checkComplexFunctions<Nmpl::value>();
+	}
 };
 
 template <int minHP>

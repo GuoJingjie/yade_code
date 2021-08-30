@@ -34,10 +34,10 @@
 #include <utility>
 
 /*
+#include <boost/math/special_functions/bessel.hpp>
 #include <boost/math/special_functions/factorials.hpp>
 #include <boost/math/special_functions/laguerre.hpp>
 #include <boost/math/special_functions/spherical_harmonic.hpp>
-#include <boost/math/special_functions/bessel.hpp>
  boost::math::cyl_bessel_j
  boost::math::factorial;
  boost::math::laguerre;
@@ -46,6 +46,8 @@
 
 namespace forCtags {
 struct MathComplexFunctions {
+}; // for ctags
+struct MathSpecialFunctions {
 }; // for ctags
 }
 
@@ -63,8 +65,8 @@ struct MathComplexFunctions {
 namespace yade {
 namespace math {
 	// use SFINAE to allow other non RealHP type, its level is treated as == 1
-	//	template <typename HP, typename Allow, typename boost::enable_if_c<(isComplexHP<HP> or std::is_same<HP, Allow>::value), int>::type = 0>
-	//	const constexpr int levelOfComplexHPAllow = ((isHP<HP>) ? (levelOrZero<HP>) : (1));
+	//template <typename HP, typename Allow, typename boost::enable_if_c<(isComplexHP<HP> or std::is_same<HP, Allow>::value), int>::type = 0>
+	//const constexpr int levelOfComplexHPAllow = ((isHP<HP>) ? (levelOrZero<HP>) : (1));
 
 	/********************************************************************************************/
 	/**********************   logarithm, exponential and power functions   **********************/
@@ -73,8 +75,7 @@ namespace math {
 	// They can be converted to accept complex by changing levelOfRealHP<> → levelOfHP<>, provided that a complex version exists.
 	// But remember to add tests for complex versions in py/high-precision/_math.cpp, py/tests/testMath.py and py/tests/testMathHelper.py
 	template <typename A, typename B, int Level = levelOfComplexHP<A>, typename Cc = PromoteHP<A>>
-	inline typename boost::enable_if_c<(std::is_convertible<typename std::decay<B>::type, Cc>::value and isComplexHP<typename std::decay<A>::type>), Cc>::type
-	pow(const A& a, const B& b)
+	inline typename boost::enable_if_c<(std::is_convertible<B, Cc>::value and isComplexHP<A::type>), Cc>::type pow(const A& a, const B& b)
 	{
 		using ::std::pow;
 		using YADE_REAL_MATH_NAMESPACE::pow;
