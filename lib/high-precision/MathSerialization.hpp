@@ -19,10 +19,14 @@
 #if (YADE_REAL_BIT > 80)
 #include <boost/serialization/split_free.hpp>
 BOOST_SERIALIZATION_SPLIT_FREE(::yade::math::Real);
-BOOST_IS_BITWISE_SERIALIZABLE(::yade::math::Real);
+BOOST_IS_BITWISE_SERIALIZABLE(::yade::math::Real); // faster serialization because does not store versioning, which is unnecessary here
+BOOST_SERIALIZATION_SPLIT_FREE(::yade::math::Complex);
+BOOST_IS_BITWISE_SERIALIZABLE(::yade::math::Complex);
 #endif
 #if (YADE_REAL_BIT == 80)
 BOOST_IS_BITWISE_SERIALIZABLE(::yade::math::Real);
+BOOST_SERIALIZATION_SPLIT_FREE(::yade::math::Complex);
+BOOST_IS_BITWISE_SERIALIZABLE(::yade::math::Complex);
 #endif
 
 // fast serialization (no version info and no tracking) for basic math types
@@ -56,12 +60,44 @@ namespace serialization {
 		ar&         BOOST_SERIALIZATION_NVP(v);
 		a = ::yade::math::fromStringReal(v);
 	}
+	// serialization of Complex numbers
+	template <class Archive> void save(Archive& ar, const ::yade::math::Complex& a, unsigned int)
+	{
+		// TODO: maybe we can find a faster method for float128
+		std::string re = ::yade::math::toString(a.real());
+		std::string im = ::yade::math::toString(a.imag());
+		ar&         BOOST_SERIALIZATION_NVP(re);
+		ar&         BOOST_SERIALIZATION_NVP(im);
+	}
+	template <class Archive> void load(Archive& ar, ::yade::math::Complex& a, unsigned int)
+	{
+		std::string re {}, im {};
+		ar&         BOOST_SERIALIZATION_NVP(re);
+		ar&         BOOST_SERIALIZATION_NVP(im);
+		a = ::yade::math::Complex { ::yade::math::fromStringReal(re), ::yade::math::fromStringReal(im) };
+	}
 #endif
 #if (YADE_REAL_BIT == 80)
 	template <class Archive> void serialize(Archive& ar, ::yade::math::Real& a, unsigned int)
 	{
 		::yade::math::UnderlyingReal& v = a.operator ::yade::math::UnderlyingReal&();
 		ar&                                 BOOST_SERIALIZATION_NVP(v);
+	}
+	// serialization of Complex numbers
+	template <class Archive> void save(Archive& ar, const ::yade::math::Complex& a, unsigned int)
+	{
+		::yade::math::UnderlyingReal re = a.real();
+		::yade::math::UnderlyingReal im = a.imag();
+		ar&                          BOOST_SERIALIZATION_NVP(re);
+		ar&                          BOOST_SERIALIZATION_NVP(im);
+	}
+	template <class Archive> void load(Archive& ar, ::yade::math::Complex& a, unsigned int)
+	{
+		::yade::math::UnderlyingReal re {};
+		::yade::math::UnderlyingReal im {};
+		ar&                          BOOST_SERIALIZATION_NVP(re);
+		ar&                          BOOST_SERIALIZATION_NVP(im);
+		a = ::yade::math::Complex(re, im);
 	}
 #endif
 

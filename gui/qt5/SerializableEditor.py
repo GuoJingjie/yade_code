@@ -420,9 +420,10 @@ _fundamentalInitValues={
 }
 
 if yade.config.highPrecisionMpmath:
-	# TODO: handle Complex mpmath.ctx_mp_python.mpc
 	_fundamentalEditorMap[mpmath.ctx_mp_python.mpf]=AttrEditor_Mpmath
 	_fundamentalInitValues[mpmath.ctx_mp_python.mpf]=(mpmath.mpf(0))
+	_fundamentalEditorMap[mpmath.ctx_mp_python.mpc]=AttrEditor_Complex
+	_fundamentalInitValues[mpmath.ctx_mp_python.mpc]=(mpmath.mpc(0))
 
 class SerQLabel(QLabel):
 	def __init__(self,parent,label,tooltip,path):
@@ -494,6 +495,7 @@ class SerializableEditor(QFrame):
 		}
 		if yade.config.highPrecisionMpmath:
 			vecMap['mpf']=mpmath.ctx_mp_python.mpf
+			vecMap['mpc']=mpmath.ctx_mp_python.mpc
 		for T,ret in list(vecMap.items()):
 			if vecTest(T,cxxT):
 				logging.debug("Got type %s from cxx type %s"%(repr(ret),cxxT))
@@ -613,7 +615,7 @@ class SerializableEditor(QFrame):
 			entry.widget=self.mkWidget(entry)
 			objPath=(self.path+'.'+entry.name) if self.path else None
 			label=SerQLabel(self,serializableHref(self.ser,entry.name),tooltip=self.getDocstring(entry.name),path=objPath)
-			grid.addRow(label,entry.widget if entry.widget else QLabel('<i>unhandled type</i>'))
+			grid.addRow(label,entry.widget if entry.widget else QLabel('<i>unhandled type</i>: '+str(entry.T).replace('<','').replace('>','') ))
 		self.setLayout(grid)
 		self.refreshEvent()
 	def refreshEvent(self):
