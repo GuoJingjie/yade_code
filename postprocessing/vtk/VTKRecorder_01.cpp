@@ -40,6 +40,26 @@ CREATE_LOGGER(VTKRecorder);
 
 void VTKRecorder::action()
 {
+/* What's going on here?
+
+Previously it was one large action() 1500 lines long. But it wasn't compiling on 32bit systems with debug build. The VTK library is especially memory hungry
+during compilation. To get it to compile this action() had to be split into many smaller actions. The determining factor in the split was whether it would
+compile in the gitlab CI pipeline on make_asan_i386 debug build. It is difficult to determine this locally without being able to perform such
+compilation (it can be done inside a chroot), so the alternative factor is the number of lines of code. We estimate that about 300 lines is maximum (but
+it depends on how many VTK types are declared and instatinated). This shows how memory hungry the compilation of VTK library is.
+
+The split done here was very linear, this large action was almost exactly split and moved into separate files. The only "special" part of this split was that
+now in the header postprocessing/vtk/VTKRecorder.hpp reside all the variables vtkSmartPointer<……> which were local to this function. They are now class
+variables, because they are used across these split actions.
+
+To add more VTK export capabilities here:
+
+- Preferred way is to add more actions, rather than to add more code to existing ones. Especially if the added export capability is logically different from the previous ones.
+- In general do not go over 300 lines of code per file, but the gitlab CI pipeline make_asan_i386 is the deciding factor.
+- Some small changes in the existing actions probably won't break the compilation.
+- Removing some vtkSmartPointer<……> from VTKRecorder.hpp is welcome, then such variable can be used only locally in a single action_NN() and in a single file.
+
+*/
 	action_01();
 	action_02();
 	action_03();
