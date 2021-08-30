@@ -620,7 +620,7 @@ namespace yade {
 // If necessary for debugging put these the static_assert tests to the lib/high-precision/RealHP.hpp file
 // Here - they are also tested, but are compiled only once - with this file.
 
-static_assert(std::is_same<math::RealOf<Complex>, Real>::value, "");
+static_assert(std::is_same<math::RealOf<Complex>, Real>::value, "RealOf did not extract value_type with success.");
 
 static_assert(std::is_same<math::RealOf<ComplexHP<1>>, RealHP<1>>::value, "");
 #ifndef YADE_DISABLE_REAL_MULTI_HP
@@ -630,7 +630,7 @@ static_assert(std::is_same<math::RealOf<ComplexHP<4>>, RealHP<4>>::value, "");
 static_assert(std::is_same<math::RealOf<ComplexHP<8>>, RealHP<8>>::value, "");
 #endif
 
-static_assert(math::isHP<RealHP<1>> == true, "");
+static_assert(math::isHP<RealHP<1>> == true, "isHP didn't correctly recognize RealHP");
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 static_assert(math::isHP<RealHP<2>> == true, "");
 static_assert(math::isHP<RealHP<3>> == true, "");
@@ -646,7 +646,7 @@ static_assert(math::isHP<ComplexHP<4>> == true, "");
 static_assert(math::isHP<ComplexHP<8>> == true, "");
 #endif
 
-static_assert(math::isReal<RealHP<1>> == true, "");
+static_assert(math::isReal<RealHP<1>> == true, "isReal did not recognize RealHP");
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 static_assert(math::isReal<RealHP<2>> == true, "");
 static_assert(math::isReal<RealHP<3>> == true, "");
@@ -654,7 +654,7 @@ static_assert(math::isReal<RealHP<4>> == true, "");
 static_assert(math::isReal<RealHP<8>> == true, "");
 #endif
 
-static_assert(math::isReal<ComplexHP<1>> == false, "");
+static_assert(math::isReal<ComplexHP<1>> == false, "isReal thinks Complex is Real");
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 static_assert(math::isReal<ComplexHP<2>> == false, "");
 static_assert(math::isReal<ComplexHP<3>> == false, "");
@@ -662,7 +662,7 @@ static_assert(math::isReal<ComplexHP<4>> == false, "");
 static_assert(math::isReal<ComplexHP<8>> == false, "");
 #endif
 
-static_assert(math::isComplex<RealHP<1>> == false, "");
+static_assert(math::isComplex<RealHP<1>> == false, "isComplex thinks Real is Complex");
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 static_assert(math::isComplex<RealHP<2>> == false, "");
 static_assert(math::isComplex<RealHP<3>> == false, "");
@@ -670,7 +670,7 @@ static_assert(math::isComplex<RealHP<4>> == false, "");
 static_assert(math::isComplex<RealHP<8>> == false, "");
 #endif
 
-static_assert(math::isComplex<ComplexHP<1>> == true, "");
+static_assert(math::isComplex<ComplexHP<1>> == true, "isComplex did not recognize ComplexHP");
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 static_assert(math::isComplex<ComplexHP<2>> == true, "");
 static_assert(math::isComplex<ComplexHP<3>> == true, "");
@@ -678,7 +678,7 @@ static_assert(math::isComplex<ComplexHP<4>> == true, "");
 static_assert(math::isComplex<ComplexHP<8>> == true, "");
 #endif
 
-static_assert(math::levelOrZero<RealHP<1>> == 1, "");
+static_assert(math::levelOrZero<RealHP<1>> == 1, "levelOrZero did not correctly extract level of RealHP<level> (zero is for types where isHP == false)");
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 static_assert(math::levelOrZero<RealHP<2>> == 2, "");
 static_assert(math::levelOrZero<RealHP<3>> == 3, "");
@@ -686,7 +686,7 @@ static_assert(math::levelOrZero<RealHP<4>> == 4, "");
 static_assert(math::levelOrZero<RealHP<8>> == 8, "");
 #endif
 
-static_assert(math::levelOfComplexHP<ComplexHP<1>> == 1, "");
+static_assert(math::levelOfComplexHP<ComplexHP<1>> == 1, "levelOfComplexHP did not extract level of ComplexHP<level>");
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 static_assert(math::levelOfComplexHP<ComplexHP<2>> == 2, "");
 static_assert(math::levelOfComplexHP<ComplexHP<3>> == 3, "");
@@ -694,7 +694,7 @@ static_assert(math::levelOfComplexHP<ComplexHP<4>> == 4, "");
 static_assert(math::levelOfComplexHP<ComplexHP<8>> == 8, "");
 #endif
 
-static_assert(math::levelOfRealHP<RealHP<1>> == 1, "");
+static_assert(math::levelOfRealHP<RealHP<1>> == 1, "levelOfRealHP did not extract level of RealHP<level>");
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 static_assert(math::levelOfRealHP<RealHP<2>> == 2, "");
 static_assert(math::levelOfRealHP<RealHP<3>> == 3, "");
@@ -702,7 +702,7 @@ static_assert(math::levelOfRealHP<RealHP<4>> == 4, "");
 static_assert(math::levelOfRealHP<RealHP<8>> == 8, "");
 #endif
 
-static_assert(math::levelOfHP<ComplexHP<1>> == 1, "");
+static_assert(math::levelOfHP<ComplexHP<1>> == 1, "levelOfHP should work both for Real and Complex");
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 static_assert(math::levelOfHP<ComplexHP<2>> == 2, "");
 static_assert(math::levelOfHP<ComplexHP<3>> == 3, "");
@@ -710,7 +710,7 @@ static_assert(math::levelOfHP<ComplexHP<4>> == 4, "");
 static_assert(math::levelOfHP<ComplexHP<8>> == 8, "");
 #endif
 
-static_assert(math::levelOfHP<RealHP<1>> == 1, "");
+static_assert(math::levelOfHP<RealHP<1>> == 1, "levelOfHP should work both for Real and Complex");
 #ifndef YADE_DISABLE_REAL_MULTI_HP
 static_assert(math::levelOfHP<RealHP<2>> == 2, "");
 static_assert(math::levelOfHP<RealHP<3>> == 3, "");
@@ -723,12 +723,12 @@ static_assert(math::levelOfHP<RealHP<8>> == 8, "");
 
 // + vs <2>
 
-static_assert(std::is_same<decltype(RealHP<1>(1) + RealHP<2>(1)), RealHP<2>>::value, "");
+static_assert(std::is_same<decltype(RealHP<1>(1) + RealHP<2>(1)), RealHP<2>>::value, "UpconversionOfBasicOperatorsHP.hpp: + should produce a higher precision type");
 static_assert(std::is_same<decltype(RealHP<7>(1) + RealHP<2>(1)), RealHP<7>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) + RealHP<1>(1)), RealHP<2>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) + RealHP<7>(1)), RealHP<7>>::value, "");
 #ifndef YADE_COMPLEX_MP // see comment in lib/high-precision/RealHP.hpp line 94 about MakeComplexStd, MakeComplexMpc and problems of MPFR mpc_complex with UpconversionOfBasicOperatorsHP.hpp
-static_assert(std::is_same<decltype(RealHP<1>(1) + ComplexHP<2>(1)), ComplexHP<2>>::value, "");
+static_assert(std::is_same<decltype(RealHP<1>(1) + ComplexHP<2>(1)), ComplexHP<2>>::value, "UpconversionOfBasicOperatorsHP.hpp: + should produce a higher precision ComplexHP type");
 static_assert(std::is_same<decltype(RealHP<7>(1) + ComplexHP<2>(1)), ComplexHP<7>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) + ComplexHP<1>(1)), ComplexHP<2>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) + ComplexHP<7>(1)), ComplexHP<7>>::value, "");
@@ -744,12 +744,12 @@ static_assert(std::is_same<decltype(ComplexHP<2>(1) + ComplexHP<7>(1)), ComplexH
 
 // -
 
-static_assert(std::is_same<decltype(RealHP<1>(1) - RealHP<2>(1)), RealHP<2>>::value, "");
+static_assert(std::is_same<decltype(RealHP<1>(1) - RealHP<2>(1)), RealHP<2>>::value, "UpconversionOfBasicOperatorsHP.hpp: - should produce a higher precision type");
 static_assert(std::is_same<decltype(RealHP<7>(1) - RealHP<2>(1)), RealHP<7>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) - RealHP<1>(1)), RealHP<2>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) - RealHP<7>(1)), RealHP<7>>::value, "");
 #ifndef YADE_COMPLEX_MP // see comment in lib/high-precision/RealHP.hpp line 94 about MakeComplexStd, MakeComplexMpc and problems of MPFR mpc_complex with UpconversionOfBasicOperatorsHP.hpp
-static_assert(std::is_same<decltype(RealHP<1>(1) - ComplexHP<2>(1)), ComplexHP<2>>::value, "");
+static_assert(std::is_same<decltype(RealHP<1>(1) - ComplexHP<2>(1)), ComplexHP<2>>::value, "UpconversionOfBasicOperatorsHP.hpp: - should produce a higher precision ComplexHP type");
 static_assert(std::is_same<decltype(RealHP<7>(1) - ComplexHP<2>(1)), ComplexHP<7>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) - ComplexHP<1>(1)), ComplexHP<2>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) - ComplexHP<7>(1)), ComplexHP<7>>::value, "");
@@ -764,12 +764,12 @@ static_assert(std::is_same<decltype(ComplexHP<2>(1) - ComplexHP<7>(1)), ComplexH
 #endif
 // *
 
-static_assert(std::is_same<decltype(RealHP<1>(1) * RealHP<2>(1)), RealHP<2>>::value, "");
+static_assert(std::is_same<decltype(RealHP<1>(1) * RealHP<2>(1)), RealHP<2>>::value, "UpconversionOfBasicOperatorsHP.hpp: * should produce a higher precision type");
 static_assert(std::is_same<decltype(RealHP<7>(1) * RealHP<2>(1)), RealHP<7>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) * RealHP<1>(1)), RealHP<2>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) * RealHP<7>(1)), RealHP<7>>::value, "");
 #ifndef YADE_COMPLEX_MP
-static_assert(std::is_same<decltype(RealHP<1>(1) * ComplexHP<2>(1)), ComplexHP<2>>::value, "");
+static_assert(std::is_same<decltype(RealHP<1>(1) * ComplexHP<2>(1)), ComplexHP<2>>::value, "UpconversionOfBasicOperatorsHP.hpp: * should produce a higher precision ComplexHP type");
 static_assert(std::is_same<decltype(RealHP<7>(1) * ComplexHP<2>(1)), ComplexHP<7>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) * ComplexHP<1>(1)), ComplexHP<2>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) * ComplexHP<7>(1)), ComplexHP<7>>::value, "");
@@ -785,12 +785,12 @@ static_assert(std::is_same<decltype(ComplexHP<2>(1) * ComplexHP<7>(1)), ComplexH
 
 // /
 
-static_assert(std::is_same<decltype(RealHP<1>(1) / RealHP<2>(1)), RealHP<2>>::value, "");
+static_assert(std::is_same<decltype(RealHP<1>(1) / RealHP<2>(1)), RealHP<2>>::value, "UpconversionOfBasicOperatorsHP.hpp: / should produce a higher precision type");
 static_assert(std::is_same<decltype(RealHP<7>(1) / RealHP<2>(1)), RealHP<7>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) / RealHP<1>(1)), RealHP<2>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) / RealHP<7>(1)), RealHP<7>>::value, "");
 #ifndef YADE_COMPLEX_MP
-static_assert(std::is_same<decltype(RealHP<1>(1) / ComplexHP<2>(1)), ComplexHP<2>>::value, "");
+static_assert(std::is_same<decltype(RealHP<1>(1) / ComplexHP<2>(1)), ComplexHP<2>>::value, "UpconversionOfBasicOperatorsHP.hpp: / should produce a higher precision ComplexHP type");
 static_assert(std::is_same<decltype(RealHP<7>(1) / ComplexHP<2>(1)), ComplexHP<7>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) / ComplexHP<1>(1)), ComplexHP<2>>::value, "");
 static_assert(std::is_same<decltype(RealHP<2>(1) / ComplexHP<7>(1)), ComplexHP<7>>::value, "");
