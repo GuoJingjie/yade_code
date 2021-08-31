@@ -90,70 +90,62 @@ namespace math {
 	/*************************************************************************/
 	// Here is declared the 'ultimate' precision type called NthLevelRealHP. Depending on settings it can be MPFR or cpp_bin_float.
 	namespace detail {
-		// Two classes for creating complex type: MakeComplexStd, MakeComplexMpc. Their skills:
-		// 1. MakeComplexStd
+		// Two approaches to complex numbers. Their skills:
+		//
+		// 1. ENABLE_COMPLEX_MP=ON (default)
+		//    - uses best complex type available from boost::multiprecision , the (1) complex128 and (2) mpc_complex<…> and (3) complex_adaptor<cpp_bin_float<…>>
+		//    - UpconversionOfBasicOperatorsHP.hpp            - with MPFR doesn't work for Real{+,-,*,/}Complex. The mpc_complex too greedily provides operator+-*/ which then we cannot overload.
+		//                                                      this has been reported: https://github.com/boostorg/multiprecision/issues/363
+		//    - MathComplexFunctions.hpp                      - always uses this better type, math functions have smaller error
+		//    - doesn't work with boost < 1.71
+		//
+		// 2. ENABLE_COMPLEX_MP=OFF (optional, but default when boost < 1.71)
 		//    - uses std::complex<for everything>             - generally not recommended because C++ standard guarantees std::complex to work only for fundamental types.
 		//    - UpconversionOfBasicOperatorsHP.hpp            - works without any problems.
 		//    - MathComplexFunctions.hpp                      - larger numerical error in the mathematical functions
 		//    - always works on older compilers, linux distros
-		// 2. MakeComplexMpc
-		//    - uses best complex type available from boost::multiprecision , the (1) complex128 and (2) mpc_complex<…> and (3) complex_adaptor<cpp_bin_float<…>>
-		//    - UpconversionOfBasicOperatorsHP.hpp            - with MPFR doesn't work for Real{+,-,*,/}Complex. The mpc_complex too greedily provides operator+-*/ which then we cannot overload.
-		//    - MathComplexFunctions.hpp                      - always uses this better type unless impossible, has smaller error
-		//    - doesn't work with boost < 1.71
 		//
-		// Generally MakeComplexMpc is numerically better and has only one drawback: not working UpconversionOfBasicOperatorsHP.hpp. It is the default selection.
+		// Generally ENABLE_COMPLEX_MP=ON is numerically better and has only one drawback: not working UpconversionOfBasicOperatorsHP.hpp. It is the default selection.
 		//
-		// UpconversionOfBasicOperatorsHP.hpp works without problems only with MakeComplexStd this is optional via cmake ENABLE_COMPLEX_MP=OFF
+		// UpconversionOfBasicOperatorsHP.hpp works without problems only with ENABLE_COMPLEX_MP=OFF this is optional via cmake.
 		// We closely watch if std::complex<User Defined Types> work. If they stop we will act accordingly.
 		// There is a chance this problem will get some standardized solution: https://github.com/BoostGSoC21/math/issues/16#issuecomment-907625419
 		// And then we are ready to switch to the standard solution.
 		//
-		// To select MakeComplexMpc as the compilation option use ENABLE_COMPLEX_MP=ON which in turn #defines YADE_COMPLEX_MP
-		//
-		template <typename T> struct MakeComplexStd {
+		template <typename T> struct MakeComplex {
 			using type = std::complex<T>;
 		};
-		template <typename T> struct MakeComplexMpc {
-			using type = std::complex<T>;
-		};
-
 #if (defined(YADE_THIN_REAL_WRAPPER_HPP) and defined(YADE_THIN_COMPLEX_WRAPPER_HPP))
-		template <> struct MakeComplexStd<ThinRealWrapper<long double>> {
-			using type = ThinComplexWrapper<std::complex<long double>>;
-		};
-		template <> struct MakeComplexMpc<ThinRealWrapper<long double>> {
+		template <> struct MakeComplex<ThinRealWrapper<long double>> {
 			using type = ThinComplexWrapper<std::complex<long double>>;
 		};
 #endif
-
-#if (BOOST_VERSION >= 107100)
-// so for older boost MakeComplexMpc == MakeComplexStd and choice via ENABLE_COMPLEX_MP=ON between them means nothing.
-// Otherwise MakeComplexMpc is extended with (1) complex128 and (2) mpc_complex<…> and (3) complex_adaptor<cpp_bin_float<…>>
+#if ((BOOST_VERSION >= 107100) and defined(YADE_COMPLEX_MP))
+// ENABLE_COMPLEX_MP=ON : The ComplexHP type is extended with (1) complex128 and (2) mpc_complex_backend<…> and (3) complex_adaptor<cpp_bin_float<…>>
 #if (((((YADE_REAL_BIT <= 64) and (not defined(YADE_DISABLE_REAL_MULTI_HP)))) or (YADE_REAL_BIT == 128)) and (not defined(__clang__)))
-		template <> struct MakeComplexMpc<boost::multiprecision::float128> {
+		template <> struct MakeComplex<boost::multiprecision::float128> {
 			using type = boost::multiprecision::complex128;
 		};
 #endif
 		using ::boost::multiprecision::number;
 #ifdef YADE_MPFR
-		// here MakeComplexMpc allows creation of mpc_complex_backend types which use MPFR
+		// here MakeComplex allows creation of mpc_complex_backend types which use MPFR
 		using ::boost::multiprecision::expression_template_option;
 		using ::boost::multiprecision::mpc_complex_backend;
 		using ::boost::multiprecision::mpfr_allocation_type;
 		using ::boost::multiprecision::backends::mpfr_float_backend;
 		template <unsigned Digits, mpfr_allocation_type AllocationType, expression_template_option ExpressionTemplates>
-		struct MakeComplexMpc<number<mpfr_float_backend<Digits, AllocationType>, ExpressionTemplates>> {
+		struct MakeComplex<number<mpfr_float_backend<Digits, AllocationType>, ExpressionTemplates>> {
 			using type = number<mpc_complex_backend<Digits>, ExpressionTemplates>;
 		};
 #else
-		// here MakeComplexMpc allows creation of complex_adaptor types which use cpp_bin_float
+		// here MakeComplex allows creation of complex_adaptor types which use cpp_bin_float
 		using ex_opt = ::boost::multiprecision::expression_template_option;
 		using ::boost::multiprecision::backends::complex_adaptor;
 		using ::boost::multiprecision::backends::cpp_bin_float;
 		using ::boost::multiprecision::backends::digit_base_type;
 		template <unsigned Digits, digit_base_type DigitBase, class Alloc, class Exp, Exp MinEx, Exp MaxEx, ex_opt ExpressionTemplates>
-		struct MakeComplexMpc<number<cpp_bin_float<Digits, DigitBase, Alloc, Exp, MinEx, MaxEx>, ExpressionTemplates>> {
+		struct MakeComplex<number<cpp_bin_float<Digits, DigitBase, Alloc, Exp, MinEx, MaxEx>, ExpressionTemplates>> {
 			using type = number<complex_adaptor<cpp_bin_float<Digits, DigitBase, Alloc, Exp, MinEx, MaxEx>>, ExpressionTemplates>;
 		};
 #endif
@@ -233,17 +225,9 @@ namespace math {
 	/*************************************************************************/
 	// Extract UnderlyingReal (strip ThinRealWrapper) from type 'HP' which may be any of the RealHP<N> types.
 	// This implementation might be revised in the future if ThinRealWrapper or UnderlyingReal will acquire some new meaning. But interface shall remain the same.
-	template <typename HP> using UnderlyingRealHP       = typename std::conditional<IsWrapped<HP>, long double, HP>::type;
-	template <typename HP> using UnderlyingComplexHPStd = typename detail::MakeComplexStd<UnderlyingRealHP<HP>>::type;
-	template <typename HP> using UnderlyingComplexHPMpc = typename detail::MakeComplexMpc<UnderlyingRealHP<HP>>::type;
+	template <typename HP> using UnderlyingRealHP    = typename std::conditional<IsWrapped<HP>, long double, HP>::type;
+	template <typename HP> using UnderlyingComplexHP = typename detail::MakeComplex<UnderlyingRealHP<HP>>::type;
 
-	template <typename HP>
-	using UnderlyingComplexHP =
-#ifdef YADE_COMPLEX_MP
-	        UnderlyingComplexHPMpc<HP>;
-#else
-	        UnderlyingComplexHPStd<HP>;
-#endif
 	/*************************************************************************/
 	/*************************      AND FINALLY     **************************/
 	/*************************        declare       **************************/
@@ -264,31 +248,15 @@ namespace math {
 	        detail::NthLevelRealHP<Level>>::type;                     // otherwise use the type constructed from MPFR or from boost::cpp_bin_float
 
 	template <int Level>
-	using ComplexHPStd = typename std::conditional<
-	        IsWrapped<RealHP<Level>>,                                    // construct ComplexHP type
-	        MakeWrappedComplexHP<UnderlyingComplexHPStd<RealHP<Level>>>, // depending on whether it is wrapped or not
-	        UnderlyingComplexHPStd<RealHP<Level>>>::type;
-
-	template <int Level>
-	using ComplexHPMpc = typename std::conditional<
-	        IsWrapped<RealHP<Level>>,                                    // construct ComplexHP type
-	        MakeWrappedComplexHP<UnderlyingComplexHPMpc<RealHP<Level>>>, // depending on whether it is wrapped or not
-	        UnderlyingComplexHPMpc<RealHP<Level>>>::type;
+	using ComplexHP = typename std::conditional<
+	        IsWrapped<RealHP<Level>>,                                 // construct ComplexHP type
+	        MakeWrappedComplexHP<UnderlyingComplexHP<RealHP<Level>>>, // depending on whether it is wrapped or not
+	        UnderlyingComplexHP<RealHP<Level>>>::type;
 
 #else
 	// RealHP<…> won't work on this system, cmake sets YADE_DISABLE_REAL_MULTI_HP to use RealHP<1> for all precisions RealHP<N>.
-	template <int Level> using RealHP = Real; // ignore Level
-	// ComplexHP also won't work. But we need these typedefs for MathComplexFunctions to work.
-	template <int Level> using ComplexHPStd = UnderlyingComplexHPStd<Real>; // ignore Level
-	template <int Level> using ComplexHPMpc = UnderlyingComplexHPMpc<Real>; // ignore Level
-#endif
-
-	template <int Level>
-	using ComplexHP =
-#ifdef YADE_COMPLEX_MP
-	        ComplexHPMpc<Level>;
-#else
-	        ComplexHPStd<Level>;
+	template <int Level> using RealHP                     = Real;                      // ignore Level
+	template <int Level> using ComplexHP                  = UnderlyingComplexHP<Real>; // ignore Level
 #endif
 
 	/*************************************************************************/
@@ -313,15 +281,7 @@ namespace math {
 			static constexpr bool value = false;
 		};
 		template <typename T> struct IsHPComplex<T, true> {
-			static constexpr bool value = std::is_same<
-			        typename
-#ifdef YADE_COMPLEX_MP
-			        MakeComplexMpc
-#else
-			        MakeComplexStd
-#endif
-			        <typename T::value_type>::type,
-			        typename std::decay<T>::type>::value;
+			static constexpr bool value = std::is_same<typename MakeComplex<typename T::value_type>::type, typename std::decay<T>::type>::value;
 		};
 	} // namespace detail
 
@@ -413,15 +373,8 @@ using Complex = math::Complex;
 static_assert(sizeof(Real) == sizeof(math::UnderlyingReal), "This compiler introduced padding, which breaks binary compatibility");
 static_assert(
         (sizeof(Complex) == sizeof(std::complex<math::UnderlyingReal>))
-                or ((not math::isConstexprFloatingPoint<math::UnderlyingReal>)and(std::is_same<
-                                                                                  Complex,
-                                                                                  typename math::detail::
-#ifdef YADE_COMPLEX_MP
-                                                                                          MakeComplexMpc
-#else
-                                                                                          MakeComplexStd
-#endif
-                                                                                  <math::UnderlyingReal>::type>::value)),
+                or ((not math::isConstexprFloatingPoint<math::UnderlyingReal>)and(
+                        std::is_same<Complex, typename math::detail::MakeComplex<math::UnderlyingReal>::type>::value)),
         "This compiler introduced padding, which breaks binary compatibility");
 
 // If necessary for debugging put here the static_assert tests from the end of py/high-precision/_math.cpp file
