@@ -164,13 +164,13 @@ namespace math {
 		return cosh(static_cast<const UnderlyingHP<Cc>&>(a));
 	}
 	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline typename boost::enable_if_c<isComplexHP<Cc>, Cc>::type tan(const Cc& a)
-	{
+	{ // Warning: in boost < 1.76 the float128 and higher complex tan(…), tanh(…) has huge ULP error.
 		using ::std::tan;
 		using YADE_REAL_MATH_NAMESPACE::tan;
 		return tan(static_cast<const UnderlyingHP<Cc>&>(a));
 	}
 	template <typename Cc, int Level = levelOfComplexHP<Cc>> inline typename boost::enable_if_c<isComplexHP<Cc>, Cc>::type tanh(const Cc& a)
-	{
+	{ // Warning: in boost < 1.76 the float128 and higher complex tan(…), tanh(…) has huge ULP error.
 		using ::std::tanh;
 		using YADE_REAL_MATH_NAMESPACE::tanh;
 		return tanh(static_cast<const UnderlyingHP<Cc>&>(a));
