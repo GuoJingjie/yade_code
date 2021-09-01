@@ -609,18 +609,19 @@ public:
 	        , scene(Omega::instance().getScene())
 	{
 	}
-	pyInteractionIterator   pyIter() { return pyInteractionIterator(proxee); }
-	bool                    has(Body::id_t id1, Body::id_t id2, bool onlyReal = false) const {
+	pyInteractionIterator pyIter() { return pyInteractionIterator(proxee); }
+	bool                  has(Body::id_t id1, Body::id_t id2, bool onlyReal = false) const
+	{
 		const auto found(proxee->found(id1, id2));
-		bool retVal;
+		bool       retVal;
 		if (onlyReal) {
 			if (found) {
-				const shared_ptr<Interaction>& cont(proxee->find(id1,id2));
+				const shared_ptr<Interaction>& cont(proxee->find(id1, id2));
 				retVal = cont->isReal();
-			}
-			else retVal = false;
-		}
-		else retVal = found;
+			} else
+				retVal = false;
+		} else
+			retVal = found;
 		return retVal;
 	}
 	shared_ptr<Interaction> pyGetitem(vector<Body::id_t> id12)
@@ -1373,7 +1374,12 @@ try {
 	        .add_property("time", &pyOmega::time, "Return virtual (model world) time of the simulation.")
 	        .add_property("realtime", &pyOmega::realTime, "Return clock (human world) time the simulation has been running.")
 	        .add_property("speed", &pyOmega::speed, "Return current calculation speed [iter/sec].")
-	        .add_property("dt", &pyOmega::dt_get, &pyOmega::dt_set, "Current timestep (Δt) value.  See :yref:`dynDt<Omega.dynDt>` for enabling/disabling automatic Δt updates through a :yref:`TimeStepper`.")
+	        .add_property(
+	                "dt",
+	                &pyOmega::dt_get,
+	                &pyOmega::dt_set,
+	                "Current timestep (Δt) value.  See :yref:`dynDt<Omega.dynDt>` for enabling/disabling automatic Δt updates through a "
+	                ":yref:`TimeStepper`.")
 	        .add_property(
 	                "dynDt",
 	                &pyOmega::dynDt_get,
@@ -1386,8 +1392,9 @@ try {
 	        .def("load",
 	             &pyOmega::load,
 	             (py::arg("file"), py::arg("quiet") = false),
-	             "Load simulation from file. The file should have been :yref:`saved<Omega.save>` in the same version of Yade built or compiled with the same features, otherwise compatibility is not "
-	             "guaranteed. Compatibility may also be affected by different versions of external libraries such as Boost")
+	             "Load simulation from file. The file should have been :yref:`saved<Omega.save>` in the same version of Yade built or compiled with the "
+	             "same features, otherwise compatibility is not guaranteed. Compatibility may also be affected by different versions of external libraries "
+	             "such as Boost")
 	        .def("reload", &pyOmega::reload, (py::arg("quiet") = false), "Reload current simulation")
 	        .def("save",
 	             &pyOmega::save,
@@ -1550,15 +1557,14 @@ try {
 	             &pyBodyContainer::appendClump,
 	             (py::arg("discretization") = 0),
 	             "Append given list of bodies as a clump (rigid aggregate); returns a tuple of ``(clumpId,[memberId1,memberId2,...])``. Clump masses and "
-	             "inertia are adapted automatically (for details see :yref:`clump()<BodyContainer.clump>`).")
+	             "inertia are computed automatically depending upon *discretization* (for details see :yref:`clump()<BodyContainer.clump>`).")
 	        .def("clump",
 	             &pyBodyContainer::clump,
 	             (py::arg("discretization") = 0),
-	             "Clump given bodies together (creating a rigid aggregate); returns ``clumpId``. Clump masses and inertia are adapted automatically when "
-	             "discretization>0. If clump members are overlapping this is done by integration/summation over mass points using a regular grid of cells "
-	             "(grid cells length is defined as $R_{min}/discretization$, where $R_{min}$ is minimum clump member radius). For non-overlapping members "
-	             "inertia of the clump is the sum of inertias from members. If discretization<=0 sum of inertias from members is used (faster, but "
-	             "inaccurate).")
+	             "Clump given bodies together (creating a rigid aggregate); returns ``clumpId``. A precise definition of clump masses and inertia when "
+	             "clump members overlap requires *discretization*>0 and is achieved in this case by integration/summation over mass points using a regular "
+	             "grid of cells (grid cells length is defined as $R_{min}/discretization$, where $R_{min}$ is minimum clump member radius).  If "
+	             "*discretization*<=0 sum of inertias from members is simply used, which is faster but accurate only for non-overlapping members).")
 	        .def("updateClumpProperties",
 	             &pyBodyContainer::updateClumpProperties,
 	             (py::arg("excludeList") = py::list(), py::arg("discretization") = 5),
@@ -1632,13 +1638,19 @@ try {
 	        .def("__iter__", &pyInteractionContainer::pyIter)
 	        .def("__getitem__", &pyInteractionContainer::pyGetitem)
 	        .def("__len__", &pyInteractionContainer::len)
-	        .def("has", &pyInteractionContainer::has, (py::arg("id1"),py::arg("id2"),py::arg("onlyReal")=false),"Tell if a pair of ids *id1*, *id2* corresponds to an existing interaction (:yref:`real<Interaction.isReal>` or not depending on *onlyReal*)")
+	        .def("has",
+	             &pyInteractionContainer::has,
+	             (py::arg("id1"), py::arg("id2"), py::arg("onlyReal") = false),
+	             "Tell if a pair of ids *id1*, *id2* corresponds to an existing interaction (:yref:`real<Interaction.isReal>` or not depending on "
+	             "*onlyReal*)")
 	        .def("countReal", &pyInteractionContainer::countReal, "Return number of interactions that are :yref:`real<Interaction.isReal>`.")
 	        .def("nth",
 	             &pyInteractionContainer::pyNth,
 	             "Return n-th interaction from the container (usable for picking random interaction). The virtual interactions are not reached.")
 	        .def("withBody", &pyInteractionContainer::withBody, "Return list of :yref:`real<Interaction.isReal>` interactions of given body.")
-	        .def("withBodyAll", &pyInteractionContainer::withBodyAll, "Return list of all (:yref:`real<Interaction.isReal>` as well as non-real) interactions of given body.")
+	        .def("withBodyAll",
+	             &pyInteractionContainer::withBodyAll,
+	             "Return list of all (:yref:`real<Interaction.isReal>` as well as non-real) interactions of given body.")
 	        .def("all",
 	             &pyInteractionContainer::getAll,
 	             (py::arg("onlyReal") = false),
