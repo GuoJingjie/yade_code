@@ -610,7 +610,19 @@ public:
 	{
 	}
 	pyInteractionIterator   pyIter() { return pyInteractionIterator(proxee); }
-	bool                    has(Body::id_t id1, Body::id_t id2) { return proxee->found(id1, id2); }
+	bool                    has(Body::id_t id1, Body::id_t id2, bool onlyReal = false) const {
+		const auto found(proxee->found(id1, id2));
+		bool retVal;
+		if (onlyReal) {
+			if (found) {
+				const shared_ptr<Interaction>& cont(proxee->find(id1,id2));
+				retVal = cont->isReal();
+			}
+			else retVal = false;
+		}
+		else retVal = found;
+		return retVal;
+	}
 	shared_ptr<Interaction> pyGetitem(vector<Body::id_t> id12)
 	{
 		//if(!PySequence_Check(id12.ptr())) throw invalid_argument("Key must be a tuple");
@@ -1615,18 +1627,18 @@ try {
 	        "InteractionContainer",
 	        "Access to :yref:`interactions<Interaction>` of simulation, by using \n\n#. id's of both :yref:`Bodies<Body>` of the interactions, e.g. "
 	        "``O.interactions[23,65]``\n#. iteraction over the whole container::\n\n\tfor i in O.interactions: print i.id1,i.id2\n\n.. note::\n\tIteration "
-	        "silently skips interactions that are not :yref:`real<Interaction.isReal>`.",
+	        "silently skips interactions that are virtual i.e. not :yref:`real<Interaction.isReal>`.",
 	        py::init<pyInteractionContainer&>())
 	        .def("__iter__", &pyInteractionContainer::pyIter)
 	        .def("__getitem__", &pyInteractionContainer::pyGetitem)
 	        .def("__len__", &pyInteractionContainer::len)
-	        .def("has", &pyInteractionContainer::has, "Tell if a pair of ids corresponds to an existing interaction (real or not)")
-	        .def("countReal", &pyInteractionContainer::countReal, "Return number of interactions that are \"real\", i.e. they have phys and geom.")
+	        .def("has", &pyInteractionContainer::has, (py::arg("id1"),py::arg("id2"),py::arg("onlyReal")=false),"Tell if a pair of ids *id1*, *id2* corresponds to an existing interaction (:yref:`real<Interaction.isReal>` or not depending on *onlyReal*)")
+	        .def("countReal", &pyInteractionContainer::countReal, "Return number of interactions that are :yref:`real<Interaction.isReal>`.")
 	        .def("nth",
 	             &pyInteractionContainer::pyNth,
 	             "Return n-th interaction from the container (usable for picking random interaction). The virtual interactions are not reached.")
-	        .def("withBody", &pyInteractionContainer::withBody, "Return list of real interactions of given body.")
-	        .def("withBodyAll", &pyInteractionContainer::withBodyAll, "Return list of all (real as well as non-real) interactions of given body.")
+	        .def("withBody", &pyInteractionContainer::withBody, "Return list of :yref:`real<Interaction.isReal>` interactions of given body.")
+	        .def("withBodyAll", &pyInteractionContainer::withBodyAll, "Return list of all (:yref:`real<Interaction.isReal>` as well as non-real) interactions of given body.")
 	        .def("all",
 	             &pyInteractionContainer::getAll,
 	             (py::arg("onlyReal") = false),

@@ -65,13 +65,13 @@ public:
 		((long,iterLastSeen,-1,(Attr::noSave|Attr::hidden),"At which step this interaction was last detected by the collider. InteractionLoop will remove it if InteractionContainer::iterColliderLastRun==scene->iter, InteractionContainer::iterColliderLastRun is positive (some colliders manage interaction deletion themselves, such as :yref:`InsertionSortCollider`) and iterLastSeen<scene->iter."))
 		((shared_ptr<IGeom>,geom,,,"Geometry part of the interaction."))
 		((shared_ptr<IPhys>,phys,,,"Physical (material) part of the interaction."))
-		((Vector3i,cellDist,Vector3i(0,0,0),,"Distance of bodies in cell size units, if using periodic boundary conditions; id2 is shifted by this number of cells from its :yref:`State::pos` coordinates for this interaction to exist. Assigned by the collider.\n\n.. warning::\n\t(internal)  cellDist must survive Interaction::reset(), it is only initialized in ctor. Interaction that was cancelled by the constitutive law, was reset() and became only potential must have thepriod information if the geometric functor again makes it real. Good to know after few days of debugging that :-)"))
+		((Vector3i,cellDist,Vector3i(0,0,0),,"Distance of bodies in cell size units, if using periodic boundary conditions; id2 is shifted by this number of cells from its :yref:`State::pos` coordinates for this interaction to exist. Assigned by the collider.\n\n.. warning::\n\t(internal)  cellDist must survive Interaction::reset(), it is only initialized in ctor. Interaction that was cancelled by the constitutive law, was reset() and became only potential must have the period information if the geometric functor again makes it real. Good to know after few days of debugging that :-)"))
 		((int,linIx,-1,(Attr::noSave|Attr::hidden),"Index in the linear interaction container. For internal use by InteractionContainer only."))
 		((long,iterBorn,-1,,"Step number at which the interaction was added to simulation."))
 		,
 		/* ctor */ init(),
 		/*py*/
-		.def_readonly("isReal",&Interaction::isReal,"True if this interaction has both geom and phys; False otherwise. :yattrflags:`2` ")
+		.def_readonly("isReal",&Interaction::isReal,"True if this interaction has both :yref:`geom<Interaction.geom>` and :yref:`phys<Interaction.phys>`; False otherwise. :yattrflags:`2` ")
 		.def_readwrite("isActive",&Interaction::isActive,"True if this interaction is active. Otherwise the forces from this interaction will not be taken into account. True by default.")
 	);
 	// clang-format on
