@@ -615,7 +615,7 @@ class SerializableEditor(QFrame):
 			entry.widget=self.mkWidget(entry)
 			objPath=(self.path+'.'+entry.name) if self.path else None
 			label=SerQLabel(self,serializableHref(self.ser,entry.name),tooltip=self.getDocstring(entry.name),path=objPath)
-			grid.addRow(label,entry.widget if entry.widget else QLabel('<i>unhandled type</i>: '+str(entry.T).replace('<','').replace('>','') ))
+			grid.addRow(label,entry.widget if entry.widget else QLabel('<i>unhandled type</i>: '+str(entry.T).replace('<','').replace('>','')+' aka. "'+str(entry.T.__name__)+'"'))
 		self.setLayout(grid)
 		self.refreshEvent()
 	def refreshEvent(self):
