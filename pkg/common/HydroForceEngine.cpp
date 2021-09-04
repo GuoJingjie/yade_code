@@ -47,7 +47,8 @@ void HydroForceEngine::action()
 				//Drag force calculation
 				if (vRel.norm() != 0.0) {
 					dragForce = 0.5 * densFluid * Mathr::PI * pow(sphere->radius, 2.0)
-					        * (0.44 * vRel.norm() + 24.4 * viscoDyn / (densFluid * sphere->radius * 2)) * pow(1 - phiPart[p], -expoRZ)
+					        * (0.44 * vRel.norm() + 24.4 * viscoDyn / (densFluid * sphere->radius * 2)) 
+						* pow(1 - phiPart[p], -expoRZ)
 					        * vRel;
 				}
 				//lift force calculation due to difference of fluid pressure between top and bottom of the particle
@@ -509,8 +510,10 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 	viscof    = viscoDyn / densFluid; // compute the kinematic viscosity
 	dz        = deltaZ;
 	Real imp  = 0.5; // Implicitation factor of the lateral sink term due to wall friction
+
+	// compute fluid phase volume fraction
 	for (j = 0; j < nCell; j++) {
-		epsilon[j] = 1. - phiPart[j]; // compute fluid phase volume fraction or porosity
+		epsilon[j] = 1. - phiPart[j]; 
 	}
 
 	// Mesh definition: regular of step dz
@@ -540,10 +543,6 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 	// compute the fluid height
 	fluidHeight = sig[nCell - 1];
 
-	sig_cpp.resize(nCell);
-	dsig_cpp.resize(nCell);
-	sig_cpp  = sig;
-	dsig_cpp = dsig;
 
 	////////////////////////////////////  //  computeTaufsi(dt);
 	// Compute the fluid-particle momentum transfer associated to drag force, taufsi = phi/Vp*<fd>/rhof/(uf - up), not changing during the fluid resolution
@@ -609,7 +608,7 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 
 	///////////////////////////////////////////////
 	// FLUID VELOCITY PROFILE RESOLUTION: LOOP OVER TIME (main loop)
-	while (time <= tfin) {
+	while (time < tfin) {
 		// Advance time
 		time = time + dt;
 
@@ -640,8 +639,14 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 			else if (ilm == 2) {
 				sum   = 0.;
 				lm[0] = 0.;
+				//Threshold the value of the solid volume fraction:once the profile reach phiMax,
+				// the lower part of the bed is considered to be at phiMax. This fully damp the turbulence in the bed. 
+				int nPhiMax = nCell;
+				while(phiPart[nPhiMax]<phiMax)	nPhiMax -= 1;
+
 				for (j = 1; j < nCell; j++) {
-					phi_lim = math::min(phiPart[j - 1], phiMax);
+					if (j-1 < nPhiMax) phi_lim = phiMax;
+					else phi_lim = phiPart[j-1];
 					sum += kappa * (phiMax - phi_lim) / phiMax * dsig[j - 1];
 					lm[j] = sum;
 				}

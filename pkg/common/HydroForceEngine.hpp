@@ -7,14 +7,6 @@
 namespace yade { // Cannot have #include directive inside.
 
 class HydroForceEngine : public PartialEngine {
-private:
-	void calbeta(vector<Real> beta_in);
-	void calviscotlm(vector<Real> ufn_in, Real viscof_in, vector<Real> viscoft_in, vector<Real> sig_in, vector<Real> dsig_in);
-	//		void doubleq(Real ddam1[],Real ddam2[],Real ddam3[], Real ddbm[],Real ddxm[]);
-	void doubleq(vector<Real> ddam1, vector<Real> ddam2, vector<Real> ddam3, vector<Real> ddbm, vector<Real> ddxm);
-	void computeTaufsi(Real dt_in);
-	void calWallFriction(vector<Real> ufn_in, Real channelWidth_in, Real viscof_in, vector<Real> wallFriction_in);
-
 public:
 	void averageProfile();
 	void averageProfilePP();
@@ -87,8 +79,6 @@ public:
 		((Real,Cl,0.2,,"Value of the lift coefficient taken from [Wiberg1985]_"))
 		((vector<Real>,convAcc,0,,"Convective acceleration, depth dependent"))
 		((vector<Real>,taufsi,vector<Real>(1000),,"Fluid Resolution: Create Taufsi/rhof = dragTerm/(rhof(vf-vxp)) to transmit to the fluid code"))
-		((vector<Real>,sig_cpp,vector<Real>(1000),,"test"))
-		((vector<Real>,dsig_cpp,vector<Real>(1000),,"test"))
                 ((bool,steadyFlow,true,,"Condition to modify the buoyancy force according to the physical difference between a fluid at rest and a steady fluid flow. For more details see [Maurin2018]_"))
 	,/*ctor*/
 	,/*py*/
