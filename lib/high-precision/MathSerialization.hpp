@@ -24,6 +24,7 @@ BOOST_SERIALIZATION_SPLIT_FREE(::yade::math::Complex);
 BOOST_IS_BITWISE_SERIALIZABLE(::yade::math::Complex);
 #endif
 #if (YADE_REAL_BIT == 80)
+#include <boost/serialization/split_free.hpp>
 BOOST_IS_BITWISE_SERIALIZABLE(::yade::math::Real);
 BOOST_SERIALIZATION_SPLIT_FREE(::yade::math::Complex);
 BOOST_IS_BITWISE_SERIALIZABLE(::yade::math::Complex);
