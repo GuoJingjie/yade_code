@@ -77,7 +77,14 @@ try:
 	for refScr in screenshotNames:
 		# Check if file exists
 		if not os.path.isfile(scrDir   + "/" + refScr):
-			printFlushExit("\033[91m ERROR: file, " + refScr + " does not exist in compareSources folder.\033[0m", 1)
+			testFile = refScr[4:-7]
+			skipFile = "testGui_"+testFile+"_OK_or_Skipped.txt"
+			if(os.path.isfile(scrDir + "/" + skipFile)):
+				# test is normally skipped
+				print(refScr+" : "+skipFile)
+				continue
+			else:
+				printFlushExit("\033[91m ERROR: file, " + refScr + " does not exist in compareSources folder.\033[0m", 1)
 		# Both screenshots have the same filenames
 		scr = cv2.imread(scrDir + "/" + refScr, cv2.IMREAD_COLOR)
 		ref = cv2.imread(refDir + "/" + refScr, cv2.IMREAD_COLOR)
