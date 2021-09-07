@@ -17,13 +17,13 @@ class TestGUIHelper:
 	This simple class makes screenshots.
 	"""
 
-	def __init__(self, name = None, recenter = False):
-		self.recenter            = recenter # recenter after adjusting camera
-		self.viewWaitTimeSeconds = 30.0     # sometimes the build servers are oveloaded. Let's try 30 seconds and see if it works. When testing locally put here 1 second.
+	def __init__(self, name=None, recenter=False):
+		self.recenter = recenter  # recenter after adjusting camera
+		self.viewWaitTimeSeconds = 30.0  # sometimes the build servers are oveloaded. Let's try 30 seconds and see if it works. When testing locally put here 1 second.
 		self.scrNum = 0
 		# FIXME : this number 14 is hardcoded in scripts/checks-and-tests/gui/testGui.sh when testing if screenshots are present.
 		self.maxTestNum = 14
-		if(name != None):
+		if (name != None):
 			self.name = name
 		else:
 			self.name = ""
@@ -56,14 +56,14 @@ class TestGUIHelper:
 	def screenshotEngine(self):
 		self.scrNum += 1
 		intro = "Test '" + self.name + "', stage:" + str(self.scrNum) + " iter:" + str(O.iter)
-		if(self.scrNum == 1):
+		if (self.scrNum == 1):
 			self.makeNextScreenshot()
 			print(intro + " moving yade.qt.Controller()")
 			yade.qt.Controller()
 			yade.qt.controller.setWindowTitle('GUI test: ' + self.name)
 			yade.qt.controller.setGeometry(550, 20, 500, 1100)
-			yade.qt.Renderer().blinkHighlight='NEVER'
-		if(self.scrNum == 2):
+			yade.qt.Renderer().blinkHighlight = 'NEVER'
+		if (self.scrNum == 2):
 			self.makeNextScreenshot()
 			print(intro + " opening yade.qt.View()")
 			self.clickOnScreen(634, 1054)
@@ -72,20 +72,20 @@ class TestGUIHelper:
 			while (len(yade.qt.views()) == 0):
 				time.sleep(0.5)
 				t += 0.5
-				if(t > self.viewWaitTimeSeconds):
+				if (t > self.viewWaitTimeSeconds):
 					self.createEmptyFile("screenshots/yade_qt_View_FAILED_" + self.name)
 					print("*** ERROR: failed to open QT View window by clicking ***")
 					self.finish()
 			# OK, now we have a view to work with.
-			vv             = yade.qt.views()[0]
-			vv.axes        = True
-			vv.lookAt      = ( 7.978,-4.635, 8.221)
-			vv.viewDir     = (-0.647, 0.441,-0.620)
-			vv.eyePosition = ( 8.626,-5.076, 8.842)
-			vv.upVector    = (-0.691, 0.000, 0.721)
-			if(self.recenter):
+			vv = yade.qt.views()[0]
+			vv.axes = True
+			vv.lookAt = (7.978, -4.635, 8.221)
+			vv.viewDir = (-0.647, 0.441, -0.620)
+			vv.eyePosition = (8.626, -5.076, 8.842)
+			vv.upVector = (-0.691, 0.000, 0.721)
+			if (self.recenter):
 				yade.qt.center()
-		if(self.scrNum == 3):
+		if (self.scrNum == 3):
 			self.makeNextScreenshot()
 			print(intro + " opening yade.qt.Inspector() , setting wire=True, setting intrGeom=True")
 			self.clickOnScreen(982, 60)
@@ -96,16 +96,16 @@ class TestGUIHelper:
 					success = True
 				except:
 					time.sleep(1)
-			if(not success):
+			if (not success):
 				self.createEmptyFile("screenshots/mouse_click_the_Inspector_open_FAILED_" + self.name)
 				print("\n\n*** ERROR: self.clickOnScreen failed to open Inspector window ***\n\n")
-				self.makeNextScreenshot() # a debug screenshot.
+				self.makeNextScreenshot()  # a debug screenshot.
 				sys.stdout.flush()
 				self.finish()
 			yade.qt.controller.inspector.show()
 			qt.Renderer().wire = True
 			qt.Renderer().intrGeom = True
-		if(self.scrNum == 4):
+		if (self.scrNum == 4):
 			self.makeNextScreenshot()
 			print(intro + " changing tab to bodies, setting intrPhys=True, setting bound=True")
 			self.clickOnScreen(1148, 26)
@@ -116,54 +116,54 @@ class TestGUIHelper:
 			# yade.qt.controller.inspector.show()
 			qt.Renderer().intrPhys = True
 			qt.Renderer().bound = True
-		if(self.scrNum == 5):
+		if (self.scrNum == 5):
 			self.makeNextScreenshot()
 			print(intro + " clicking on interaction, setting wire=False, setting intrWire=True")
 			self.clickOnScreen(1494, 55)
 			qt.Renderer().wire = False
 			qt.Renderer().intrWire = True
-		if(self.scrNum == 6):
+		if (self.scrNum == 6):
 			self.makeNextScreenshot()
 			print(intro + " changing tab to interactions, setting wire=False, setting intrWire=True")
 			self.clickOnScreen(1234, 26)
 			qt.Renderer().wire = False
 			qt.Renderer().intrWire = True
-		if(self.scrNum == 7):
+		if (self.scrNum == 7):
 			self.makeNextScreenshot()
 			print(intro + " changing tab to cell, setting intrPhys=False")
 			self.clickOnScreen(1312, 26)
 			qt.Renderer().intrPhys = False
-		if(self.scrNum == 8):
+		if (self.scrNum == 8):
 			self.makeNextScreenshot()
 			print(intro + " changing tab to bodies, setting intrWire=False, setting intrGeom=False, setting intrPhys=True")
 			self.clickOnScreen(1148, 26)
 			qt.Renderer().intrWire = False
 			qt.Renderer().intrGeom = False
 			qt.Renderer().intrPhys = True
-		if(self.scrNum == 9):
+		if (self.scrNum == 9):
 			self.makeNextScreenshot()
 			print(intro + " changing tab to display, setting intrAllWire=True")
 			self.clickOnScreen(668, 26)
 			# yade.qt.controller.setTabActive('display')
 			qt.Renderer().intrAllWire = True
-		if(self.scrNum == 10):
+		if (self.scrNum == 10):
 			self.makeNextScreenshot()
 			print(intro + " changing tab to generator, setting intrGeom=True")
 			self.clickOnScreen(744, 26)
 			# yade.qt.controller.setTabActive('generator')
 			qt.Renderer().intrGeom = True
-		if(self.scrNum == 11):
+		if (self.scrNum == 11):
 			self.makeNextScreenshot()
 			print(intro + " changing tab to python, setting intrAllWire=False")
 			self.clickOnScreen(821, 26)
 			# yade.qt.controller.setTabActive('python')
 			qt.Renderer().intrAllWire = False
-		if(self.scrNum == 12):
+		if (self.scrNum == 12):
 			self.makeNextScreenshot()
 			print(intro + " changing tab to simulation")
 			self.clickOnScreen(580, 26)
 			# yade.qt.controller.setTabActive('simulation')
-		if(self.scrNum == 13):
+		if (self.scrNum == 13):
 			print(intro + " (testing of matplotlib is skipped for now...)")
 			self.makeNextScreenshot()
 			# FIXME: I couldn't get matplotlib to draw the plot, while screenshotting is going on.
@@ -178,7 +178,7 @@ class TestGUIHelper:
 			# time.sleep(5)
 			# self.makeNextScreenshot();
 			# matplotlib.pyplot.close(fig)
-		if(self.scrNum == 14):
+		if (self.scrNum == 14):
 			self.makeNextScreenshot()
 			self.createEmptyFile("screenshots/testGui_" + self.name + "_OK_or_Skipped.txt")
 			print(intro + " exiting\n\n")

@@ -11,20 +11,19 @@ $ firefox /tmp/aa.html
 """
 from __future__ import print_function
 
-
 import collections
-Dispatch=collections.namedtuple('Dispatch',['basename','types'])
+Dispatch = collections.namedtuple('Dispatch', ['basename', 'types'])
 
-dispatches=[
-	Dispatch('Law',('IGeom','IPhys')),
-	Dispatch('IGeom',('Shape','Shape')),
-	Dispatch('IPhys',('Material','Material')),
-	Dispatch('Bound',('Shape',)),
-	Dispatch('GlBound',('Bound',)),
-	Dispatch('GlIGeom',('IGeom',)),
-	Dispatch('GlIPhys',('IPhys',)),
-	Dispatch('GlShape',('Shape',)),
-	#Dispatch('GlState',('State',)) # broken for now
+dispatches = [
+        Dispatch('Law', ('IGeom', 'IPhys')),
+        Dispatch('IGeom', ('Shape', 'Shape')),
+        Dispatch('IPhys', ('Material', 'Material')),
+        Dispatch('Bound', ('Shape',)),
+        Dispatch('GlBound', ('Bound',)),
+        Dispatch('GlIGeom', ('IGeom',)),
+        Dispatch('GlIPhys', ('IPhys',)),
+        Dispatch('GlShape', ('Shape',)),
+        #Dispatch('GlState',('State',)) # broken for now
 ]
 
 sys.path.append('.')
@@ -33,41 +32,42 @@ try:
 except:
 	print("\nERROR: This script needs an unpackaged python import from https://www.decalage.info/en/python/html a file HTML.py\n")
 	sys.exit(1)
-outStr=''
+outStr = ''
 for D in dispatches:
-	functors=yade.system.childClasses(D.basename+'Functor')
+	functors = yade.system.childClasses(D.basename + 'Functor')
 	# create dispatcher with all available functors
-	dispatcher=eval(D.basename+'Dispatcher([%s])'%(','.join(['%s()'%f for f in functors])))
-	if len(D.types)==1:
-		allDim0=list(yade.system.childClasses(D.types[0]))
-		table=HTML.Table(header_row=allDim0)
-		row=[]
+	dispatcher = eval(D.basename + 'Dispatcher([%s])' % (','.join(['%s()' % f for f in functors])))
+	if len(D.types) == 1:
+		allDim0 = list(yade.system.childClasses(D.types[0]))
+		table = HTML.Table(header_row=allDim0)
+		row = []
 		for d0 in allDim0:
-			dd0=eval(d0+'()')
+			dd0 = eval(d0 + '()')
 			try:
-				f=dispatcher.dispFunctor(dd0)
+				f = dispatcher.dispFunctor(dd0)
 				row.append(f.__class__.__name__ if f else '-')
 			except RuntimeError as strerror:
-				row.append('<b>ambiguous (%s)</b>'%(strerror))
+				row.append('<b>ambiguous (%s)</b>' % (strerror))
 		table.rows.append(row)
-	elif len(D.types)==2:
+	elif len(D.types) == 2:
 		# lists of types the dispatcher accepts
-		allDim0=list(yade.system.childClasses(D.types[0]))
-		allDim1=list(yade.system.childClasses(D.types[1]))
-		table=HTML.Table(header_row=['']+allDim1)
+		allDim0 = list(yade.system.childClasses(D.types[0]))
+		allDim1 = list(yade.system.childClasses(D.types[1]))
+		table = HTML.Table(header_row=[''] + allDim1)
 		for d0 in allDim0:
-			row=['<b>'+d0+'</b>']
+			row = ['<b>' + d0 + '</b>']
 			for d1 in allDim1:
-				dd0,dd1=eval(d0+'()'),eval(d1+'()')
+				dd0, dd1 = eval(d0 + '()'), eval(d1 + '()')
 				try:
-					f=dispatcher.dispFunctor(dd0,dd1)
+					f = dispatcher.dispFunctor(dd0, dd1)
 					row.append(f.__class__.__name__ if f else '-')
-				except RuntimeError as strerror: # ambiguous
+				except RuntimeError as strerror:  # ambiguous
 					# FIXME - better to see all possible choices in the table.
-					row.append('<b>ambiguous (%s)</b>'%(strerror))
+					row.append('<b>ambiguous (%s)</b>' % (strerror))
 			table.rows.append(row)
-	else: raise ValueError("Dispatcher must be 1D or 2D, not %dD"%len(D.types))
-	outStr+='\n<h1>%sDispatcher</h1>'%D.basename
-	outStr+=str(table)
+	else:
+		raise ValueError("Dispatcher must be 1D or 2D, not %dD" % len(D.types))
+	outStr += '\n<h1>%sDispatcher</h1>' % D.basename
+	outStr += str(table)
 print(outStr)
 quit()
