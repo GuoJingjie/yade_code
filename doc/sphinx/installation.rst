@@ -330,7 +330,7 @@ The following cmake options are available: (see the `source code <https://gitlab
 	* ENABLE_COMPLEX_MP: use `boost multiprecision complex <https://www.boost.org/doc/libs/1_77_0/libs/multiprecision/doc/html/boost_multiprecision/tut/complex.html>`__ for ``ComplexHP<N>``, otherwise use ``std::complex<RealHP<N>>``. See :ref:`high precision documentation<highPrecisionReal>` for additional details. (ON by default if possible: requires boost >= 1.71)
 	* ENABLE_DEFORM: enable constant volume deformation engine (OFF by default)
 	* ENABLE_FAST_NATIVE: use maximum optimization compiler flags including ``-Ofast`` and ``-mtune=native``. Note: ``native`` means that code will **only** run on the same processor type on which it was compiled. Observed speedup was 2% (below standard deviation measurement error) and above 5% if clang compiler was used. (OFF by default)
-	* ENABLE_FEMLIKE: enable meshed solids, FEM-like (OFF by default, experimental)
+	* ENABLE_FEMLIKE: enable meshed solids, FEM-like (ON by default)
 	* ENABLE_GL2PS: enable GL2PS-option (ON by default)
 	* ENABLE_GTS: enable GTS-option (ON by default)
 	* ENABLE_GUI: enable GUI option (ON by default)
