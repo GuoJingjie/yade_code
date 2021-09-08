@@ -8,6 +8,8 @@ Installation
 * Other Operating Systems:
   Jump to the `last section <https://yade-dem.org/doc/installation.html#yubuntu>`_ of this page.
 
+* 64 bit Operating Systems required; no support for 32 bit (i386).
+
 .. toctree::
   :maxdepth: 2
 
