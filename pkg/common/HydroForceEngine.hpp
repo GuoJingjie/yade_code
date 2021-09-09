@@ -11,10 +11,8 @@ public:
 	void averageProfile();
 	void averageProfilePP();
 	void turbulentFluctuation();
-	void turbulentFluctuationBIS();
-	void turbulentFluctuationFluidizedBed();
+	void turbulentFluctuationZDep();
 	void fluidResolution(Real tfin, Real dt);
-
 public:
 	void action() override;
 	// clang-format off
@@ -73,6 +71,7 @@ public:
 		((Real,bedElevation,0.,,"Elevation of the bed above which the fluid flow is turbulent and the particles undergo turbulent velocity fluctuation."))
 		((vector<Real>,fluctTime,,,"Vector containing the time of life of the fluctuations associated to each particles."))
 		((Real,dtFluct,,,"Execution time step of the turbulent fluctuation model."))
+		((bool,freeSurfaceFluct,true,,"Condition to generate correlated fluid fluctuations as known in free-surface flow. If false, no correlation will exist between x, y and z fluctuations component."))
 		//// Fluid-particle interactions 
 		((Real,expoRZ,3.1,,"Value of the Richardson-Zaki exponent, for the drag correction due to hindrance"))
                 ((bool,lift,false,,"Option to activate or not the evaluation of the lift"))
@@ -86,8 +85,7 @@ public:
 	 .def("averageProfilePP",&HydroForceEngine::averageProfilePP,"Same as averageProfile function but considering point particles, i.e. particles for which all the quantites are defined at their center (no extent considered).")
 	 .def("fluidResolution",&HydroForceEngine::fluidResolution,"Solve the 1D volume-averaged fluid momentum balance on the defined mesh (:yref:`nCell<HydroForceEngine.nCell>`, :yref:`deltaZ<HydroForceEngine.deltaZ>`) from the volume-averaged solid profiles (:yref:`phiPart<HydroForceEngine.phiPart>`,:yref:`vxPart<HydroForceEngine.vxPart>`,:yref:`averageDrag<HydroForceEngine.averageDrag>`), which can be evaluated with the averageProfile function.")
 	 .def("turbulentFluctuation",&HydroForceEngine::turbulentFluctuation,"Apply a discrete random walk model to the evaluation of the drag force to account for the fluid velocity turbulent fluctuations. Very simple model applying fluctuations from the values of the Reynolds stresses in order to recover the property $<u_x'u_z'> (z) = <R^f_{xz}>(z)/\\rho^f$. The random fluctuations are modified over a time scale given by the eddy turn over time.")
-	 .def("turbulentFluctuationBIS",&HydroForceEngine::turbulentFluctuationBIS,"Apply turbulent fluctuation to the problem similarly to turbulentFluctuation but with an update of the fluctuation depending on the particle position.")
-	 .def("turbulentFluctuationFluidizedBed",&HydroForceEngine::turbulentFluctuationFluidizedBed,"Same as turbulentFluctuations but adapted to the example case of the fluidized bed.")
+	 .def("turbulentFluctuationZDep",&HydroForceEngine::turbulentFluctuationZDep,"Apply turbulent fluctuation to the problem similarly to turbulentFluctuation but with an update of the fluctuation depending on the particle position.")
 	);
 	// clang-format on
 };

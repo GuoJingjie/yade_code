@@ -372,7 +372,7 @@ void HydroForceEngine::turbulentFluctuation()
 /* Alternative Velocity fluctuation model, same as turbulentFluctuation model but with a time step associated with the fluctuation generation depending on z */
 /* Should be executed in the python script at a period dtFluct corresponding to the smallest value of the fluctTime vector */
 /* Should be initialized before running HydroForceEngine */
-void HydroForceEngine::turbulentFluctuationBIS()
+void HydroForceEngine::turbulentFluctuationZDep()
 {
 	int  idPartMax = vFluctX.size();
 	Real rand1     = 0.0;
@@ -404,8 +404,10 @@ void HydroForceEngine::turbulentFluctuationBIS()
 				if ((p < nCell) && (posSphere[2] - zRef > bedElevation)) {
 					rand1 = rnd();
 					rand2 = rnd();
-					rand3 = -rand1
-					        + rnd(); // x and z fluctuation are correlated as measured by Nezu 1977 and as expected from the formulation of the Reynolds stress tensor.
+					rand3 = rnd();
+					if (freeSurfaceFluct==true)
+						rand3 = -rand1
+						        + rnd(); // x and z fluctuation are correlated as measured by Nezu 1977 and as expected from the formulation of the Reynolds stress tensor.
 					vFluctZ[idPart] = rand1 * uStar;
 					vFluctY[idPart] = rand2 * uStar;
 					vFluctX[idPart] = rand3 * uStar;
@@ -419,71 +421,6 @@ void HydroForceEngine::turbulentFluctuationBIS()
 					vFluctX[idPart]   = 0.0;
 					fluctTime[idPart] = 0.0;
 				}
-			}
-		}
-	}
-}
-
-/* Velocity fluctuation determination.  To execute at a given period*/
-/* Should be initialized before running HydroForceEngine */
-void HydroForceEngine::turbulentFluctuationFluidizedBed()
-{
-	/* check size */
-	size_t size = vFluctX.size();
-	if (size < scene->bodies->size()) {
-		size = scene->bodies->size();
-		vFluctX.resize(size);
-		vFluctY.resize(size);
-		vFluctZ.resize(size);
-	}
-	/* reset stored values to zero */
-#if (YADE_REAL_BIT <= 64)
-	memset(&vFluctX[0], 0, size);
-	memset(&vFluctY[0], 0, size);
-	memset(&vFluctZ[0], 0, size);
-#else
-	// the standard way, perfectly optimized by compiler.
-	std::fill(vFluctX.begin(), vFluctX.end(), 0);
-	std::fill(vFluctY.begin(), vFluctY.end(), 0);
-	std::fill(vFluctZ.begin(), vFluctZ.end(), 0);
-#endif
-
-	/* Create a random number generator rnd() with a gaussian distribution of mean 0 and stdev 1.0 */
-	/* see http://www.boost.org/doc/libs/1_55_0/doc/html/boost_random/reference.html and the chapter 7 of Numerical Recipes in C, second edition (1992) for more details */
-	static boost::minstd_rand0                                                              randGen((int)TimingInfo::getNow(true));
-	static boost::normal_distribution<Real>                                                 dist(0.0, 1.0);
-	static boost::variate_generator<boost::minstd_rand0&, boost::normal_distribution<Real>> rnd(randGen, dist);
-
-	Real rand1 = 0.0;
-	Real rand2 = 0.0;
-	Real rand3 = 0.0;
-	/* Attribute a fluid velocity fluctuation to each body above the bed elevation */
-	FOREACH(Body::id_t id, ids)
-	{
-		Body* b = Body::byId(id, scene).get();
-		if (!b) continue;
-		if (!(scene->bodies->exists(id))) continue;
-		const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
-		if (sphere) {
-			Vector3r posSphere = b->state->pos;                                    //position vector of the sphere
-			int      p         = int(math::floor((posSphere[2] - zRef) / deltaZ)); //cell number in which the particle is
-			// If the particle is inside the water and above the bed elevation, so inside the turbulent flow, evaluate a turbulent fluid velocity fluctuation which will be used to apply the drag.
-			// The fluctuation magnitude is linked to the value of the Reynolds stress tensor at the given position, a kind of local friction velocity ustar
-			if ((p < nCell) && (posSphere[2] - zRef > 0.)) { // Remove the particles outside of the flow
-				Real uStar2 = ReynoldStresses[p] / densFluid;
-				if (uStar2 > 0.0) {
-					Real uStar  = sqrt(uStar2);
-					rand1       = rnd();
-					rand2       = rnd();
-					rand3       = rnd();
-					vFluctZ[id] = rand1 * uStar;
-					vFluctY[id] = rand2 * uStar;
-					vFluctX[id] = rand3 * uStar;
-				}
-			} else {
-				vFluctZ[id] = 0.0;
-				vFluctY[id] = 0.0;
-				vFluctX[id] = 0.0;
 			}
 		}
 	}
