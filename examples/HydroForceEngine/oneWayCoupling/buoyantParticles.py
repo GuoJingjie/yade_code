@@ -84,7 +84,7 @@ O.engines = [
 	[Law2_ScGeom_ViscElPhys_Basic()]
 	,label = 'interactionLoop'),				
 	#Apply an hydrodynamic force to the particles
-	HydroForceEngine(densFluid = densFluidPY,viscoDyn = kinematicViscoFluid*densFluidPY,zRef = groundPosition,gravity = gravityVector,deltaZ = fluidHeight/ndimz,expoRZ = 0.,lift = False,nCell = ndimz,vCell = 1.,vxFluid = np.zeros(ndimz),phiPart = np.zeros(ndimz),vxPart = np.zeros(ndimz),vFluctX = np.zeros(len(O.bodies)),vFluctY = np.zeros(len(O.bodies)),vFluctZ = np.zeros(len(O.bodies)),ids = idApplyForce, label = 'hydroEngine'),
+	HydroForceEngine(densFluid = densFluidPY,viscoDyn = kinematicViscoFluid*densFluidPY,zRef = groundPosition,gravity = gravityVector,deltaZ = fluidHeight/ndimz,expoRZ = 0.,lift = False,nCell = ndimz,vCell = 1.,ids = idApplyForce, label = 'hydroEngine'),
 	#To plot the wall normal position of the spheres with time
 	PyRunner(command = 'plotPos()', virtPeriod = 0.01, label = 'plot'),
 	# Integrate the equation and calculate the new position/velocities...
@@ -94,6 +94,12 @@ O.engines = [
 O.saveTmp()
 #Time step
 O.dt = 5e-7 #Low no purpose, in order to observe the sedimentation
+
+#Initialize HydroForceEngine variables (fluid velocity, fluctuations,...) to zero
+hydroEngine.initialization()
+
+#Run the simulation
+O.run()
 
 #Plot the wall normal position of the spheres with time
 def plotPos():

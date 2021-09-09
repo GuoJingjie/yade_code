@@ -30,12 +30,12 @@ dtFluid = 1e4		#Resolution time step, in s
 ndimz = 101   #Number of grid cells in the height
 dz =  fluidHeight/(1.0*(ndimz-1))	#spatial step between two mesh nodes
 
-# Initialization of the fluid velocity
-vxFluid =np.zeros(ndimz)
-
 ################################
 # CREATE THE ASSOCIATED HYDROFORCEENGINE OBJECT FOR THE FLUID RESOLUTION
-a = HydroForceEngine(densFluid=densFluid,viscoDyn=kinematicViscoFluid*densFluid,deltaZ=dz,nCell=ndimz,vxFluid=np.array(vxFluid),dpdx=dpdx,gravity = Vector3(0,0,-9.81),phiMax=0.61,turbulentViscosity = np.zeros(ndimz),iturbu=0,iusl=0,uTop=0.,phiPart=np.zeros(ndimz),vxPart = np.zeros(ndimz),averageDrag=np.zeros(ndimz))# Define the minimum parameters of the HydroForceEngine for the fluid resolution
+a = HydroForceEngine(densFluid=densFluid,viscoDyn=kinematicViscoFluid*densFluid,deltaZ=dz,nCell=ndimz,dpdx=dpdx,gravity = Vector3(0,0,-9.81),phiMax=0.61,iturbu=0,iusl=0,uTop=0.)# Define the minimum parameters of the HydroForceEngine for the fluid resolution
+
+#Initialization of hydroForceEngine
+a.initialization()
 
 ################################
 # FLUID RESOLUTION

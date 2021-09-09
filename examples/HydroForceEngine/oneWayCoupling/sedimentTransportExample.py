@@ -141,7 +141,7 @@ O.engines = [
 	[Law2_ScGeom_ViscElPhys_Basic()]
 	,label = 'interactionLoop'),
 	#Apply an hydrodynamic force to the particles
-	HydroForceEngine(densFluid = densFluidPY,viscoDyn = kinematicViscoFluid*densFluidPY,zRef = groundPosition,gravity = gravityVector,deltaZ = dz,expoRZ = expoDrag_PY,nCell = ndimz,vCell = length*width*dz ,vxFluid = vxFluidPY,phiPart = phiPartPY,vxPart = vxPartPY,ids = idApplyForce, label = 'hydroEngine', dead = True),
+	HydroForceEngine(densFluid = densFluidPY,viscoDyn = kinematicViscoFluid*densFluidPY,zRef = groundPosition,gravity = gravityVector,deltaZ = dz,expoRZ = expoDrag_PY,nCell = ndimz,vCell = length*width*dz,ids = idApplyForce, label = 'hydroEngine', dead = True),
 	#Measurement, output files
 	PyRunner(command = 'measure()', virtPeriod = 0.1, label = 'measurement', dead = True),
 	# Check if the packing is stabilized, if yes activate the hydro force on the grains and the slope.
@@ -153,8 +153,14 @@ O.engines = [
 	]
 #save the initial configuration to be able to recharge the simulation starting configuration easily
 O.saveTmp()
+
+#Initialize HydroForceEngine variables to zero (fluid velocity, fluctuations,...)
+hydroEngine.initialization()
+
 #run
 O.run()
+
+
 
 
 ####################################################################################################################################
