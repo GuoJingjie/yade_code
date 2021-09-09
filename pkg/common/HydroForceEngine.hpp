@@ -15,9 +15,11 @@ public:
 	void turbulentFluctuation();
 	void turbulentFluctuationZDep();
 	void fluidResolution(Real tfin, Real dt);
-	//New average
 	void computeRadiusParts();
-
+	Real computePoreLength(int i);
+	int computeZbedIndex();
+	Real computeDiameter(int i);
+	vector<Real> computePhiPartAverageOverTime();
 public:
 	void action() override;
 	std::queue< vector<Real> > phiPartT;
@@ -101,6 +103,9 @@ public:
 		((vector<Real>,averageDrag,,,"Discretized average drag depth profile. No role in the engine, output parameter. For practical reason, it can be evaluated directly inside the engine, calling from python the averageProfile() method of the engine"))
 		((vector< vector<Real> >,multiDragPart,,,"Spatial-averaged mean drag force for each class of particle. Un-used ? Or just for debug."))
 
+		/* -- Turbulence modeling parameters */
+		((double,phiBed,0.08,,"New"))
+
 	,/*ctor*/
 	,/*py*/
 	 .def("initialization",&HydroForceEngine::initialization,"Initialize the necessary parameters to make HydroForceEngine run. Necessary to execute before any simulation run, otherwise it crashes")
@@ -110,7 +115,6 @@ public:
 	 .def("turbulentFluctuationZDep",&HydroForceEngine::turbulentFluctuationZDep,"Apply turbulent fluctuation to the problem similarly to turbulentFluctuation but with an update of the fluctuation depending on the particle position.")
 
 	 .def("computeRadiusParts", &HydroForceEngine::computeRadiusParts, "compute the different class of radius present in the simulation.")
-
 	);
 	// clang-format on
 };
