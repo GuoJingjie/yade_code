@@ -420,6 +420,122 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 		}
 	}
 
+	////////////////////////////////////
+	//  Compute the mixing length
+	// ilm = 0 : Prandtl mixing length
+	if (ilm == 0) {
+		lm[0] = 0.;
+		for (j = 1; j < nCell; j++)
+			lm[j] = kappa * sig[j];
+	}
+	// ilm = 1 : Parabolic profile (free surface flows)
+	else if (ilm == 1) {
+		lm[0] = 0.;
+		for (j = 1; j < nCell; j++)
+			lm[j] = kappa * sig[j] * sqrt(1. - sig[j] / fluidHeight);
+		lm[nCell - 1] = 0.;
+	}
+	// ilm = 2 : Li and Sawamoto (1995) integral of concentration profile
+	else if (ilm == 2) {
+		sum   = 0.;
+		lm[0] = 0.;
+		//Threshold the value of the solid volume fraction:once the profile reach phiMax,
+		// the lower part of the bed is considered to be at phiMax. This fully damp the turbulence in the bed. 
+		int nPhiMax = nCell;
+		while(phiPart[nPhiMax]<phiMax)	nPhiMax -= 1;
+		for (j = 1; j < nCell; j++) {
+			if (j-1 < nPhiMax) phi_lim = phiMax;
+			else phi_lim = phiPart[j-1];
+			sum += kappa * (phiMax - phi_lim) / phiMax * dsig[j - 1];
+			lm[j] = sum;
+		}
+	}
+	// ilm = 3 : TODO, TEST : enableMultiClassAverage must be true
+	else if (ilm == 3){
+		const Real cvd = 0.5;
+		for(int j = 0; j < nCell; j++){
+			int k = j;
+			Real lmpj = cvd * computePoreLength(j);
+			Real zj = sig[j];
+			Real lmp = lmpj;
+			Real lmz = 0;
+			k--;
+			while(k > 0 and lmp > lmz){
+				const Real zvd = (zj - sig[k]);
+				lmp = cvd * computePoreLength(k);
+				lmz = kappa * zvd;
+				k--;
+			}
+			lm[j] = lmz;
+		}
+	}
+	// ilm = 4 : Gauthier Rousseau's model, based on phiMax.
+	else if (ilm == 4){
+		const Real viscoKin = viscoDyn/densFluid;
+		const Real revd = 26.0;
+		const Real cvd = 0.5;
+		
+		// computing lp
+		Real volumeAverage = 0.0;
+		Real surfaceAverage = 0.0;
+		for(unsigned int j = 0; j < radiusParts.size(); j++){
+			const Real vj = 4.0/3.0 * Mathr::PI * pow(radiusParts[j], 3.0);
+			const Real sj = 4.0 * Mathr::PI * pow(radiusParts[j], 2.0);
+			volumeAverage += vj;
+			surfaceAverage += sj;
+		}
+		const Real lp = (1.0 - phiMax)/phiMax * volumeAverage/surfaceAverage;
+		// lp computed
+		
+		Real zvd = 0.;
+		lm[0] = 0.;
+		for(int j = 1; j < nCell; j++){
+			Real phiLim = std::min(phiPart[j-1], phiMax);
+			zvd += sqrt((phiMax - phiLim) / phiMax) * dsig[j-1];
+			lm[j] = kappa * zvd * (1 - exp(-sqrt(fabs(zvd * vxFluid[j]) / viscoKin) / revd)) + cvd * lp;
+		}
+	}
+	// ilm = 5 : TODO, TEST : Model based on Ni and Capart 2018 results and Gauthier Rousseau's Thesis results.
+	else if (ilm == 5){
+		// Coefficient given by Gauthier Rousseau.
+		const Real clp = 0.5;
+		// Coefficient given by Ni and Capart.
+		const Real cd = 0.2;
+		// Computes the position of the bed. 
+		const Real zBed = sig[computeZbedIndex()];
+				
+		// Computes lm
+		for(int j = 0; j < nCell; j++){
+			lm[j] = max(min(clp * computePoreLength(j), cd * computeDiameter(j)), kappa * (sig[j] - zBed));
+		}
+	}
+	// ilm = 6 : TODO, TEST : Model of mixing length for pipe flow, combining Li & Sawamoto and pipe flow Prantl mixing length
+	else if (ilm == 6){
+		//Initialization
+		vector<Real> lm_bot(nCell, 0.);
+		vector<Real> lm_top(nCell, 0.);
+		// Li & Sawamoto mixing length from the bottom
+		sum   = 0.;
+		//Threshold the value of the solid volume fraction:once the profile reach phiMax,
+		// the lower part of the bed is considered to be at phiMax. This fully damp the turbulence in the bed. 
+		int nPhiMax = nCell;
+		while(phiPart[nPhiMax]<phiMax)	nPhiMax -= 1;
+		for (j = 1; j < nCell; j++) {
+			if (j-1 < nPhiMax) phi_lim = phiMax;
+			else phi_lim = phiPart[j-1];
+			sum += kappa * (phiMax - phi_lim) / phiMax * dsig[j - 1];
+			lm_bot[j] = sum;
+		}
+		//Prantl mixing length from the top 
+		lm_top[nCell-1] = 0.;
+		for (j = nCell-1; j >=0; j--)	lm_top[j] = kappa * (sig[nCell-1] - sig[j]);
+		//Final mixing length as the minimum between the two
+		for (j = 1; j < nCell; j++) lm[j] = min(lm_bot[j],lm_top[j]);
+	}
+
+
+
+
 	///////////////////////////////////////////////
 	// FLUID VELOCITY PROFILE RESOLUTION: LOOP OVER TIME (main loop)
 	while (time < tfin) {
@@ -436,118 +552,7 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 		}
 		// iturbu = 1 : Turbulence activated
 		else if (iturbu == 1) {
-			// ilm = 0 : Prandtl mixing length
-			if (ilm == 0) {
-				lm[0] = 0.;
-				for (j = 1; j < nCell; j++)
-					lm[j] = kappa * sig[j];
-			}
-			// ilm = 1 : Parabolic profile (free surface flows)
-			else if (ilm == 1) {
-				lm[0] = 0.;
-				for (j = 1; j < nCell; j++)
-					lm[j] = kappa * sig[j] * sqrt(1. - sig[j] / fluidHeight);
-				lm[nCell - 1] = 0.;
-			}
-			// ilm = 2 : Li and Sawamoto (1995) integral of concentration profile
-			else if (ilm == 2) {
-				sum   = 0.;
-				lm[0] = 0.;
-				//Threshold the value of the solid volume fraction:once the profile reach phiMax,
-				// the lower part of the bed is considered to be at phiMax. This fully damp the turbulence in the bed. 
-				int nPhiMax = nCell;
-				while(phiPart[nPhiMax]<phiMax)	nPhiMax -= 1;
 
-				for (j = 1; j < nCell; j++) {
-					if (j-1 < nPhiMax) phi_lim = phiMax;
-					else phi_lim = phiPart[j-1];
-					sum += kappa * (phiMax - phi_lim) / phiMax * dsig[j - 1];
-					lm[j] = sum;
-				}
-			}
-			// ilm = 3 : TODO, TEST : enableMultiClassAverage must be true
-			else if (ilm == 3){
-				const Real cvd = 0.5;
-				for(int j = 0; j < nCell; j++){
-					int k = j;
-					Real lmpj = cvd * computePoreLength(j);
-					Real zj = sig[j];
-					Real lmp = lmpj;
-					Real lmz = 0;
-					k--;
-					while(k > 0 and lmp > lmz){
-						const Real zvd = (zj - sig[k]);
-						lmp = cvd * computePoreLength(k);
-						lmz = kappa * zvd;
-						k--;
-					}
-					lm[j] = lmz;
-				}
-			}
-			// ilm = 4 : Gauthier Rousseau's model, based on phiMax.
-			else if (ilm == 4){
-				const Real viscoKin = viscoDyn/densFluid;
-				const Real revd = 26.0;
-				const Real cvd = 0.5;
-				
-				// computing lp
-				Real volumeAverage = 0.0;
-				Real surfaceAverage = 0.0;
-				for(unsigned int j = 0; j < radiusParts.size(); j++){
-					const Real vj = 4.0/3.0 * Mathr::PI * pow(radiusParts[j], 3.0);
-					const Real sj = 4.0 * Mathr::PI * pow(radiusParts[j], 2.0);
-					volumeAverage += vj;
-					surfaceAverage += sj;
-				}
-				const Real lp = (1.0 - phiMax)/phiMax * volumeAverage/surfaceAverage;
-				// lp computed
-				
-				Real zvd = 0.;
-				lm[0] = 0.;
-				for(int j = 1; j < nCell; j++){
-					Real phiLim = std::min(phiPart[j-1], phiMax);
-					zvd += sqrt((phiMax - phiLim) / phiMax) * dsig[j-1];
-					lm[j] = kappa * zvd * (1 - exp(-sqrt(fabs(zvd * vxFluid[j]) / viscoKin) / revd)) + cvd * lp;
-				}
-			}
-			// ilm = 5 : TODO, TEST : Model based on Ni and Capart 2018 results and Gauthier Rousseau's Thesis results.
-			else if (ilm == 5){
-				// Coefficient given by Gauthier Rousseau.
-				const Real clp = 0.5;
-				// Coefficient given by Ni and Capart.
-				const Real cd = 0.2;
-				// Computes the position of the bed. 
-				const Real zBed = sig[computeZbedIndex()];
-				
-				// Computes lm
-				for(int j = 0; j < nCell; j++){
-					lm[j] = max(min(clp * computePoreLength(j), cd * computeDiameter(j)), kappa * (sig[j] - zBed));
-				}
-			}
-			// ilm = 6 : TODO, TEST : Model of mixing length for pipe flow, combining Li & Sawamoto and pipe flow Prantl mixing length
-			else if (ilm == 6){
-				//Initialization
-				vector<Real> lm_bot(nCell, 0.);
-				vector<Real> lm_top(nCell, 0.);
-				// Li & Sawamoto mixing length from the bottom
-				sum   = 0.;
-				//Threshold the value of the solid volume fraction:once the profile reach phiMax,
-				// the lower part of the bed is considered to be at phiMax. This fully damp the turbulence in the bed. 
-				int nPhiMax = nCell;
-				while(phiPart[nPhiMax]<phiMax)	nPhiMax -= 1;
-				for (j = 1; j < nCell; j++) {
-					if (j-1 < nPhiMax) phi_lim = phiMax;
-					else phi_lim = phiPart[j-1];
-					sum += kappa * (phiMax - phi_lim) / phiMax * dsig[j - 1];
-					lm_bot[j] = sum;
-				}
-				//Prantl mixing length from the top 
-				lm_top[nCell-1] = 0.;
-				for (j = nCell-1; j >=0; j--)	lm_top[j] = kappa * (sig[nCell-1] - sig[j]);
-				//Final mixing length as the minimum between the two
-				for (j = 1; j < nCell; j++) lm[j] = min(lm_bot[j],lm_top[j]);
-
-			}
 			// end if ilm
 
 			// Compute the velocity gradient and the turbulent viscosity
