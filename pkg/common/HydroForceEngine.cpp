@@ -481,7 +481,7 @@ void HydroForceEngine::turbulentFluctuationZDep()
 
 
 
-///////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /* Fluid Resolution */
 ///////////////////////
 // Fluid resolution routine: 1D vertical volume-averaged fluid momentum balance resolution
@@ -546,24 +546,29 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 	// the standard way, perfectly optimized by compiler.
 	std::fill(taufsi.begin(), taufsi.end(), 0);
 #endif
-	Real lim = 1e-5, dragTerm = 0., partVolume = 1., partVolume1 = 1., partVolume2 = 1.;
+	Real lim = 1e-5, dragTerm = 0., partVolume = 1.;
+	vector<Real> partVolumeMulti(radiusParts.size(),1.);
 	// Evaluate particles volume
-	if (twoSize == true) {
-		partVolume1 = 4. / 3. * Mathr::PI * pow(radiusPart1, 3);
-		partVolume2 = 4. / 3. * Mathr::PI * pow(radiusPart2, 3);
-	} else
+	if (twoSize || enableMultiClassAverage) {
+		for(unsigned int r = 0; r < radiusParts.size(); r++){
+			partVolumeMulti[r] = 4. / 3. * Mathr::PI * pow(radiusParts[r], 3);
+		}
+	} 
+	else{
 		partVolume = 4. / 3. * Mathr::PI * pow(radiusPart, 3);
+	}
 	// Compute taufsi
 	taufsi[0] = 0.;
 	for (i = 1; i < nCell; i++) {
-		if (twoSize == true) {
-			dragTerm = phiPart1[i] / partVolume1 * averageDrag1[i] + phiPart2[i] / partVolume2 * averageDrag2[i];
+		if (twoSize || enableMultiClassAverage) {
+			dragTerm = 0.;
+			for(unsigned int r = 0; r < radiusParts.size(); r++) dragTerm+=(multiPhiPart[r][i]/partVolumeMulti[r]*multiDragPart[r][i]);
 		} else {
 			dragTerm = phiPart[i] / partVolume * averageDrag[i];
 		}
 		urel = math::abs(
 		        ufn[i + 1]
-		        - vxPart[i]); // Difference of definition between ufn and vxPart, ufn starts at 0, while vxPart starts at 1/2. The two therefore corresponds for i+1 and i
+		        - vPart[i][0]); // Difference of definition between ufn and vxPart, ufn starts at 0, while vxPart starts at 1/2. The two therefore corresponds for i+1 and i
 		urel_bound = math::max(urel, lim); //limit the value to avoid division by 0
 		taufsi[i]  = math::max(
                         0.,
@@ -597,6 +602,122 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 		}
 	}
 
+	////////////////////////////////////
+	//  Compute the mixing length
+	// ilm = 0 : Prandtl mixing length
+	if (ilm == 0) {
+		lm[0] = 0.;
+		for (j = 1; j < nCell; j++)
+			lm[j] = kappa * sig[j];
+	}
+	// ilm = 1 : Parabolic profile (free surface flows)
+	else if (ilm == 1) {
+		lm[0] = 0.;
+		for (j = 1; j < nCell; j++)
+			lm[j] = kappa * sig[j] * sqrt(1. - sig[j] / fluidHeight);
+		lm[nCell - 1] = 0.;
+	}
+	// ilm = 2 : Li and Sawamoto (1995) integral of concentration profile
+	else if (ilm == 2) {
+		sum   = 0.;
+		lm[0] = 0.;
+		//Threshold the value of the solid volume fraction:once the profile reach phiMax,
+		// the lower part of the bed is considered to be at phiMax. This fully damp the turbulence in the bed. 
+		int nPhiMax = nCell;
+		while(phiPart[nPhiMax]<phiMax)	nPhiMax -= 1;
+		for (j = 1; j < nCell; j++) {
+			if (j-1 < nPhiMax) phi_lim = phiMax;
+			else phi_lim = phiPart[j-1];
+			sum += kappa * (phiMax - phi_lim) / phiMax * dsig[j - 1];
+			lm[j] = sum;
+		}
+	}
+	// ilm = 3 : TODO, TEST : enableMultiClassAverage must be true
+	else if (ilm == 3){
+		const Real cvd = 0.5;
+		for(j = 0; j < nCell; j++){
+			int k = j;
+			Real lmpj = cvd * computePoreLength(j);
+			Real zj = sig[j];
+			Real lmp = lmpj;
+			Real lmz = 0;
+			k--;
+			while(k > 0 and lmp > lmz){
+				const Real zvd = (zj - sig[k]);
+				lmp = cvd * computePoreLength(k);
+				lmz = kappa * zvd;
+				k--;
+			}
+			lm[j] = lmz;
+		}
+	}
+	// ilm = 4 : Gauthier Rousseau's model, based on phiMax.
+	else if (ilm == 4){
+		const Real viscoKin = viscoDyn/densFluid;
+		const Real revd = 26.0;
+		const Real cvd = 0.5;
+		
+		// computing lp
+		Real volumeAverage = 0.0;
+		Real surfaceAverage = 0.0;
+		for(unsigned int l = 0; l < radiusParts.size(); l++){
+			const Real vj = 4.0/3.0 * Mathr::PI * pow(radiusParts[l], 3.0);
+			const Real sj = 4.0 * Mathr::PI * pow(radiusParts[l], 2.0);
+			volumeAverage += vj;
+			surfaceAverage += sj;
+		}
+		const Real lp = (1.0 - phiMax)/phiMax * volumeAverage/surfaceAverage;
+		// lp computed
+		
+		Real zvd = 0.;
+		lm[0] = 0.;
+		for(j = 1; j < nCell; j++){
+			Real phiLim = std::min(phiPart[j-1], phiMax);
+			zvd += sqrt((phiMax - phiLim) / phiMax) * dsig[j-1];
+			lm[j] = kappa * zvd * (1 - exp(-sqrt(fabs(zvd * vxFluid[j]) / viscoKin) / revd)) + cvd * lp;
+		}
+	}
+	// ilm = 5 : TODO, TEST : Model based on Ni and Capart 2018 results and Gauthier Rousseau's Thesis results.
+	else if (ilm == 5){
+		// Coefficient given by Gauthier Rousseau.
+		const Real clp = 0.5;
+		// Coefficient given by Ni and Capart.
+		const Real cd = 0.2;
+		// Computes the position of the bed. 
+		const Real zBed = sig[computeZbedIndex()];
+				
+		// Computes lm
+		for(j = 0; j < nCell; j++){
+			lm[j] = max(min(clp * computePoreLength(j), cd * computeDiameter(j)), kappa * (sig[j] - zBed));
+		}
+	}
+	// ilm = 6 : TODO, TEST : Model of mixing length for pipe flow, combining Li & Sawamoto and pipe flow Prantl mixing length
+	else if (ilm == 6){
+		//Initialization
+		vector<Real> lm_bot(nCell, 0.);
+		vector<Real> lm_top(nCell, 0.);
+		// Li & Sawamoto mixing length from the bottom
+		sum   = 0.;
+		//Threshold the value of the solid volume fraction:once the profile reach phiMax,
+		// the lower part of the bed is considered to be at phiMax. This fully damp the turbulence in the bed. 
+		int nPhiMax = nCell;
+		while(phiPart[nPhiMax]<phiMax)	nPhiMax -= 1;
+		for (j = 1; j < nCell; j++) {
+			if (j-1 < nPhiMax) phi_lim = phiMax;
+			else phi_lim = phiPart[j-1];
+			sum += kappa * (phiMax - phi_lim) / phiMax * dsig[j - 1];
+			lm_bot[j] = sum;
+		}
+		//Prantl mixing length from the top 
+		lm_top[nCell-1] = 0.;
+		for (j = nCell-1; j >=0; j--)	lm_top[j] = kappa * (sig[nCell-1] - sig[j]);
+		//Final mixing length as the minimum between the two
+		for (j = 1; j < nCell; j++) lm[j] = min(lm_bot[j],lm_top[j]);
+	}
+
+
+
+
 	///////////////////////////////////////////////
 	// FLUID VELOCITY PROFILE RESOLUTION: LOOP OVER TIME (main loop)
 	while (time < tfin) {
@@ -613,37 +734,10 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 		}
 		// iturbu = 1 : Turbulence activated
 		else if (iturbu == 1) {
-			// ilm = 0 : Prandtl mixing length
-			if (ilm == 0) {
-				lm[0] = 0.;
-				for (j = 1; j < nCell; j++)
-					lm[j] = kappa * sig[j];
-			}
-			// ilm = 1 : Parabolic profile (free surface flows)
-			else if (ilm == 1) {
-				lm[0] = 0.;
-				for (j = 1; j < nCell; j++)
-					lm[j] = kappa * sig[j] * sqrt(1. - sig[j] / fluidHeight);
-				lm[nCell - 1] = 0.;
-			}
-			// ilm = 2 : Li and Sawamoto (1995) integral of concentration profile
-			else if (ilm == 2) {
-				sum   = 0.;
-				lm[0] = 0.;
-				//Threshold the value of the solid volume fraction:once the profile reach phiMax,
-				// the lower part of the bed is considered to be at phiMax. This fully damp the turbulence in the bed. 
-				int nPhiMax = nCell;
-				while(phiPart[nPhiMax]<phiMax)	nPhiMax -= 1;
 
-				for (j = 1; j < nCell; j++) {
-					if (j-1 < nPhiMax) phi_lim = phiMax;
-					else phi_lim = phiPart[j-1];
-					sum += kappa * (phiMax - phi_lim) / phiMax * dsig[j - 1];
-					lm[j] = sum;
-				}
-			}
 			// end if ilm
-			// Compute the velocity gradient and the mixing length
+
+			// Compute the velocity gradient and the turbulent viscosity
 			for (j = 0; j < nCell; j++) {
 				dudz       = (ufn[j + 1] - ufn[j]) / deltaz[j];
 				viscoft[j] = pow(lm[j], 2) * fabs(dudz);
@@ -718,25 +812,25 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 			if (j == 0) {
 				ejm1   = epsilon[j];
 				phijm1 = phiPart[j];
-				upjm1  = vxPart[j];
+				upjm1  = vPart[j][0];
 			} else {
 				ejm1   = epsilon[j - 1];
 				phijm1 = phiPart[j - 1];
-				upjm1  = vxPart[j - 1];
+				upjm1  = vPart[j - 1][0];
 			}
 			if (j == nCell - 1) {
 				ejp1   = epsilon[j];
 				phijp1 = phiPart[j];
-				upjp1  = vxPart[j];
+				upjp1  = vPart[j][0];
 			} else {
 				ejp1   = epsilon[j + 1];
 				phijp1 = phiPart[j + 1];
-				upjp1  = vxPart[j + 1];
+				upjp1  = vPart[j + 1][0];
 			}
 
 			secondMemberPart = dt * epsilon[j] / dsig[j]
-			        * (viscoeff[j + 1] / deltaz[j + 1] * (phijp1 * upjp1 - phiPart[j] * vxPart[j])
-			           - viscoeff[j] / deltaz[j] * (phiPart[j] * vxPart[j] - phijm1 * upjm1));
+			        * (viscoeff[j + 1] / deltaz[j + 1] * (phijp1 * upjp1 - phiPart[j] * vPart[j][0])
+			           - viscoeff[j] / deltaz[j] * (phiPart[j] * vPart[j][0] - phijm1 * upjm1));
 
 			// LHS: algebraic system coefficients
 			a[j + 1] = -termeVisco_j * ejm1 - termeTurb_j; //eq. 24 of the manual Maurin 2018
@@ -746,7 +840,7 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 			c[j + 1] = -termeVisco_jp1 * ejp1 - termeTurb_jp1; //eq. 26 of the manual Maurin 2018
 
 			// RHS: unsteady, gravity, drag, pressure gradient, lateral wall friction
-			s[j + 1] = ufn[j + 1] * epsilon[j] + epsilon[j] * dt * math::abs(gravity[0]) + dt * taufsi[j] * vxPart[j] + secondMemberPart
+			s[j + 1] = ufn[j + 1] * epsilon[j] + epsilon[j] * dt * math::abs(gravity[0]) + dt * taufsi[j] * vPart[j][0] + secondMemberPart
 			        - (1. - imp) * dt * epsilon[j] * 2. / channelWidth * 0.125 * wallFriction[j] * pow(ufn[j + 1], 2)
 			        - epsilon[j] * dpdx / densFluid * dt; //eq. 27 of the manual Maurin 2018 + fluid wall correction and pressure gradient forcing.
 		}
@@ -804,6 +898,118 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 	}
 	vxFluid[nCell] = ufn[nCell];
 }
-///////////////////////////////////////////////////////////////////////// END OF HydroForceEngine::fluidResolution
+//End of fluid resolution
+
+
+
+/* Computes the pore length scale
+ *
+ */
+Real HydroForceEngine::computePoreLength(int i){
+	const Real lim = 1e-3;
+	
+	Real lp = 0.0;
+
+	Real volumeAverage = 0.0;
+	Real surfaceAverage = 0.0;
+	for(unsigned int j = 0; j < radiusParts.size(); j++){
+		const Real vj = 4.0/3.0 * Mathr::PI * pow(radiusParts[j], 3.0);
+		const Real sj = 4.0 * Mathr::PI * pow(radiusParts[j], 2.0);
+		volumeAverage += multiPhiPart[j][i] * vj;
+		surfaceAverage += multiPhiPart[j][i] * sj;
+	}
+	if(phiPart[i] > 0.0){
+		volumeAverage /= phiPart[i];
+		surfaceAverage /= phiPart[i];
+	}
+	if(surfaceAverage <= 0.0){
+		lp = (1.0 - phiPart[i])/max(phiPart[i], lim);
+	}
+	else{
+		lp = (1.0 - phiPart[i])/max(phiPart[i], lim) * volumeAverage/surfaceAverage;
+	}
+
+	return lp;
+}
+
+/* Gets the position where to start the Prandt model using a dichotomique method.
+ *
+ */
+int HydroForceEngine::computeZbedIndex()
+{
+	const vector<Real> averagePhiPartT = computePhiPartAverageOverTime();
+
+	int iLeft = 0;
+	int iRight = phiPart.size() - 1;
+	int iMiddle;
+	do{
+		iMiddle = (iLeft + iRight) / 2;
+		if (averagePhiPartT[iMiddle] > phiBed)
+		{
+			iLeft = iMiddle + 1;
+		}
+		else
+		{
+			iRight = iMiddle - 1;
+		}
+	} while (iRight > iLeft);
+	return iLeft;
+}
+
+
+/* Computes the diameter
+ *
+ */
+Real HydroForceEngine::computeDiameter(int i){
+	Real d = 0.0;
+
+	Real volumeAverage = 0.0;
+	Real surfaceAverage = 0.0;
+	for(unsigned int j = 0; j < radiusParts.size(); j++){
+		const Real vj = 4.0/3.0 * Mathr::PI * pow(radiusParts[j], 3.0);
+		const Real sj = 4.0 * Mathr::PI * pow(radiusParts[j], 2.0);
+		volumeAverage += multiPhiPart[j][i] * vj;
+		surfaceAverage += multiPhiPart[j][i] * sj;
+	}
+	if(phiPart[i] > 0.0){
+		volumeAverage /= phiPart[i];
+		surfaceAverage /= phiPart[i];
+	}
+	if(surfaceAverage <= 0.0){
+		d = 0.0;
+	}
+	else{
+		d = 6.0 * volumeAverage / surfaceAverage;
+	}
+
+	return d;
+}
+
+/* Computes the mean profile over the nbAverageT time.
+ *
+ */
+vector<Real> HydroForceEngine::computePhiPartAverageOverTime()
+{
+	if (nbAverageT == 0){
+		return phiPart;
+	}
+	else{
+		vector<Real> averagePhiPartT (nCell, 0.0);
+		std::queue< vector<Real> > q = phiPartT;
+		while(!q.empty()) {
+			vector<Real> phiTmp = q.front();
+			for(unsigned int j = 0; j < averagePhiPartT.size(); j++){
+				averagePhiPartT[j] += phiTmp[j];
+			}
+			q.pop();
+		}
+		for(unsigned int j = 0; j < averagePhiPartT.size(); j++){
+			averagePhiPartT[j] /= phiPartT.size();
+		}
+		return averagePhiPartT;
+	}
+}
+
+///////////////////////////////////////////////////////////////////////// END OF HydroForceEngine::fluidResolutionNEW
 
 } // namespace yade
