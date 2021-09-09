@@ -38,6 +38,9 @@ public:
 		((Real,ks,NaN,,"Shear elastic stiffness. Attention, this parameter cannot be set if tc, en or es is defined!"))
 		((Real,cs,NaN,,"Shear viscous constant. Attention, this parameter cannot be set if tc, en or es is defined!"))
 		((Real,mR,0.0,,"Rolling resistance, see [Zhou1999536]_."))
+		((Real,roughnessScale,1e-3,,"Test"))
+		((Real,viscoDyn,1e-3,,"Test"))
+		((bool,lubrication,false,,"Test"))
 #ifdef YADE_SPH
 		((bool,SPHmode,false,,"True, if SPH-mode is enabled."))
 		((Real,mu,-1,, "Viscosity. See Mueller [Morris1997]_ ."))                                              // [Mueller2003], (14)
