@@ -1,0 +1,2 @@
+#!/bin/bash
+yadedaily -nx common/postProc.py $@ 

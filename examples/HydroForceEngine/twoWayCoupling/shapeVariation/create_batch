@@ -1,0 +1,11 @@
+#!/bin/bash
+
+dir=$1
+param=$2
+param_range=${@:3}
+
+for val in $param_range ; do
+        new_dir=$dir"_"$param"_"$val
+        cp -r $dir $new_dir
+        sed -ie 's/\b'$param' =''.*''/'$param' = '$val'/' './'$new_dir'/params.py' 
+done

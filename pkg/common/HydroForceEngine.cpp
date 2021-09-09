@@ -7,7 +7,7 @@
 #include <lib/smoothing/LinearInterpolate.hpp>
 #include <core/Scene.hpp>
 #include <pkg/common/Sphere.hpp>
-#include <pkg/dem/Shop.hpp>
+#include <preprocessing/dem/Shop.hpp>
 
 #include <core/IGeom.hpp>
 #include <core/IPhys.hpp>
@@ -60,6 +60,7 @@ void HydroForceEngine::action()
 	{
 		Body* b = Body::byId(id, scene).get();
 		if (!b) continue;
+		if (b->isClump()) continue;
 		if (!(scene->bodies->exists(id))) continue;
 		const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
 		if (sphere) {
