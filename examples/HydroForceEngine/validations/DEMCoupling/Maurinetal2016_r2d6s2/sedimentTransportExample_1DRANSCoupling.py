@@ -61,12 +61,12 @@ expoDrag_PY = 3.1	# Richardson Zaki exponent for the hindrance function of the d
 
 #Discretization of the sample in ndimz wall-normal (z) steps of size dz, between the bottom of the channel and the position of the water free-surface. Should be equal to the length of the imposed fluid profile. Mesh used for HydroForceEngine.
 ndimz = 825	#Number of cells in the height
-dz =  fluidHeight/(1.0*(ndimz-1))	# Fluid discretization step in the wall-normal direction	
+dz =  fluidHeight/(1.0*(ndimz-1))	# Fluid discretization step in the wall-normal direction
 
 # Initialization of the main vectors
 vxFluidPY = np.zeros(ndimz+1)	# Vertical fluid velocity profile: u^f = u_x^f(z) e_x, with x the streamwise direction and z the wall-normal. Fluid velocity defined in between the mesh nodes and at the node at the two boundaries, i.e. at ndimz-1 + 2 location = ndimz+1.
 phiPartPY = np.zeros(ndimz-1)	# Vertical particle volume fraction profile, evaluated in between the cells, i.e. at ndimz-1 locations
-vxPartPY = np.zeros(ndimz-1)	# Vertical average particle velocity profile, evaluated in between the cells, i.e. at ndimz-1 locations
+vxPartPY = np.zeros(ndimz-1)	# Vertical average particle velocity profile, evaluated in between the cells, i.e. at ndimz-1 locations	
 
 #Geometrical configuration, define useful quantities
 height = 5*fluidHeight	#heigth of the periodic cell, in m (bigger than the fluid height to take into particles jumping above the latter)
@@ -140,7 +140,7 @@ O.engines = [
 	[Law2_ScGeom_ViscElPhys_Basic()]
 	,label = 'interactionLoop'),				
 	#Apply an hydrodynamic force to the particles
-	HydroForceEngine(densFluid = densFluidPY,viscoDyn = kinematicViscoFluid*densFluidPY,zRef = groundPosition,gravity = gravityVector,deltaZ = dz,expoRZ = expoDrag_PY,lift = False,nCell = ndimz,vCell = length*width*dz,radiusPart=diameterPart/2.,vxFluid = np.array(vxFluidPY),phiPart = phiPartPY,vxPart = vxPartPY,ids = idApplyForce, label = 'hydroEngine', dead = True),
+	HydroForceEngine(densFluid = densFluidPY,viscoDyn = kinematicViscoFluid*densFluidPY,zRef = groundPosition,gravity = gravityVector,deltaZ = dz,expoRZ = expoDrag_PY,lift = False,nCell = ndimz,vCell = length*width*dz,radiusPart=diameterPart/2.,ids = idApplyForce, label = 'hydroEngine', dead = True),
 	#Solve the fluid volume-averaged 1D momentum balance, RANS 1D
 	PyRunner(command = 'fluidModel()', virtPeriod = fluidResolPeriod, label = 'fluidRes', dead = True),
 	#Measurement, output files
@@ -154,6 +154,8 @@ O.engines = [
 	]
 #save the initial configuration to be able to recharge the simulation starting configuration easily
 O.saveTmp()
+#Initialize HydroForceEngine variables to zero (fluid velocity, fluctuations,...)
+hydroEngine.initialization()
 #run
 O.run()
 
@@ -172,12 +174,12 @@ def gravityDeposition(lim):
 		print('\n Gravity deposition finished, apply fluid forces !\n')
 		newtonIntegr.damping = 0.0	# Set the artificial numerical damping to zero
 		gravDepo.dead = True	# Remove the present engine for the following
-		hydroEngine.dead = False	# Activate the HydroForceEngine
-		hydroEngine.vxFluid = vxFluidPY # Send the fluid velocity vector used to apply the drag fluid force on particles in HydroForceEngine (see c++ code)
-		hydroEngine.ReynoldStresses = np.ones(ndimz)*1e-4 # Send the simplified fluid Reynolds stresses Rxz/\rho^f used to account for the fluid velocity fluctuations in HydroForceEngine (see c++ code)
-		hydroEngine.turbulentFluctuation() #Initialize the fluid velocity fluctuation associated to particles to zero in HydroForceEngine, necessary to avoid segmentation fault
 		measurement.dead = False	# Activate the measure() PyRunner
 		fluidRes.dead = False		# Activate the 1D fluid resolution
+
+		hydroEngine.dead = False	# Activate the HydroForceEngine
+		hydroEngine.ReynoldStresses = np.ones(ndimz)*1e-4 # Send the simplified fluid Reynolds stresses Rxz/\rho^f used to account for the fluid velocity fluctuations in HydroForceEngine (see c++ code)
+		hydroEngine.turbulentFluctuation() #Initialize the fluid velocity fluctuation associated to particles to zero in HydroForceEngine, necessary to avoid segmentation fault
 		hydroEngine.averageProfile()	#Evaluate the solid volume fraction, velocity and drag, necessary for the fluid resolution. 
 		hydroEngine.fluidResolution(1.,dtFluid)	#Initialize the fluid resolution, run the fluid resolution for 1s
 	return
@@ -189,7 +191,7 @@ def gravityDeposition(lim):
 ###	    FLUID RESOLUTION	   ###
 #######			      ########
 def fluidModel():
-	global vxFluidPY,taufsi
+	global vxFluidPY
 	#Evaluate the average vx,vy,vz,phi,drag profiles and store it in hydroEngine, to prepare the fluid resolution
 	hydroEngine.averageProfile()
 	#Fluid resolution

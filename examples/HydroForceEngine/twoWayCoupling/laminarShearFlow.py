@@ -151,7 +151,7 @@ O.engines = [
 	[Law2_ScGeom_ViscElPhys_Basic()]
 	,label = 'interactionLoop'),				
 	#Apply an hydrodynamic force to the particles
-	HydroForceEngine(densFluid = densFluidPY,viscoDyn = dynamicVisco,zRef = groundPosition,gravity = gravityVector,deltaZ = dz,expoRZ = expoDrag_PY,lift = False,nCell = ndimz,vCell = length*width*dz,radiusPart=diameterPart/2.,vxFluid = initVxFluid,phiPart = phiPartPY,vxPart = vxPartPY,irheolf=0, iusl = 0, uTop = uTop,iturbu = 0,ids = idApplyForce, label = 'hydroEngine', dead = True),
+	HydroForceEngine(densFluid = densFluidPY,viscoDyn = dynamicVisco,zRef = groundPosition,gravity = gravityVector,deltaZ = dz,expoRZ = expoDrag_PY,lift = False,nCell = ndimz,vCell = length*width*dz,radiusPart=diameterPart/2.,irheolf=0, iusl = 0, uTop = uTop,iturbu = 0,ids = idApplyForce, label = 'hydroEngine', dead = True),
 	#Solve the fluid volume-averaged 1D momentum balance, RANS 1D
 	PyRunner(command = 'fluidModel()', virtPeriod = fluidResolPeriod, label = 'fluidRes', dead = True),
 	#Measurement, output files
@@ -165,6 +165,8 @@ O.engines = [
 	]
 #save the initial configuration to be able to recharge the simulation starting configuration easily
 O.saveTmp()
+#Initialize HydroForceEngine variables to zero (fluid velocity, fluctuations,...)
+hydroEngine.initialization()
 #run
 O.run()
 
@@ -183,12 +185,13 @@ def gravityDeposition(lim):
 		print('\n Gravity deposition finished, apply fluid forces !\n')
 		newtonIntegr.damping = 0.0	# Set the artificial numerical damping to zero
 		gravDepo.dead = True		# Remove the present engine for the following
-		hydroEngine.dead = False	# Activate the HydroForceEngine
-		hydroEngine.vxFluid = vxFluidPY # Send the fluid velocity vector used to apply the drag fluid force on particles in HydroForceEngine (see c++ code)
-		hydroEngine.ReynoldStresses = np.zeros(ndimz) # Send the simplified fluid Reynolds stresses Rxz/\rho^f used to account for the fluid velocity fluctuations in HydroForceEngine (see c++ code)
-		hydroEngine.turbulentFluctuation() #Initialize the fluid velocity fluctuation associated to particles to zero in HydroForceEngine, necessary to avoid segmentation fault
 		measurement.dead = False	# Activate the measure() PyRunner
 		fluidRes.dead = False		# Activate the 1D fluid resolution
+
+		hydroEngine.dead = False	# Activate the HydroForceEngine
+		hydroEngine.vxFluid = initVxFluid # Send the fluid velocity vector used to apply the drag fluid force on particles in HydroForceEngine (see c++ code)
+		hydroEngine.ReynoldStresses = np.zeros(ndimz) # Send the simplified fluid Reynolds stresses Rxz/\rho^f used to account for the fluid velocity fluctuations in HydroForceEngine (see c++ code)
+		hydroEngine.turbulentFluctuation() #Initialize the fluid velocity fluctuation associated to particles to zero in HydroForceEngine, necessary to avoid segmentation fault
 		hydroEngine.averageProfile()	# Evaluate the solid volume fraction, velocity and drag, necessary for the fluid resolution. 
 		O.bodies[tpID].mask = 1 	# The top plate becomes solid again
 	return

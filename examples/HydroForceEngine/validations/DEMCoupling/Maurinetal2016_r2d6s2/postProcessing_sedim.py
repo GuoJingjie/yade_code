@@ -1,4 +1,3 @@
-from __future__ import print_function
 #########################################################################################################################################################################
 # Author: Raphael Maurin, raphael.maurin@imft.fr
 # 24/11/2017
@@ -9,10 +8,6 @@ from __future__ import print_function
 #
 ############################################################################################################################################################################
 
-
-from past.builtins import execfile
-
-from builtins import range
 import numpy as np
 import os
 from matplotlib.pyplot import *

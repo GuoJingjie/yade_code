@@ -32,6 +32,8 @@ import numpy as np
 ## Main parameters of the simulation
 ##
 
+turbulentFluctuationIntensity = 4. #Intensity scale of the turbulent fluctuations
+
 #Particles
 diameterPart = 6e-3	#Diameter of the particles, in meter
 densPart = 2500		#density of the particles, in kg/m3
@@ -47,7 +49,6 @@ lengthCell = 100	#length cell along the gravity axis (x), in diameter
 widthCell = 10	#length cell along the two other axis, in diameter
 Nlayer = 2.5	#nb of layer of particle deposited, in diameter
 phiPartMax = 0.61	#Value of the dense packing solid volume fraction
-
 endTime = 10	#Time simulated (in seconds)
 
 
@@ -61,9 +62,6 @@ dz =  widthCell*diameterPart/ndimz	# Fluid discretization step in the wall-norma
 
 # Initialization of the main vectors
 vxFluidPY = np.ones(ndimz)*18.5	# Vertical fluid velocity profile: u^f = u_x^f(z) e_x, with x the streamwise direction and z the wall-normal
-
-phiPartPY = np.zeros(ndimz)	# Vertical particle volume fraction profile
-vxPartPY = np.zeros(ndimz)	# Vertical average particle velocity profile
 
 #Geometrical configuration, define useful quantities
 length = lengthCell*diameterPart #length of the stream, in m
@@ -123,7 +121,7 @@ O.engines = [
 	[Law2_ScGeom_ViscElPhys_Basic()]
 	,label = 'interactionLoop'),				
 	#Apply an hydrodynamic force to the particles
-	HydroForceEngine(densFluid = densFluidPY,viscoDyn = kinematicViscoFluid*densFluidPY,zRef = groundPosition,gravity = gravityVector,deltaZ = dz,expoRZ = expoDrag_PY,lift = False,nCell = ndimz,vCell = length*width*dz ,vxFluid = vxFluidPY,phiPart = phiPartPY,vxPart = vxPartPY,ids = idApplyForce,vFluctX = np.zeros(len(O.bodies)),vFluctY = np.zeros(len(O.bodies)),vFluctZ = np.zeros(len(O.bodies)), label = 'hydroEngine', dead = True),
+	HydroForceEngine(densFluid = densFluidPY,viscoDyn = kinematicViscoFluid*densFluidPY,zRef = groundPosition,gravity = gravityVector,deltaZ = dz,expoRZ = expoDrag_PY,lift = False,nCell = ndimz,vCell = length*width*dz ,ids = idApplyForce, label = 'hydroEngine', dead = True),
 	#Measurement, output files
 	PyRunner(command = 'measure()', virtPeriod = 0.1, label = 'measurement', dead = True),
 	# Check if the packing is stabilized, if yes activate the hydro force on the grains and the slope.
@@ -137,8 +135,15 @@ O.engines = [
 	]
 #save the initial configuration to be able to recharge the simulation starting configuration easily
 O.saveTmp()
+
+#Initialize HydroForceEngine variables to zero (fluid velocity, fluctuations,...)
+hydroEngine.initialization()
+
 #run
-#O.run()
+O.run()
+
+
+
 #####################################################################################################################################
 #####################################################  FUNCTION DEFINITION  #########################################################
 #####################################################################################################################################
@@ -153,9 +158,14 @@ def gravityDeposition(lim):
 	else :		
 		print('\n Gravity deposition finished, apply fluid forces !\n')
 		newtonIntegr.damping = 0.0	# Set the artificial numerical damping to zero
-		gravDepo.dead = True	# Remove the present engine for the following
+		gravDepo.dead = True		# Remove the present engine for the following
+		turbFluct.dead = False		# Activate the turbulent fluctuations model
 		hydroEngine.dead = False	# Activate the HydroForceEngine
-		turbFluct.dead = False	# Activate the turbulent fluctuations model
+		#Set hydroEngine parameters for the present configuration
+		hydroEngine.vxFluid = vxFluidPY			# Vertical fluid velocity profile to apply fluid forces
+		hydroEngine.unCorrelatedFluctuations = True	# Apply uncorrelated fluid velocity fluctuations
+		hydroEngine.ReynoldStresses = densFluidPY*np.ones(ndimz)*turbulentFluctuationIntensity	#Intensity of the Reynolds
+										# stresses on which the fluctuations are based
 	return
 ###############
 #########################################
@@ -167,8 +177,8 @@ def gravityDeposition(lim):
 # 	stresses Rxz imposed in simplifiedReynoldsStress = Rxz/densFluid		#
 #Details in the C++ code: function turbulentFluctuationsFluidizedBed in ForceEngine.cpp #
 ######								         	   ######
-hydroEngine.simplifiedReynoldStresses = np.ones(ndimz)*4.
+
 def turbulentFluctuations():
-	hydroEngine.turbulentFluctuationFluidizedBed()
+	hydroEngine.turbulentFluctuation()
 
 

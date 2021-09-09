@@ -385,7 +385,7 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 		}
 		urel = math::abs(
 		        ufn[i + 1]
-		        - vxPart[i]); // Difference of definition between ufn and vxPart, ufn starts at 0, while vxPart starts at 1/2. The two therefore corresponds for i+1 and i
+		        - vPart[i][0]); // Difference of definition between ufn and vxPart, ufn starts at 0, while vxPart starts at 1/2. The two therefore corresponds for i+1 and i
 		urel_bound = math::max(urel, lim); //limit the value to avoid division by 0
 		taufsi[i]  = math::max(
                         0.,

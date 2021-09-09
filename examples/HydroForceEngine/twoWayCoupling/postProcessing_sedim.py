@@ -1,4 +1,3 @@
-from __future__ import print_function
 #########################################################################################################################################################################
 # Author: Raphael Maurin, raphael.maurin@imft.fr
 # 24/11/2017
@@ -10,9 +9,6 @@ from __future__ import print_function
 ############################################################################################################################################################################
 
 
-from past.builtins import execfile
-
-from builtins import range
 import numpy as np
 import os
 from matplotlib.pyplot import *
@@ -20,8 +16,9 @@ import matplotlib.gridspec as gridspec
 
 #######
 # INPUT
+biDisperse = 1		# Activate to consider post processing of bidisperse script
 timeStepSave = 0.1	# Data saved every timeStepSave seconds in the simulation
-startFile = 0		# File where the post-processing begins
+startFile = 5		# File where the post-processing begins
 endFile = 400		# File where the post-processing ends
 
 scriptPath = os.path.abspath(os.path.dirname(sys.argv[-1])) #Path where the script is stored
@@ -33,7 +30,9 @@ else:	#Else, extract the first file in order to get the size of the vectors, ndi
 	ndimz = len(phiPartPY)	#Size of the vectors, mesh parameter. 
 
 #Initilization of the variable to extract and plot
-[qs,time,phiPart,vxPart,vxFluid] = [[],[],np.zeros(ndimz),np.zeros(ndimz),np.zeros(ndimz)]
+[qs,time,phiPart,vxPart,vxFluid] = [[],[],np.zeros(ndimz),np.zeros(ndimz),np.zeros(ndimz+1)]
+if biDisperse: 
+	[phiPart1,vxPart1,phiPart2,vxPart2] = [np.zeros(ndimz),np.zeros(ndimz),np.zeros(ndimz),np.zeros(ndimz)]
 
 ########
 # LOOP over time to EXTRACT the data
@@ -51,11 +50,23 @@ for i in range(startFile,endFile):
 	phiPart+=phiPartPY		#Average over time the solid volume fraction vertical profile
 	vxPart+=vxPartPY*phiPartPY	#Average over time the solid velocity profile. The spatial averaging is weighted by the particle volume so that it is necessary to re-multiply the averaging by the solid volume fraction before re-normalizing. See the paper Maurin et al (2015) in the references for more details on the averaging. 
 	vxFluid+=vxFluidPY		#Average over time the fluid velocity vertical profile
+	if biDisperse: 
+		phiPart1+=phiPart1PY
+		vxPart1+=vxPart1PY*phiPart1PY
+		phiPart2+=phiPart2PY
+		vxPart2+=vxPart2PY*phiPart2PY
 #Normalization
 toto = np.where(phiPart>0)
 vxPart[toto]/=phiPart[toto]	#Avoid division by zero
 phiPart/=(endFile-startFile+1)
 vxFluid/=(endFile-startFile+1)
+if biDisperse: 
+	toto = np.where(phiPart1>0)
+	vxPart1[toto]/=phiPart1[toto]	#Avoid division by zero
+	phiPart1/=(endFile-startFile+1)
+	toto = np.where(phiPart2>0)
+	vxPart2[toto]/=phiPart2[toto]	#Avoid division by zero
+	phiPart2/=(endFile-startFile+1)
 
 
 ######
@@ -78,9 +89,17 @@ ax1=subplot(gs[0,0])		#ax1 = subfigure corresponding to 1st row 1st column
 ax2=subplot(gs[0,1])		#ax2 = subfigure corresponding to 1st row 2nd column
 ax3=subplot(gs[0,2])		#ax3 = subfigure corresponding to 1st row 3rd column
 ax1.plot(vxPart,zAxis,'-r')	#Plot the solid velocity profile on first subfigure
-ax1.plot(vxFluid,zAxis,'-b')	#Plot the fluid velocity profile on first subfigure
+ax1.plot(vxFluid[1:],zAxis,'-b')	#Plot the fluid velocity profile on first subfigure
 ax2.plot(phiPart,zAxis,'-r')	#Plot the solid volume fraction on second subfigure
 ax3.plot(phiPart*vxPart,zAxis,'-r')	#Plot the sediment transport rate density on the third subfigure
+if biDisperse: 
+	ax1.plot(vxPart1,zAxis,'--g')	#Plot the solid velocity profile on first subfigure
+	ax1.plot(vxPart2,zAxis,'--k')	#Plot the solid velocity profile on first subfigure
+	ax2.plot(phiPart1,zAxis,'-g')	#Plot the solid volume fraction on second subfigure
+	ax2.plot(phiPart2,zAxis,'-k')	#Plot the solid volume fraction on second subfigure
+	ax2.plot(phiPart1 + phiPart2,zAxis,'-r')	#Plot the solid volume fraction on second subfigure
+	ax3.plot(phiPart1*vxPart1,zAxis,'-g')	#Plot the sediment transport rate density on the third subfigure
+	ax3.plot(phiPart2*vxPart2,zAxis,'-k')	#Plot the sediment transport rate density on the third subfigure
 ax1.set_xlabel(r'$<v^k_x>$ (m/s)')	#Assign the x axis label of the first subfigure
 ax1.set_ylabel(r'$z/d$',rotation='horizontal')	#Assign the y axis label of the first subfigure
 ax2.set_xlabel(r'$\phi$') 	#Assign the x axis label of the second subfigure
@@ -92,5 +111,7 @@ ax2.grid()
 ax3.grid()
 fig2.subplots_adjust(left=0.08, bottom=0.11, right=0.98, top=0.98, wspace=.1)	#Adjust the spacing around the full figure (left, bottom, right, top) and between the subfigure (wspace), in percent of the figure size
 savefig('depthProfiles.png')	#Save the figure
+
+
 
 show()	#Show the two figures created
