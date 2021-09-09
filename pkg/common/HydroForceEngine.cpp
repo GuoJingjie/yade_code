@@ -6,7 +6,7 @@
 #include <lib/smoothing/LinearInterpolate.hpp>
 #include <core/Scene.hpp>
 #include <pkg/common/Sphere.hpp>
-#include <preprocessing/dem/Shop.hpp>
+#include <pkg/dem/Shop.hpp>
 
 #include <core/IGeom.hpp>
 #include <core/IPhys.hpp>
@@ -22,6 +22,30 @@ using math::max;
 using math::min;
 
 YADE_PLUGIN((HydroForceEngine));
+
+void HydroForceEngine::initialization()
+{
+	// Initialize all the necessary variables to run HydroForceEngine. 
+	// Some of the variables might be prescribed by the user. If this is the case, the variables are not overwritten. 
+
+	// Profiles
+	vxPart = vector<Real> (nCell, 0.0);		//Averaged particle velocity
+	phiPart = vector<Real> (nCell, 0.0);		//Averaged solid volume fraction
+	averageDrag = vector<Real> (nCell, 0.0);	//Averaged drag force
+	vxFluid = vector<Real> (nCell + 1, 0.0);	//Averaged fluid velocity
+	ReynoldStresses = vector<Real> (nCell, 0.0);	//Reynolds stresses
+	if (convAccOption==false)
+		convAcc = vector<Real> (nCell, 0.0);	//Convective acceleration (optional)
+	turbulentViscosity = vector<Real> (nCell, 0.0);	//Turbulent viscosity
+	taufsi = vector<Real> (nCell, 0.0);		//Fluid-particle momentum transfer
+
+	// Particle based quantities
+	size_t lenBody = scene->bodies->size();
+	vFluctX = vector<Real> (lenBody, 0.0);		//Turbulent fluctuations along x 
+	vFluctY = vector<Real> (lenBody, 0.0);		//Turbulent fluctuations along y 
+	vFluctZ = vector<Real> (lenBody, 0.0);		//Turbulent fluctuations along z 
+}
+
 
 void HydroForceEngine::action()
 {
@@ -352,10 +376,13 @@ void HydroForceEngine::turbulentFluctuation()
 				Real uStar2 = ReynoldStresses[p] / densFluid;
 				if (uStar2 > 0.0) {
 					Real uStar = sqrt(uStar2);
-					rand1      = rnd();
-					rand2      = rnd();
-					rand3      = -rand1
-					        + rnd(); // x and z fluctuation are correlated as measured by Nezu 1977 and as expected from the formulation of the Reynolds stress tensor.
+					rand1	= rnd();
+					rand2	= rnd();
+					rand3	= rnd();
+					// Free surface flow:  x and z fluctuation are correlated as measured by Nezu 1977 and as expected from the formulation of the Reynolds stress tensor.
+					if (unCorrelatedFluctuations==false) 
+						rand3	= -rand1 + rnd(); 
+
 					vFluctZ[id] = rand1 * uStar;
 					vFluctY[id] = rand2 * uStar;
 					vFluctX[id] = rand3 * uStar;
@@ -404,10 +431,10 @@ void HydroForceEngine::turbulentFluctuationZDep()
 				if ((p < nCell) && (posSphere[2] - zRef > bedElevation)) {
 					rand1 = rnd();
 					rand2 = rnd();
-					rand3 = rnd();
-					if (freeSurfaceFluct==true)
-						rand3 = -rand1
-						        + rnd(); // x and z fluctuation are correlated as measured by Nezu 1977 and as expected from the formulation of the Reynolds stress tensor.
+					rand3	= rnd();
+					// Free surface flow:  x and z fluctuation are correlated as measured by Nezu 1977 and as expected from the formulation of the Reynolds stress tensor.
+					if (unCorrelatedFluctuations==false) 
+						rand3	= -rand1 + rnd(); 
 					vFluctZ[idPart] = rand1 * uStar;
 					vFluctY[idPart] = rand2 * uStar;
 					vFluctX[idPart] = rand3 * uStar;

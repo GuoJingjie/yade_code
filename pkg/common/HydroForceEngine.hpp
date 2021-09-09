@@ -8,6 +8,7 @@ namespace yade { // Cannot have #include directive inside.
 
 class HydroForceEngine : public PartialEngine {
 public:
+	void initialization();
 	void averageProfile();
 	void averageProfilePP();
 	void turbulentFluctuation();
@@ -22,17 +23,17 @@ public:
                 ((Vector3r,gravity,Vector3r(0,0,-9.81),,"Gravity vector"))
 		((bool,convAccOption,false,,"To activate the convective acceleration"))
 		//// Mesh parameters
-		((int,nCell,0,,"Number of cell in the depth"))
+		((int,nCell,1,,"Number of cell in the depth"))
 		((Real,zRef,0.,,"Position of the reference point which correspond to the first value of the fluid velocity, i.e. to the ground."))
 		((Real,deltaZ,,,"Height of the discretization cell."))
 		((Real,vCell,,,"Volume of averaging cell"))
 		///  Fluid Resolution parameters
-		((vector<Real>,vxFluid,vector<Real>(1000),,"Discretized streamwise fluid velocity depth profile at t"))
+		((vector<Real>,vxFluid,,,"Discretized streamwise fluid velocity depth profile at t"))
 		((Real,densFluid,1000,,"Density of the fluid, by default - density of water"))
 		((Real,viscoDyn,1e-3,,"Dynamic viscosity of the fluid, by default - viscosity of water"))
 		((Real,radiusPart,0.,,"Reference particle radius"))
 		((Real,dpdx,0.,,"pressure gradient along streamwise direction"))
-		((vector<Real>,turbulentViscosity,vector<Real>(1000),,"Fluid Resolution: turbulent viscocity as a function of the depth"))
+		((vector<Real>,turbulentViscosity,,,"Fluid Resolution: turbulent viscocity as a function of the depth"))
 		((Real,phiMax,0.64,,"Fluid resolution: maximum solid volume fraction. "))
 		((int,irheolf,0,,"Fluid resolution: effective fluid viscosity option: 0: pure fluid viscosity, 1: Einstein viscosity. "))
 		((int,iturbu,1,,"Fluid resolution: activate the turbulence resolution, 1, or not, 0"))
@@ -67,20 +68,21 @@ public:
 		((vector<Real>,vFluctX,,,"Vector associating a streamwise fluid velocity fluctuation to each particle. Fluctuation calculated in the C++ code from the discrete random walk model"))
 		((vector<Real>,vFluctY,,,"Vector associating a spanwise fluid velocity fluctuation to each particle. Fluctuation calculated in the C++ code from the discrete random walk model"))
 		((vector<Real>,vFluctZ,,,"Vector associating a normal fluid velocity fluctuation to each particle. Fluctuation calculated in the C++ code from the discrete random walk model"))
-		((vector<Real>,ReynoldStresses,vector<Real>(1000),,"Vector of size equal to :yref:`nCell<HydroForceEngine.nCell>` containing the Reynolds stresses as a function of the depth. ReynoldStresses(z) $=  \\rho^f <u_x'u_z'>(z)^2$"))
+		((vector<Real>,ReynoldStresses,,,"Vector of size equal to :yref:`nCell<HydroForceEngine.nCell>` containing the Reynolds stresses as a function of the depth. ReynoldStresses(z) $=  \\rho^f <u_x'u_z'>(z)^2$"))
 		((Real,bedElevation,0.,,"Elevation of the bed above which the fluid flow is turbulent and the particles undergo turbulent velocity fluctuation."))
 		((vector<Real>,fluctTime,,,"Vector containing the time of life of the fluctuations associated to each particles."))
 		((Real,dtFluct,,,"Execution time step of the turbulent fluctuation model."))
-		((bool,freeSurfaceFluct,true,,"Condition to generate correlated fluid fluctuations as known in free-surface flow. If false, no correlation will exist between x, y and z fluctuations component."))
+		((bool,unCorrelatedFluctuations,false,,"Condition to generate uncorrelated fluid fluctuations. Default case represent in free-surface flows, for which the vertical and streamwise fluid velocity fluctuations are correlated (see e.g. reference book of Nezu & Nagakawa 1992, turbulence in open channel flows)."))
 		//// Fluid-particle interactions 
 		((Real,expoRZ,3.1,,"Value of the Richardson-Zaki exponent, for the drag correction due to hindrance"))
                 ((bool,lift,false,,"Option to activate or not the evaluation of the lift"))
 		((Real,Cl,0.2,,"Value of the lift coefficient taken from [Wiberg1985]_"))
-		((vector<Real>,convAcc,0,,"Convective acceleration, depth dependent"))
-		((vector<Real>,taufsi,vector<Real>(1000),,"Fluid Resolution: Create Taufsi/rhof = dragTerm/(rhof(vf-vxp)) to transmit to the fluid code"))
+		((vector<Real>,convAcc,,,"Convective acceleration, depth dependent"))
+		((vector<Real>,taufsi,,,"Fluid Resolution: Create Taufsi/rhof = dragTerm/(rhof(vf-vxp)) to transmit to the fluid code"))
                 ((bool,steadyFlow,true,,"Condition to modify the buoyancy force according to the physical difference between a fluid at rest and a steady fluid flow. For more details see [Maurin2018]_"))
 	,/*ctor*/
 	,/*py*/
+	 .def("initialization",&HydroForceEngine::initialization,"Initialize the necessary quantity to make HydroForceEngine run. Necessary to execute before any simulation run, otherwise it crashes")
 	 .def("averageProfile",&HydroForceEngine::averageProfile,"Compute and store the particle velocity (:yref:`vxPart<HydroForceEngine.vxPart>`, :yref:`vyPart<HydroForceEngine.vyPart>`, :yref:`vzPart<HydroForceEngine.vzPart>`) and solid volume fraction (:yref:`phiPart<HydroForceEngine.phiPart>`) depth profile. For each defined cell z, the k component of the average particle velocity reads: \n\n $<v_k>^z= \\sum_p V^p v_k^p/\\sum_p V^p$,\n\n where the sum is made over the particles contained in the cell, $v_k^p$ is the k component of the velocity associated to particle p, and $V^p$ is the part of the volume of the particle p contained inside the cell. This definition allows to smooth the averaging, and is equivalent to taking into account the center of the particles only when there is a lot of particles in each cell. As for the solid volume fraction, it is evaluated in the same way:  for each defined cell z, it reads: \n\n $<\\phi>^z= \\frac{1}{V_{cell}}\\sum_p V^p$, where $V_{cell}$ is the volume of the cell considered, and $V^p$ is the volume of particle p contained in cell z.\n This function gives depth profiles of average velocity and solid volume fraction, returning the average quantities in each cell of height dz, from the reference horizontal plane at elevation :yref:`zRef<HydroForceEngine.zRef>` (input parameter) until the plane of elevation :yref:`zRef<HydroForceEngine.zRef>` plus :yref:`nCell<HydroForceEngine.nCell>` times :yref:`deltaZ<HydroForceEngine.deltaZ>` (input parameters). When the option :yref:`twoSize<HydroForceEngine.twoSize>` is set to True, evaluate in addition the average drag (:yref:`averageDrag1<HydroForceEngine.averageDrag1>` and :yref:`averageDrag2<HydroForceEngine.averageDrag2>`) and solid volume fraction (:yref:`phiPart1<HydroForceEngine.phiPart1>` and :yref:`phiPart2<HydroForceEngine.phiPart2>`) depth profiles considering only the particles of radius respectively :yref:`radiusPart1<HydroForceEngine.radiusPart1>` and :yref:`radiusPart2<HydroForceEngine.radiusPart2>` in the averaging.")
 	 .def("averageProfilePP",&HydroForceEngine::averageProfilePP,"Same as averageProfile function but considering point particles, i.e. particles for which all the quantites are defined at their center (no extent considered).")
 	 .def("fluidResolution",&HydroForceEngine::fluidResolution,"Solve the 1D volume-averaged fluid momentum balance on the defined mesh (:yref:`nCell<HydroForceEngine.nCell>`, :yref:`deltaZ<HydroForceEngine.deltaZ>`) from the volume-averaged solid profiles (:yref:`phiPart<HydroForceEngine.phiPart>`,:yref:`vxPart<HydroForceEngine.vxPart>`,:yref:`averageDrag<HydroForceEngine.averageDrag>`), which can be evaluated with the averageProfile function.")
