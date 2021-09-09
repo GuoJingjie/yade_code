@@ -26,9 +26,13 @@ def errorRMS(ref,a):
 		N+=1.
 	return err/N/ref.mean()
 
-fullValidation = False
-fluidValidation = False
-DEMcouplingValidation = True
+
+##################
+# Validation options
+fullValidation = False	#Fluid + DEM coupling
+fluidValidation = False	#Fluid only validation (short)
+DEMcouplingValidation = True	#DEM coupling validation only (long, for comparison with another run/another yade version)
+
 
 if fullValidation ==True or fluidValidation==True:
 	##########################################################

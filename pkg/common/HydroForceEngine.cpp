@@ -152,13 +152,17 @@ void HydroForceEngine::averageProfile()
 	// Multi class vectors
 	vector< vector<Real> > phiAverageMulti;
 	vector< vector<Real> > dragAverageMulti;
-	vector< vector<Vector3r> > vAverageMulti;
+	vector< vector<Real> > vAverageMultiX;
+	vector< vector<Real> > vAverageMultiY;
+	vector< vector<Real> > vAverageMultiZ;
 
 	// Only ask for memory when Multi average is enable
 	if(twoSize || enableMultiClassAverage){
 		phiAverageMulti = vector< vector<Real> > (radiusParts.size(),vector<Real>(nCell, 0.0));
 		dragAverageMulti = vector< vector<Real> > (radiusParts.size(),vector<Real>(nCell, 0.0));
-		vAverageMulti = vector< vector<Vector3r> > (radiusParts.size(),vector<Vector3r>(nCell, Vector3r::Zero()));
+		vAverageMultiX =  vector< vector<Real> > (radiusParts.size(),vector<Real>(nCell, 0.0));
+		vAverageMultiY =  vector< vector<Real> > (radiusParts.size(),vector<Real>(nCell, 0.0));
+		vAverageMultiZ =  vector< vector<Real> > (radiusParts.size(),vector<Real>(nCell, 0.0));
 	}
 
 	//
@@ -205,7 +209,9 @@ void HydroForceEngine::averageProfile()
 				const unsigned int i = find(radiusParts.begin(), radiusParts.end(), rPart) - radiusParts.begin();
 				if(i >= radiusParts.size()){ throw runtime_error("Radius of particlenot found. Did you call computeRadiusParts ?"); }
 				phiAverageMulti[i][nPart] += volPart;
-				vAverageMulti[i][nPart] += volPart * b->state->vel;
+				vAverageMultiX[i][nPart] += volPart * b->state->vel[0];
+				vAverageMultiY[i][nPart] += volPart * b->state->vel[1];
+				vAverageMultiZ[i][nPart] += volPart * b->state->vel[2];
 				dragAverageMulti[i][nPart] += volPart * fDrag[0];
 				}
 		}
@@ -239,7 +245,9 @@ void HydroForceEngine::averageProfile()
 							radiusParts.begin();
 					if(i >= radiusParts.size()){ throw runtime_error("Radius of particle not found. Did you call computeRadiusParts ?"); }
 					phiAverageMulti[i][n] += volPart;
-					vAverageMulti[i][n] += volPart * b->state->vel;
+					vAverageMultiX[i][nPart] += volPart * b->state->vel[0];
+					vAverageMultiY[i][nPart] += volPart * b->state->vel[1];
+					vAverageMultiZ[i][nPart] += volPart * b->state->vel[2];
 					dragAverageMulti[i][n] += volPart * fDrag[0];
 				}
 				phiAverageTot[n] += volPart;
@@ -264,13 +272,17 @@ void HydroForceEngine::averageProfile()
 				// Avoiding division by 0
 				if (phiAverageMulti[i][n] != 0){
 					// phiAverage still contains the total solid volume.
-					vAverageMulti[i][n] /= phiAverageMulti[i][n];
+					vAverageMultiX[i][n] /= phiAverageMulti[i][n];
+					vAverageMultiY[i][n] /= phiAverageMulti[i][n];
+					vAverageMultiZ[i][n] /= phiAverageMulti[i][n];
 					dragAverageMulti[i][n] /= phiAverageMulti[i][n];
 					// Get the volume fraction from the solid volume.
 					phiAverageMulti[i][n] /= vCell;
 				}
 				else {
-					vAverageMulti[i][n] = Vector3r::Zero();
+					vAverageMultiX[i][n] = 0.0;
+					vAverageMultiY[i][n] = 0.0;
+					vAverageMultiZ[i][n] = 0.0;
 					dragAverageMulti[i][n] = 0.0;
 				}
 			}
@@ -290,7 +302,9 @@ void HydroForceEngine::averageProfile()
 	// Setting all class attributes.
 	if(twoSize || enableMultiClassAverage){
 		// Multi class :
-		multiVPart = vAverageMulti;
+		multiVxPart = vAverageMultiX;
+		multiVyPart = vAverageMultiY;
+		multiVzPart = vAverageMultiZ;
 		multiDragPart = dragAverageMulti;
 		multiPhiPart = phiAverageMulti;
 	}
@@ -308,6 +322,8 @@ void HydroForceEngine::averageProfile()
 	// If asked by the user, variables are evaluated in order to make it compatible with former versions of the code
 	if (compatibilityOldVersion==true){
 		vxPart = vector<Real> (nCell, 0.0);
+		vyPart = vector<Real> (nCell, 0.0);
+		vzPart = vector<Real> (nCell, 0.0);
 		if (twoSize){
 			phiPart1 = vector<Real> (nCell, 0.0);
 			phiPart2 = vector<Real> (nCell, 0.0);
@@ -322,16 +338,18 @@ void HydroForceEngine::averageProfile()
 		}
 		for(int n = 0; n < nCell;n++) {
 			vxPart[n] = vPart[n][0];
+			vyPart[n] = vPart[n][1];
+			vzPart[n] = vPart[n][2];
 			if (twoSize){
 				if (radiusParts.size()!=2) throw runtime_error("More than two particle size, not compatible with averagedProfile function and twosize option");
 				phiPart1[n] = phiAverageMulti[0][n];
 				phiPart2[n] = phiAverageMulti[1][n];
-				vxPart1[n]  =  vAverageMulti[0][n][0];
-				vxPart2[n]  =  vAverageMulti[1][n][0];
-				vyPart1[n]  =  vAverageMulti[0][n][1];
-				vyPart2[n]  =  vAverageMulti[1][n][1];
-				vzPart1[n]  =  vAverageMulti[0][n][2];
-				vzPart2[n]  =  vAverageMulti[1][n][2];
+				vxPart1[n]  =  vAverageMultiX[0][n];
+				vxPart2[n]  =  vAverageMultiX[1][n];
+				vyPart1[n]  =  vAverageMultiY[0][n];
+				vyPart2[n]  =  vAverageMultiY[1][n];
+				vzPart1[n]  =  vAverageMultiZ[0][n];
+				vzPart2[n]  =  vAverageMultiZ[1][n];
 				averageDrag1[n] = dragAverageMulti[0][n];
 				averageDrag2[n] = dragAverageMulti[1][n];
 			}
@@ -408,18 +426,23 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 	// the standard way, perfectly optimized by compiler.
 	std::fill(taufsi.begin(), taufsi.end(), 0);
 #endif
-	Real lim = 1e-5, dragTerm = 0., partVolume = 1., partVolume1 = 1., partVolume2 = 1.;
+	Real lim = 1e-5, dragTerm = 0., partVolume = 1.;
+	vector<Real> partVolumeMulti(radiusParts.size(),1.);
 	// Evaluate particles volume
-	if (twoSize == true) {
-		partVolume1 = 4. / 3. * Mathr::PI * pow(radiusPart1, 3);
-		partVolume2 = 4. / 3. * Mathr::PI * pow(radiusPart2, 3);
-	} else
+	if (twoSize || enableMultiClassAverage) {
+		for(unsigned int r = 0; r < radiusParts.size(); r++){
+			partVolumeMulti[r] = 4. / 3. * Mathr::PI * pow(radiusParts[r], 3);
+		}
+	} 
+	else{
 		partVolume = 4. / 3. * Mathr::PI * pow(radiusPart, 3);
+	}
 	// Compute taufsi
 	taufsi[0] = 0.;
 	for (i = 1; i < nCell; i++) {
-		if (twoSize == true) {
-			dragTerm = phiPart1[i] / partVolume1 * averageDrag1[i] + phiPart2[i] / partVolume2 * averageDrag2[i];
+		if (twoSize || enableMultiClassAverage) {
+			dragTerm = 0.;
+			for(unsigned int r = 0; r < radiusParts.size(); r++) dragTerm+=(multiPhiPart[r][i]/partVolumeMulti[r]*multiDragPart[r][i]);
 		} else {
 			dragTerm = phiPart[i] / partVolume * averageDrag[i];
 		}

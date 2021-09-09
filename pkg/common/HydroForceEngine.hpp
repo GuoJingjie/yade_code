@@ -73,9 +73,10 @@ public:
 		((unsigned int,nbAverageT,0,,"If >0, perform a time-averaging (in addition to the spatial averaging) over nbAverage steps."))
 		// Polydisperse
 		((bool,enableMultiClassAverage,false,,"Enables specific averaging for all the different particle size. Uses a lot of memory if using a lots of different particle size"))
-		((vector< vector<Vector3r> >,multiVPart,,,"Spatial-averaged velocity in x, y and z direction for each class of particle."))
-		((vector< vector<Real> >,multiPhiPart,,,"Spatial-averaged solid volume fraction for each class of particle."))
-
+		((vector<vector<Real>>,multiVxPart,,,"Spatial-averaged velocity in x direction for each class of particle."))
+		((vector<vector<Real>>,multiVyPart,,,"Spatial-averaged velocity in y direction for each class of particle."))
+		((vector<vector<Real>>,multiVzPart,,,"Spatial-averaged velocity in z direction for each class of particle."))
+		((vector<vector<Real>>,multiPhiPart,,,"Spatial-averaged solid volume fraction for each class of particle."))
 		//// Discrete Random Walk fluid velocity fluctuations model parameters
 		((bool,velFluct,false,,"If true, activate the determination of turbulent fluid velocity fluctuation for the next time step only at the position of each particle, using a simple discrete random walk (DRW) model based on the Reynolds stresses profile (:yref:`ReynoldStresses<HydroForceEngine.ReynoldStresses>`)"))
 		((vector<Real>,vFluctX,,,"Vector associating a streamwise fluid velocity fluctuation to each particle. Fluctuation calculated in the C++ code from the discrete random walk model"))
@@ -103,6 +104,8 @@ public:
 		((vector<Real>,vzPart1,,,"Discretized solid wall-normal velocity depth profile of particles of type 1. Evaluated when :yref:`twoSize<HydroForceEngine.twoSize>` is set to True."))
 		((vector<Real>,vzPart2,,,"Discretized solid wall-normal velocity depth profile of particles of type 2. Evaluated when :yref:`twoSize<HydroForceEngine.twoSize>` is set to True."))
 		((vector<Real>,vxPart,,,"Discretized streamwise solid velocity depth profile. Can be taken as input parameter, or evaluated directly inside the engine, calling from python the averageProfile() function"))
+		((vector<Real>,vyPart,,,"Discretized spanwise solid velocity depth profile. Can be taken as input parameter, or evaluated directly inside the engine, calling from python the averageProfile() function"))
+		((vector<Real>,vzPart,,,"Discretized wall-normal solid velocity depth profile. Can be taken as input parameter, or evaluated directly inside the engine, calling from python the averageProfile() function"))
 		((vector<Real>,averageDrag,,,"Discretized average drag depth profile. No role in the engine, output parameter. For practical reason, it can be evaluated directly inside the engine, calling from python the averageProfile() method of the engine"))
 		((vector< vector<Real> >,multiDragPart,,,"Spatial-averaged mean drag force for each class of particle. Un-used ? Or just for debug."))
 
