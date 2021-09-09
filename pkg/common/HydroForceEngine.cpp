@@ -77,16 +77,17 @@ void HydroForceEngine::computeRadiusParts()
 }
 
 
-
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/* Application of hydrodynamical forces */
 void HydroForceEngine::action()
 {
-	/* Application of hydrodynamical forces */
 	Vector3r gravityBuoyancy = gravity;
 	if (steadyFlow == true) gravityBuoyancy[0] = 0.; // If the fluid flow is steady, no streamwise buoyancy contribution from gravity
 	FOREACH(Body::id_t id, ids)
 	{
 		Body* b = Body::byId(id, scene).get();
 		if (!b) continue;
+		if (b->isClump()) continue;
 		if (!(scene->bodies->exists(id))) continue;
 		const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
 		if (sphere) {
@@ -120,6 +121,45 @@ void HydroForceEngine::action()
 				if (convAccOption == true) { convAccForce[0] = -convAcc[p]; }
 				//add the hydro forces to the particle
 				scene->forces.addForce(id, dragForce + liftForce + buoyantForce + convAccForce);
+			}
+		}
+	}
+
+	// Lubrication force application, requires a loop over the interactions
+	if (lubrication == true) {
+		//loop over the interactions
+		FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
+		{
+			// Get the two id of the object interacting
+			const int id1 = I->getId1();
+			const int id2 = I->getId2();
+			// Get the body caracteristic
+			Body* b1 = Body::byId(id1, scene).get();
+			Body* b2 = Body::byId(id2, scene).get();
+			// Get the sphere caracteristics
+			const Sphere* sphere1 = dynamic_cast<Sphere*>(b1->shape.get());
+			const Sphere* sphere2 = dynamic_cast<Sphere*>(b2->shape.get());
+
+			//If the two interacting objects are spheres, apply buoyancy force (Need to generalize for any object). 
+			if ((sphere1) && (sphere2)) {
+				// Evaluate quantities necessary to know if the lubrication force is at stake
+				Vector3r deltaPos12 = b2->state->pos - b1->state->pos;	// Evaluate the x_12 relative position vector
+				Vector3r deltaVel12 = b2->state->vel - b1->state->vel;	// Evaluate the v_12 relative velocity vector
+				Real deltaPosNorm = deltaPos12.norm();	//Take the norm of the relative position vector
+				Real delta_n = deltaPosNorm - (sphere1->radius + sphere2->radius);	//calculation the distance between the two particles surface
+				
+				// Calculate the normal velocity
+				Vector3r velNormal = deltaVel12.dot(deltaPos12) * deltaPos12/deltaPosNorm;
+				// Calculate the lubrication force f12
+				if (deltaVel12.dot(deltaPos12)<0){
+					Vector3r lubricationForce = 6*Mathr::PI * viscoDyn / (delta_n + roughnessPartScale)
+										* pow((sphere1->radius*sphere2->radius)/(sphere1->radius + sphere2->radius),2) 
+										* velNormal;
+
+					// Apply the lubrication force to the two particles
+					scene->forces.addForce(I->id1,lubricationForce);	//lubrication = + f12
+	 				scene->forces.addForce(I->id2,-lubricationForce);	//lubrication = - f12
+				}
 			}
 		}
 	}
