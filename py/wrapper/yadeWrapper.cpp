@@ -1563,8 +1563,9 @@ try {
 	             (py::arg("discretization") = 0),
 	             "Clump given bodies together (creating a rigid aggregate); returns ``clumpId``. A precise definition of clump masses and inertia when "
 	             "clump members overlap requires *discretization*>0 and is achieved in this case by integration/summation over mass points using a regular "
-	             "grid of cells (grid cells length is defined as $R_{min}/discretization$, where $R_{min}$ is minimum clump member radius).  If "
-	             "*discretization*<=0 sum of inertias from members is simply used, which is faster but accurate only for non-overlapping members).")
+	             "grid of cells (grid cells length is defined as $L_{min}/discretization$, where $L_{min}$ is the minimum length of an Axis-Aligned "
+	             "Bounding Box. If *discretization*<=0 sum of inertias from members is simply used, which is faster but accurate only for non-overlapping "
+	             "members).")
 	        .def("updateClumpProperties",
 	             &pyBodyContainer::updateClumpProperties,
 	             (py::arg("excludeList") = py::list(), py::arg("discretization") = 5),
