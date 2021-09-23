@@ -380,9 +380,9 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 		((int, zmax,5,(Attr::readonly),"See :yref:`FlowEngine::xmin`."))
 
 		((vector<bool>, bndCondIsPressure, vector<bool>(6,false),,"defines the type of boundary condition for each side. True if pressure is imposed, False for no-flux. Indexes can be retrieved with :yref:`FlowEngine::xmin` and friends."))
-		((vector<bool>, bndCondIsTemperature, vector<bool>(6,false),,"defines the type of boundary condition for each side. True if temperature is imposed, False for no heat-flux. Indexes can be retrieved with :yref:`FlowEngine::xmin` and friends."))
+		((vector<bool>, bndCondIsTemperature, vector<bool>(6,false),,"defines the type of boundary condition for each side of triangulation (used with :yref:`ThermalEngine` only). True if temperature is imposed, False for no heat-flux. Indexes can be retrieved with :yref:`FlowEngine::xmin` and friends."))
 		((vector<Real>, bndCondValue, vector<Real>(6,0),,"Imposed value of a boundary condition. Only applies if the boundary condition is imposed pressure, else the imposed flux is always zero presently (may be generalized to non-zero imposed fluxes in the future)."))
-		((vector<Real>, thermalBndCondValue, vector<Real>(6,0),,"Imposed temperature value of a boundary condition."))
+		((vector<Real>, thermalBndCondValue, vector<Real>(6,0),,"Imposed temperature boundary condition value for the cells in the triangulation (used with :yref:`ThermalEngine` only)."))
 		((vector<Vector3r>, boundaryVelocity, vector<Vector3r>(6,Vector3r::Zero()),, "velocity on top boundary, only change it using :yref:`FlowEngine::setBoundaryVel`"))
 		((int, ignoredBody,-1,,"DEPRECATED, USE MASK - Id of a sphere to exclude from the triangulation.)"))
 		((int,mask,0,,"If mask defined, only bodies with corresponding groupMask will be affected by this engine. If 0, all bodies will be affected."))
