@@ -514,9 +514,9 @@ void ThermalEngine::computeFluidFluidConduction()
 	/* Parallel version */
 	Tesselation& Tes = flow->solver->T[flow->solver->currentTes];
 	const long   sizeFacets = Tes.facetCells.size();
-	#ifdef YADE_OPENMP
-	#pragma omp parallel for  
-	#endif
+//	#ifdef YADE_OPENMP
+//	#pragma omp parallel for  
+//	#endif
 	for (long i = 0; i < sizeFacets; i++) {
 		CVector                    fluidSurfK;
 		CVector                    poreVector;
@@ -547,15 +547,15 @@ void ThermalEngine::computeFluidFluidConduction()
 		cell->info().stabilityCoefficient += thermalResist;
 		//cout << "conduction distance" << distance << endl;
 		if (!cell->info().Tcondition && !math::isnan(conductionEnergy)) {
-#ifdef YADE_OPENMP
-#pragma omp atomic
-#endif
+//#ifdef YADE_OPENMP
+//#pragma omp atomic
+//#endif
 			cell->info().internalEnergy -= conductionEnergy;
 		}
 		if (!neighborCell->info().Tcondition && !math::isnan(conductionEnergy)) {
-#ifdef YADE_OPENMP
-#pragma omp atomic
-#endif
+//#ifdef YADE_OPENMP
+//#pragma omp atomic
+//#endif
 		neighborCell->info().internalEnergy += conductionEnergy;
 		}
 	}
