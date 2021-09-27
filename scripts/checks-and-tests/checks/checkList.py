@@ -29,7 +29,7 @@ singleCore = [
 slowScripts = ['checkClumpHopper.py', 'checkMPISilo.py', 'colliderTorture.py']
 
 # checkSpawn.py fails always for now, needs investigations
-skipScripts = ['checkList.py']
+skipScripts = ['checkList.py', 'checkMPISilo.py']
 # use this if you want to test only one script, it takes precedence over skipScripts.
 onlyOneScript = []
 
