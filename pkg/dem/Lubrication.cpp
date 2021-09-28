@@ -413,7 +413,7 @@ Real Law2_ScGeom_ImplicitLubricationPhys::trapz_integrate_u(
 		prevDotU = keff * u * (un_eff - u); //set for next iteration
 		un_prev  = un_curr;
 		u_prev   = u;
-                if (u<=1e-15) LOG_WARN("u<=1e-15, rr0="<<rr[0]<<" "<<rr[1]<<" "<<delta<<" "<<b<<" "<<c<<" "<<u )
+//                 if (u<=1e-15) LOG_WARN("u<=1e-15, rr0="<<rr[0]<<" "<<rr[1]<<" "<<delta<<" "<<b<<" "<<c<<" "<<u )
 		return k * (un_curr - u);
 	}
 }
