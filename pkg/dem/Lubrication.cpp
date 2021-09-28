@@ -54,6 +54,7 @@ void Ip2_FrictMat_FrictMat_LubricationPhys::go(
 	Real Ks = 2. * Ea * Da * Va * Eb * Db * Vb / (Ea * Da * Va + Eb * Db * Vb);
 
 	phys->kn = Kn;
+        phys->keps = Kn*keps;
 	phys->ks = Ks;
 
 	/* Friction */
@@ -315,7 +316,7 @@ Real Law2_ScGeom_ImplicitLubricationPhys::normalForce_trapezoidal(LubricationPhy
 	                            -geom->penetrationDepth,
 	                            (phys->nun * 3. / 2.),
 	                            phys->kn,
-	                            phys->kn /*should be keps, currently both are equal*/,
+	                            phys->keps /*should be keps, currently both are equal*/,
 	                            2. * phys->eps * a,
 	                            scene->dt,
 	                            phys->u < (2 * phys->eps * a),
@@ -601,7 +602,7 @@ void Law2_ScGeom_VirtualLubricationPhys::computeShearForceAndTorques(Lubrication
 		C1 = -(geom->radius1 - geom->penetrationDepth / 2.) * phys->shearForce.cross(geom->normal) + Cr + Ct;
 		C2 = -(geom->radius2 - geom->penetrationDepth / 2.) * phys->shearForce.cross(geom->normal) - Cr - Ct;
 	} else {
-		LOG_WARN("Gap is negative or null with lubrication: inconsistant results: skip shear force and torques calculation" << phys->u);
+		LOG_ERROR("Gap is negative or null with lubrication: inconsistant results: skip shear force and torques calculation" << phys->u);
 	}
 }
 

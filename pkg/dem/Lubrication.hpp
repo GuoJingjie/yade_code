@@ -28,6 +28,7 @@ public:
 				// Physical properties
                 ((Real,eta,1,Attr::readonly,"Fluid viscosity [Pa.s]"))
                 ((Real,eps,0.001,,"Roughness: fraction of radius used as roughness [-]"))
+                ((Real,keps,1,,"stiffness coefficient of the asperities [N/m]. Only used with resolution method=0, with resolution>0 it is always equal to kn."))
                 ((Real,kno,0.0,,"Coefficient for normal stiffness (Hertzian-like contact) [N/m^(3/2)]"))
                 ((Real,nun,0.0,,"Coefficient for normal lubrication [N.s]"))
                 ((Real,mum,0.3,,"Friction coefficient [-]"))
@@ -63,7 +64,8 @@ public:
 	// clang-format off
                 YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(Ip2_FrictMat_FrictMat_LubricationPhys,IPhysFunctor,"Ip2 creating LubricationPhys from two Material instances.",
                         ((Real,eta,1,,"Fluid viscosity [Pa.s]"))
-                        ((Real,eps,0.001,,"Roughness: fraction of radius enlargement for contact"))
+                        ((Real,eps,0.001,,"Roughness: fraction of radius enlargement for contact asperities"))
+                        ((Real,keps,1,,"Dimensionless stiffness coefficient of the asperities, relative to the stiffness of the surface (the final stiffness will be keps*kn). Only used with resolution method=0, with resolution>0 it is always equal to 1. [-]"))
                                                   ,,
                 );
 	// clang-format on
@@ -157,7 +159,7 @@ public:
 			// ATTR
 			((int,maxSubSteps,4,,"max recursion depth of adaptative timestepping in the theta-method, the minimal time interval is thus :yref:`Omega::dt<O.dt>`$/2^{depth}$. If still not converged the integrator will switch to backward Euler."))
 			((Real,theta,0.55,,"parameter of the 'theta'-method, 1: backward Euler, 0.5: trapezoidal rule, 0: not used,  0.55: suggested optimum)"))
-			((int,resolution,2,,"Change normal component resolution method, 0: Iterative exact resolution with substepping (theta method, linear contact), 1: Newton-Rafson dimensionless resolution (theta method, linear contact), 2: (default) Dichotomy dimensionless resolution (theta method, linear contact), 3: Exact dimensionless solution with contact prediction (theta method, linear contact). Method 3 is better if the volumic fraction is not too high. Use 2 otherwise."))
+			((int,resolution,0,,"Change normal component resolution method, 0: Iterative exact resolution with substepping (theta method, linear contact), 1: Newton-Rafson dimensionless resolution (theta method, linear contact), 2: (default) Dichotomy dimensionless resolution (theta method, linear contact), 3: Exact dimensionless solution with contact prediction (theta method, linear contact). Method 3 is better if the volumic fraction is not too high. Use 2 otherwise."))
 			((Real, SolutionTol, 1.e-8,,"Tolerance for numerical resolution (Dichotomy and Newton-Rafson)"))
 			((int, MaxIter, 30,,"Maximum iterations for numerical resolution (Dichotomy and Newton-Rafson)"))
 			,// CTOR
