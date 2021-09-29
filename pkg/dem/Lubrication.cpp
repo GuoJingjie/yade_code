@@ -10,6 +10,8 @@ YADE_PLUGIN((Ip2_FrictMat_FrictMat_LubricationPhys)(LubricationPhys)(Law2_ScGeom
 LubricationPhys::~LubricationPhys() { }
 
 CREATE_LOGGER(LubricationPhys);
+CREATE_LOGGER(Law2_ScGeom_ImplicitLubricationPhys);
+CREATE_LOGGER(Law2_ScGeom_VirtualLubricationPhys);
 
 void Ip2_FrictMat_FrictMat_LubricationPhys::go(
         const shared_ptr<Material>& material1, const shared_ptr<Material>& material2, const shared_ptr<Interaction>& interaction)
@@ -363,11 +365,17 @@ Real Law2_ScGeom_ImplicitLubricationPhys::trapz_integrate_u(
 		b = nu / dt / keff - un_eff;
 		c = -w * u_prev; /*implicit backward Euler 1st order*/
 	}
-	Real delta = b * b - 4 * c; //note: a=1
 	Real rr[2] = { 0, 0 };
+        Real delta = b * b - 4 * c; //note: a=1
 	if (delta >= 0) {
-		rr[0] = 0.5 * (-b + sqrt(delta));
-		rr[1] = 0.5 * (-b - sqrt(delta));
+                // there is an accuracy issue when computing (-b+√(b²-4ac))/2a, use 1st order approx when needed (first case): r=-c/b
+                if ((-c) < (1e-12*delta)) { 
+                    rr[0] = -c/b;
+                    rr[1] = c/b;
+                } else {
+                    rr[0] = 0.5 * (-b + sqrt(delta));
+                    rr[1] = 0.5 * (-b - sqrt(delta));
+                }
 	}                             //roots
 	if (delta < 0 or rr[0] < 0) { // recursive calls after halving the time increment if no positive solution found (no need to check r[1], always smaller)
 		if (depth < maxSubSteps) { //sub-stepping
@@ -376,14 +384,16 @@ Real Law2_ScGeom_ImplicitLubricationPhys::trapz_integrate_u(
 			trapz_integrate_u(prevDotU, un_prev, u_prev, un_mid, nu, k, keps, eps, dt / 2., withContact, depth + 1);
 			return trapz_integrate_u(prevDotU, un_prev, u_prev, un_curr, nu, k, keps, eps, dt / 2., withContact, depth + 1);
 		} else { // switch to backward Euler (theta = 1) by increasing depth again (see above)
-			LOG_DEBUG("minimal sub-step reached (depth=" << maxSubSteps << "), the result may be innacurate. Increase maxSubSteps?");
+			LOG_WARN("minimal sub-step reached (depth=" << maxSubSteps << "), the result may be innacurate. Increase maxSubSteps?");
 			return trapz_integrate_u(prevDotU, un_prev, u_prev, un_curr, nu, k, keps, eps, dt, withContact, depth + 1);
 		}
 	} else { // normal case, keep the positive solution closest to the previous one, and check contact status
 		// select the nearest strictly positive solution, keep 0 only if there is no positive solution
 		if ((math::abs(rr[0] - u_prev) < math::abs(rr[1] - u_prev) and rr[0] > 0) or rr[1] <= 0) u = rr[0];
-		else
+		else {
+                        LOG_WARN("root 1 was used")
 			u = rr[1];
+                }
 		bool hasContact = u < eps;
 		// if contact appeared/disappeared recalculate with different coefficients (another recursion)
 		if (withContact and not hasContact) {
@@ -516,12 +526,8 @@ bool Law2_ScGeom_ImplicitLubricationPhys::go(shared_ptr<IGeom>& iGeom, shared_pt
 	//    Vector3r relVT = relV - relVN; // Tangeancial velocity
 	Real undot = relV.dot(geom->normal); // Normal velocity norm
 
-	if (-geom->penetrationDepth > MaxDist * a) {
-		//FIXME: it needs to go to potential always based on distance, the "undot < 0" here is dangerous (let the collider do its job), ex: if true is returned here the interaction is still alive and it will be included in the stress
-		//         return undot < 0; // Only go to potential if distance is increasing
-
-		return false;
-	}
+        // the second condition below is to keep alive soft sticking contacts (large elastic forces between distant particles)
+	if (-geom->penetrationDepth > MaxDist * a and (phys->u > (-0.99*geom->penetrationDepth) )) return false;
 
 	// inititalization
 	if (phys->u == -1.) {
@@ -632,8 +638,6 @@ void Law2_ScGeom_VirtualLubricationPhys::computeShearForceAndTorques_log(Lubrica
 	C2 = -(geom->radius2 - geom->penetrationDepth / 2.) * phys->shearForce.cross(geom->normal) - Cr - Ct;
 }
 
-CREATE_LOGGER(Law2_ScGeom_ImplicitLubricationPhys);
-CREATE_LOGGER(Law2_ScGeom_VirtualLubricationPhys);
 
 void Law2_ScGeom_VirtualLubricationPhys::getStressForEachBody(
         vector<Matrix3r>& NCStresses, vector<Matrix3r>& SCStresses, vector<Matrix3r>& NLStresses, vector<Matrix3r>& SLStresses, vector<Matrix3r>& NPStresses)
