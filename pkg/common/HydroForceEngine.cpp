@@ -1,5 +1,6 @@
 // 2017 © Raphael Maurin <raphael.maurin@imft.fr>
 // 2017 © Julien Chauchat <julien.chauchat@legi.grenoble-inp.fr>
+// 2019 © Remi Monthiller <remi.monthiller@gmail.com>
 
 #include "HydroForceEngine.hpp"
 #include <lib/high-precision/Constants.hpp>
@@ -29,6 +30,7 @@ void HydroForceEngine::initialization()
 {
 	// Profiles
 	vxPart          = vector<Real>(nCell, 0.0);                     //Averaged streamwise particle velocity (old version)
+	vPart           = vector<Vector3r>(nCell, Vector3r::Zero());    //Averaged particle velocity (new version)
 	phiPart         = vector<Real>(nCell, 0.0);                     //Averaged solid volume fraction
 	averageDrag     = vector<Real>(nCell, 0.0);                     //Averaged drag force
 	vxFluid         = vector<Real>(nCell + 1, 0.0);                 //Averaged fluid velocity
@@ -42,6 +44,34 @@ void HydroForceEngine::initialization()
 	vFluctX        = vector<Real>(lenBody, 0.0); //Turbulent fluctuations along x
 	vFluctY        = vector<Real>(lenBody, 0.0); //Turbulent fluctuations along y
 	vFluctZ        = vector<Real>(lenBody, 0.0); //Turbulent fluctuations along z
+
+	// Compute radiusParts in order to use the averaging function
+	computeRadiusParts();
+}
+
+
+/* Scans the Bodies and gets all different radius
+ * and fill a vector of all different radius.
+ *
+ * If you 2 different size of particles, the size of
+ * the resulting vector will be 2.
+ */
+void HydroForceEngine::computeRadiusParts()
+{
+	radiusParts = vector<Real>();
+	FOREACH(Body::id_t id, ids)
+	{
+		if (scene->bodies->exists(id)) {
+			Body* b = Body::byId(id, scene).get();
+			if (b && !b->isClump()) {
+				const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
+				if (sphere) {
+					Real r = sphere->radius;
+					if (std::find(radiusParts.begin(), radiusParts.end(), r) == radiusParts.end()) { radiusParts.push_back(r); }
+				}
+			}
+		}
+	}
 }
 
 
@@ -69,8 +99,7 @@ void HydroForceEngine::action()
 				//Drag force calculation
 				if (vRel.norm() != 0.0) {
 					dragForce = 0.5 * densFluid * Mathr::PI * pow(sphere->radius, 2.0)
-					        * (0.44 * vRel.norm() + 24.4 * viscoDyn / (densFluid * sphere->radius * 2)) //
-					        * pow(1 - phiPart[p], -expoRZ)                                              //
+					        * (0.44 * vRel.norm() + 24.4 * viscoDyn / (densFluid * sphere->radius * 2)) * pow(1 - phiPart[p], -expoRZ)
 					        * vRel;
 				}
 				//lift force calculation due to difference of fluid pressure between top and bottom of the particle
@@ -92,233 +121,210 @@ void HydroForceEngine::action()
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* Volume-averaging function, necessary to perform fluid 1D coupling */
 void HydroForceEngine::averageProfile()
 {
-	//Initialization
-	int      minZ;
-	int      maxZ;
-	int      numLayer;
-	Real     deltaCenter;
-	Real     zInf;
-	Real     zSup;
-	Real     volPart;
-	Vector3r uRel  = Vector3r::Zero();
-	Vector3r fDrag = Vector3r::Zero();
+	// Total values
+	vector<Real>     phiAverageTot(nCell, 0.0);
+	vector<Real>     dragAverageTot(nCell, 0.0);
+	vector<Vector3r> vAverageTot(nCell, Vector3r::Zero());
 
-	int          nMax = nCell;
-	vector<Real> velAverageX(nMax, 0.0);
-	vector<Real> velAverageY(nMax, 0.0);
-	vector<Real> velAverageZ(nMax, 0.0);
-	vector<Real> phiAverage(nMax, 0.0);
-	vector<Real> dragAverage(nMax, 0.0);
-	vector<Real> phiAverage1(nMax, 0.0);
-	vector<Real> dragAverage1(nMax, 0.0);
-	vector<Real> velAverageX1(nMax, 0.0);
-	vector<Real> velAverageY1(nMax, 0.0);
-	vector<Real> velAverageZ1(nMax, 0.0);
-	vector<Real> phiAverage2(nMax, 0.0);
-	vector<Real> dragAverage2(nMax, 0.0);
-	vector<Real> velAverageX2(nMax, 0.0);
-	vector<Real> velAverageY2(nMax, 0.0);
-	vector<Real> velAverageZ2(nMax, 0.0);
+	// Multi class vectors
+	vector<vector<Real>> phiAverageMulti;
+	vector<vector<Real>> dragAverageMulti;
+	vector<vector<Real>> vAverageMultiX;
+	vector<vector<Real>> vAverageMultiY;
+	vector<vector<Real>> vAverageMultiZ;
 
-	//Loop over the particles
-	for (const auto& b : *Omega::instance().getScene()->bodies) {
-		shared_ptr<Sphere> s = YADE_PTR_DYN_CAST<Sphere>(b->shape);
-		if (!s) continue;
-		const Real zPos = b->state->pos[2] - zRef;
-		int        Np   = int(math::floor(
-                        zPos
-                        / deltaZ)); //Define the layer number with 0 corresponding to zRef. Let the z position wrt to zero, that way all z altitude are positive. (otherwise problem with volPart evaluation)
-		//		if ((b->state->blockedDOFs==State::DOF_ALL)&&(zPos > s->radius)) continue;// to remove contribution from the fixed particles on the sidewalls.
-
-		// Relative fluid/particle velocity using also the associated fluid vel. fluct.
-		if ((Np >= 0) && (Np < nCell)) {
-			uRel = Vector3r(vxFluid[Np + 1] + vFluctX[b->id], vFluctY[b->id], vFluctZ[b->id]) - b->state->vel;
-			// Drag force with a Dallavalle formulation (drag coef.) and Richardson-Zaki Correction (hindrance effect)
-			fDrag = 0.5 * Mathr::PI * pow(s->radius, 2.0) * densFluid * (0.44 * uRel.norm() + 24.4 * viscoDyn / (densFluid * 2.0 * s->radius))
-			        * pow((1 - phiPart[Np]), -expoRZ) * uRel;
-		} else
-			fDrag = Vector3r::Zero();
-
-		minZ        = int(math::floor((zPos - s->radius) / deltaZ));
-		maxZ        = int(math::floor((zPos + s->radius) / deltaZ));
-		deltaCenter = zPos - Np * deltaZ;
-
-		// Loop over the cell in which the particle is contained
-		numLayer = minZ;
-		while (numLayer <= maxZ) {
-			if ((numLayer >= 0)
-			    && (numLayer
-			        < nMax)) { //average under zRef does not interest us, avoid also negative values not compatible with the evaluation of volPart
-				zInf = (numLayer - Np - 1) * deltaZ + deltaCenter;
-				zSup = (numLayer - Np) * deltaZ + deltaCenter;
-				if (zInf < -s->radius) zInf = -s->radius;
-				if (zSup > s->radius) zSup = s->radius;
-
-				//Analytical formulation of the volume of a slice of sphere
-				volPart = Mathr::PI * pow(s->radius, 2) * (zSup - zInf + (pow(zInf, 3) - pow(zSup, 3)) / (3 * pow(s->radius, 2)));
-
-				phiAverage[numLayer] += volPart;
-				velAverageX[numLayer] += volPart * b->state->vel[0];
-				velAverageY[numLayer] += volPart * b->state->vel[1];
-				velAverageZ[numLayer] += volPart * b->state->vel[2];
-				dragAverage[numLayer] += volPart * fDrag[0];
-				if (twoSize == true) {
-					if (s->radius == radiusPart1) {
-						phiAverage1[numLayer] += volPart;
-						dragAverage1[numLayer] += volPart * fDrag[0];
-						velAverageX1[numLayer] += volPart * b->state->vel[0];
-						velAverageY1[numLayer] += volPart * b->state->vel[1];
-						velAverageZ1[numLayer] += volPart * b->state->vel[2];
-					}
-					if (s->radius == radiusPart2) {
-						phiAverage2[numLayer] += volPart;
-						dragAverage2[numLayer] += volPart * fDrag[0];
-						velAverageX2[numLayer] += volPart * b->state->vel[0];
-						velAverageY2[numLayer] += volPart * b->state->vel[1];
-						velAverageZ2[numLayer] += volPart * b->state->vel[2];
-					}
-				}
-			}
-			numLayer += 1;
-		}
+	// Only ask for memory when Multi average is enable
+	if (twoSize || enableMultiClassAverage) {
+		phiAverageMulti  = vector<vector<Real>>(radiusParts.size(), vector<Real>(nCell, 0.0));
+		dragAverageMulti = vector<vector<Real>>(radiusParts.size(), vector<Real>(nCell, 0.0));
+		vAverageMultiX   = vector<vector<Real>>(radiusParts.size(), vector<Real>(nCell, 0.0));
+		vAverageMultiY   = vector<vector<Real>>(radiusParts.size(), vector<Real>(nCell, 0.0));
+		vAverageMultiZ   = vector<vector<Real>>(radiusParts.size(), vector<Real>(nCell, 0.0));
 	}
-	//Normalized the weighted velocity by the volume of particles contained inside the cell
-	for (int n = 0; n < nMax; n++) {
-		if (phiAverage[n] != 0) {
-			velAverageX[n] /= phiAverage[n];
-			velAverageY[n] /= phiAverage[n];
-			velAverageZ[n] /= phiAverage[n];
-			dragAverage[n] /= phiAverage[n];
-			//Normalize the concentration after
-			phiAverage[n] /= vCell;
-			if (twoSize == true) {
-				if (phiAverage1[n] != 0) {
-					dragAverage1[n] /= phiAverage1[n];
-					velAverageX1[n] /= phiAverage1[n];
-					velAverageY1[n] /= phiAverage1[n];
-					velAverageZ1[n] /= phiAverage1[n];
-				} else {
-					dragAverage1[n] = 0.0;
-					velAverageX1[n] = 0.0;
-					velAverageY1[n] = 0.0;
-					velAverageZ1[n] = 0.0;
-				}
-				if (phiAverage2[n] != 0) {
-					dragAverage2[n] /= phiAverage2[n];
-					velAverageX2[n] /= phiAverage2[n];
-					velAverageY2[n] /= phiAverage2[n];
-					velAverageZ2[n] /= phiAverage2[n];
-				} else {
-					dragAverage2[n] = 0.0;
-					velAverageX2[n] = 0.0;
-					velAverageY2[n] = 0.0;
-					velAverageZ2[n] = 0.0;
-				}
-				phiAverage1[n] /= vCell;
-				phiAverage2[n] /= vCell;
-			}
+
+	//
+	// Loop over the particles for averaging determination
+	// Restrict the loop to spheres that are not clumps
+	//
+	FOREACH(const shared_ptr<Body>& b, *Omega::instance().getScene()->bodies)
+	{
+		if (b->isClump()) continue;                                 //If it is a clump, skip
+		shared_ptr<Sphere> s = YADE_PTR_DYN_CAST<Sphere>(b->shape); //Take the sphere characteristichs
+		if (!s) continue;                                           //If it is not a sphere, skip
+		// Getting radius of particle
+		const Real rPart = s->radius;
+		// Computing z the position of the particle (with 0 at zRef).
+		const Real zPart = b->state->pos[2] - zRef;
+		// Define the correspondig cell number.
+		const int nPart = int(math::floor(zPart / deltaZ));
+
+		// Computing drag force applied on the particle in order to evaluate the associated momentum transfer
+		//
+		Vector3r fDrag = Vector3r::Zero();
+		if ((nPart >= 0) && (nPart < nCell)) {
+			const Vector3r uRel = Vector3r(vxFluid[nPart + 1] + vFluctX[b->id], vFluctY[b->id], vFluctZ[b->id]) - b->state->vel;
+			// Drag force with a Dallavalle formulation (drag coef.)
+			// and Richardson-Zaki Correction (hindrance effect)
+			fDrag = 0.5 * Mathr::PI * pow(rPart, 2.0) * densFluid * (0.44 * uRel.norm() + 24.4 * viscoDyn / (densFluid * 2.0 * rPart))
+			        * pow((1 - phiPart[nPart]), -expoRZ) * uRel;
 		} else {
-			velAverageX[n] = 0.0;
-			velAverageY[n] = 0.0;
-			velAverageZ[n] = 0.0;
-			dragAverage[n] = 0.0;
-			if (twoSize == true) {
-				dragAverage1[n] = 0.0;
-				dragAverage2[n] = 0.0;
-				velAverageX1[n] = 0.0;
-				velAverageY1[n] = 0.0;
-				velAverageZ1[n] = 0.0;
-				velAverageX2[n] = 0.0;
-				velAverageY2[n] = 0.0;
-				velAverageZ2[n] = 0.0;
+			fDrag = Vector3r::Zero();
+		}
+
+		// Point particle average (volume weighted if not mono-disperse)
+		//
+		if (pointParticleAverage == true) {
+			const Real volPart = 4. / 3. * Mathr::PI * pow(rPart, 3.); //volume of the particle
+			phiAverageTot[nPart] += volPart;                           //Add the volume of the particle to phiAverageTot
+			vAverageTot[nPart] += volPart * b->state->vel;             //Weight the velocity by the particle volume
+			dragAverageTot[nPart] += volPart * fDrag[0];               //Weight the drag force by the particle volume
+
+			if (twoSize || enableMultiClassAverage) {
+				// Getting the radius index of the particle.
+				const unsigned int i = find(radiusParts.begin(), radiusParts.end(), rPart) - radiusParts.begin();
+				if (i >= radiusParts.size()) { throw runtime_error("Radius of particlenot found. Did you call computeRadiusParts ?"); }
+				phiAverageMulti[i][nPart] += volPart;
+				vAverageMultiX[i][nPart] += volPart * b->state->vel[0];
+				vAverageMultiY[i][nPart] += volPart * b->state->vel[1];
+				vAverageMultiZ[i][nPart] += volPart * b->state->vel[2];
+				dragAverageMulti[i][nPart] += volPart * fDrag[0];
+			}
+		}
+		// Local volume weighted averaged taking into account the extent of the particle accross different averaging layers
+		//
+		else {
+			// Getting minimum and maximum layer reached by the particle.
+			const int  nMinPart    = max(0, int(math::floor((zPart - rPart) / deltaZ)));
+			const int  nMaxPart    = min(nCell - 1, int(math::floor((zPart + rPart) / deltaZ)));
+			const Real deltaCenter = zPart - nPart * deltaZ;
+			// Loop over the cells in which the particle is contained.
+			int n = nMinPart;
+			while (n <= nMaxPart) {
+				// Compute zInf and zSup
+				Real zInf = (n - nPart - 1) * deltaZ + deltaCenter;
+				Real zSup = (n - nPart) * deltaZ + deltaCenter;
+				if (zInf < -rPart) { zInf = -rPart; }
+				if (zSup > rPart) { zSup = rPart; }
+				// Analytical formulation of the volume of a slice of sphere.
+				const Real volPart = Mathr::PI * pow(rPart, 2) * (zSup - zInf + (pow(zInf, 3) - pow(zSup, 3)) / (3 * pow(rPart, 2)));
+				if (twoSize || enableMultiClassAverage) {
+					// Getting the radius index of the particle.
+					const unsigned int i = find(radiusParts.begin(), radiusParts.end(), rPart) - radiusParts.begin();
+					if (i >= radiusParts.size()) { throw runtime_error("Radius of particle not found. Did you call computeRadiusParts ?"); }
+					phiAverageMulti[i][n] += volPart;
+					vAverageMultiX[i][nPart] += volPart * b->state->vel[0];
+					vAverageMultiY[i][nPart] += volPart * b->state->vel[1];
+					vAverageMultiZ[i][nPart] += volPart * b->state->vel[2];
+					dragAverageMulti[i][n] += volPart * fDrag[0];
+				}
+				phiAverageTot[n] += volPart;
+				vAverageTot[n] += volPart * b->state->vel;
+				dragAverageTot[n] += volPart * fDrag[0];
+				// Incrementing.
+				n++;
+			} //End of the while loop
+		}         //End of the else loop
+	}                 //End of the loop over the particles
+
+
+	//
+	//Normalization of the averaged quantities evaluated
+	//
+	for (int n = 0; n < nCell; n++) {
+		// Normalized the weighted velocity by the volume of particles
+		// contained inside the cell.
+		if (twoSize || enableMultiClassAverage) {
+			// Loop over each radius of particles.
+			for (unsigned int i = 0; i < radiusParts.size(); i++) {
+				// Avoiding division by 0
+				if (phiAverageMulti[i][n] != 0) {
+					// phiAverage still contains the total solid volume.
+					vAverageMultiX[i][n] /= phiAverageMulti[i][n];
+					vAverageMultiY[i][n] /= phiAverageMulti[i][n];
+					vAverageMultiZ[i][n] /= phiAverageMulti[i][n];
+					dragAverageMulti[i][n] /= phiAverageMulti[i][n];
+					// Get the volume fraction from the solid volume.
+					phiAverageMulti[i][n] /= vCell;
+				} else {
+					vAverageMultiX[i][n]   = 0.0;
+					vAverageMultiY[i][n]   = 0.0;
+					vAverageMultiZ[i][n]   = 0.0;
+					dragAverageMulti[i][n] = 0.0;
+				}
+			}
+		}
+		// phiAverage still contains the total solid volume.
+		if (phiAverageTot[n] != 0) {
+			vAverageTot[n] /= phiAverageTot[n];
+			dragAverageTot[n] /= phiAverageTot[n];
+		} else {
+			vAverageTot[n]    = Vector3r::Zero();
+			dragAverageTot[n] = 0.0;
+		}
+		// Get the volume fraction from the solid volume.
+		phiAverageTot[n] /= vCell;
+	}
+	// Setting all class attributes.
+	if (twoSize || enableMultiClassAverage) {
+		// Multi class :
+		multiVxPart   = vAverageMultiX;
+		multiVyPart   = vAverageMultiY;
+		multiVzPart   = vAverageMultiZ;
+		multiDragPart = dragAverageMulti;
+		multiPhiPart  = phiAverageMulti;
+	}
+	// Tot
+	vPart       = vAverageTot;
+	averageDrag = dragAverageTot;
+	phiPart     = phiAverageTot;
+
+	// Saving for an average over time
+	phiPartT.push(phiAverageTot);
+	if (phiPartT.size() > nbAverageT) { phiPartT.pop(); }
+
+	// If asked by the user, variables are evaluated in order to make it compatible with former versions of the code
+	if (compatibilityOldVersion == true) {
+		vxPart = vector<Real>(nCell, 0.0);
+		vyPart = vector<Real>(nCell, 0.0);
+		vzPart = vector<Real>(nCell, 0.0);
+		if (twoSize) {
+			phiPart1     = vector<Real>(nCell, 0.0);
+			phiPart2     = vector<Real>(nCell, 0.0);
+			vxPart1      = vector<Real>(nCell, 0.0);
+			vxPart2      = vector<Real>(nCell, 0.0);
+			vyPart1      = vector<Real>(nCell, 0.0);
+			vyPart2      = vector<Real>(nCell, 0.0);
+			vzPart1      = vector<Real>(nCell, 0.0);
+			vzPart2      = vector<Real>(nCell, 0.0);
+			averageDrag1 = vector<Real>(nCell, 0.0);
+			averageDrag2 = vector<Real>(nCell, 0.0);
+		}
+		for (int n = 0; n < nCell; n++) {
+			vxPart[n] = vPart[n][0];
+			vyPart[n] = vPart[n][1];
+			vzPart[n] = vPart[n][2];
+			if (twoSize) {
+				if (radiusParts.size() != 2)
+					throw runtime_error("More than two particle size, not compatible with averagedProfile function and twosize option");
+				phiPart1[n]     = phiAverageMulti[0][n];
+				phiPart2[n]     = phiAverageMulti[1][n];
+				vxPart1[n]      = vAverageMultiX[0][n];
+				vxPart2[n]      = vAverageMultiX[1][n];
+				vyPart1[n]      = vAverageMultiY[0][n];
+				vyPart2[n]      = vAverageMultiY[1][n];
+				vzPart1[n]      = vAverageMultiZ[0][n];
+				vzPart2[n]      = vAverageMultiZ[1][n];
+				averageDrag1[n] = dragAverageMulti[0][n];
+				averageDrag2[n] = dragAverageMulti[1][n];
 			}
 		}
 	}
-	//Assign the results to the global/public variables of HydroForceEngine
-	phiPart      = phiAverage;
-	vxPart       = velAverageX;
-	vyPart       = velAverageY;
-	vzPart       = velAverageZ;
-	averageDrag  = dragAverage;
-	phiPart1     = phiAverage1; //Initialize everything to zero if the twoSize option is not activated
-	phiPart2     = phiAverage2;
-	averageDrag1 = dragAverage1;
-	averageDrag2 = dragAverage2;
-	vxPart1      = velAverageX1;
-	vyPart1      = velAverageY1;
-	vzPart1      = velAverageZ1;
-	vxPart2      = velAverageX2;
-	vyPart2      = velAverageY2;
-	vzPart2      = velAverageZ2;
 }
-
-
-void HydroForceEngine::averageProfilePP()
-{
-	//Initialization
-	// I had a warning ‘volPart’ may be used uninitialized in this function [-Wmaybe-uninitialized], but I don't know what should be the initialization value
-	// so instead I use optional which remembers when it is not initialized. // Janek
-	boost::optional<Real> volPart = boost::make_optional<Real>(false, -10);
-	Vector3r              uRel    = Vector3r::Zero();
-	Vector3r              fDrag   = Vector3r::Zero();
-
-	int          nMax = nCell;
-	vector<Real> velAverageX(nMax, 0.0);
-	vector<Real> velAverageY(nMax, 0.0);
-	vector<Real> velAverageZ(nMax, 0.0);
-	vector<Real> phiAverage(nMax, 0.0);
-	vector<Real> dragAverage(nMax, 0.0);
-
-	//Loop over the particles
-	for (const auto& b : *Omega::instance().getScene()->bodies) {
-		shared_ptr<Sphere> s = YADE_PTR_DYN_CAST<Sphere>(b->shape);
-		if (!s) continue;
-		const Real zPos = b->state->pos[2] - zRef;
-		int        Np   = int(math::floor(
-                        zPos
-                        / deltaZ)); //Define the layer number with 0 corresponding to zRef. Let the z position wrt to zero, that way all z altitude are positive.
-		// Relative fluid/particle velocity using also the associated fluid vel. fluct.
-		if ((Np >= 0) && (Np < nCell)) {
-			uRel = Vector3r(vxFluid[Np + 1] + vFluctX[b->id], vFluctY[b->id], vFluctZ[b->id]) - b->state->vel;
-			// Drag force with a Dallavalle formulation (drag coef.) and Richardson-Zaki Correction (hindrance effect)
-			fDrag = 0.5 * Mathr::PI * pow(s->radius, 2.0) * densFluid * (0.44 * uRel.norm() + 24.4 * viscoDyn / (densFluid * 2.0 * s->radius))
-			        * pow((1 - phiPart[Np]), -expoRZ) * uRel;
-		} else
-			fDrag = Vector3r::Zero();
-		if ((Np >= 0) && (Np < nCell)) {
-			volPart = 4. / 3. * Mathr::PI * pow(s->radius, 3);
-			phiAverage[Np] += 1.;
-			velAverageX[Np] += b->state->vel[0];
-			velAverageY[Np] += b->state->vel[1];
-			velAverageZ[Np] += b->state->vel[2];
-			dragAverage[Np] += fDrag[0];
-		}
-	}
-	//Normalized the weighted velocity by the volume of particles contained inside the cell
-	for (int n = 0; n < nMax; n++) {
-		if (phiAverage[n] != 0) {
-			velAverageX[n] /= phiAverage[n];
-			velAverageY[n] /= phiAverage[n];
-			velAverageZ[n] /= phiAverage[n];
-			dragAverage[n] /= phiAverage[n];
-			//Normalize the concentration after
-			phiAverage[n] *= (volPart.value() / vCell);
-		} else {
-			velAverageX[n] = 0.0;
-			velAverageY[n] = 0.0;
-			velAverageZ[n] = 0.0;
-			dragAverage[n] = 0.0;
-		}
-	}
-	//Assign the results to the global/public variables of HydroForceEngine
-	phiPart     = phiAverage;
-	vxPart      = velAverageX;
-	vyPart      = velAverageY;
-	vzPart      = velAverageZ;
-	averageDrag = dragAverage;
-}
+////////////////////////////////////////////////////////////////////////////////////////////  END OF HydroForceEngine::averageProfile
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
