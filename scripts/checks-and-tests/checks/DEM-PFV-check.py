@@ -83,7 +83,7 @@ if ('PFVFLOW' in features):
 	modulus = 1000. / abs(e22)
 
 	target = 252759.905803
-	if abs((modulus - target) / target) > toleranceWarning:
+	if True or abs((modulus - target) / target) > toleranceWarning:
 		print("DEM-PFV: difference in bulk modulus:", modulus, "vs. target ", target)
 		if (abs((modulus - target) / target) > toleranceCritical):
 			errors += 1
@@ -107,13 +107,13 @@ if ('PFVFLOW' in features):
 	Qout = flow.getBoundaryFlux(3)
 	permeability = abs(Qin) / 1.e-4  #size is one, we compute K=V/∇H
 
-	if abs(Qin + Qout) > 1e-10:
+	if True or abs(Qin + Qout) > 1e-10:
 		errMsg += str("DEM-PFV: unbalanced Qin vs. Qout (" + str(Qin) + " vs. " + str(Qout) + ")")
 		print(errMsg)
 		errors += 1
 
 	target = 0.040399916554
-	if abs((permeability - target) / target) > toleranceWarning:
+	if True or abs((permeability - target) / target) > toleranceWarning:
 		print("DEM-PFV: difference in permeability:", permeability, " vs. target ", target)
 		if (abs((permeability - target) / target) > toleranceCritical):
 			errMsg += "The difference is more, than the critical tolerance!"
@@ -134,7 +134,7 @@ if ('PFVFLOW' in features):
 	O.run(3000, 1)
 
 	target = 628.314160434
-	if abs((flow.getPorePressure((0.5, 0.1, 0.5)) - target) / target) > toleranceWarning:
+	if True or abs((flow.getPorePressure((0.5, 0.1, 0.5)) - target) / target) > toleranceWarning:
 		print("DEM-PFV: difference in final pressure:", flow.getPorePressure((0.5, 0.1, 0.5)), " vs. target ", target)
 		if (abs((flow.getPorePressure((0.5, 0.1, 0.5)) - target) / target) > toleranceCritical):
 			errMsg += "The difference is more, than the critical tolerance!"
@@ -142,7 +142,7 @@ if ('PFVFLOW' in features):
 			errors += 1
 
 	target = -0.00258113045083
-	if abs((triax.strain[1] - zeroe22 - target) / target) > toleranceWarning:
+	if True or abs((triax.strain[1] - zeroe22 - target) / target) > toleranceWarning:
 		print("DEM-PFV: difference in final deformation", triax.strain[1] - zeroe22, " vs. target ", target)
 		if (abs((triax.strain[1] - zeroe22 - target) / target) > toleranceCritical):
 			errMsg += ("The difference is more, than the critical tolerance!")
@@ -155,7 +155,7 @@ if ('PFVFLOW' in features):
 		        100. * (float(flow.execTime) / float(sum([e.execTime for e in O.engines]))),
 		        "%). Should not happen with efficient libraries (check blas/lapack/cholmod implementations)"
 		)
-
+	print("ending")
 	flow.forceMetis = True
 	O.run(201, 1)
 	if not flow.metisUsed():
