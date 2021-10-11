@@ -31,7 +31,7 @@ slowScripts = ['checkClumpHopper.py', 'checkMPISilo.py', 'colliderTorture.py']
 # checkSpawn.py fails always for now, needs investigations
 skipScripts = ['checkList.py']
 # use this if you want to test only one script, it takes precedence over skipScripts.
-onlyOneScript = []
+onlyOneScript = ['DEM-PFV-check.py']
 
 mpiScripts = ['checkMPI.py', 'checkMPISilo.py', 'checkMPI4PYcomm.py']
 # singleCore = singleCore + mpiScripts # ignore hybrid MPIxOMP
