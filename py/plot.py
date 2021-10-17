@@ -30,6 +30,7 @@ except:
 
 
 import matplotlib,os,time,math,itertools
+from cycler import cycler
 
 # running in batch
 #
@@ -452,7 +453,7 @@ def createPlots(subPlots=True,scatterSize=60,wider=False):
 				line2,=pylab.plot([nan],[nan])
 				currLineRefs.append(LineRef(line,None,line2,[nan],[nan]))
 			# set different color series for y1 and y2 so that they are recognizable
-			if 'axes.color_cycle' in pylab.rcParams: pylab.rcParams['axes.color_cycle']='b,g,r,c,m,y,k' if not isY1 else 'm,y,k,b,g,r,c'
+			if 'axes.prop_cycle' in pylab.rcParams: pylab.rcParams['axes.prop_cycle']=cycler('color',['b','g','r','c','m','y','k']) if not isY1 else cycler('color',['m','y','k','b','g','r','c'])
 			for d in ySpecs2:
 				yNames.add(d)
 				line,=pylab.plot(data[pStrip],data[d[0]],d[1],label=xlateLabel(d[0]))
