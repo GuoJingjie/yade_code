@@ -3,7 +3,7 @@
 # the test is based on examples/FluidCouplingPFV/oedometer.py, only slightly simplified and using less particles
 
 from __future__ import print_function
-if (('PFVFLOW' in features) and ('bookworm' not in yade.libVersions.getLinuxVersion())):
+if ('PFVFLOW' in features):
 	errors = 0
 	errMsg = ""
 	toleranceWarning = 0.01
