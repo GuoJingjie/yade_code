@@ -10,12 +10,16 @@ namespace yade { // Cannot have #include directive inside.
 
 class HydroForceEngine : public PartialEngine {
 public:
-	void initialization();
-	void averageProfile();
-	void turbulentFluctuation();
-	void turbulentFluctuationZDep();
-	void fluidResolution(Real tfin, Real dt);
-	void computeRadiusParts();
+	void         initialization();
+	void         averageProfile();
+	void         turbulentFluctuation();
+	void         turbulentFluctuationZDep();
+	void         fluidResolution(Real tfin, Real dt);
+	void         computeRadiusParts();
+	Real         computePoreLength(int i);
+	int          computeZbedIndex();
+	Real         computeDiameter(int i);
+	vector<Real> computePhiPartAverageOverTime();
 
 public:
 	void                     action() override;
@@ -24,7 +28,7 @@ public:
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(HydroForceEngine,PartialEngine,"Engine performing a coupling of the DEM with a volume-averaged 1D fluid resolution to simulate steady uniform unidirectional fluid flow. It has been developed and used to model steady uniform gravity-driven turbulent bedload transport [Maurin2015b]_ [Maurin2016]_ [Maurin2018]_, but can be also used in its current state for laminar or pressure-driven configurations. The fundamentals of the model can be found in [Maurin2015b]_ and [Maurin2015PhD]_, and in more details in [Maurin2018_VANSbasis]_, [Maurin2018_VANSfluidResol]_ and [Maurin2018_VANSvalidations]_. \n The engine can be decomposed in three different parts:\n (i) It applies the fluid force on the particles imposed by the fluid velocity profiles and fluid properties,\n (ii) It evaluates averaged solid depth profiles necessary for the fluid force application and for the fluid resolution,\n (iii) It solve the volume-averaged 1D fluid momentum balance. \nThe three different functions are detailed below: \n\n (i) Fluid force on particles \n Apply to each particles, buoyancy, drag and lift force due to a 1D fluid flow. The applied drag force reads\n\n $F_{d}=\\frac{1}{2} C_d A\\rho^f|\\vec{v_f - v}| \\vec{v_f - v}$ \n\n where $\\rho$ is the fluid density (:yref:`densFluid<HydroForceEngine.densFluid>`), $v$ is particle's velocity,  $v_f$ is the velocity of the fluid at the particle center (taken from the fluid velocity profile :yref:`vxFluid<HydroForceEngine.vxFluid>`),  $A = \\pi d^2/4$ is particle projected area (disc), $C_d$ is the drag coefficient. The formulation of the drag coefficient depends on the local particle reynolds number and the solid volume fraction. The formulation of the drag is [Dallavalle1948]_ [RevilBaudard2013]_ with a correction of Richardson-Zaki [Richardson1954]_ to take into account the hindrance effect. This law is classical in sediment transport. It is possible to activate a fluctuation of the drag force for each particle which account for the turbulent fluctuation of the fluid velocity (:yref:`velFluct<HydroForceEngine.velFluct>`). Three simple discrete random walk model have been implemented for the turbulent velocity fluctuation. The main one (turbulentFluctuations) takes as input the Reynolds stress tensor $R^f_{xz}$ as a function of the depth, and allows to recover the main property of the fluctuations by imposing $<u_x'u_z'> (z) = <R^f_{xz}>(z)/\\rho^f$. It requires as input $<R^f_{xz}>(z)$ called :yref:`ReynoldStresses<HydroForceEngine.ReynoldStresses>` in the code. \n The formulation of the lift is taken from [Wiberg1985]_ and is such that : \n\n $F_{L}=\\frac{1}{2} C_L A\\rho^f((v_f - v)^2_{top} - (v_f - v)^2_{bottom})$ \n\n Where the subscript top and bottom means evaluated at the top (respectively the bottom) of the sphere considered. This formulation of the lift account for the difference of pressure at the top and the bottom of the particle inside a turbulent shear flow. As this formulation is controversial when approaching the threshold of motion [Schmeeckle2007]_ it is possible to desactivate it with the variable :yref:`lift<HydroForceEngine.lift>`.\n The buoyancy is taken into account through the buoyant weight : \n\n $F_{buoyancy}= - \\rho^f V^p g$ \n\n, where g is the gravity vector along the vertical, and $V^p$ is the volume of the particle. In the case where the fluid flow is steady and uniform, the buoyancy reduces to its wall-normal component (see [Maurin2018]_ for a full explanation), and one should put :yref:`steadyFlow<HydroForceEngine.steadyFlow>` to true in order to kill the streamwise component. \n\n (ii)  Averaged solid depth profiles\n The function averageProfile evaluates the volume averaged depth profiles (1D) of particle velocity, particle solid volume fraction and particle drag force. It uses a volume-weighting average following [Maurin2015PhD]_[Maurin2015b]_, i.e. the average of a variable $A^p$ associated to particles at a given discretized wall-normal position $z$ is given by: \n\n $\\left< A \\right>^s(z) = \\displaystyle \\frac{\\displaystyle \\sum_{p|z^p\\in[z-dz/2,z+dz/2]}  A^p(t) V^p_z}{\\displaystyle \\sum_{p|z^p\\in[z-dz/2,z+dz/2]}  V^p_z}$\n\n Where the sums are over the particles contained inside the slice between the wall-normal position $z-dz/2$ and $z+dz/2$, and $V^p$ represents the part of the volume of the given particle effectively  contained inside the slice. For more details, see [Maurin2015PhD]_. \n\n (iii) 1D volume-average fluid resolution\n The fluid resolution is based on the resolution of the 1D volume-averaged fluid momentum balance. It assumes by definition (unidirectional) that the fluid flow is steady and uniform. It is the same fluid resolution as [RevilBaudard2013]_. Details can be found in this paper and in [Maurin2015PhD]_ [Maurin2015b]_.\n\n The three different component can be used independently, e.g. applying a fluid force due to an imposed fluid profile or solving the fluid momentum balance for a given concentration of particles.",
 		//// General parameters
                 ((Vector3r,gravity,Vector3r(0,0,-9.81),,"Gravity vector"))
-		((bool,convAccOption,false,,"To activate the convective acceleration"))
+		((bool,convAccOption,false,,"To activate the convective acceleration option in order to account for a convective acceleration term inside the momentum balance. "))
 		((vector<Real>,radiusParts,,,"Variables containing the number of different radius of particles in the simulation. Allow to perform class averaging by particle size."))
 		((bool,compatibilityOldVersion,false,,"Option to make HydroForceEngine compatible with former scripts. Slow down slightly the calculation and will eventually be removed."))
 		//// Mesh parameters
@@ -50,6 +54,7 @@ public:
 		((bool,fluidWallFriction,false,,"Fluid resolution: if set to true, introduce a sink term to account for the fluid friction at the wall, see [Maurin2015]_ for details. Requires to set the width of the channel. It might slow down significantly the calculation."))
 		((Real,fluidFrictionCoef,1.,,"Fluid resolution: fitting coefficient for the fluid wall friction"))
 		((Real,channelWidth,1.,,"Fluid resolution: Channel width for the evaluation of the fluid wall friction inside the fluid resolution."))
+		((Real,phiBed,0.08,,"Turbulence modelling parameter. Associated with mixing length modelling ilm = 5."))
 		//// Particle averaged depth profiles parameters Monodisperse: 
 		((vector<Real>,phiPart,,,"Discretized solid volume fraction depth profile. Can be taken as input parameter or evaluated directly inside the engine, calling from python the averageProfile() function"))
 		((vector<Vector3r>,vPart,,,"Discretized streamwise solid velocity depth profile, in x, y and z direction. Only the x direction measurement is taken into account in the 1D fluid coupling resolution. The two other can be used as output parameters. The x component can be taken as input parameter, or evaluated directly inside the engine, calling from python the averageProfile() function"))
@@ -73,7 +78,7 @@ public:
 		((bool,unCorrelatedFluctuations,false,,"Condition to generate uncorrelated fluid fluctuations. Default case represent in free-surface flows, for which the vertical and streamwise fluid velocity fluctuations are correlated (see e.g. reference book of Nezu & Nagakawa 1992, turbulence in open channel flows)."))
 		//// Fluid-particle interactions 
 		((Real,expoRZ,3.1,,"Value of the Richardson-Zaki exponent, for the drag correction due to hindrance"))
-		((bool,lift,false,,"Option to activate or not the evaluation of the lift"))
+                ((bool,lift,false,,"Option to activate or not the evaluation of the lift"))
 		((Real,Cl,0.2,,"Value of the lift coefficient taken from [Wiberg1985]_"))
 		((vector<Real>,convAcc,0,,"Convective acceleration, depth dependent"))
 		((vector<Real>,taufsi,vector<Real>(1000),,"Fluid Resolution: Create Taufsi/rhof = dragTerm/(rhof(vf-vxp)) to transmit to the fluid code"))
