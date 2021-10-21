@@ -518,17 +518,17 @@ void ThermalEngine::computeFluidFluidConduction()
 //	#pragma omp parallel for  
 //	#endif
 	for (long i = 0; i < sizeFacets; i++) {
-		const CVector                    fluidSurfK;
-		const CVector                    poreVector;
-		const Real                       distance;
-		const Real                       area;
-		const Real                       conductionEnergy;
+		CVector                    fluidSurfK;
+		CVector                    poreVector;
+		Real                       distance;
+		Real                       area;
+		Real                       conductionEnergy;
 		std::pair<CellHandle, int> facetPair = Tes.facetCells[i];
 		const CellHandle&          cell = facetPair.first;
 		const CellHandle&          neighborCell = cell->neighbor(facetPair.second);
 		if (cell->info().isFictious || neighborCell->info().isFictious || cell->info().blocked || neighborCell->info().blocked) continue;
 		const Real delT = cell->info().temp() - neighborCell->info().temp();
-		const Real fluidToSolidRatio;
+		Real fluidToSolidRatio;
 		if (cell->info().isCavity && neighborCell->info().isCavity) fluidToSolidRatio = 1.;
 		else
 			fluidToSolidRatio = cell->info().facetFluidSurfacesRatio[facetPair.second];
