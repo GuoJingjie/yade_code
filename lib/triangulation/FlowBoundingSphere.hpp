@@ -251,6 +251,13 @@ namespace CGT {
 		void sliceField(const char* filename);
 		void comsolField();
 
+		Tesselation& lastSolution () { // returns last mesh containing some solution. Right after remeshing it will point to previous mesh.
+			if  (noCache and T[!currentTes].Triangulation().number_of_vertices()>0) return T[!currentTes];
+			if (T[currentTes].Triangulation().number_of_vertices()>0) return T[currentTes];
+			cout << "no triangulation available yet, solve at least once" << endl;
+			return T[currentTes];
+		}
+		
 		virtual void                   interpolate(Tesselation& Tes, Tesselation& NewTes);
 		virtual void                   averageRelativeCellVelocity();
 		void                           averageFluidVelocity();

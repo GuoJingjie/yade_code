@@ -100,7 +100,7 @@ namespace CGT {
 	template <class Tesselation> void FlowBoundingSphere<Tesselation>::averageRelativeCellVelocity()
 	{
 		if (noCache && T[!currentTes].Max_id() <= 0) return;
-		RTriangulation&     Tri = T[currentTes].Triangulation(); // T[noCache ? (!currentTes) : currentTes].Triangulation();
+		RTriangulation&     Tri = lastSolution().Triangulation();
 		Point               posAvFacet;
 		int                 numCells = 0;
 		Real                facetFlowRate = 0;
@@ -134,7 +134,7 @@ namespace CGT {
 
 	template <class Tesselation> bool FlowBoundingSphere<Tesselation>::isOnSolid(Real X, Real Y, Real Z)
 	{
-		RTriangulation&     Tri = T[currentTes].Triangulation();
+		RTriangulation&     Tri = lastSolution().Triangulation();
 		FiniteCellsIterator cellEnd = Tri.finiteCellsEnd();
 		for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
 			for (int i = 0; i < 4; i++) {
@@ -150,9 +150,8 @@ namespace CGT {
 	}
 	template <class Tesselation> void FlowBoundingSphere<Tesselation>::averageFluidVelocity()
 	{
-		if (noCache && T[!currentTes].Max_id() <= 0) return;
 		averageRelativeCellVelocity();
-		RTriangulation&        Tri = T[noCache ? (!currentTes) : currentTes].Triangulation();
+		RTriangulation&        Tri = lastSolution().Triangulation();
 		int                    numVertex = 0;
 		FiniteVerticesIterator verticesEnd = Tri.finite_vertices_end();
 		for (FiniteVerticesIterator vIt = Tri.finite_vertices_begin(); vIt != verticesEnd; vIt++) {
@@ -211,7 +210,7 @@ namespace CGT {
 	{ //FIXME: we are computing everything again for each other Id_sph...
 		if (noCache && T[!currentTes].Max_id() <= 0) return vector<Real>(3, 0);
 		averageRelativeCellVelocity();
-		RTriangulation& Tri = T[noCache ? (!currentTes) : currentTes].Triangulation();
+		RTriangulation& Tri = lastSolution().Triangulation();
 		Real            volumes;
 		CGT::CVector    velocityVolumes;
 		vector<Real>    result;
@@ -238,27 +237,21 @@ namespace CGT {
 
 	template <class Tesselation> Real FlowBoundingSphere<Tesselation>::getPorePressure(Real X, Real Y, Real Z)
 	{
-		if (noCache && T[!currentTes].Max_id() <= 0) return 0; //the engine never solved anything
-		RTriangulation& Tri = T[noCache ? (!currentTes) : currentTes].Triangulation();
+		const RTriangulation& Tri = lastSolution().Triangulation();
 		CellHandle      cell = Tri.locate(CGT::Sphere(X, Y, Z));
 		return cell->info().p();
 	}
 
 	template <class Tesselation> Real FlowBoundingSphere<Tesselation>::getPoreTemperature(Real X, Real Y, Real Z)
 	{
-		if (noCache && T[!currentTes].Max_id() <= 0) return 0; //the engine never solved anything
-		RTriangulation& Tri = T[noCache ? (!currentTes) : currentTes].Triangulation();
+		const RTriangulation& Tri = lastSolution().Triangulation();
 		CellHandle      cell = Tri.locate(CGT::Sphere(X, Y, Z));
 		return cell->info().temp();
 	}
 
 	template <class Tesselation> int FlowBoundingSphere<Tesselation>::getCell(Real X, Real Y, Real Z)
 	{
-		if (noCache && T[!currentTes].Max_id() <= 0) {
-			cout << "Triangulation does not exist. Sorry." << endl;
-			return -1;
-		}
-		RTriangulation& Tri = T[noCache ? (!currentTes) : currentTes].Triangulation();
+		RTriangulation& Tri = lastSolution().Triangulation();
 		CellHandle      cell = Tri.locate(CGT::Sphere(X, Y, Z));
 		return cell->info().id;
 	}
@@ -268,8 +261,7 @@ namespace CGT {
 		using math::max;
 		using math::min;
 
-		if (noCache && T[!currentTes].Max_id() <= 0) return; //the engine never solved anything
-		RTriangulation& Tri = T[noCache ? (!currentTes) : currentTes].Triangulation();
+		RTriangulation& Tri = lastSolution().Triangulation();
 		CellHandle      permeameter;
 		std::ofstream   capture("Pressure_profile", std::ios::app);
 		int             intervals = 5;
@@ -292,7 +284,7 @@ namespace CGT {
 	}
 	template <class Tesselation> Real FlowBoundingSphere<Tesselation>::averageSlicePressure(Real Y)
 	{
-		RTriangulation& Tri = T[currentTes].Triangulation();
+		RTriangulation& Tri = lastSolution().Triangulation();
 		Real            P_ave = 0.f;
 		int             n = 0;
 		Real            Ry = (yMax - yMin) / 30;
@@ -309,7 +301,7 @@ namespace CGT {
 	}
 	template <class Tesselation> Real FlowBoundingSphere<Tesselation>::averagePressure()
 	{
-		RTriangulation& Tri = T[currentTes].Triangulation();
+		RTriangulation& Tri = lastSolution().Triangulation();
 		Real            P = 0.f, Ppond = 0.f, Vpond = 0.f;
 		int             n = 0;
 		for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != Tri.finite_cells_end(); cell++) {
@@ -405,11 +397,12 @@ namespace CGT {
 			noCache = false; //cache should always be defined after execution of this function
 		}
 		if (onlyCache) return;
-			// 	} else {//use cached values
+			
+                
 #ifndef parallel_forces
-		for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++) {
-			for (int yy = 0; yy < 4; yy++)
-				cell->vertex(yy)->info().forces = cell->vertex(yy)->info().forces + cell->info().unitForceVectors[yy] * cell->info().p();
+                } else {//use cached values
+                    for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++)
+                            for (int yy = 0; yy < 4; yy++) cell->vertex(yy)->info().forces = cell->vertex(yy)->info().forces + cell->info().unitForceVectors[yy] * cell->info().p();
 		}
 
 #else

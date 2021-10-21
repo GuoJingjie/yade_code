@@ -638,7 +638,7 @@ namespace CGT {
 					tangent = tangent
 					        / sqrt(tangent.squared_length()); //this is orthogonal to the _previous_ branch segment of the polygonal contour
 					Real dotP2 = tangent * normal;
-					coplanar = (abs(dotP2) < 1e-2);
+					coplanar = (math::abs(dotP2) < 1e-2);
 					CVector p1mp2 = p1 - p2;
 					if (!coplanar) {
 						//make sure the construction is not singular (no intermediate vertex)

@@ -156,7 +156,7 @@ O.engines=O.engines+[PyRunner(iterPeriod=200,command='history()',label='recorder
 #O.engines=O.engines+[PyRunner(iterPeriod=200,command='flow.saveVtk()')]
 
 from yade import plot
-plot.plots={'t':('e22','e22_theory',None,'s22','p')}
+plot.plots={'t':(('e22','b--'),('e22_theory','b-'),None,('s22','g--'),('p','g-'))}
 plot.plot()
 O.saveTmp()
 O.timingEnabled=1
