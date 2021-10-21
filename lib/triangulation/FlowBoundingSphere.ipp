@@ -395,12 +395,11 @@ namespace CGT {
 					}
 			}
 			noCache = false; //cache should always be defined after execution of this function
+			if (onlyCache) return;
 		}
-		if (onlyCache) return;
-			
-                
+		
 #ifndef parallel_forces
-                } else {//use cached values
+		else {//use cached values
                     for (FiniteCellsIterator cell = Tri.finite_cells_begin(); cell != cellEnd; cell++)
                             for (int yy = 0; yy < 4; yy++) cell->vertex(yy)->info().forces = cell->vertex(yy)->info().forces + cell->info().unitForceVectors[yy] * cell->info().p();
 		}
