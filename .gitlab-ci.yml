@@ -217,7 +217,7 @@ make_debug:
     - export EXTRA_CMAKE_ARGS="-DDEBUG=ON $EXTRA_CMAKE_ARGS"
     - echo $EXTRA_CMAKE_ARGS
     - export CXXFLAGS="-O2 $CXXFLAGS"
-    - apt-cache policy libopenblas0 libcgal-dev
+    - apt-cache policy libopenblas0 libcgal-dev libsuitesparse-dev
 #    - wget https://snapshot.debian.org/archive/debian/20210920T204307Z/pool/main/o/openblas/libopenblas-dev_0.3.17%2Bds-3_amd64.deb
 #    - wget https://snapshot.debian.org/archive/debian/20210920T204307Z/pool/main/o/openblas/libopenblas-pthread-dev_0.3.17%2Bds-3_amd64.deb
 #    - wget https://snapshot.debian.org/archive/debian/20210920T204307Z/pool/main/o/openblas/libopenblas0-pthread_0.3.17%2Bds-3_amd64.deb
@@ -226,8 +226,11 @@ make_debug:
 #    - dpkg -i libopenblas-dev_0.3.17+ds-3_amd64.deb libopenblas-pthread-dev_0.3.17+ds-3_amd64.deb libopenblas0-pthread-dbgsym_0.3.17+ds-3_amd64.deb libopenblas0-pthread_0.3.17+ds-3_amd64.deb libopenblas0_0.3.17+ds-3_amd64.deb
 #    - wget https://snapshot.debian.org/archive/debian-debug/20211003T144136Z/pool/main/o/openblas/libopenblas0-pthread-dbgsym_0.3.18%2Bds-1_amd64.deb
 #    - dpkg -i libopenblas0-pthread-dbgsym_0.3.18+ds-1_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libsuitesparse-dev_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libsuitesparseconfig5_5.8.1%2Bdfsg-2_amd64.deb
+    - dpkg -i libsuitesparse-dev_5.8.1+dfsg-2_amd64.deb libsuitesparseconfig5_5.8.1+dfsg-2_amd64.deb 
     - export DEBUGINFOD_URLS="https://debuginfod.debian.net"
-    - apt-cache policy libopenblas0 libcgal-dev
+    - apt-cache policy libopenblas0 libcgal-dev libsuitesparse-dev
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
   tags:
     - oldhardware
