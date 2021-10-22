@@ -218,7 +218,7 @@ make_debug:
     - export EXTRA_CMAKE_ARGS="-DDEBUG=ON $EXTRA_CMAKE_ARGS"
     - echo $EXTRA_CMAKE_ARGS
     - export CXXFLAGS="-O2 $CXXFLAGS"
-    - apt-get install -y libopenblas-dbg
+    - apt-cache policy libopenblas0 libcgal-dev
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
   tags:
     - oldhardware
