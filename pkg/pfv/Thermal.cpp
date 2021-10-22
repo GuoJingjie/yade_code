@@ -527,7 +527,7 @@ void ThermalEngine::computeFluidFluidConduction()
 		const CellHandle&          cell = facetPair.first;
 		const CellHandle&          neighborCell = cell->neighbor(facetPair.second);
 		if (cell->info().isFictious || neighborCell->info().isFictious || cell->info().blocked || neighborCell->info().blocked) continue;
-		delT = cell->info().temp() - neighborCell->info().temp();
+		const Real deltaT = cell->info().temp() - neighborCell->info().temp();
 		Real fluidToSolidRatio;
 		if (cell->info().isCavity && neighborCell->info().isCavity) fluidToSolidRatio = 1.;
 		else
@@ -542,7 +542,7 @@ void ThermalEngine::computeFluidFluidConduction()
 		//cout << "conduction distance" << distance << endl;
 		//if (distance < area) continue;  // hexagonal packings result in extremely small distances that blow up the simulation
 		const Real thermalResist = fluidK * area / distance;
-		conductionEnergy = thermalResist * delT * thermalDT;
+		conductionEnergy = thermalResist * deltaT * thermalDT;
 		if (math::isnan(conductionEnergy)) conductionEnergy = 0;
 		cell->info().stabilityCoefficient += thermalResist;
 		//cout << "conduction distance" << distance << endl;
