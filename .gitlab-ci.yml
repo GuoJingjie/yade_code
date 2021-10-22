@@ -228,7 +228,22 @@ make_debug:
 #    - dpkg -i libopenblas0-pthread-dbgsym_0.3.18+ds-1_amd64.deb
     - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libsuitesparse-dev_5.8.1%2Bdfsg-2_amd64.deb
     - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libsuitesparseconfig5_5.8.1%2Bdfsg-2_amd64.deb
-    - dpkg -i libsuitesparse-dev_5.8.1+dfsg-2_amd64.deb libsuitesparseconfig5_5.8.1+dfsg-2_amd64.deb 
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libamd2_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libcamd2_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libbtf1_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libcolamd2_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libccolamd2_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libcholmod3_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libcxsparse3_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libgraphblas3_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libklu1_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libldl2_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libmongoose2_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libumfpack5_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/librbio2_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libspqr2_5.8.1%2Bdfsg-2_amd64.deb
+    - wget https://snapshot.debian.org/archive/debian/20200730T145345Z/pool/main/s/suitesparse/libsliplu1_5.8.1%2Bdfsg-2_amd64.deb
+    - dpkg -i libamd2_5.8.1+dfsg-2_amd64.deb libbtf1_5.8.1+dfsg-2_amd64.deb libcamd2_5.8.1+dfsg-2_amd64.deb libccolamd2_5.8.1+dfsg-2_amd64.deb libcholmod3_5.8.1+dfsg-2_amd64.deb libcolamd2_5.8.1+dfsg-2_amd64.deb libcxsparse3_5.8.1+dfsg-2_amd64.deb libgraphblas3_5.8.1+dfsg-2_amd64.deb libklu1_5.8.1+dfsg-2_amd64.deb libldl2_5.8.1+dfsg-2_amd64.deb libmongoose2_5.8.1+dfsg-2_amd64.deb librbio2_5.8.1+dfsg-2_amd64.deb libsliplu1_5.8.1+dfsg-2_amd64.deb libspqr2_5.8.1+dfsg-2_amd64.deb libsuitesparse-dev_5.8.1+dfsg-2_amd64.deb libsuitesparseconfig5_5.8.1+dfsg-2_amd64.deb libumfpack5_5.8.1+dfsg-2_amd64.deb
     - export DEBUGINFOD_URLS="https://debuginfod.debian.net"
     - apt-cache policy libopenblas0 libcgal-dev libsuitesparse-dev
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
