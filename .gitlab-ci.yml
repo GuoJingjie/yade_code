@@ -1018,6 +1018,8 @@ deb_bookworm:
   before_script:
     - rm -rf ./deb
     - ./scripts/ppa_ci/builddeb.py -d "bookworm"
+  tags:
+    - newhardware
 
 deb_xenial:
   <<: *deb_definition
