@@ -226,7 +226,14 @@ make_debug:
 #    - dpkg -i libopenblas-dev_0.3.17+ds-3_amd64.deb libopenblas-pthread-dev_0.3.17+ds-3_amd64.deb libopenblas0-pthread-dbgsym_0.3.17+ds-3_amd64.deb libopenblas0-pthread_0.3.17+ds-3_amd64.deb libopenblas0_0.3.17+ds-3_amd64.deb
 #    - wget https://snapshot.debian.org/archive/debian-debug/20211003T144136Z/pool/main/o/openblas/libopenblas0-pthread-dbgsym_0.3.18%2Bds-1_amd64.deb
 #    - dpkg -i libopenblas0-pthread-dbgsym_0.3.18+ds-1_amd64.deb
-    - export DEBUGINFOD_URLS="https://debuginfod.debian.net"
+    - wget https://people.debian.org/~gladk/deb/02/libopenblas-dev_0.3.18+ds-1_amd64.deb
+    - wget https://people.debian.org/~gladk/deb/02/libopenblas-pthread-dev_0.3.18+ds-1_amd64.deb
+    - wget https://people.debian.org/~gladk/deb/02/libopenblas0-pthread_0.3.18+ds-1_amd64.deb
+    - wget https://people.debian.org/~gladk/deb/02/libopenblas0_0.3.18+ds-1_amd64.deb
+    - wget https://people.debian.org/~gladk/deb/02/libopenblas0-pthread-dbgsym_0.3.18+ds-1_amd64.deb
+    - dpkg -i libopenblas-dev_0.3.18+ds-1_amd64.deb  libopenblas-pthread-dev_0.3.18+ds-1_amd64.deb  libopenblas0-pthread-dbgsym_0.3.18+ds-1_amd64.deb  libopenblas0-pthread_0.3.18+ds-1_amd64.deb  libopenblas0_0.3.18+ds-1_amd64.deb 
+    - wget https://snapshot.debian.org/archive/debian-debug/20211003T144136Z/pool/main/o/openblas/libopenblas0-pthread-dbgsym_0.3.18+ds-1_amd64.deb
+    - dpkg -i libopenblas0-pthread-dbgsym_0.3.18+ds-1_amd64.deb
     - apt-cache policy libopenblas0 libcgal-dev libsuitesparse-dev
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
   tags:
