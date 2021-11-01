@@ -51,39 +51,31 @@ CMAKE uses the original source layout and it is advised to use ``#include <modul
 style of inclusion rather than ``#include "Class.hpp"`` even if you are in the same directory.
 The following table gives a few examples:
 
-============================================================= =========================
-Original header location                                      Included as     
-============================================================= =========================
-``core/Scene.hpp``                                            ``#include <core/Scene.hpp>``
-``lib/base/Logging.hpp``                                      ``#include <lib/base/Logging.hpp>``
-``lib/serialization/Serializable.hpp``                        ``#include <lib/serialization/Serializable.hpp>``
-``pkg/dem/SpherePack.hpp``                                    ``#include <pkg/dem/SpherePack.hpp>``
-============================================================= =========================
+============================================ ====================================================
+Original header location                     Included as
+============================================ ====================================================
+``core/Scene.hpp``                           ``#include <core/Scene.hpp>``
+``lib/base/Logging.hpp``                     ``#include <lib/base/Logging.hpp>``
+``lib/serialization/Serializable.hpp``       ``#include <lib/serialization/Serializable.hpp>``
+``pkg/dem/SpherePack.hpp``                   ``#include <pkg/dem/SpherePack.hpp>``
+============================================ ====================================================
 
 
 Automatic compilation
 """"""""""""""""""""""
 
-In the ``pkg/`` directory, situation is different. In order to maximally ease 
-addition of modules to yade, all ``*.cpp`` files are *automatically scanned* by 
+In the ``pkg/`` directory, situation is different. In order to maximally ease
+addition of modules to yade, all ``*.cpp`` files are *automatically scanned recursively* by
 CMAKE and considered for compilation.
 
-.. FIXME: replace this with info about cmake -DENABLE_Something for #ifdef. Or something ilke that.
+To enable/disable some component use the cmake flags ``ENABLE_FEATURE``, which are listed in:
 
-Each file may contain multiple lines that 
-declare features that are necessary for this file to be compiled::
+	1. :ref:`compilation instructions <yadeCompilation>`.
+	2. :ysrc:`CMakeLists.txt<CMakeLists.txt>`.
 
-	YADE_REQUIRE_FEATURE(vtk);
-	YADE_REQUIRE_FEATURE(gts);
-
-This file will be compiled only if *both* ``VTK`` and ``GTS`` features are enabled. 
-Depending on current feature set, only selection of plugins will be compiled.
-
-It is possible to disable compilation of a file by requiring any non-existent feature, such as::
-
-	YADE_REQUIRE_FEATURE(temporarily disabled 345uiysdijkn);
-
-The ``YADE_REQUIRE_FEATURE`` macro expands to nothing during actual compilation.
+When some component is enabled an extra ``#define`` flag ``YADE_FEATURE`` is passed from cmake to the compiler.
+Then inside the code both the ``.cpp`` and ``.hpp`` files which contain the ``FEATURE`` feature
+should have an ``#ifdef YADE_FEATURE`` guard at the beginning.
 
 .. _linking:
 
