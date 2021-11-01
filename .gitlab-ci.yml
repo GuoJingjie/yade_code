@@ -772,8 +772,6 @@ check_bookworm:
   dependencies:
     - make_bookworm
   needs: ["make_bookworm"]
-  tags:
-    - newhardware
 
 check_bullseye:
   <<: *check_definition
