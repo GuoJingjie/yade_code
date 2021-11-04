@@ -29,9 +29,9 @@ Most useful commands are listed in the sections below. For more details, see the
 Setup
 =====
 
-1. Register on gitlab.com
+1. Register on `gitlab.com <https://gitlab.com>`_
 
-2. Add your `SSH key <https://gitlab.com/profile/keys>`_ to GitLab
+2. Add your `SSH key <https://gitlab.com/-/profile/keys>`_ to GitLab
 
 3. Set your username and email through terminal
 
