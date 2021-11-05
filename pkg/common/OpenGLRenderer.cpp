@@ -254,6 +254,7 @@ void OpenGLRenderer::render(const shared_ptr<Scene>& _scene, Body::id_t selectio
 
 void OpenGLRenderer::renderAllInteractionsWire()
 {
+	const std::lock_guard<std::mutex> lockB(scene->bodies->drawloopmutex);
 	const std::lock_guard<std::mutex> lock(scene->interactions->drawloopmutex);
 	for (const auto& i : *scene->interactions) {
 		// geometry must exist              , sometimes a body can get deleted
@@ -315,6 +316,7 @@ void OpenGLRenderer::renderIGeom()
 	geomDispatcher.scene = scene.get();
 	geomDispatcher.updateScenePtr();
 	{
+		const std::lock_guard<std::mutex> lockB(scene->bodies->drawloopmutex);
 		const std::lock_guard<std::mutex> lock(scene->interactions->drawloopmutex);
 		for (const auto& I : *scene->interactions) {
 			if (!I->geom) continue;        // avoid refcount manipulations if the interaction is not real anyway
@@ -334,6 +336,7 @@ void OpenGLRenderer::renderIPhys()
 	physDispatcher.scene = scene.get();
 	physDispatcher.updateScenePtr();
 	{
+		const std::lock_guard<std::mutex> lockB(scene->bodies->drawloopmutex);
 		const std::lock_guard<std::mutex> lock(scene->interactions->drawloopmutex);
 		for (const auto& I : *scene->interactions) {
 			shared_ptr<IPhys> ip(I->phys);
