@@ -121,6 +121,18 @@ variables:
                   else
                           echo -e "\n\e[92m===\nclang-format check OK\n===\e[0m\n" ;
                   fi;
+                  git reset --hard ;
+                  git status ;
+                  /usr/bin/find . -type f -print0 | xargs -0 dos2unix -q;
+                  export CHANGED_LINE_ENDINGS=`git diff --shortstat | sed -e 's/^.*,\s\([0-9]\+\)\sdeletion.*$/\1/g'` ;
+                  echo "CHANGED_LINE_ENDINGS = "$CHANGED_LINE_ENDINGS ;
+                  if [[ ${CHANGED_LINE_ENDINGS} -ge "10" ]] ; then
+                          echo -e "\n\e[91m===\n*** ERROR *** Following files have non-unix line endings.\nWe require unix line endings, for reasoning see https://gitlab.com/yade-dev/trunk/-/merge_requests/783 \n===\e[0m\n \n";
+                          git diff --numstat ;
+                          exit 1 ;
+                  else
+                          echo -e "\n\e[92m===\nLine endings check OK\n===\e[0m\n" ;
+                  fi;
           else
                   echo -e "\n\e[93m===\nSkipping  clang-format check (disabled or version too old)\n===\e[0m\n" ;
           fi;
@@ -375,7 +387,7 @@ make_asan_HP:
 make_minimal:
   <<: *make_definition
   <<: *artifacts_definition
-  <<: *skip_WIP_and_Draft
+  <<: *skip_WIP
   before_script:
     - export EXTRA_CMAKE_ARGS="-DENABLE_VTK=OFF -DENABLE_MPI=OFF -DENABLE_GUI=OFF -DENABLE_GTS=OFF -DENABLE_TWOPHASEFLOW=OFF -DENABLE_PARTIALSAT=OFF -DENABLE_CGAL=OFF -DENABLE_FEMLIKE=OFF -DENABLE_LBMFLOW=OFF -DENABLE_POTENTIAL_BLOCKS=OFF -DENABLE_POTENTIAL_PARTICLES=OFF -DENABLE_GL2PS=OFF -DENABLE_LOGGER=OFF -DENABLE_OPENMP=OFF -DENABLE_THERMAL=OFF -DENABLE_LS_DEM=OFF $EXTRA_CMAKE_ARGS"
     - echo $EXTRA_CMAKE_ARGS
