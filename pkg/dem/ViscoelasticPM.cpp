@@ -256,7 +256,31 @@ void Ip2_ViscElMat_ViscElMat_ViscElPhys::Calculate_ViscElMat_ViscElMat_ViscElPhy
 			cs1 = mat1->cs;
 			cs2 = mat2->cs;
 		} else if (isfinite(mat1->en)) {
-			const Real En = (en) ? (*en)(mat1->id, mat2->id) : (mat1->en + mat2->en) / 2.0;
+			auto En = (en) ? (*en)(mat1->id, mat2->id) : (mat1->en + mat2->en) / 2.0;
+			//lubrication
+			if (mat1->lubrication == true && mat2->lubrication == true) {
+				const auto  id1    = interaction->getId1();
+				const auto  id2    = interaction->getId2();
+				const auto& bodies = *scene->bodies;
+				const auto& de1    = *static_cast<State*>(bodies[id1]->state.get());
+				const auto& de2    = *static_cast<State*>(bodies[id2]->state.get());
+
+				// Handle periodicity.
+				const auto shift2   = scene->isPeriodic ? scene->cell->intrShiftPos(interaction->cellDist) : Vector3r::Zero();
+				const auto shiftVel = scene->isPeriodic ? scene->cell->intrShiftVel(interaction->cellDist) : Vector3r::Zero();
+
+				const auto c1x = (sphCont->contactPoint - de1.pos);
+				const auto c2x = (sphCont->contactPoint - de2.pos - shift2);
+
+				const auto relativeVelocity = (de1.vel + de1.angVel.cross(c1x)) - (de2.vel + de2.angVel.cross(c2x)) + shiftVel;
+				const auto normalVelocity   = relativeVelocity.dot(sphCont->normal);
+				const auto densPart         = (mat1->density + mat2->density) / 2.;
+				const auto visco            = (mat1->viscoDyn + mat2->viscoDyn) / 2.;
+				const auto roughness        = (mat1->roughnessScale + mat2->roughnessScale) / 2.;
+				const auto stokes           = densPart * abs(normalVelocity) * (R1 + R2) / visco; //<rhop> U <d> /eta
+				En                          = math::max(1e-3, En * (1 + 1 / stokes * log(roughness / ((R1 + R2) * 0.5))));
+			}
+
 			cn1 = cn2 = 2.0 * find_cn_from_en(En, massR, contactParameterCalculation(kn1, kn2), interaction);
 			cs1 = cs2 = 0;
 		} else {

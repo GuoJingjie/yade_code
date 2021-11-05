@@ -75,15 +75,18 @@ void HydroForceEngine::computeRadiusParts()
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/* Application of hydrodynamical forces */
 void HydroForceEngine::action()
 {
-	/* Application of hydrodynamical forces */
+	// Buoyancy, drag, lift and convective acceleration forces application, loop over the particles
 	Vector3r gravityBuoyancy = gravity;
 	if (steadyFlow == true) gravityBuoyancy[0] = 0.; // If the fluid flow is steady, no streamwise buoyancy contribution from gravity
 	FOREACH(Body::id_t id, ids)
 	{
 		Body* b = Body::byId(id, scene).get();
 		if (!b) continue;
+		if (b->isClump()) continue;
 		if (!(scene->bodies->exists(id))) continue;
 		const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
 		if (sphere) {
@@ -116,6 +119,45 @@ void HydroForceEngine::action()
 				if (convAccOption == true) { convAccForce[0] = -convAcc[p]; }
 				//add the hydro forces to the particle
 				scene->forces.addForce(id, dragForce + liftForce + buoyantForce + convAccForce);
+			}
+		}
+	}
+
+	// Lubrication force application, loop over the interactions (more efficient)
+	if (lubrication == true) {
+		//loop over the interactions
+		FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
+		{
+			// Get the two id of the object interacting
+			const auto id1 = I->getId1();
+			const auto id2 = I->getId2();
+			// Get the body caracteristic
+			const auto b1 = Body::byId(id1, scene).get();
+			const auto b2 = Body::byId(id2, scene).get();
+			// Get the sphere caracteristics
+			const auto sphere1 = dynamic_cast<Sphere*>(b1->shape.get());
+			const auto sphere2 = dynamic_cast<Sphere*>(b2->shape.get());
+
+			//If the two interacting objects are spheres, apply buoyancy force (Need to generalize for any object).
+			if ((sphere1) && (sphere2)) {
+				// Evaluate quantities necessary to know if the lubrication force is at stake
+				const auto deltaPos12   = b2->state->pos - b1->state->pos; // Evaluate the x_12 relative position vector
+				const auto deltaVel12   = b2->state->vel - b1->state->vel; // Evaluate the v_12 relative velocity vector
+				const auto deltaPosNorm = deltaPos12.norm();               //Take the norm of the relative position vector
+				const auto delta_n
+				        = deltaPosNorm - (sphere1->radius + sphere2->radius); //calculation the distance between the two particles surface
+
+				// Calculate the normal velocity
+				const auto velNormal = deltaVel12.dot(deltaPos12) * deltaPos12 / deltaPosNorm;
+				// Calculate the lubrication force f12
+				if (deltaVel12.dot(deltaPos12) < 0) {
+					const auto lubricationForce = 6 * Mathr::PI * viscoDyn / (delta_n + roughnessPartScale)
+					        * pow((sphere1->radius * sphere2->radius) / (sphere1->radius + sphere2->radius), 2) * velNormal;
+
+					// Apply the lubrication force to the two particles
+					scene->forces.addForce(I->id1, lubricationForce);  //lubrication = + f12
+					scene->forces.addForce(I->id2, -lubricationForce); //lubrication = - f12
+				}
 			}
 		}
 	}
@@ -560,14 +602,14 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 
 	////////////////////////////////////
 	//  Compute the effective viscosity (due to the presence of particles)
-	switch (irheolf){
+	switch (irheolf) {
 		// 0 : Pure fluid viscosity
-		case 0 : {
+		case 0: {
 			for (j = 0; j < nCell; j++)
 				viscoeff[j] = viscof;
 		}; break;
 		// 1 : Einstein's effective viscosity
-		case 1 : {
+		case 1: {
 			viscoeff[0] = viscof * (1. + 2.5 * phiPart[0]);
 			for (j = 1; j < nCell; j++) {
 				phi_nodej   = 0.5 * (phiPart[j - 1] + phiPart[j]); // solid volume fraction at (scalar) node j.
@@ -575,7 +617,7 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 			}
 		}; break;
 		//2: fluid volume fraction power-law effective viscosity
-		case 2 : {
+		case 2: {
 			viscoeff[0] = viscof * (1. + 2.5 * phiPart[0]);
 			for (j = 1; j < nCell; j++) {
 				phi_nodej   = 0.5 * (phiPart[j - 1] + phiPart[j]); // solid volume fraction at (scalar) node j.
@@ -583,28 +625,28 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 			}
 		}; break;
 		//default
-		default : throw std::runtime_error("HydroForceEngine: irheolf should take an integer value between 0 and 2.");
+		default: throw std::runtime_error("HydroForceEngine: irheolf should take an integer value between 0 and 2.");
 	}
 
 
 	////////////////////////////////////
 	//  Compute the mixing length
-	switch(ilm){
+	switch (ilm) {
 		// ilm = 0 : Prandtl mixing length
-		case 0 : {
+		case 0: {
 			lm[0] = 0.;
 			for (j = 1; j < nCell; j++)
 				lm[j] = kappa * sig[j];
 		}; break;
 		// ilm = 1 : Parabolic profile (free surface flows)
-		case 1 : {
+		case 1: {
 			lm[0] = 0.;
 			for (j = 1; j < nCell; j++)
 				lm[j] = kappa * sig[j] * sqrt(1. - sig[j] / fluidHeight);
 			lm[nCell - 1] = 0.;
 		}; break;
 		// ilm = 2 : Li and Sawamoto (1995) integral of concentration profile
-		case 2 : {
+		case 2: {
 			sum   = 0.;
 			lm[0] = 0.;
 			//Threshold the value of the solid volume fraction:once the profile reach phiMax,
@@ -621,7 +663,7 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 			}
 		}; break;
 		// ilm = 3 : TODO, TEST : enableMultiClassAverage must be true
-		case 3 : {
+		case 3: {
 			const Real cvd = 0.5;
 			for (j = 0; j < nCell; j++) {
 				int  k    = j;
@@ -640,7 +682,7 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 			}
 		}; break;
 		// ilm = 4 : Gauthier Rousseau's model, based on phiMax.
-		case 4 : {
+		case 4: {
 			const Real viscoKin = viscoDyn / densFluid;
 			const Real revd     = 26.0;
 			const Real cvd      = 0.5;
@@ -666,7 +708,7 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 			}
 		}; break;
 		// ilm = 5 : TODO, TEST : Model based on Ni and Capart 2018 results and Gauthier Rousseau's Thesis results.
-		case 5 : {
+		case 5: {
 			// Coefficient given by Gauthier Rousseau.
 			const Real clp = 0.5;
 			// Coefficient given by Ni and Capart.
@@ -680,7 +722,7 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 			}
 		}; break;
 		// ilm = 6 : TODO, TEST : Model of mixing length for pipe flow, combining Li & Sawamoto and pipe flow Prantl mixing length
-		case 6 : {
+		case 6: {
 			//Initialization
 			vector<Real> lm_bot(nCell, 0.);
 			vector<Real> lm_top(nCell, 0.);
@@ -707,7 +749,7 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 				lm[j] = min(lm_bot[j], lm_top[j]);
 		}; break;
 		//default: error
-		default : throw std::runtime_error("HydroForceEngine: ilm should take an integer value between 0 and 6.");	
+		default: throw std::runtime_error("HydroForceEngine: ilm should take an integer value between 0 and 6.");
 	}
 	// end switch ilm
 
@@ -720,16 +762,14 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 		////////////////////////////////////
 		// Compute the eddy viscosity depth profile, viscoft
 		// Eddy viscosity
-		switch(iturbu){
+		switch (iturbu) {
 			// 0 : No turbulence
-			case 0 : {
+			case 0: {
 				for (j = 0; j < nCell; j++)
 					viscoft[j] = 0.;
 			}; break;
 			// iturbu = 1 : Turbulence activated
-			case 1 : {
-
-
+			case 1: {
 				// Compute the velocity gradient and the turbulent viscosity
 				for (j = 0; j < nCell; j++) {
 					dudz       = (ufn[j + 1] - ufn[j]) / deltaz[j];
@@ -743,7 +783,7 @@ void HydroForceEngine::fluidResolution(Real tfin, Real dt)
 				}
 			}; break;
 			//default: error
-			default : throw std::runtime_error("HydroForceEngine: iturbu should take an integer value between 0 and 1.");	
+			default: throw std::runtime_error("HydroForceEngine: iturbu should take an integer value between 0 and 1.");
 		}
 		////////////////////////////////////      end switch iturbu
 

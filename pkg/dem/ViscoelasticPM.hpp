@@ -38,6 +38,9 @@ public:
 		((Real,ks,NaN,,"Shear elastic stiffness. Attention, this parameter cannot be set if tc, en or es is defined!"))
 		((Real,cs,NaN,,"Shear viscous constant. Attention, this parameter cannot be set if tc, en or es is defined!"))
 		((Real,mR,0.0,,"Rolling resistance, see [Zhou1999536]_."))
+		((bool,lubrication,false,,"option to apply lubrication forces when material is defined from young, poisson and en (restitution coefficient)."))
+		((Real,viscoDyn,1e-3,,"if lubrication is activated, surrounding fluid dynamic viscosity considered to evaluate the effective restitution coefficient as a function of the local Stokes number of the collision."))
+		((Real,roughnessScale,1e-3,,"if lubrication is activated, roughness scale considered for the particles to evaluate the effective restitution coefficient."))
 #ifdef YADE_SPH
 		((bool,SPHmode,false,,"True, if SPH-mode is enabled."))
 		((Real,mu,-1,, "Viscosity. See Mueller [Morris1997]_ ."))                                              // [Mueller2003], (14)
