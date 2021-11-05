@@ -455,6 +455,51 @@ def avgNumInteractions(cutoff=0.,skipFree=False,considerClumps=False):
 		NN=N-N0-N1
 		return (CC-N1)*1./NN if NN>0 else float('nan')
 
+def phiIniPy(ioPyFn,grid):
+	r"""Returns a 3D discrete field appropriate to serve as :yref:`FastMarchingMethod.phiIni` (LS_DEM feature required), applying a user-made Python function *ioPyFn*
+
+        :param ioPyFn: an existing inside-outside Python function that takes three numbers (cartesian coordinates) as arguments
+        :param RegularGrid grid: the :yref:`RegularGrid` instance to operate on
+        :return list: an appropriate 3D discrete field to pass at :yref:`FastMarchingMethod.phiIni`"""
+	phiField = []
+	nGPx,nGPy,nGPz = grid.nGP[0],grid.nGP[1],grid.nGP[2]
+	for xInd in range(nGPx):
+		distanceInPlane=[]
+		for yInd in range(nGPy):
+			distanceAlongZaxis = []
+			for zInd in range(nGPz):
+				gp = grid.gridPoint(xInd,yInd,zInd)
+				io = ioPyFn(gp[0],gp[1],gp[2])
+				if io>0: distanceAlongZaxis.append(numpy.inf)
+				elif io<0: distanceAlongZaxis.append(-numpy.inf)
+				else: distanceAlongZaxis.append(0)
+			distanceInPlane.append(distanceAlongZaxis)
+		phiField.append(distanceInPlane)
+	for exterior in [False,True]:
+		for xInd in range(nGPx):
+			for yInd in range(nGPy):
+				for zInd in range(nGPz):
+#					let s look first at the necessary condition for that gp to serve as BC for the present (exterior?) side:
+					if (phiField[xInd][yInd][zInd]>=0 and exterior) or (phiField[xInd][yInd][zInd]<=0 and not exterior):
+						for neigh in range(6): # match .. case possible once Python 3.10 settles in..
+							if neigh==0:
+								otherVal = phiField[xInd][yInd][zInd] if xInd==0 else phiField[xInd-1][yInd][zInd]
+							elif neigh ==1:
+								otherVal = phiField[xInd][yInd][zInd] if xInd == nGPx-1 else phiField[xInd+1][yInd][zInd]
+							elif neigh==2:
+								otherVal = phiField[xInd][yInd][zInd] if yInd == 0 else phiField[xInd][yInd-1][zInd]
+							elif neigh==3:
+								otherVal = phiField[xInd][yInd][zInd] if yInd == nGPy-1 else phiField[xInd][yInd+1][zInd]
+							elif neigh==4:
+								otherVal = phiField[xInd][yInd][zInd] if zInd == 0 else phiField[xInd][yInd][zInd-1]
+							elif neigh==5:
+								otherVal = phiField[xInd][yInd][zInd] if zInd == nGPz-1 else phiField[xInd][yInd][zInd+1]
+							if (otherVal<0 and exterior) or (otherVal>0 and not exterior): # being next to the other side, ie in the initial front
+								gp = grid.gridPoint(xInd,yInd,zInd);
+								phiField[xInd][yInd][zInd] = ioPyFn(gp[0],gp[1],gp[2])
+								break # no need to look at other neighbours along other axes, let s move on to the next gp
+	return phiField
+
 def plotNumInteractionsHistogram(cutoff=0.):
 	"Plot histogram with number of interactions per body, optionally cutting away *cutoff* relative axis-aligned box from specimen margin."
 	nums,counts=bodyNumInteractionsHistogram(aabbExtrema(cutoff))

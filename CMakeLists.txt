@@ -24,6 +24,7 @@
 #  ENABLE_LINSOLV             : enable LINSOLV-option (ON by default)
 #  ENABLE_LIQMIGRATION        : enable LIQMIGRATION-option, see [Mani2013] for details (OFF by default)
 #  ENABLE_LOGGER              : use boost::log library for logging (ON by default)
+#  ENABLE_LS_DEM              : enable level-set shape description (ON by default)
 #  ENABLE_MASK_ARBITRARY      : enable MASK_ARBITRARY option (OFF by default)
 #  ENABLE_MPFR                : use https://www.mpfr.org/ library, can be used for higher precision calculations or for CGAL exact predicates (OFF by default)
 #  ENABLE_MPI                 : Enable MPI communications in Yade. Used for Yade-OpenFOAM coupling.
@@ -101,6 +102,7 @@ OPTION(ENABLE_LBMFLOW "Enable LBM engine (very experimental)" ${DEFAULT_ON})
 OPTION(ENABLE_LINSOLV "Enable direct solver for the flow engines (experimental)" ${DEFAULT_ON})
 OPTION(ENABLE_LIQMIGRATION "Enable liquid control (very experimental), see [Mani2013] for details" ${DEFAULT_OFF})
 OPTION(ENABLE_LOGGER "Use boost::log library for logging (ON by default)" ${DEFAULT_ON})
+OPTION(ENABLE_LS_DEM "Enable level-set shape description" ${DEFAULT_ON})
 OPTION(ENABLE_MASK_ARBITRARY "Enable arbitrary precision of bitmask variables (only Body::groupMask yet implemented) (experimental). Use -DMASK_ARBITRARY_SIZE=int to set number of used bits (256 by default)" ${DEFAULT_OFF})
 OPTION(ENABLE_MPFR "Use mpfr library (higher precision calculations or CGAL exact predicates)" ${DEFAULT_OFF})
 OPTION(ENABLE_MPI "Enable MPI environement and communications, required for coupling Yade with OpenFOAM  " ${DEFAULT_ON})
@@ -639,7 +641,7 @@ MESSAGE(STATUS "Will use ${Esc}[93m${REAL_PREC_NAME}${Esc}[0m as Real type with 
 #======================================
 #====== * Unsupported features * ======
 #======================================
-# non-double Real precision does not work with extarnal library cholmod.
+# non-double Real precision does not work with external library cholmod.
 IF(NOT (${REAL_PRECISION_BITS} EQUAL 64))
   IF(ENABLE_TWOPHASEFLOW OR ENABLE_LINSOLV OR ENABLE_PFVFLOW OR ENABLE_PARTIALSAT)
      MESSAGE(STATUS "ENABLE_TWOPHASEFLOW OR ENABLE_LINSOLV OR ENABLE_PFVFLOW pr ENABLE_PARTIALSAT were disabled automatically because they use double precision external library: cholesky linear solver. It can be replaced with native Eigen solvers, then it will work.")
@@ -651,6 +653,13 @@ IF(NOT (${REAL_PRECISION_BITS} EQUAL 64))
   IF(ENABLE_TWOPHASEFLOW OR ENABLE_LINSOLV OR ENABLE_PFVFLOW OR ENABLE_PARTIALSAT)
     MESSAGE(FATAL_ERROR "Cannot (yet) use ENABLE_TWOPHASEFLOW OR ENABLE_LINSOLV OR ENABLE_PFVFLOW with high precision.")
   ENDIF(ENABLE_TWOPHASEFLOW OR ENABLE_LINSOLV OR ENABLE_PFVFLOW OR ENABLE_PARTIALSAT)
+  IF(ENABLE_LS_DEM)
+     MESSAGE(STATUS "ENABLE_LS_DEM automatically modified to OFF since you can not ask for both LS_DEM feature and a non-double numeric precision (e.g. REAL_* options).")
+     SET(ENABLE_LS_DEM OFF)
+  ENDIF(ENABLE_LS_DEM)
+  IF(ENABLE_LS_DEM) # Adding the same second verification (with FATAL_ERROR) than everyone else..
+     MESSAGE(FATAL_ERROR "Combining ENABLE_LS_DEM with a non-double numeric precision (e.g. REAL_* options) is impossible")
+  ENDIF(ENABLE_LS_DEM)
   IF(ENABLE_POTENTIAL_BLOCKS)
      MESSAGE(STATUS "ENABLE_POTENTIAL_BLOCKS was disabled because external library coinor can only work with double type.")
      SET(ENABLE_POTENTIAL_BLOCKS OFF)
@@ -981,6 +990,13 @@ ELSE(ENABLE_SPH)
   SET(DISABLED_FEATS "${DISABLED_FEATS} SPH")
 ENDIF(ENABLE_SPH)
 #===============================================
+IF(ENABLE_LS_DEM)
+  ADD_DEFINITIONS("-DYADE_LS_DEM")
+  SET(CONFIGURED_FEATS "${CONFIGURED_FEATS} LS_DEM")
+ELSE(ENABLE_LS_DEM)
+  SET(DISABLED_FEATS "${DISABLED_FEATS} LS_DEM")
+ENDIF(ENABLE_LS_DEM)
+#===============================================
 IF(ENABLE_DEFORM)
   ADD_DEFINITIONS("-DYADE_DEFORM")
   SET(CONFIGURED_FEATS "${CONFIGURED_FEATS} DEFORM")
@@ -1185,9 +1201,9 @@ endmacro()
 
 SET(SRC_LIB "${SRC_LIB};lib/base/Math.cpp;lib/high-precision/RealHPConfig.cpp;lib/factory/ClassFactory.cpp;lib/factory/DynLibManager.cpp;lib/base/Logging.cpp;lib/compatibility/LapackCompatibility.cpp;lib/compatibility/VTKCompatibility.cpp")
 SET(SRC_LIB "${SRC_LIB};lib/serialization/Serializable.cpp;lib/pyutil/gil.cpp;core/main/pyboot.cpp;${GUI_SRC_LIB};${CGAL_SRC_LIB}")
-IF(ENABLE_POTENTIAL_PARTICLES OR ENABLE_POTENTIAL_BLOCKS)
+IF(ENABLE_POTENTIAL_PARTICLES OR ENABLE_POTENTIAL_BLOCKS OR ENABLE_LS_DEM)
   SET(SRC_LIB "${SRC_LIB};lib/computational-geometry/MarchingCube.cpp")
-ENDIF(ENABLE_POTENTIAL_PARTICLES OR ENABLE_POTENTIAL_BLOCKS)
+ENDIF(ENABLE_POTENTIAL_PARTICLES OR ENABLE_POTENTIAL_BLOCKS OR ENABLE_LS_DEM)
 
 #===========================================================
 

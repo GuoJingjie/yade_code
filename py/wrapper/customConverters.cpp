@@ -6,6 +6,7 @@
 *  2014 Jan Stránský                                                     *
 *  2019 François Kneib                                                   *
 *  2019 Janek Kozicki                                                    *
+*  2021 Jérôme Duriez                                                    *
 *                                                                        *
 *  This program is free software; it is licensed under the terms of the  *
 *  GNU General Public License v2 or later. See file LICENSE for details. *
@@ -140,6 +141,24 @@ struct custom_OpenMPAccumulator_from_int {
 	}
 };
 
+template <typename T> struct custom_vvvector_to_list {
+	static PyObject* convert(const std::vector<std::vector<std::vector<T>>>& vvv)
+	{
+		boost::python::list ret;
+		for (const auto& vv : vvv) {
+			boost::python::list ret2;
+			for (const auto& v : vv) {
+				boost::python::list ret3;
+				for (const auto& e : v)
+					ret3.append(e);
+				ret2.append(ret3);
+			}
+			ret.append(ret2);
+		}
+		return boost::python::incref(ret.ptr());
+	}
+};
+
 template <typename T> struct custom_vvector_to_list {
 	static PyObject* convert(const std::vector<std::vector<T>>& vv)
 	{
@@ -197,6 +216,76 @@ template <typename containedType> struct custom_vector_from_seq {
 	}
 };
 
+// custom_vvector_from_llist: will build a std::vector< std::vector<someType> > from a list (of list) Python input. Necessary for custom_vvvector_from_lllist below
+template <typename someType> struct custom_vvector_from_llist {
+	custom_vvector_from_llist()
+	{
+		boost::python::converter::registry::push_back(&convertible, &construct, boost::python::type_id<std::vector<std::vector<someType>>>());
+	}
+	static void* convertible(PyObject* obj_ptr)
+	{
+		if (!PyList_Check(obj_ptr) || !PyObject_HasAttrString(obj_ptr, "__len__"))
+			return 0; // 1st check, with the 2nd condition kept as in custom_vector_from_seq (for no other reason ?)...
+		PyObject* objItem = PyList_GetItem(obj_ptr, 0);
+		if (!PyList_Check(objItem)) { // 2nd check
+			LOG_ERROR("You did not provide a list of list, returning 0 (None ?)");
+			return 0;
+		} // now we're sure it is a list of list, at least.
+		return obj_ptr;
+	}
+	static void construct(PyObject* obj_ptr, boost::python::converter::rvalue_from_python_stage1_data* data)
+	{
+		void* storage = ((boost::python::converter::rvalue_from_python_storage<std::vector<std::vector<someType>>>*)(data))->storage.bytes;
+		new (storage) std::vector<std::vector<someType>>();
+		std::vector<std::vector<someType>>* v = (std::vector<std::vector<someType>>*)(storage);
+		int                                 l = PySequence_Size(obj_ptr);
+		if (l < 0) abort();
+		v->reserve(l);
+		for (int i = 0; i < l; i++) {
+			v->push_back(boost::python::extract<std::vector<someType>>(PySequence_GetItem(obj_ptr, i)));
+		}
+		data->convertible = storage;
+	}
+};
+
+// custom_vvvector_from_lllist: will build a std::vector< std::vector< std::vector<someType> > > from a Python list (of list of list) input. E.g. for direct Python definition of LevelSet::distField
+template <typename someType> struct custom_vvvector_from_lllist {
+	custom_vvvector_from_lllist()
+	{
+		boost::python::converter::registry::push_back(
+		        &convertible, &construct, boost::python::type_id<std::vector<std::vector<std::vector<someType>>>>());
+	}
+	static void* convertible(PyObject* obj_ptr)
+	{
+		if (!PyList_Check(obj_ptr) || !PyObject_HasAttrString(obj_ptr, "__len__"))
+			return 0; // 1st check, with the 2nd condition kept as in custom_vector_from_seq (for no other reason ?)...
+		PyObject* objItem = PyList_GetItem(obj_ptr, 0);
+		if (!PyList_Check(objItem)) { // 2nd check
+			LOG_ERROR("You did not provide a list of list (of list), returning 0 (None ?)");
+			return 0;
+		} // now we're sure it is a list of list, at least.
+		PyObject* objItemItem = PyList_GetItem(objItem, 0);
+		if (!PyList_Check(objItemItem)) { // 3rd check
+			LOG_ERROR("You did not provide a list of list of list, returning 0 (None ?)");
+			return 0;
+		} // now we're sure it is a list of list of list
+		//we could add a last test to check if someType is a number (using e.g. PyFloat_Check() from Python-C API)
+		return obj_ptr;
+	}
+	static void construct(PyObject* obj_ptr, boost::python::converter::rvalue_from_python_stage1_data* data)
+	{
+		void* storage = ((boost::python::converter::rvalue_from_python_storage<std::vector<std::vector<std::vector<someType>>>>*)(data))->storage.bytes;
+		new (storage) std::vector<std::vector<std::vector<someType>>>();
+		std::vector<std::vector<std::vector<someType>>>* v = (std::vector<std::vector<std::vector<someType>>>*)(storage);
+		int                                              l = PySequence_Size(obj_ptr);
+		if (l < 0) abort();
+		v->reserve(l);
+		for (int i = 0; i < l; i++) {
+			v->push_back(boost::python::extract<std::vector<std::vector<someType>>>(PySequence_GetItem(obj_ptr, i)));
+		}
+		data->convertible = storage;
+	}
+};
 
 struct custom_ptrMatchMaker_from_float {
 	custom_ptrMatchMaker_from_float()
@@ -282,12 +371,17 @@ try {
 	//custom_StrArrayMap_to_dict();
 	// register from-python converter and to-python converter
 
+	// register 1-way C++ -> Python conversion:
 	boost::python::to_python_converter<std::vector<std::vector<std::string>>, y::custom_vvector_to_list<std::string>>();
 	boost::python::to_python_converter<std::vector<std::vector<y::Matrix3r>>, y::custom_vvector_to_list<y::Matrix3r>>();
 	boost::python::to_python_converter<std::vector<std::vector<int>>, y::custom_vvector_to_list<int>>();
 	boost::python::to_python_converter<std::vector<std::vector<double>>, y::custom_vvector_to_list<double>>();
 	//boost::python::to_python_converter<std::list<shared_ptr<Functor     > >, y::custom_list_to_list<shared_ptr<Functor> > >();
 	//boost::python::to_python_converter<std::list<shared_ptr<Functor     > >, y::custom_list_to_list<shared_ptr<Functor> > >();
+	boost::python::to_python_converter<std::vector<std::vector<std::vector<y::Real>>>, y::custom_vvvector_to_list<y::Real>>(); // eg for LevelSet.distField
+	// register the reciprocal conversion Python -> C++
+	y::custom_vvector_from_llist<y::Real>();
+	y::custom_vvvector_from_lllist<y::Real>();
 
 #ifdef YADE_MASK_ARBITRARY
 	y::custom_mask_from_long();

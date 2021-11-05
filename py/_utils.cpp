@@ -1,5 +1,8 @@
 #include <lib/high-precision/Constants.hpp>
 #include <core/InteractionLoop.hpp>
+#ifdef YADE_LS_DEM
+#include <pkg/levelSet/ShopLS.hpp>
+#endif // YADE_LS_DEM
 #include <py/_utils.hpp>
 // https://codeyarns.com/2014/03/11/how-to-selectively-ignore-a-gcc-warning/
 #pragma GCC diagnostic push
@@ -922,7 +925,83 @@ try {
 	        setBodyColor,
 	        (py::args("id"), py::args("color")),
 	        "Set a body color from its id and a new Vector3r.\n\n:param int id: the body id.\n:param Vector3 color: the desired updated color.");
+#ifdef YADE_LS_DEM
+	// clang-format off
+	py::def("cart2spher",
+		ShopLS::cart2spher,
+		(py::arg("vec")),
+		"Converts cartesian coordinates to spherical ones.\n\n:param Vector3 vec: the $(x,y,z)$ cartesian coordinates\n:return: a $(r,\\theta,\\phi)$ Vector3 of spherical coordinates, with $\\theta = (\\vec{e_z},\\vec{e_r}) \\in [0;\\pi]$ and $\\phi \\in [0;2 \\pi]$ measured in $(x,y)$ plane from $x$-axis");
+	py::def("spher2cart",
+		ShopLS::spher2cart,
+		(py::arg("vec")),
+		"Converts spherical coordinates to cartesian ones.\n\n:param Vector3 vec: the $(r,\\theta,\\phi)$ spherical coordinates, see cart2spher function for conventions\n:return: a $(x,y,z)$ Vector3 of cartesian coordinates");
+	py::def("lsSimpleShape",
+		ShopLS::lsSimpleShape,
+		(py::arg("shape"),py::arg("aabb"),py::arg("step")=0.1,py::arg("epsilons")=Vector2r(Vector2r::Zero()),py::arg("clump")=boost::make_shared<Clump>()), // Vector*r(Vector*r::Zero()) is actually necessary for to-Python conversion to work (and YADE to start)
+		R"""(Creates a LevelSet shape among pre-defined ones. Not intended to be used directly, see levelSetBody() instead.
 
+:param int shape: a shape index among supported choices
+:param AlignedBox3 aabb: the axis-aligned surrounding box of the body
+:param Real step: the LevelSet grid step size
+:param Vector2 epsilons: the epsilon exponents in case *shape* = 3 (superellipsoid)
+:param Clump clump: the Clump instance to mimick in case *shape* = 4
+:return: a list (of list of list) corresponding to LevelSet.distField.)""");
+ // NB: the rest of the code makes a mixed use of py::arg and py::args, Boost doc does not really help for this https://www.boost.org/doc/libs/1_67_0/libs/python/doc/html/reference/function_invocation_and_creation.html#function_invocation_and_creation.boost_python_args_hpp, see /usr/include/boost/python/args.hpp if you wish...
+//	NB for the two following nGP: see overloading comments in ShopLS.hpp.
+	py::def("nGP",
+		ShopLS::nGPr,
+		(py::arg("min"),py::arg("max"),py::arg("step")),
+		"Defines how many gridpoints are necessary to go from *min* to (at least) *max*, by *step* increments, eg when constructing a :yref:`RegularGrid`\n\n:param Real min: lowest grid extremity as (min,min,min) in case you just give a number, or as (min[0],min[1],min[2]) in case you give a tuple/list/Vector3\n\n:param Real max: highest gridpoint as (max,max,max) in case you give a number, or as (max[0],max[1],max[2]) in case you give a tuple/list/Vector3. The actual highest point of the grid may be beyond max by something like *step*.\n:param Real step: the distance between two consecutive grid points (the same along each axis).\n\n:return: either an integer, or a Vector3 of, depending on usage"); // html doc output is bound to be less good than elsewhere (for the "Parameters" block), because of the same name below..
+	py::def("nGP",
+		ShopLS::nGPv,
+		(py::arg("min"),py::arg("max"),py::arg("step")),
+		"Type-overloaded version of the above, to allow for both types of max/min attributes.");
+	py::def("distApproxSE",
+		ShopLS::distApproxSE,
+		(py::arg("pt"),py::arg("radii"),py::arg("epsilons")),
+		R"""(An approximate distance value to a superellipsoid surface defined (in local axes) as $f(x,y,z) = ( |x/r_x|^{2/\epsilon_e} + |y/r_y|^{2/\epsilon_e} )^{\epsilon_e/\epsilon_n} + |z/r_z|^{2/\epsilon_n} = 1$.
+
+:param Vector3 pt: the $(x,y,z)$ of interest
+:param Vector3 radii: the $(r_x,r_y,r_z)$
+:param Vector2 epsilons: the $(\epsilon_e,\epsilon_n)$ exponents
+:return: a 0-approximation distance value.)""");
+	py::def("distIniClump",
+		ShopLS::distIniClump,
+		(py::arg("clump"),py::arg("grid")),
+		R"""(An appropriate discrete field to serve as a Fast Marching Method input in :yref:`FastMarchingMethod.phiIni` in order to compute distance to a clump.
+
+:param Clump clump: considered clump instance
+:param RegularGrid grid: the :yref:`RegularGrid` instance to consider
+:return: an appropriate 3D discrete field for :yref:`FastMarchingMethod.phiIni`.)""");
+	py::def("distIniSE",
+		ShopLS::distIniSE,
+		(py::arg("radii"),py::arg("epsilons"),py::arg("grid")),
+		R"""(An appropriate discrete field to serve as a Fast Marching Method input in :yref:`FastMarchingMethod.phiIni` in order to compute distance to a superellipsoid.
+
+:param Vector3 radii: the $(r_x,r_y,r_z)$
+:param Vector2 epsilons: the $(\epsilon_e,\epsilon_n)$ exponents
+:param RegularGrid grid: the :yref:`RegularGrid` instance to consider
+:return: an appropriate 3D discrete field for :yref:`FastMarchingMethod.phiIni`.)""");
+	py::def("distApproxRose",
+		ShopLS::distApproxRose,
+		(py::arg("pt")),
+		R"""(An approximate distance value to a rose-like flaky surface defined in spherical coordinates as $r = 3+1.5 \\sin(5 \\theta) \\sin(4\\phi)$ (see :yref:`cart2spher` function for spherical <-> cartesian convention).
+
+:param Vector3 pt: the pt of interest given in $(x,y,z)$ cartesian coordinates.
+:return: a 0-approximation distance value.)""");
+	py::def("phiIniCppPy",ShopLS::phiIniCppPy,(py::arg("grid")), // jduriez personal note: see fmm8 for comparison with phiIniPy
+		R"""(A possibly handy function to construct a :yref:`FastMarchingMethod.phiIni` after applying on *grid* an inside-outside Python function. The latter necessarily names ioFn and takes three floating numbers (cartesian coordinates) as arguments. Code source of the present function is both C++ and Python, and execution should be faster and heavier in memory than the pure Python version utils.phiIniPy, both being under the second and few MB for grids with ~ $10^4$ gridpoints.
+
+:param RegularGrid grid: the yref:`RegularGrid` instance to operate on with a preexisting ioFn Python function
+:return: an appropriate 3D discrete field for :yref:`FastMarchingMethod.phiIni`)""");
+	py::def("insideClump",ShopLS::insideClump,(py::arg("pt"),py::arg("clump")),
+		R"""(Tells whether some point is inside or outside a clump
+
+:param Vector3 pt: the point of interest expressed in local coordinates
+:param Clump clump: the clump instance to consider
+:return bool: True when strictly inside, False otherwise)""");
+	// clang-format on
+#endif //YADE_LS_DEM
 } catch (...) {
 	LOG_FATAL("Importing this module caused an exception and this module is in an inconsistent state now.");
 	PyErr_Print();

@@ -337,6 +337,7 @@ The following cmake options are available: (see the `source code <https://gitlab
 	* ENABLE_GTS: enable GTS-option (ON by default)
 	* ENABLE_GUI: enable GUI option (ON by default)
 	* ENABLE_LBMFLOW: enable LBMFLOW-option, LBM_ENGINE (ON by default)
+	* ENABLE_LS_DEM: enable a :yref:`LevelSet` shape description (ON by default)
 	* ENABLE_LINSOLV: enable LINSOLV-option (ON by default)
 	* ENABLE_LIQMIGRATION: enable LIQMIGRATION-option, see [Mani2013]_ for details (OFF by default)
 	* ENABLE_LOGGER: use `boost::log <https://www.boost.org/doc/libs/release/libs/log/>`_ library for :ref:`logging<logging>` separately for each class (ON by default)

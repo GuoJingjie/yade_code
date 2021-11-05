@@ -45,7 +45,7 @@ regular :ref:`installation instructions <install-from-source-code>`. With extra 
 
 	1. either number of bits as ``REAL_PRECISION_BITS=……``,
 	2. or number of requested decimal places as ``REAL_DECIMAL_PLACES=……``, but not both
-	3. to use MPFR specify ``ENABLE_MPFR=ON``.
+	3. to use MPFR specify ``ENABLE_MPFR=ON`` (is ``OFF`` by default).
 
    The arbitrary precision (``mpfr`` or ``cpp_bin_float``) types are used only when more than 128 bits or more than 39 decimal places are requested. In such case if ``ENABLE_MPFR=OFF`` then
    the slower ``cpp_bin_float`` type is used. The difference in decimal places between 39 and 33 stems from the fact that `15 bits are used for exponent <https://en.wikipedia.org/wiki/Quadruple-precision_floating-point_format>`__. Note: a fast quad-double (debian package ``libqd-dev``) implementation with 62 decimal places is `in the works <https://github.com/boostorg/multiprecision/issues/184>`__ with boost multiprecision team.
@@ -86,9 +86,10 @@ The following table lists which modules are currently working with high precisio
 ``ENABLE_FEMLIKE``                          yes          ``ON``                        supported [#supp2]_
 ``ENABLE_ASAN``                             yes          ``OFF``                       supported [#supp2]_
 ``ENABLE_MPFR``                             yes          ``OFF``                       native support [#supp1]_
+``ENABLE_LS_DEM``                           no           ``ON``                        not supported [#suppLS]_
 =========================================== ============ ============================= ========================
 
-The unsupported modules are automatically disabled during the cmake stage.
+The unsupported modules are automatically disabled during a high precision ``cmake`` stage.
 
 .. rubric:: Footnotes
 
@@ -109,6 +110,8 @@ The unsupported modules are automatically disabled during the cmake stage.
 .. [#supp8] Potential blocks use external library coinor for linear programming, this library uses ``double`` type only. To make it work a linear programming routine has to be implemented using Eigen or coinor library should start using C++ templates or a converter/wrapper similar to :ysrc:`LAPACK library <lib/compatibility/LapackCompatibility.hpp>` should be used.
 
 .. [#supp4] The module is enabled by default, the ``yade --test`` and ``yade --check`` pass, as well as most of examples are working. However the calculations are performed at lower ``double`` precision. A wrapper/converter layer for :ysrc:`LAPACK library <lib/compatibility/LapackCompatibility.hpp>` has been implemented. To make it work with full precision these routines should be reimplemented using Eigen.
+
+.. [#suppLS] Possible future enchancement. See comments `there <https://gitlab.com/yade-dev/trunk/-/merge_requests/779>`_ .
 
 .. _higher-hp-precision:
 
