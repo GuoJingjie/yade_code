@@ -6,6 +6,10 @@
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #include <vtkQuad.h>
 #include <vtkSmartPointer.h>
+#ifdef YADE_LS_DEM
+#include <pkg/levelSet/LevelSet.hpp>
+#include <vtkStructuredGrid.h>
+#endif
 #pragma GCC diagnostic pop
 // multiblock features don't seem to exist prioor to 5.2
 #if (VTK_MAJOR_VERSION == 5 && VTK_MINOR_VERSION >= 2) || (VTK_MAJOR_VERSION > 5)
@@ -16,64 +20,67 @@ namespace yade { // Cannot have #include directive inside.
 
 class VTKRecorder : public PeriodicEngine {
 private:
+#ifdef YADE_LS_DEM
+	vtkSmartPointer<vtkStructuredGrid> gridOfLSbody(shared_ptr<Body>, shared_ptr<LevelSet>);
+#endif
 #ifdef YADE_MPI
 	int  rank, commSize;
 	bool sceneRefreshed = false;
 #endif
 public:
-	enum {
-		REC_SPHERES = 0,
-		REC_FACETS,
-		REC_BOXES,
-		REC_COLORS,
-		REC_MASS,
-		REC_TEMP,
-		REC_CPM,
-		REC_INTR,
-		REC_VELOCITY,
-		REC_ID,
-		REC_CLUMPID,
-		REC_SENTINEL,
-		REC_MATERIALID,
-		REC_STRESS,
-		REC_MASK,
-		REC_RPM,
-		REC_JCFPM,
-		REC_CRACKS,
-		REC_MOMENTS,
-		REC_WPM,
-		REC_PERICELL,
-		REC_LIQ,
-		REC_BSTRESS,
-		REC_FORCE,
-		REC_COORDNUMBER,
-		REC_SPH,
-		REC_DEFORM,
-		REC_LUBRICATION,
-		REC_SUBDOMAIN,
-		REC_PARTIALSAT,
-		REC_HERTZMINDLIN
-	};
+	enum { REC_SPHERES = 0,
+	       REC_FACETS,
+	       REC_BOXES,
+	       REC_COLORS,
+	       REC_MASS,
+	       REC_TEMP,
+	       REC_CPM,
+	       REC_INTR,
+	       REC_VELOCITY,
+	       REC_ID,
+	       REC_CLUMPID,
+	       REC_SENTINEL,
+	       REC_MATERIALID,
+	       REC_STRESS,
+	       REC_MASK,
+	       REC_RPM,
+	       REC_JCFPM,
+	       REC_CRACKS,
+	       REC_MOMENTS,
+	       REC_WPM,
+	       REC_PERICELL,
+	       REC_LIQ,
+	       REC_BSTRESS,
+	       REC_FORCE,
+	       REC_COORDNUMBER,
+	       REC_SPH,
+	       REC_DEFORM,
+	       REC_LUBRICATION,
+	       REC_SUBDOMAIN,
+	       REC_PARTIALSAT,
+	       REC_HERTZMINDLIN,
+	       REC_LS };
 	void action() override;
 	void addWallVTK(vtkSmartPointer<vtkQuad>& boxes, vtkSmartPointer<vtkPointsReal>& boxesPos, Vector3r& W1, Vector3r& W2, Vector3r& W3, Vector3r& W4);
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS_CTOR(VTKRecorder,PeriodicEngine,"Engine recording snapshots of simulation into series of \\*.vtu files, readable by VTK-based postprocessing programs such as Paraview. Both bodies (spheres and facets) and interactions can be recorded, with various vector/scalar quantities that are defined on them.\n\n:yref:`PeriodicEngine.initRun` is initialized to ``True`` automatically.",
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR(VTKRecorder,PeriodicEngine,"Engine recording snapshots of simulation into series of \\*.vtu files, readable by VTK-based postprocessing programs such as Paraview. Both bodies (depending on their :yref:`shapes<Shape>`) and interactions can be recorded, with various vector/scalar quantities that are defined on them.\n\n:yref:`PeriodicEngine.initRun` is initialized to ``True`` automatically.",
 		((bool,compress,false,,"Compress output XML files [experimental]."))
 		((bool,ascii,false,,"Store data as readable text in the XML file (sets `vtkXMLWriter <http://www.vtk.org/doc/nightly/html/classvtkXMLWriter.html>`__ data mode to ``vtkXMLWriter::Ascii``, while the default is ``Appended``)"))
 		((bool,skipFacetIntr,true,,"Skip interactions that are not of sphere-sphere type (e.g. sphere-facet, sphere-box...), when saving interactions"))
 		((bool,skipNondynamic,false,,"Skip non-dynamic spheres (but not facets)."))
 		#ifdef YADE_VTK_MULTIBLOCK
 			((bool,multiblock,false,,"Use multi-block (``.vtm``) files to store data, rather than separate ``.vtu`` files."))
+			((bool,multiblockLS,false,,"For executing, when True and with lsBodies in *recorders*, a serial export of the :yref:`LevelSet` bodies into one unique multi-block (``.vtm``) file, rather than a OpenMP export of separate ``.vtu`` files, when False. Compatibility with *multiblock* has not been implemented yet"))
 		#endif
 		#ifdef YADE_MPI
 			((bool,parallelMode,false,,"For MPI parallel runs, each proc writes their own vtu/vtp files. Master proc writes a pvtu/pvtp file containing metadata about worker vtu files. load the pvtu/pvtp in paraview for visualization."))
 		#endif
-		((string,fileName,"",,"Base file name; it will be appended with {spheres,intrs,facets}.243100.vtu (unless *multiblock* is ``True``) depending on active recorders and step number (243100 in this case). It can contain slashes, but the directory must exist already."))
-		((vector<string>,recorders,vector<string>(1,string("all")),,R"""(List of active recorders (as strings). ``all`` (the default value) enables all base and generic recorders.
+		((string,fileName,"",,"Base file name; it will be appended with {lsBody*,spheres,intrs,facets}.243100.vtu (unless *multiblock* or *multiblockLS* is ``True``) depending on active recorders and step number (243100 in this case). It can contain slashes, but the directory must exist already."))
+		((vector<string>,recorders,vector<string>(1,string("all")),,R"""(List of active recorders (as strings). ``all`` (the default value) enables all base (``lsBodies'' excepted) and generic recorders.
 
 **Base recorders**
 
-	Base recorders save the geometry (unstructured grids) on which other data is defined. They are implicitly activated by many of the other recorders. Each of them creates a new file (or a block, if :yref:`multiblock <VTKRecorder.multiblock>` is set).
+	Base recorders save the geometry (unstructured or structured grids) on which other data is defined. They are implicitly activated by many of the other recorders. Each of them creates a new file (or a block, if :yref:`multiblock <VTKRecorder.multiblock>` is set).
 
 	``spheres``
 		Saves positions and radii (``radii``) of :yref:`spherical<Sphere>` particles.
@@ -81,6 +88,8 @@ public:
 		Save :yref:`facets<Facet>` positions (vertices).
 	``boxes``
 		Save :yref:`boxes<Box>` positions (edges).
+	``lsBodies``
+		Exports :yref:`LevelSet` shaped bodies in global frame, after mapping to current positions and orientations their :yref:`grid<LevelSet.lsGrid>` with :yref:`distance fields<LevelSet.distField>`.
 	``intr``
 		Store interactions as lines between nodes at respective particles positions. Additionally stores magnitude of normal (``forceN``) and shear (``absForceT``) forces on interactions (the :yref:`geom<Interaction.geom> must be of type :yref:`NormShearPhys`).
 

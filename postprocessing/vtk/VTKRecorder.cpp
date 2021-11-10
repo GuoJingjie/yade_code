@@ -17,6 +17,9 @@
 #include <vtkSmartPointer.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkXMLPolyDataWriter.h>
+#ifdef YADE_LS_DEM
+#include <vtkXMLStructuredGridWriter.h>
+#endif
 #include <vtkXMLUnstructuredGridWriter.h>
 #include <vtkZLibDataCompressor.h>
 
@@ -57,6 +60,9 @@
 #include <preprocessing/dem/Shop.hpp>
 #ifdef YADE_LIQMIGRATION
 #include <pkg/dem/ViscoelasticCapillarPM.hpp>
+#endif
+#ifdef YADE_LS_DEM
+#include <pkg/levelSet/ShopLS.hpp>
 #endif
 #include <pkg/dem/HertzMindlin.hpp>
 #include <boost/fusion/include/pair.hpp>
@@ -105,6 +111,7 @@ void VTKRecorder::action()
 			recActive[REC_COORDNUMBER] = true;
 			if (scene->isPeriodic) { recActive[REC_PERICELL] = true; }
 			recActive[REC_BSTRESS] = true;
+			// avoiding #ifdef YADE_LS_DEM recActive[REC_LS]=true; #endif for now to avoid problems if one uses recorders=["all"],multiblock=1
 		} else if (rec == "spheres") {
 			recActive[REC_SPHERES] = true;
 		} else if (rec == "velocity")
@@ -162,11 +169,16 @@ void VTKRecorder::action()
 			recActive[REC_HERTZMINDLIN] = true;
 		else if (rec == "partialSat")
 			recActive[REC_PARTIALSAT] = true;
+#ifdef YADE_LS_DEM
+		else if (rec == "lsBodies")
+			recActive[REC_LS] = true;
+#endif // YADE_LS_DEM
 		else
 			LOG_ERROR(
 			        "Unknown recorder named `" << rec
-			                                   << "' (supported are: all, spheres, velocity, facets, boxes, color, stress, cpm, wpm, intr, id, "
-			                                      "clumpId, materialId, jcfpm, cracks, moments, pericell, liquidcontrol, bstresses). Ignored.");
+			                                   << "' (supported are: all, spheres, velocity, facets, boxes, lsBodies (YADE-version depending), "
+			                                      "color, stress, cpm, wpm, intr, id, clumpId, materialId, jcfpm, cracks, moments, pericell, "
+			                                      "liquidcontrol, bstresses). Ignored.");
 	}
 #ifdef YADE_MPI
 	if (parallelMode) { recActive[REC_SUBDOMAIN] = true; }
@@ -1432,8 +1444,56 @@ void VTKRecorder::action()
 	}
 
 #ifdef YADE_VTK_MULTIBLOCK
+#ifdef YADE_LS_DEM
+	if (recActive[REC_LS]) {
+		// LS bodies can not be exported all into a common grid, because we would end up asking for the distance in some point being outside the level set grid (which is not supported). Each body is thus exported into its own moving grid
+#ifdef YADE_MPI
+		if (parallelMode) LOG_ERROR("VTKRecording LevelSet bodies during MPI runs not supported");
+#endif // YADE_MPI
+		if (multiblockLS) {
+			vtkSmartPointer<vtkMultiBlockDataSet> mbDataset = vtkSmartPointer<vtkMultiBlockDataSet>::New();
+			unsigned int                          i         = 0;
+			for (const auto& b : *scene->bodies /* b is a shared_ptr<Body> */) {
+				if (!b) continue;
+				if (mask != 0 && !b->maskCompatible(mask)) continue;
+				shared_ptr<LevelSet> lsShape = YADE_PTR_DYN_CAST<LevelSet>(
+				        b->shape); // we test the null case below and want a dynamic cast (then prevents YADE_PTR_CAST = static_pointer_cast in non-debug builds). One may wonder about time comparison with respect using Class::getClassIndexStatic()==object->getClassIndex()d (see e.g. Law2_ScGeom_CapillaryPhys_Capillarity::action())
+				if (!lsShape) continue;
+				vtkSmartPointer<vtkStructuredGrid> vtkLSgrid(gridOfLSbody(b, lsShape));
+				// the structured grid data is formed, let s export it:
+				mbDataset->SetBlock(i++, vtkLSgrid);
+			}
+			vtkSmartPointer<vtkXMLMultiBlockDataWriter> writer = vtkSmartPointer<vtkXMLMultiBlockDataWriter>::New();
+			if (ascii) writer->SetDataModeToAscii();
+			std::string fn;
+			fn = fileName + "lsBodies." + boost::lexical_cast<string>(scene->iter) + ".vtm";
+			writer->SetFileName(fn.c_str());
+			writer->SetInputData(mbDataset);
+			writer->Write();
+		} else {
+			YADE_PARALLEL_FOREACH_BODY_BEGIN(const auto& b, scene->bodies)
+			{
+				if (!b) continue;
+				if (mask != 0 && !b->maskCompatible(mask)) continue;
+				shared_ptr<LevelSet> lsShape = YADE_PTR_DYN_CAST<LevelSet>(b->shape);
+				if (!lsShape) continue;
+				vtkSmartPointer<vtkStructuredGrid> vtkLSgrid(gridOfLSbody(b, lsShape));
+				// the unstructured grid data is formed, let s export it:
+				vtkSmartPointer<vtkXMLStructuredGridWriter> writer = vtkSmartPointer<vtkXMLStructuredGridWriter>::New();
+				if (compress) writer->SetCompressor(compressor);
+				if (ascii) writer->SetDataModeToAscii();
+				string fn = fileName + "lsBody" + boost::lexical_cast<string>(b->id) + "." + boost::lexical_cast<string>(scene->iter) + ".vts";
+				writer->SetFileName(fn.c_str());
+				writer->SetInputData(vtkLSgrid);
+				writer->Write();
+			}
+			YADE_PARALLEL_FOREACH_BODY_END();
+		}
+	}
+#endif // YADE_LS_DEM
 #ifdef YADE_MPI
 	if (multiblock) {
+		if (recActive[REC_LS]) LOG_ERROR("Exporting LevelSet bodies (lsBodies in recorders) impossible with multiblock. Maybe multiblockLS ?");
 		if (parallelMode) { LOG_WARN("Multiblock feature in MPI case untested."); }
 		vtkSmartPointer<vtkMultiBlockDataSet> multiblockDataset = vtkSmartPointer<vtkMultiBlockDataSet>::New();
 		int                                   i                 = 0;
@@ -1467,6 +1527,7 @@ void VTKRecorder::action()
 	}
 #else
 	if (multiblock) {
+		if (recActive[REC_LS]) LOG_ERROR("Exporting LevelSet bodies (lsBodies in recorders) impossible with multiblock. Maybe multiblockLS ?");
 		vtkSmartPointer<vtkMultiBlockDataSet> multiblockDataset = vtkSmartPointer<vtkMultiBlockDataSet>::New();
 		int                                   i                 = 0;
 		if (recActive[REC_SPHERES]) multiblockDataset->SetBlock(i++, spheresUg);
@@ -1484,6 +1545,44 @@ void VTKRecorder::action()
 
 #endif
 };
+
+#ifdef YADE_LS_DEM
+vtkSmartPointer<vtkStructuredGrid> VTKRecorder::gridOfLSbody(shared_ptr<Body> b, shared_ptr<LevelSet> lsShape)
+{
+	vtkSmartPointer<vtkStructuredGrid> vtkLSgrid(
+	        vtkSmartPointer<vtkStructuredGrid>::
+	                New()); // see https://vtk.org/doc/nightly/html/classvtkStructuredGrid.html for class doc and e.g. https://lorensen.github.io/VTKExamples/site/Cxx/IO/XMLStructuredGridWriter/ for an example. Note that regular/rectilinear grid is actually impossible here because we will conform global axes where gridpoints with same i index do not necessarily have the same x coordinate.
+	vtkSmartPointer<vtkPoints> lsGP = vtkSmartPointer<vtkPoints>::New(); // the points of the vtk grid
+	int                        nGPx(lsShape->lsGrid->nGP[0]), nGPy(lsShape->lsGrid->nGP[1]), nGPz(lsShape->lsGrid->nGP[2]);
+	Vector3r                   mappedGP; // the current position of a given level set grid point
+	for (int zInd = 0; zInd < nGPz;
+	     zInd++) { // let s loop on x (below) with the greatest frequency, maybe that s necessary (and that s the case in https://lorensen.github.io/VTKExamples/site/Cxx/StructuredGrid/VisualizeStructuredGrid/ )
+		for (int yInd = 0; yInd < nGPy; yInd++) {
+			for (int xInd = 0; xInd < nGPx; xInd++) {
+				mappedGP = ShopLS::rigidMapping(lsShape->lsGrid->gridPoint(xInd, yInd, zInd), Vector3r::Zero(), b->state->pos, b->state->ori);
+				lsGP->InsertNextPoint(mappedGP[0], mappedGP[1], mappedGP[2]);
+			}
+		}
+	}
+	vtkLSgrid->SetDimensions(nGPx, nGPy, nGPz);
+	vtkLSgrid->SetPoints(lsGP);
+	vtkSmartPointer<vtkDoubleArray> bodyFootprint = vtkSmartPointer<vtkDoubleArray>::New();
+	bodyFootprint->SetNumberOfComponents(1);
+	std::stringstream arrayName;
+	arrayName << "distField"; // a unique name (across all bodies) for easy Paraview manipulation of the multiblock data
+	bodyFootprint->SetName((arrayName.str()).c_str());
+	for (int zInd = 0; zInd < nGPz; zInd++) {
+		for (int yInd = 0; yInd < nGPy; yInd++) {
+			for (int xInd = 0; xInd < nGPx; xInd++) {
+				bodyFootprint->InsertNextValue(lsShape->distField[xInd][yInd][zInd]);
+			}
+		}
+	}
+	vtkLSgrid->GetPointData()->AddArray(
+	        bodyFootprint); //vtkFieldData::AddArray (giving vtkPointData::AddArray through inheritance) wants a vtkAbstractArray * as attribute, OK here with vtkSmartPointer<vtkDoubleArray> bodyFootprint
+	return vtkLSgrid;
+}
+#endif // YADE_LS_DEM
 
 void VTKRecorder::addWallVTK(vtkSmartPointer<vtkQuad>& boxes, vtkSmartPointer<vtkPointsReal>& boxesPos, Vector3r& W1, Vector3r& W2, Vector3r& W3, Vector3r& W4)
 {

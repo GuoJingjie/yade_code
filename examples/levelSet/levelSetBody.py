@@ -26,13 +26,21 @@ for xInd in range(grid.nGP[0]):
     distField.append(field_x)
 sph2 = levelSetBody(grid=grid,distField=distField)
 
+# print('sph1 vs sph2 volume comparison',sph1.shape.volume()/sph2.shape.volume()) # you can check eg here they're the same bodies
+
 # yet another definition: direct assignment of distance field, but using numpy arrays
 axis = numpy.linspace(-1.1,1.1,23)
 X,Y,Z = numpy.meshgrid(axis,axis,axis,indexing='ij')
 distField = (X**2+Y**2+Z**2)**0.5 - 1
 sph3 = levelSetBody(grid=grid,distField=distField.tolist())
 
-# print('sph1 vs sph2 volume comparison',sph1.shape.volume()/sph2.shape.volume()) # you can check eg here they're the same bodies
+O.bodies.append([sph1,sph2,sph3])
+O.engines = [VTKRecorder(recorders=["lsBodies"],iterPeriod=1) # multiblockLS=True # if you prefer a unique output file
+	    ]
+O.step()
 
+# bodies can be displayed after simulation in Paraview / ipython calling e.g.
+# pvVisu(idBodies = range(3),itSnap = range(1))
+# where pvVisu() is defined in pvVisu.py (same folder)
 
 # II. Going further in subsequent YADE revisions
