@@ -230,6 +230,11 @@ make_20_04:
   <<: *artifacts_definition
   image: registry.gitlab.com/yade-dev/docker-yade:ubuntu20.04
 
+make_22_04:
+  <<: *make_definition
+  <<: *artifacts_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:ubuntu22.04
+
 make_stretch:
   <<: *make_definition
   <<: *artifacts_definition
@@ -533,6 +538,13 @@ test_20_04:
     - make_20_04
   needs: ["make_20_04"]
 
+test_22_04:
+  <<: *test_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:ubuntu22.04
+  dependencies:
+    - make_22_04
+  needs: ["make_22_04"]
+
 test_stretch:
   <<: *test_definition
   <<: *skip_WIP
@@ -757,6 +769,13 @@ check_20_04:
   dependencies:
     - make_20_04
   needs: ["make_20_04"]
+
+check_22_04:
+  <<: *check_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:ubuntu22.04
+  dependencies:
+    - make_22_04
+  needs: ["make_22_04"]
 
 check_stretch:
   <<: *check_definition
@@ -1049,3 +1068,10 @@ deb_focal:
   before_script:
     - rm -rf ./deb
     - ./scripts/ppa_ci/builddeb.py -d "focal"
+
+deb_jammy:
+  <<: *deb_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:ubuntu22.04
+  before_script:
+    - rm -rf ./deb
+    - ./scripts/ppa_ci/builddeb.py -d "jammy"

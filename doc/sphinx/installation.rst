@@ -79,6 +79,10 @@ To install the daily-version you need to add the repository to your
 
 	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ focal main" >> /etc/apt/sources.list'
 
+- Ubuntu 22.04 **jammy**::
+
+	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ jammy main" >> /etc/apt/sources.list'
+
 
 Add the PGP-key AA915EEB as trusted and install ``yadedaily``::
 
@@ -149,6 +153,10 @@ Docker images are based on supported distributions:
 - Ubuntu 20.04 **focal**::
 
 	docker run -it registry.gitlab.com/yade-dev/docker-prod:ubuntu20.04
+
+- Ubuntu 22.04 **jammy**::
+
+	docker run -it registry.gitlab.com/yade-dev/docker-prod:ubuntu22.04
 
 
 After the container is pulled and is running, Yade functionality can be checked::
