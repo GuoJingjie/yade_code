@@ -102,15 +102,20 @@ void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
 
 		//if (phiZero>0) solver->adjustCavityCompressibility(pZero);
 		timingDeltas->checkpoint ( "Factorize + Solve" );
-		if (!decoupleForces) solver->computeFacetForcesWithCache();}
-        timingDeltas->checkpoint ( "compute_Forces" );
-        ///Application of vicscous forces
-        if (!decoupleForces) scene->forces.sync();
-	timingDeltas->checkpoint ( "forces.sync()" );
-	if (!decoupleForces) computeViscousForces ( *solver );
-	timingDeltas->checkpoint ( "viscous forces" );
-	if (!decoupleForces) applyForces(*solver);
-        timingDeltas->checkpoint ( "Applying Forces" );
+
+		if (!decoupleForces){
+ 			solver->computeFacetForcesWithCache();
+	    timingDeltas->checkpoint ( "compute_Forces" );
+	    ///Application of vicscous forces
+	    scene->forces.sync();
+			timingDeltas->checkpoint ( "forces.sync()" );
+			computeViscousForces ( *solver );
+			timingDeltas->checkpoint ( "viscous forces" );
+			applyForces(*solver);
+	    timingDeltas->checkpoint ( "Applying Forces" );
+		} else {solver->noCache = false;}
+	}
+
 	///End compute flow and forces
 	#ifdef LINSOLV
 	int sleeping = 0;
