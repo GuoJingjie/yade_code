@@ -798,7 +798,7 @@ my_maketitle=r'''
 \text{\sffamily\bfseries\large Authors}
 \begin{itemize}
  \item \text{\sffamily\bfseries\normalsize V\'{a}clav \v{S}milauer} \text{\sffamily\small Freelance consultant (http://woodem.eu)}
-  \item \text{\sffamily\bfseries\normalsize Vasileios Angelidakis} \text{\sffamily\small Newcastle (UK) University}
+  \item \text{\sffamily\bfseries\normalsize Vasileios Angelidakis} \text{\sffamily\small Newcastle University, UK}
  \item \text{\sffamily\bfseries\normalsize Emanuele Catalano} \text{\sffamily\small Univ. Grenoble Alpes, 3SR lab.}
  \item \text{\sffamily\bfseries\normalsize Robert Caulk} \text{\sffamily\small Univ. Grenoble Alpes, 3SR lab.}
  \item \text{\sffamily\bfseries\normalsize Bruno Chareyre} \text{\sffamily\small Univ. Grenoble Alpes, 3SR lab.}
@@ -828,7 +828,10 @@ my_maketitle=r'''
 
 
 \text{\sffamily\bfseries\large Citing this document}\\
-In order to let users cite Yade consistently in publications, we provide a list of bibliographic references for the different parts of the documentation. We therefore kindly ask users to cite Yade as accurately as possible in their papers, as explained at http://yade-dem.org/doc/citing.html.
+When referring to Yade-DEM software in scientific publication please cite it "by DOI" as follows:\\
+Šmilauer V. et al. (2021) Yade Documentation 3rd ed. The Yade Project. DOI:10.5281/zenodo.5705394. http://yade-dem.org
+
+See also http://yade-dem.org/doc/citing.html.
 
 '''
 
