@@ -1,0 +1,8 @@
+#!/bin/bash
+
+directories=$@
+
+for val in $directories ; do
+        new_dir=${val%.*}
+        mv $val $new_dir
+done

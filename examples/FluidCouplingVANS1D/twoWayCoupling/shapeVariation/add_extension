@@ -1,0 +1,9 @@
+#!/bin/bash
+
+extention=$1
+directories=${@:2}
+
+for val in $directories ; do
+        new_dir=$val"."$extention
+        mv $val $new_dir
+done
