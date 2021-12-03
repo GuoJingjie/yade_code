@@ -204,8 +204,8 @@ def checkVersions():
 	import yade.libVersions
 	# Remember that libVersions always can return None, when library does not exist. Make sure this will not lead to a crash.
 	glutVer = yade.libVersions.getVersion('freeglut')
-	if((glutVer != None) and (glutVer > (2,8,1) or glutVer == (-1,-1,-1))):
-		print("\033[93mWarning: freeglut versions higher than 2.8.1 are known to crash\033[0m, see https://gitlab.com/yade-dev/trunk/merge_requests/160 https://gitlab.com/yade-dev/trunk/-/issues/155 https://gitlab.com/yade-dev/trunk/-/issues/107")
+	#if((glutVer != None) and (glutVer > (2,8,1) or glutVer == (-1,-1,-1))):
+	#	print("\033[93mWarning: freeglut versions higher than 2.8.1 are known to crash\033[0m, see https://gitlab.com/yade-dev/trunk/merge_requests/160 https://gitlab.com/yade-dev/trunk/-/issues/155 https://gitlab.com/yade-dev/trunk/-/issues/107")
 
 def userSession(gui='none',qapp=None):
 	# prepare nice namespace for users
@@ -233,7 +233,7 @@ def userSession(gui='none',qapp=None):
 				'"\e[A": history-search-backward', '"\e[B": history-search-forward', # incremental history forward/backward
 		]
 	)
-	
+
 	# show python console
 	# handle ipython version (version 10 not tested after some changes here)
 	if yade.runtime.ipython_version==10:
@@ -326,7 +326,7 @@ def userSession(gui='none',qapp=None):
 		# If IPython > 5 one need to initialize graphic gui
 		if ((gui == "qt5" or gui == "qt4")and yade.runtime.ipython_version>=500):
 			ipshell.enable_gui(gui)
-		
+
 	# start non-blocking qt4 app here; need to ask on the mailing list on how to make it functional
 	## with ipython 0.11, start the even loop early (impossible with 0.10, which is thread-based)
 	#if qt4 and yade.runtime.ipython_version==11:
