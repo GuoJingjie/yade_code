@@ -323,7 +323,7 @@ Real Law2_ScGeom_ImplicitLubricationPhys::normalForce_trapezoidal(LubricationPhy
 	                            isNew ? (maxSubSteps + 1) : 0 /* depth = maxSubSteps+1 will trigger backward Euler for initialization*/);
 
 	phys->contact                = phys->u < 2. * phys->eps * a;
-	phys->normalContactForce     = ((phys->contact) ? phys->kn * (phys->u - 2 * phys->eps * a) : 0.) * geom->normal;
+	phys->normalContactForce     = ((phys->contact) ? phys->keps * (phys->u - 2 * phys->eps * a) : 0.) * geom->normal;
 	phys->normalLubricationForce = phys->normalForce - phys->normalContactForce;
 	phys->ue                     = -geom->penetrationDepth - phys->u;
 
@@ -377,7 +377,8 @@ Real Law2_ScGeom_ImplicitLubricationPhys::trapz_integrate_u(
                     rr[0] = 0.5 * (-b + sqrt(delta));
                     rr[1] = 0.5 * (-b - sqrt(delta));
                 }
-	}                             //roots
+	}  
+		
 	if (delta < 0 or rr[0] < 0) { // recursive calls after halving the time increment if no positive solution found (no need to check r[1], always smaller)
 		if (depth < maxSubSteps) { //sub-stepping
 			                   //LOG_WARN("delta<0 or negative roots, sub-stepping with dt="<<dt/2.);
@@ -385,11 +386,12 @@ Real Law2_ScGeom_ImplicitLubricationPhys::trapz_integrate_u(
 			trapz_integrate_u(prevDotU, un_prev, u_prev, un_mid, nu, k, keps, eps, dt / 2., withContact, depth + 1);
 			return trapz_integrate_u(prevDotU, un_prev, u_prev, un_curr, nu, k, keps, eps, dt / 2., withContact, depth + 1);
 		} else { // switch to backward Euler (theta = 1) by increasing depth again (see above)
-			LOG_WARN("minimal sub-step reached (depth=" << maxSubSteps << "), the result may be innacurate. Increase maxSubSteps?");
+			LOG_WARN("minimal sub-step reached (depth=" << maxSubSteps << ")"<<rr[0]<<" "<<rr[1]<<" "<<b<<" "<<c<<" "<<delta<<" "<<w);
 			return trapz_integrate_u(prevDotU, un_prev, u_prev, un_curr, nu, k, keps, eps, dt, withContact, depth + 1);
 		}
 	} else { // normal case, keep the positive solution closest to the previous one, and check contact status
 		// select the nearest strictly positive solution, keep 0 only if there is no positive solution
+		if (rr[0]==0) LOG_WARN("nul gap found "<<delta<<" "<<b<<" "<<c<<" "<<keff<<" "<<un_eff<<" "<<w<<" "<<dt<<" "<<depth<<" "<<u_prev<<" "<<un_curr)
 		if ((math::abs(rr[0] - u_prev) < math::abs(rr[1] - u_prev) and rr[0] > 0) or rr[1] <= 0) u = rr[0];
 		else {
                         LOG_WARN("root 1 was used")
@@ -426,7 +428,7 @@ void Law2_ScGeom_VirtualLubricationPhys::shearForce_firstOrder(LubricationPhys* 
 	Real            a((geom->radius1 + geom->radius2) / 2.);
 	const Vector3r& dus = geom->shearIncrement();
 	Real            kt  = phys->ks;
-	Real            nut = (phys->eta > 0.) ? M_PI * phys->eta / 2. * (-2. * a + (2. * a + phys->u) * math::log((2. * a + phys->u) / phys->u)) : 0.;
+	Real            nut = (phys->eta > 0.) ? M_PI * phys->eta / 2. * (-2. * a + (2. * a + phys->u) * (math::log(2. * a + phys->u) -  math::log(phys->u))) : 0.;
 
 	phys->shearForce            = Vector3r::Zero();
 	phys->shearLubricationForce = Vector3r::Zero();
@@ -444,7 +446,7 @@ void Law2_ScGeom_VirtualLubricationPhys::shearForce_firstOrder(LubricationPhys* 
 			//LOG_INFO("SLIP");
 			Ft *= phys->normalContactForce.norm() * math::max(0., phys->mum) / Ft.norm();
 			phys->shearContactForce     = Ft;
-			Ft                          = (Ft * kt * scene->dt + Ft_ * nut + dus * kt * nut) / (kt * scene->dt + nut);
+			Ft                          = (kt*(Ft*scene->dt + dus*nut) + Ft_ * nut ) / (kt * scene->dt + nut);
 			phys->slip                  = true;
 			phys->shearLubricationForce = nut * dus / scene->dt;
 		}
@@ -543,6 +545,7 @@ bool Law2_ScGeom_ImplicitLubricationPhys::go(shared_ptr<IGeom>& iGeom, shared_pt
 	phys->normalLubricationForce = Vector3r::Zero();
 	phys->normalPotentialForce   = Vector3r::Zero();
 
+	if (phys->keps!=phys->kn and resolution>0) LOG_WARN("keps!=1 not implemented for resolution>0");
 	switch (resolution) {
 		case 0: normalForce_trapezoidal(phys, geom, undot, isNew); break;
 		case 1: normalForce_AdimExp(phys, geom, undot, isNew, false); break;
@@ -554,7 +557,8 @@ bool Law2_ScGeom_ImplicitLubricationPhys::go(shared_ptr<IGeom>& iGeom, shared_pt
 			resolution = 0;
 			break;
 	}
-
+	if (phys->u==0) LOG_WARN("NULL GAP ON "<<id1<<" "<<id2)
+	
 	Vector3r C1 = Vector3r::Zero();
 	Vector3r C2 = Vector3r::Zero();
 
@@ -596,8 +600,8 @@ void Law2_ScGeom_VirtualLubricationPhys::computeShearForceAndTorques(Lubrication
 
 		if (a > phys->u) {
 			if (activateRollLubrication && phys->eta > 0.)
-				Cr = phys->nun * (3. / 2. * a + 63. / 500. * phys->u) * math::log(a / phys->u) * relRollVelocity;
-			if (activateTwistLubrication && phys->eta > 0.) Ct = phys->nun * phys->u * math::log(a / phys->u) * relTwistVelocity;
+				Cr = phys->nun * (3. / 2. * a + 63. / 500. * phys->u) * (math::log(a) - math::log(phys->u)) * relRollVelocity;
+			if (activateTwistLubrication && phys->eta > 0.) Ct = phys->nun * phys->u * (math::log(a) - math::log(phys->u)) * relTwistVelocity;
 		}
 		// total torque
 		C1 = -(geom->radius1 - geom->penetrationDepth / 2.) * phys->shearForce.cross(geom->normal) + Cr + Ct;
