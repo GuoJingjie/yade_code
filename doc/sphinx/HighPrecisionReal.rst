@@ -43,6 +43,7 @@ regular :ref:`installation instructions <install-from-source-code>`. With extra 
 
 3. During cmake invocation specify:
 
+	0. activation of REAL_HP feature with ``-DENABLE_REAL_HP=ON`` (default), then
 	1. either number of bits as ``REAL_PRECISION_BITS=……``,
 	2. or number of requested decimal places as ``REAL_DECIMAL_PLACES=……``, but not both
 	3. to use MPFR specify ``ENABLE_MPFR=ON`` (is ``OFF`` by default).
