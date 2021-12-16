@@ -4,7 +4,7 @@
 High precision calculations
 ***************************
 
-Yade supports high and arbitrary precision ``Real`` type for performing calculations. All tests and checks pass but still the current support is considered experimental.
+Yade supports high and arbitrary precision ``Real`` type for performing calculations (see [Kozicki2022]_ for details). All tests and checks pass but still the current support is in testing phase.
 The backend library is `boost <https://github.com/boostorg/multiprecision>`__ `multiprecision <https://www.boost.org/doc/libs/1_72_0/libs/multiprecision/doc/html/index.html>`__
 along with corresponding `boost <https://github.com/boostorg/math>`__ `math toolkit <https://www.boost.org/doc/libs/1_72_0/libs/math/doc/html/index.html>`__.
 
