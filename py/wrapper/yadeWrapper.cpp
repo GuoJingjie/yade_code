@@ -1515,7 +1515,7 @@ try {
 	                &pyOmega::forceSyncCount_set,
 	                "Counter for number of syncs in ForceContainer, for profiling purposes.")
 	        .add_property("numThreads", &pyOmega::numThreads_get /* ,&pyOmega::numThreads_set*/, "Get maximum number of threads openMP can use.")
-	        .add_property("cell", &pyOmega::cell_get, "Periodic cell of the current scene (None if the scene is aperiodic).")
+	        .add_property("cell", &pyOmega::cell_get, "Periodic :yref:`Cell` of the current scene (None if the scene is aperiodic).")
 	        .add_property("periodic", &pyOmega::periodic_get, &pyOmega::periodic_set, "Get/set whether the scene is periodic or not (True/False).")
 	        .def("exitNoBacktrace",
 	             &pyOmega::exitNoBacktrace,

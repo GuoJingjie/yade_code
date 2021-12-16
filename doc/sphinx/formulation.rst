@@ -776,6 +776,8 @@ Let us note at this place that not only $\Dtcr$ assuring numerical stability of 
 
 ..			The leap-frog integration scheme assumes constant $\Dt$. Although this is typically the case, and even dynamic time-stepping techniques such as :yref:`GlobalStiffnessTimeStepper` change $\Dt$ infrequently, big changes in timestep could destabilize the integration [Skeel1993]_.
 
+.. _sect-PBC:
+
 Periodic boundary conditions
 ============================
 While most DEM simulations happen in $R^3$ space, it is frequently useful to avoid boundary effects by using periodic space instead. In order to satisfy periodicity conditions, periodic space is created by repetition of parallelepiped-shaped cell. In Yade, periodic space is implemented in the :yref:`Cell` class. The geometry of the cell in the reference coordinates system is defined by three edges of the parallepiped. The corresponding base vectors are stored in the columns of matrix $\mat{H}$ (:yref:`Cell.hSize`).
@@ -793,7 +795,7 @@ The velocity gradient is integrated automatically over time, and the cumulated t
 
 .. math:: \next{\mat{F}}=(I+\nabla \vec{v} \Dt)\curr{\mat{F}}.
 
-$\mat{F}$ can be set back to identity at any point in simulations, in order to define the current state as reference for strains definition in boundary controllers. It will have no effect on $\mat{H}$.
+$\mat{F}$ is initially equal to identity and can be set back to the latter at any point in simulations, in order to define the current state as reference for strains definition in boundary controllers. It will have no effect on $\mat{H}$.
 
 Along with the automatic integration of cell transformation, there is an option to homothetically displace all particles so that $\nabla \vec{v}$ is applied over the whole simulation (enabled via :yref:`Cell.homoDeform`). This avoids all boundary effects coming from change of the velocity gradient.
 

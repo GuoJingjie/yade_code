@@ -225,7 +225,7 @@ public:
 
 	enum { HOMO_NONE = 0, HOMO_POS = 1, HOMO_VEL = 2, HOMO_VEL_2ND = 3 };
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(Cell,Serializable,"Parameters of periodic boundary conditions. Only applies if O.isPeriodic==True.",
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(Cell,Serializable,"Parameters of :ref:`periodic boundary conditions<sect-PBC>`. Only applies if O.isPeriodic==True.",
 		/* overridden below to be modified by getters/setters because of intended side-effects */
 		((Matrix3r,trsf,Matrix3r::Identity(),,"[overridden]")) //"Current transformation matrix of the cell, which defines how far is the current cell geometry (:yref:`hSize<Cell.hSize>`) from the reference configuration. Changing trsf will not change :yref:`hSize<Cell.hSize>`, it serves only as accumulator for transformations applied via :yref:`velGrad<Cell.velGrad>`."))
 		((Matrix3r,refHSize,Matrix3r::Identity(),,"Reference cell configuration, only used with :yref:`OpenGLRenderer.dispScale`. Updated automatically when :yref:`hSize<Cell.hSize>` or :yref:`trsf<Cell.trsf>` is assigned directly; also modified by :yref:`yade.utils.setRefSe3` (called e.g. by the ``Reference`` button in the UI)."))
@@ -235,7 +235,7 @@ public:
 		((Matrix3r,velGrad,Matrix3r::Zero(),,"[overridden below]"))
 		((Matrix3r,nextVelGrad,Matrix3r::Zero(),Attr::readonly,"see :yref:`Cell.velGrad`."))
 		((Matrix3r,prevVelGrad,Matrix3r::Zero(),Attr::readonly,"Velocity gradient in the previous step."))
-		((int,homoDeform,2,,"If >0, deform (:yref:`velGrad<Cell.velGrad>`) the cell homothetically by adjusting positions and velocities of bodies. The velocity change is obtained by deriving the expression v=∇v.x, where ∇v is the macroscopic velocity gradient, giving in an incremental form: Δv=Δ ∇v x + ∇v Δx. As a result, velocities are modified as soon as ``velGrad`` changes, according to the first term: Δv(t)=Δ ∇v x(t), while the 2nd term reflects a convective term: Δv'= ∇v v(t-dt/2). The second term is neglected if homoDeform=1. All terms are included if homoDeform=2 (default)"))
+		((int,homoDeform,2,,"If >0, deform (:yref:`velGrad<Cell.velGrad>`) the cell homothetically by adjusting positions and velocities of bodies. The velocity change is obtained by deriving the expression v=∇v.x with respect to time, where ∇v is the :yref:`macroscopic velocity gradient<Cell.velGrad>`, giving in an incremental form: Δv=Δ ∇v x + ∇v Δx across one DEM iteration. As a result, velocities are modified as soon as ``velGrad`` changes, according to the first term: Δv(t)=Δ ∇v x(t), while the 2nd term reflects a convective term: Δv'= ∇v v(t-dt/2). The second term is neglected if homoDeform=1. All terms are included if homoDeform=2 (default)"))
 		((bool,velGradChanged,false,Attr::readonly,"true when velGrad has been changed manually (see also :yref:`Cell.nextVelGrad`)")),
 		/*ctor*/ _invTrsf=Matrix3r::Identity(); integrateAndUpdate(0),
 		/*py*/
@@ -244,9 +244,9 @@ public:
 		.add_property("size",&Cell::getSize_copy,&Cell::setSize,"Current size of the cell, i.e. lengths of the 3 cell lateral vectors contained in :yref:`Cell.hSize` columns. Updated automatically at every step. Assigning a value will change the lengths of base vectors (see :yref:`Cell.hSize`), keeping their orientations unchanged.")
 		.add_property("refSize",&Cell::getRefSize,&Cell::setRefSize,"Reference size of the cell (lengths of initial cell vectors, i.e. column norms of :yref:`hSize<Cell.hSize>`).\n\n.. note::\n\t Modifying this value is deprecated, use :yref:`setBox<Cell.setBox>` instead.")
 		// useful properties
-		.add_property("trsf",&Cell::getTrsf,&Cell::setTrsf,"Current transformation matrix of the cell, obtained from time integration of :yref:`Cell.velGrad`.")
-		.add_property("velGrad",&Cell::getVelGrad,&Cell::setVelGrad,"Velocity gradient of the transformation; used in :yref:`NewtonIntegrator`. Values of :yref:`velGrad<Cell.velGrad>` accumulate in :yref:`trsf<Cell.trsf>` at every step.\n\n note: changing velGrad at the beginning of a timestep would lead to inaccurate integration for that step, as it should normally be changed after the contact laws (but before Newton). To avoid this problem, assignment is deferred automatically. The assigned value is internaly stored in :yref:`Cell.nextVelGrad` and will be applied right in time by Newton integrator. \n\n.. warning::\n\t Assigning individual components as in `O.cell.velGrad[0,0]=1` is not possible (it will not return any error but it will have no effect). Instead, the whole matrix should be assigned, as in `O.cell.velGrad=Matrix3(...)`. Alternatively :yref:`nextVelGrad<Cell.nextVelGrad>` can be assigned directly (both per-component or as a whole) and the effect should be the same.")
-		.def_readonly("size",&Cell::getSize_copy,"Current size of the cell, i.e. lengths of the 3 cell lateral vectors contained in :yref:`Cell.hSize` columns. Updated automatically at every step.")
+		.add_property("trsf",&Cell::getTrsf,&Cell::setTrsf,"Current transformation matrix of the cell $\\mat{F}$ giving current Cell vector $d\\vec{x}$ from its reference state $d\\vec{X}$ as per $d\\vec{x} = \\mat{F} d\\vec{X}$. Obtained from time integration of :yref:`velGrad<Cell.velGrad>`$\\times\\mat{F}$ as detailed in the :ref:`documentation<sect-PBC>` during the prologue of a YADE iteration (before the :yref:`O.engines<Omega.engines>` loop). |yupdate|")
+		.add_property("velGrad",&Cell::getVelGrad,&Cell::setVelGrad,"Velocity gradient of the transformation of the Cell; used in :yref:`NewtonIntegrator`. Values of :yref:`velGrad<Cell.velGrad>` accumulate in :yref:`trsf<Cell.trsf>` at every step.\n\n note: changing velGrad at the beginning of a timestep would lead to inaccurate integration for that step, as it should normally be changed after the contact laws (but before Newton). To avoid this problem, assignment is deferred automatically. The assigned value is internaly stored in :yref:`Cell.nextVelGrad` and will be applied right in time by Newton integrator. \n\n.. warning::\n\t Assigning individual components as in `O.cell.velGrad[0,0]=1` is not possible (it will not return any error but it will have no effect). Instead, the whole matrix should be assigned, as in `O.cell.velGrad=Matrix3(...)`. Alternatively :yref:`nextVelGrad<Cell.nextVelGrad>` can be assigned directly (both per-component or as a whole) and the effect should be the same.")
+		.def_readonly("size",&Cell::getSize_copy,"Current size of the cell, i.e. lengths of the 3 cell lateral vectors contained in :yref:`Cell.hSize` columns. |yupdate|")
 		.add_property("volume",&Cell::getVolume,"Current volume of the cell.")
 		// functions
 		.def("setBox",&Cell::setBox,"Set :yref:`Cell` shape to be rectangular, with dimensions along axes specified by given argument. Shorthand for assigning diagonal matrix with respective entries to :yref:`hSize<Cell.hSize>`.")
@@ -256,7 +256,7 @@ public:
 		.def("unshearPt",&Cell::unshearPt,"Apply inverse shear on the point (removes skew+rot of the cell)")
 		.def("shearPt",&Cell::shearPt,"Apply shear (cell skew+rot) on the point")
 		.def("wrapPt",&Cell::wrapPt_py,"Wrap point inside the reference cell, assuming the cell has no skew+rot.")
-		.def("getDefGrad",&Cell::getDefGrad,"Returns deformation gradient tensor $\\mat{F}$ of the cell deformation (http://en.wikipedia.org/wiki/Finite_strain_theory)")
+		.def("getDefGrad",&Cell::getDefGrad,"Returns :yref:`trsf<Cell.trsf>` = deformation gradient tensor $\\mat{F}$ of the cell deformation (http://en.wikipedia.org/wiki/Finite_strain_theory)")
 		.def("getSmallStrain",&Cell::getSmallStrain,"Returns small strain tensor $\\mat{\\varepsilon}=\\frac{1}{2}(\\mat{F}+\\mat{F}^T)-\\mat{I}$ of the cell (http://en.wikipedia.org/wiki/Finite_strain_theory)")
 		.def("getRCauchyGreenDef",&Cell::getRCauchyGreenDef,"Returns right Cauchy-Green deformation tensor $\\mat{C}=\\mat{F}^T\\mat{F}$ of the cell (http://en.wikipedia.org/wiki/Finite_strain_theory)")
 		.def("getLCauchyGreenDef",&Cell::getLCauchyGreenDef,"Returns left Cauchy-Green deformation tensor $\\mat{b}=\\mat{F}\\mat{F}^T$ of the cell (http://en.wikipedia.org/wiki/Finite_strain_theory)")
@@ -269,7 +269,7 @@ public:
 		.def("getSpin",&Cell::getSpin,"Returns the spin defined by the skew symmetric part of :yref:`velGrad<Cell.velGrad>`") 
 		.def_readonly("shearTrsf",&Cell::_shearTrsf,"Current skew+rot transformation (no resize)")
 		.def_readonly("unshearTrsf",&Cell::_unshearTrsf,"Inverse of the current skew+rot transformation (no resize)")
-		.add_property("hSize0",&Cell::getHSize0,"Value of untransformed hSize, with respect to current :yref:`trsf<Cell::trsf>` (computed as :yref:`trsf<Cell::trsf>` ⁻¹ × :yref:`hSize<Cell::hSize>`.")
+		.add_property("hSize0",&Cell::getHSize0,"Value of untransformed :yref:`hSize<Cell::hSize>` with respect to current :yref:`trsf<Cell::trsf>` (computed as :yref:`trsf<Cell::trsf>` ⁻¹ × :yref:`hSize<Cell::hSize>`).")
 	);
 	// clang-format on
 };
