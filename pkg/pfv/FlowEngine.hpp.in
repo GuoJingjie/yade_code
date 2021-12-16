@@ -355,7 +355,7 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 		((int,meshUpdateInterval,1000,,"Maximum number of timesteps between re-triangulation events (a negative value will never re-triangulate). See also :yref:`FlowEngine::defTolerance`."))
 		((int,breakControlledRemesh,0,,"If true, remesh will occur everytime a break occurs in JCFpmPhys. Designed to increase accuracy and efficiency in hydraulic fracture simulations."))
 		((Real, epsVolMax, 0,(Attr::readonly),"Maximal absolute volumetric strain computed at each iteration. |yupdate|"))
-		((Real, defTolerance,0.05,,"Cumulated deformation threshold for which retriangulation of pore space is performed. If negative, the triangulation update will occure with a fixed frequency on the basis of :yref:`FlowEngine::meshUpdateInterval`"))
+		((Real, defTolerance,0,,"Cumulated deformation threshold for which retriangulation of pore space is performed. If negative, the triangulation update will occure with a fixed frequency on the basis of :yref:`FlowEngine::meshUpdateInterval`"))
 		((Real, porosity, 0,(Attr::readonly),"Porosity computed at each retriangulation |yupdate|"))
 		((bool,meanKStat,false,,"report the local permeabilities' correction"))
 		((bool,clampKValues,true,,"If true, clamp local permeabilities in [minKdivKmean,maxKdivKmean]*globalK. This clamping can avoid singular values in the permeability matrix and may reduce numerical errors in the solve phase. It will also hide junk values if they exist, or bias all values in very heterogeneous problems. So, use this with care."))
