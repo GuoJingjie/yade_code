@@ -926,7 +926,7 @@ This is an example of a serializable class header:
 			// documentation visible from python and generated reference documentation
 			"Homogeneous gravity field; applies gravity×mass force on all bodies.",
 			// enumerating attributes here, include documentation
-			((Vector3r,gravity,Vector3r::ZERO,"acceleration, zero by default [kgms⁻²]"))
+			((Vector3r,gravity,Vector3r::Zero(),"acceleration, zero by default [kgms⁻²]"))
 		);
 	};
 	// registration function for ClassFactory
