@@ -24,7 +24,7 @@ message( STATUS "Architecture: ${ARCHITECTURE}" )
 
 ##################################################################################
 ##### Find version of freeglut by reading md5sum of include/GL/freeglut_std.h
-##### I have downloaded all available freeglut versions and did on them:
+##### I have downloaded all available freeglut versions and did on them: 
 #####       find -type f -name "freeglut_std.h" -exec md5sum {} \;
 
 IF(ENABLE_GUI)
@@ -43,9 +43,9 @@ separate_arguments(_FORCE_FREEGLUT_VALUES)
 # make sure there is anything. In case if freeglut3-dev package is not installed
 IF(_FORCE_FREEGLUT_VALUES)
 	list(GET _FORCE_FREEGLUT_VALUES 0 _FORCE_FREEGLUT_MDSUM)
-
+	
 	MESSAGE(STATUS "md5sum of freegult ${FORCE_FREEGLUT_PATH}/freeglut_std.h is: ${_FORCE_FREEGLUT_MDSUM}")
-
+	
 	if("${_FORCE_FREEGLUT_MDSUM}" STREQUAL "fce0117bba35ec344ed467bddc4e65e6")
 		set(FREEGLUT_VERSION_MAJOR 2)
 		set(FREEGLUT_VERSION_MINOR 6)
@@ -77,7 +77,7 @@ IF(_FORCE_FREEGLUT_VALUES)
 		set(FREEGLUT_VERSION_PATCH -1)
 		set(FREEGLUT_VERSION_STR "unknown")
 	endif()
-	ADD_DEFINITIONS("-DFREEGLUT_VERSION_MAJOR=${FREEGLUT_VERSION_MAJOR}")
+	
 	MESSAGE(STATUS "freegult version is ${FREEGLUT_VERSION_STR}")
 ENDIF(_FORCE_FREEGLUT_VALUES)
 ENDIF(ENABLE_GUI)
