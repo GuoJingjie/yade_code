@@ -9,7 +9,7 @@
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-stretch
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-buster
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
-# image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
+# image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
 # image: registry.gitlab.com/yade-dev/docker-yade:suse15
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-i386     # crashes in CI, see https://gitlab.com/yade-dev/trunk/-/issues/239
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-mips64el # crashes, as predicted by warnings -Wcast-align
@@ -253,8 +253,12 @@ make_bullseye:
 
 make_bookworm:
   <<: *make_definition
-  <<: *artifacts_definition
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
+  artifacts:
+    paths:
+      - install
+      - build
+    expire_in: 2 weeks
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
 
 make_archlinux:
   <<: *make_definition
@@ -319,7 +323,7 @@ make_fast:
     - export TESTS_AFTER_MAKE="TESTS_AFTER_MAKE"
     - export EXTRA_CMAKE_ARGS="-DENABLE_FAST_NATIVE=ON $EXTRA_CMAKE_ARGS"
     - echo $EXTRA_CMAKE_ARGS
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
 
 make_debug:
   <<: *make_definition
@@ -334,7 +338,7 @@ make_debug:
     - export EXTRA_CMAKE_ARGS="-DDEBUG=ON $EXTRA_CMAKE_ARGS"
     - echo $EXTRA_CMAKE_ARGS
     - export CXXFLAGS="-O2 $CXXFLAGS"
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
 
 make_asan:
   <<: *make_definition
@@ -345,7 +349,7 @@ make_asan:
     - export EXTRA_CMAKE_ARGS="-DENABLE_USEFUL_ERRORS=0 -DENABLE_ASAN=1 $EXTRA_CMAKE_ARGS"
     - echo $EXTRA_CMAKE_ARGS
     - export ASAN_OPTIONS=detect_leaks=0:log_path=stdout:verify_asan_link_order=false
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
   tags:
     - debug
   artifacts:
@@ -380,7 +384,7 @@ make_asan_HP:
     - export EXTRA_CMAKE_ARGS="-DENABLE_USEFUL_ERRORS=0 -DENABLE_ASAN=1 -DREAL_DECIMAL_PLACES=$TEST_DECIMAL_PLACES -DENABLE_MPFR=$TEST_USE_MPFR $EXTRA_CMAKE_ARGS"
     - echo $EXTRA_CMAKE_ARGS
     - export ASAN_OPTIONS=detect_leaks=0:log_path=stdout:verify_asan_link_order=false
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
   tags:
     - debug
   artifacts:
@@ -569,7 +573,7 @@ test_bullseye:
 
 test_bookworm:
   <<: *test_definition
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
   dependencies:
     - make_bookworm
   needs: ["make_bookworm"]
@@ -799,7 +803,7 @@ check_buster:
 check_bookworm:
   <<: *check_definition
   before_script:
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
   dependencies:
     - make_bookworm
   needs: ["make_bookworm"]
@@ -959,6 +963,15 @@ doc_18_04:
     - make_18_04
   needs: ["make_18_04"]
 
+doc_bookworm:
+  <<: *doc_definition
+  <<: *skip_WIP
+  <<: *gitlab_runner_retry_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
+  dependencies:
+    - make_bookworm
+  needs: ["make_bookworm"]
+
 
 # 5. pages stage; uploads documentation to the website
 pages:
@@ -983,7 +996,7 @@ pages:
   stage: deb
   <<: *gitlab_runner_retry_definition
   only:
-    - master
+    - merge_request
   script:
     - export PYTHONUNBUFFERED=1
     - cd $CI_PROJECT_DIR/deb/yadedaily
@@ -1043,7 +1056,7 @@ deb_bullseye:
 
 deb_bookworm:
   <<: *deb_definition
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
   before_script:
     - rm -rf ./deb
     - ./scripts/ppa_ci/builddeb.py -d "bookworm"
