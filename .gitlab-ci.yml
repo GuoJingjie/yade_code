@@ -9,7 +9,7 @@
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-stretch
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-buster
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
-# image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
+# image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
 # image: registry.gitlab.com/yade-dev/docker-yade:suse15
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-i386     # crashes in CI, see https://gitlab.com/yade-dev/trunk/-/issues/239
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-mips64el # crashes, as predicted by warnings -Wcast-align
@@ -254,7 +254,7 @@ make_bullseye:
 make_bookworm:
   <<: *make_definition
   <<: *artifacts_definition
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
 
 make_archlinux:
   <<: *make_definition
@@ -569,7 +569,7 @@ test_bullseye:
 
 test_bookworm:
   <<: *test_definition
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
   dependencies:
     - make_bookworm
   needs: ["make_bookworm"]
@@ -799,7 +799,7 @@ check_buster:
 check_bookworm:
   <<: *check_definition
   before_script:
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
   dependencies:
     - make_bookworm
   needs: ["make_bookworm"]
@@ -967,7 +967,6 @@ pages:
   <<: *gitlab_runner_retry_definition
   only:
     - master
-    - merge_request
   script:
     - mv install/share/doc/yade-ci/html public
     - mv install/share/doc/yade-ci/Yade.pdf public
@@ -985,7 +984,6 @@ pages:
   <<: *gitlab_runner_retry_definition
   only:
     - master
-    - merge_request
   script:
     - export PYTHONUNBUFFERED=1
     - cd $CI_PROJECT_DIR/deb/yadedaily
@@ -1045,7 +1043,7 @@ deb_bullseye:
 
 deb_bookworm:
   <<: *deb_definition
-  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-freeglut
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
   before_script:
     - rm -rf ./deb
     - ./scripts/ppa_ci/builddeb.py -d "bookworm"
