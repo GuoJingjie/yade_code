@@ -43,10 +43,10 @@ regular :ref:`installation instructions <install-from-source-code>`. With extra 
 
 3. During cmake invocation specify:
 
-	0. activation of REAL_HP feature with ``-DENABLE_REAL_HP=ON`` (default), then
 	1. either number of bits as ``REAL_PRECISION_BITS=……``,
 	2. or number of requested decimal places as ``REAL_DECIMAL_PLACES=……``, but not both
-	3. to use MPFR specify ``ENABLE_MPFR=ON`` (is ``OFF`` by default).
+	3. optionally to use MPFR specify ``ENABLE_MPFR=ON`` (is ``OFF`` by default).
+	4. optionally decide about using :ref:`quadruple, octuple or higher precisions<higher-hp-precision>` with ``-DENABLE_REAL_HP=ON`` (default). This feature is independent of selecting the precision of ``Real`` type (in point 1. or 2. above) and works even when ``Real`` is chosen as ``double`` (i.e. no special choice is made: the default settings).
 
    The arbitrary precision (``mpfr`` or ``cpp_bin_float``) types are used only when more than 128 bits or more than 39 decimal places are requested. In such case if ``ENABLE_MPFR=OFF`` then
    the slower ``cpp_bin_float`` type is used. The difference in decimal places between 39 and 33 stems from the fact that `15 bits are used for exponent <https://en.wikipedia.org/wiki/Quadruple-precision_floating-point_format>`__. Note: a fast quad-double (debian package ``libqd-dev``) implementation with 62 decimal places is `in the works <https://github.com/boostorg/multiprecision/issues/184>`__ with boost multiprecision team.
@@ -116,8 +116,8 @@ The unsupported modules are automatically disabled during a high precision ``cma
 
 .. _higher-hp-precision:
 
-Double, quadruple and higher precisions
-===========================================
+Double, quadruple, octuple and higher precisions
+================================================
 
 Sometimes a critical section of the calculations in C++ would work better if it was performed in the higher precision to guarantee that it will produce the correct result in the default precision. A simple example is solving a system of linear equations (basically inverting a matrix) where some coefficients are very close to zero. Another example of alleviating such problem is the `Kahan summation algorithm <https://en.wikipedia.org/wiki/Kahan_summation_algorithm>`__.
 
