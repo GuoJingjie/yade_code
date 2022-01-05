@@ -1,5 +1,5 @@
 # - Find FREEGLUT library
-# 
+#
 # This module defines
 #  FREEGLUT_INCLUDE_DIR, where to find loki/Typelist.h, etc.
 #  FREEGLUT_LIBRARY, libraries to link against to use GL2PS.
