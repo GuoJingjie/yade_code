@@ -125,6 +125,12 @@ def getAllVersionsCmake():
 	addVer("qt"   ,'${Used_QT_VERSION_MAJOR}','${Used_QT_VERSION_MINOR}','${Used_QT_VERSION_PATCH}','${Used_QT_VERSION_MAJOR}.${Used_QT_VERSION_MINOR}.${Used_QT_VERSION_PATCH}')
 	# 4. freeglut
 	addVer("freeglut" ,'${FREEGLUT_VERSION_MAJOR}','${FREEGLUT_VERSION_MINOR}','${FREEGLUT_VERSION_PATCH}','${FREEGLUT_VERSION_STR}')
+	try:
+		glutVerStr='${GLUT_VERSION}'
+		glutVerNum=glutVerStr.split('.')
+		addVer("glut", glutVerNum[0] , glutVerNum[1] , glutVerNum[2] , glutVerStr )
+	except:
+		pass
 	# 5. qglviewer  - I don't know how to detect it
 	# 6. python
 	addVer("python",'${PYTHON_VERSION_MAJOR}','${PYTHON_VERSION_MINOR}','${PYTHON_VERSION_PATCH}','${PYTHON_VERSION_STRING}')
