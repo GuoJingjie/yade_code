@@ -556,3 +556,224 @@ def textPolyhedra(fileName,material,shift=Vector3.Zero,scale=1.0,orientation=Qua
 				ret.append(polR)
 			i= i + surfs - 1
 	return ret
+
+
+# blockMeshDict ==================================================
+
+from dataclasses import dataclass, field
+from typing import NamedTuple
+
+BOUNDARY_ERROR = 0
+BOUNDARY_PATCH = 1
+BOUNDARY_WALL = 2
+BOUNDARY_EMPTY = 3
+
+
+class BoundaryFace3(NamedTuple):
+	v0: int
+	v1: int
+	v2: int
+
+	def __str__(self) -> str:
+		return f"({self.v0}, {self.v1}, {self.v2})"
+
+
+class BoundaryFace4(NamedTuple):
+	v0: int
+	v1: int
+	v2: int
+	v3: int
+
+	def __str__(self) -> str:
+		return f"({self.v0}, {self.v1}, {self.v2}, {self.v3})"
+
+
+@dataclass
+class Boundary:
+	name: str = ""
+	typ: int = BOUNDARY_ERROR
+	faces4: [BoundaryFace4] = field(default_factory=list)
+
+	def __str__(self) -> str:
+		s = f"{self.name} ({self.typ}):\n"
+		s += f"\tfaces4({len(self.faces4)})\n"
+		for f in self.faces4:
+			s += f"\t  {f}\n"
+		return s
+
+
+def tryParseFloat(x: str, n: int) -> float:
+	val: float
+	try:
+		val = float(x)
+	except ValueError:
+		assert False, f"{n}: Expected 'float', got: {x}"
+
+	return val
+
+
+def tryParseInt(x: str, n: int) -> int:
+	val: int
+	try:
+		val = int(x)
+	except ValueError:
+		assert False, f"{n}: Expected 'int', got: {x}"
+
+	return val
+
+
+def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
+	"""Load openfoam's blockMeshDict file's "boundary" section into facets.
+
+	:param str path: file name. Typical value is: "system/blockMeshDic".
+	:param bool patchasWall: load "patch"-es as walls.
+	:param bool emptyasWall: load "empty"-es as walls.
+	:param \*\*kw: (unused keyword arguments) is passed to :yref:`yade.utils.facet`
+	:returns: list of facets.
+    	"""
+	convertToMeters = 1.0
+
+	verticesBlock = False
+	vertices = []
+	boundariesBlock = False
+	boundaries = []
+	facesBlock = False
+	facets = []
+
+	lines = []
+	with open(path) as fp:
+		lines = fp.readlines()
+
+	lineNumber = 0
+	blockDepth = 0
+
+	currentBoundary = Boundary()
+
+	for line in lines:
+		line = line.strip()
+		lineNumber += 1
+
+		if len(line) == 0:
+			continue
+
+		if line.startswith("convertToMeters") and blockDepth == 0:
+			convertToMetersStr = line.split(" ")[-1]
+			assert convertToMetersStr[-1] == ';', f"{lineNumber}: Expected ';' at the end of convertToMeters"
+			convertToMeters = tryParseFloat(convertToMetersStr[:-1], lineNumber)
+		elif line.startswith("vertices") and blockDepth == 0:
+			verticesBlock = True
+		elif line.startswith("boundary") and blockDepth == 0:
+			boundariesBlock = True
+		elif line == "(" or line == "{":
+			blockDepth += 1
+			continue
+		elif line.endswith(");"):
+			blockDepth -= 1
+
+			if blockDepth == 0:
+				verticesBlock = False
+				boundariesBlock = False
+			elif facesBlock == 2:
+				facesBlock = False
+
+			continue
+		elif line.endswith("}"):
+			blockDepth -= 1
+
+			if blockDepth == 1:
+				assert boundariesBlock, f"{lineNumber}: Parser error, only boundaries are supported."
+				assert currentBoundary.name != "", f"{lineNumber}: Empty name for boundary"
+				assert currentBoundary.typ != BOUNDARY_ERROR, f"{lineNumber}: Invalid type for boundary, supported: patch, wall, empty"
+				assert len(currentBoundary.faces4) > 0, f"{lineNumber}: Boundary must contain at least one face"
+
+				boundaries.append(currentBoundary)
+
+				currentBoundary = Boundary()
+
+			continue
+		else:
+			if verticesBlock:
+				if line.find("(") != -1 and line.find(")") != -1:
+					vStr = line[1:-1]
+					vStrs = vStr.split(" ")
+					assert len(vStrs) == 3, f"{lineNumber}: Vertice format expected: (x y z), got: {vStr}"
+					x = tryParseFloat(vStrs[0], lineNumber)
+					y = tryParseFloat(vStrs[1], lineNumber)
+					z = tryParseFloat(vStrs[2], lineNumber)
+
+					vertices.append((x, y, z))
+				else:
+					assert False, f"{lineNumber}: Vertice format expected: (x y z), got: {line}"
+			elif boundariesBlock:
+				if blockDepth == 1:
+					assert len(line.split(" ")) == 1, f"{lineNumber}: Expected surface name, got: {line}"
+
+					currentBoundary.name = line
+				elif blockDepth == 2:
+					if line.startswith("type"):
+						typStrs = line.split(" ")
+						assert len(typStrs) == 2, f"{lineNumber}: Expected boundary type definition, got: {line}"
+						assert typStrs[1][-1] == ';', f"{lineNumber}: Expected ';' at the end of boundary type"
+
+						typStr = typStrs[1][:-1]
+						if typStr == "patch":
+							currentBoundary.typ = BOUNDARY_PATCH
+						elif typStr == "wall":
+							currentBoundary.typ = BOUNDARY_WALL
+						elif typStr == "empty":
+							currentBoundary.typ = BOUNDARY_EMPTY
+						else:
+							assert False, f"{lineNumber}: Unknown boundary type: {typStr}"
+
+					elif line.startswith("faces"):
+						facesBlock = True
+					else:
+						assert False, f"{lineNumber}: Expected 'type' or 'faces', got: {line}"
+				elif blockDepth == 3:
+					assert facesBlock, f"{lineNumber}: Parser error, only faces supported at level 3"
+
+					if line.find("(") != -1 and line.find(")") != -1:
+						fStr = line[1:-1]
+						fStrs = fStr.split(" ")
+						assert len(fStrs) == 4, f"{lineNumber}: Face format expected: (v0 v1 v2 v3), got: {fStr}"
+
+						v0 = tryParseInt(fStrs[0], lineNumber)
+						v1 = tryParseInt(fStrs[1], lineNumber)
+						v2 = tryParseInt(fStrs[2], lineNumber)
+						v3 = tryParseInt(fStrs[3], lineNumber)
+
+						assert v0 >= 0, f"{lineNumber}: Face index must be greater or equal to 0, not {v0}"
+						assert v1 >= 0, f"{lineNumber}: Face index must be greater or equal to 0, not {v1}"
+						assert v2 >= 0, f"{lineNumber}: Face index must be greater or equal to 0, not {v2}"
+						assert v3 >= 0, f"{lineNumber}: Face index must be greater or equal to 0, not {v3}"
+
+						face = BoundaryFace4(v0, v1, v2, v3)
+						currentBoundary.faces4.append(face)
+					else:
+						assert False, f"{lineNumber}: Face format expected: (v0 v1 v2 v3), got: {line}"
+				else:
+					assert blockDepth == 0, f"{lineNumber}: Parser error, only levels 0, 1, 2 and 3 are supported"
+
+	for b in boundaries:
+		if b.typ == BOUNDARY_PATCH and patchasWall == False:
+			continue
+
+		if b.typ == BOUNDARY_EMPTY and emptyasWall == False:
+			continue
+
+		for f4 in b.faces4:
+			f0 = BoundaryFace3(f4.v0, f4.v1, f4.v2)
+			f1 = BoundaryFace3(f4.v2, f4.v3, f4.v0)
+
+			f0v0 = tuple([x * convertToMeters for x in vertices[f0.v0]])
+			f0v1 = tuple([x * convertToMeters for x in vertices[f0.v1]])
+			f0v2 = tuple([x * convertToMeters for x in vertices[f0.v2]])
+
+			f1v0 = tuple([x * convertToMeters for x in vertices[f1.v0]])
+			f1v1 = tuple([x * convertToMeters for x in vertices[f1.v1]])
+			f1v2 = tuple([x * convertToMeters for x in vertices[f1.v2]])
+
+			facets.append(utils.facet((f0v0, f0v1, f0v2), **kw))
+			facets.append(utils.facet((f1v0, f1v1, f1v2), **kw))
+
+	return facets
