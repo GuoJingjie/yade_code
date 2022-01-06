@@ -1019,7 +1019,7 @@ public:
 	bool isRunning() { return OMEGA.isRunning(); }
 	void throwIfRunning()
 	{
-		if (isRunning()) throw std::runtime_error("Please call O.stop() first.");
+		if (isRunning()) throw std::runtime_error("Please stop the simulation first, e.g. O.pause().");
 	}
 	py::object get_filename()
 	{
