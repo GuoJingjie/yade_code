@@ -602,20 +602,13 @@ class Boundary:
 		self.typ = BOUNDARY_ERROR
 		self.faces4 = []
 
-	def __str__(self) -> str:
-		s = f"{self.name} ({self.typ}):\n"
-		s += f"\tfaces4({len(self.faces4)})\n"
-		for f in self.faces4:
-			s += f"\t  {f}\n"
-		return s
-
 
 def tryParseFloat(x, n):
 	val = 0.0
 	try:
 		val = float(x)
 	except ValueError:
-		assert False, f"{n}: Expected 'float', got: {x}"
+		assert False, "{}: Expected 'float', got: {}".format(n, x)
 
 	return val
 
@@ -625,7 +618,7 @@ def tryParseInt(x, n):
 	try:
 		val = int(x)
 	except ValueError:
-		assert False, f"{n}: Expected 'int', got: {x}"
+		assert False, "{}: Expected 'int', got: {}".format(n, x)
 
 	return val
 
@@ -666,7 +659,7 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 
 		if line.startswith("convertToMeters") and blockDepth == 0:
 			convertToMetersStr = line.split(" ")[-1]
-			assert convertToMetersStr[-1] == ';', f"{lineNumber}: Expected ';' at the end of convertToMeters"
+			assert convertToMetersStr[-1] == ';', "{}: Expected ';' at the end of 'convertToMeters'.".format(lineNumber)
 			convertToMeters = tryParseFloat(convertToMetersStr[:-1], lineNumber)
 		elif line.startswith("vertices") and blockDepth == 0:
 			verticesBlock = True
@@ -689,10 +682,10 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 			blockDepth -= 1
 
 			if blockDepth == 1:
-				assert boundariesBlock, f"{lineNumber}: Parser error, only boundaries are supported."
-				assert currentBoundary.name != "", f"{lineNumber}: Empty name for boundary"
-				assert currentBoundary.typ != BOUNDARY_ERROR, f"{lineNumber}: Invalid type for boundary, supported: patch, wall, empty"
-				assert len(currentBoundary.faces4) > 0, f"{lineNumber}: Boundary must contain at least one face"
+				assert boundariesBlock, "{}: Parser error, only boundaries are supported.".format(lineNumber)
+				assert currentBoundary.name != "", "{}: Empty name for boundary.".format(lineNumber)
+				assert currentBoundary.typ != BOUNDARY_ERROR, "{}: Invalid type for boundary, supported: patch, wall, empty".format(lineNumber)
+				assert len(currentBoundary.faces4) > 0, "{}: Boundary must contain at least one face.".format(lineNumber)
 
 				boundaries.append(currentBoundary)
 
@@ -704,24 +697,24 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 				if line.find("(") != -1 and line.find(")") != -1:
 					vStr = line[1:-1]
 					vStrs = vStr.split(" ")
-					assert len(vStrs) == 3, f"{lineNumber}: Vertex format expected: (x y z), got: {vStr}"
+					assert len(vStrs) == 3, "{}: Vertex format expected: (x y z), got: {}".format(lineNumber, vStr)
 					x = tryParseFloat(vStrs[0], lineNumber)
 					y = tryParseFloat(vStrs[1], lineNumber)
 					z = tryParseFloat(vStrs[2], lineNumber)
 
 					vertices.append((x, y, z))
 				else:
-					assert False, f"{lineNumber}: Vertex format expected: (x y z), got: {line}"
+					assert False, "{}: Vertex format expected: (x y z), got: {}".format(lineNumber, line)
 			elif boundariesBlock:
 				if blockDepth == 1:
-					assert len(line.split(" ")) == 1, f"{lineNumber}: Expected surface name, got: {line}"
+					assert len(line.split(" ")) == 1, "{}: Expected surface name, got: {}".format(lineNumber, line)
 
 					currentBoundary.name = line
 				elif blockDepth == 2:
 					if line.startswith("type"):
 						typStrs = line.split(" ")
-						assert len(typStrs) == 2, f"{lineNumber}: Expected boundary type definition, got: {line}"
-						assert typStrs[1][-1] == ';', f"{lineNumber}: Expected ';' at the end of boundary type"
+						assert len(typStrs) == 2, "{}: Expected boundary type definition, got: {}".format(lineNumber, line)
+						assert typStrs[1][-1] == ';', "{}: Expected ';' at the end of boundary type".format(lineNumber)
 
 						typStr = typStrs[1][:-1]
 						if typStr == "patch":
@@ -731,35 +724,35 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 						elif typStr == "empty":
 							currentBoundary.typ = BOUNDARY_EMPTY
 						else:
-							assert False, f"{lineNumber}: Unknown boundary type: {typStr}"
+							assert False, "{}: Unknown boundary type: {}".format(lineNumber, typStr)
 
 					elif line.startswith("faces"):
 						facesBlock = True
 					else:
-						assert False, f"{lineNumber}: Expected 'type' or 'faces', got: {line}"
+						assert False, "{}: Expected 'type' or 'faces', got: {}".format(lineNumber, line)
 				elif blockDepth == 3:
-					assert facesBlock, f"{lineNumber}: Parser error, only faces supported at level 3"
+					assert facesBlock, "{}: Parser error, only faces supported at level 3".format(lineNumber)
 
 					if line.find("(") != -1 and line.find(")") != -1:
 						fStr = line[1:-1]
 						fStrs = fStr.split(" ")
-						assert len(fStrs) == 4, f"{lineNumber}: Face format expected: (v0 v1 v2 v3), got: {fStr}"
+						assert len(fStrs) == 4, "{}: Face format expected: (v0 v1 v2 v3), got: {}".format(lineNumber, fStr)
 
 						v0 = tryParseInt(fStrs[0], lineNumber)
 						v1 = tryParseInt(fStrs[1], lineNumber)
 						v2 = tryParseInt(fStrs[2], lineNumber)
 						v3 = tryParseInt(fStrs[3], lineNumber)
 
-						assert v0 >= 0, f"{lineNumber}: Face index must be greater or equal to 0, not {v0}"
-						assert v1 >= 0, f"{lineNumber}: Face index must be greater or equal to 0, not {v1}"
-						assert v2 >= 0, f"{lineNumber}: Face index must be greater or equal to 0, not {v2}"
-						assert v3 >= 0, f"{lineNumber}: Face index must be greater or equal to 0, not {v3}"
+						assert v0 >= 0, "{}: Face index must be greater or equal to 0, not {}".format(lineNumber, v0)
+						assert v1 >= 0, "{}: Face index must be greater or equal to 0, not {}".format(lineNumber, v1)
+						assert v2 >= 0, "{}: Face index must be greater or equal to 0, not {}".format(lineNumber, v2)
+						assert v3 >= 0, "{}: Face index must be greater or equal to 0, not {}".format(lineNumber, v3)
 
 						currentBoundary.faces4.append((v0, v1, v2, v3))
 					else:
-						assert False, f"{lineNumber}: Face format expected: (v0 v1 v2 v3), got: {line}"
+						assert False, "{}: Face format expected: (v0 v1 v2 v3), got: {}".format(lineNumber, line)
 				else:
-					assert blockDepth == 0, f"{lineNumber}: Parser error, only levels 0, 1, 2 and 3 are supported"
+					assert blockDepth == 0, "{}: Parser error, only levels 0, 1, 2 and 3 are supported".format(lineNumber)
 
 	for b in boundaries:
 		if b.typ == BOUNDARY_PATCH and patchasWall == False:
