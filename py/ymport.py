@@ -589,39 +589,18 @@ def textPolyhedra(fileName, material, shift=Vector3.Zero, scale=1.0, orientation
 
 # blockMeshDict ==================================================
 
-from dataclasses import dataclass, field
-from typing import NamedTuple
-
 BOUNDARY_ERROR = 0
 BOUNDARY_PATCH = 1
 BOUNDARY_WALL = 2
 BOUNDARY_EMPTY = 3
 
 
-class BoundaryFace3(NamedTuple):
-	v0: int
-	v1: int
-	v2: int
-
-	def __str__(self) -> str:
-		return f"({self.v0}, {self.v1}, {self.v2})"
-
-
-class BoundaryFace4(NamedTuple):
-	v0: int
-	v1: int
-	v2: int
-	v3: int
-
-	def __str__(self) -> str:
-		return f"({self.v0}, {self.v1}, {self.v2}, {self.v3})"
-
-
-@dataclass
 class Boundary:
-	name: str = ""
-	typ: int = BOUNDARY_ERROR
-	faces4: [BoundaryFace4] = field(default_factory=list)
+
+	def __init__(self):
+		self.name = ""
+		self.typ = BOUNDARY_ERROR
+		self.faces4 = []
 
 	def __str__(self) -> str:
 		s = f"{self.name} ({self.typ}):\n"
@@ -631,8 +610,8 @@ class Boundary:
 		return s
 
 
-def tryParseFloat(x: str, n: int) -> float:
-	val: float
+def tryParseFloat(x, n):
+	val = 0.0
 	try:
 		val = float(x)
 	except ValueError:
@@ -641,8 +620,8 @@ def tryParseFloat(x: str, n: int) -> float:
 	return val
 
 
-def tryParseInt(x: str, n: int) -> int:
-	val: int
+def tryParseInt(x, n):
+	val = 0
 	try:
 		val = int(x)
 	except ValueError:
@@ -725,14 +704,14 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 				if line.find("(") != -1 and line.find(")") != -1:
 					vStr = line[1:-1]
 					vStrs = vStr.split(" ")
-					assert len(vStrs) == 3, f"{lineNumber}: Vertice format expected: (x y z), got: {vStr}"
+					assert len(vStrs) == 3, f"{lineNumber}: Vertex format expected: (x y z), got: {vStr}"
 					x = tryParseFloat(vStrs[0], lineNumber)
 					y = tryParseFloat(vStrs[1], lineNumber)
 					z = tryParseFloat(vStrs[2], lineNumber)
 
 					vertices.append((x, y, z))
 				else:
-					assert False, f"{lineNumber}: Vertice format expected: (x y z), got: {line}"
+					assert False, f"{lineNumber}: Vertex format expected: (x y z), got: {line}"
 			elif boundariesBlock:
 				if blockDepth == 1:
 					assert len(line.split(" ")) == 1, f"{lineNumber}: Expected surface name, got: {line}"
@@ -776,8 +755,7 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 						assert v2 >= 0, f"{lineNumber}: Face index must be greater or equal to 0, not {v2}"
 						assert v3 >= 0, f"{lineNumber}: Face index must be greater or equal to 0, not {v3}"
 
-						face = BoundaryFace4(v0, v1, v2, v3)
-						currentBoundary.faces4.append(face)
+						currentBoundary.faces4.append((v0, v1, v2, v3))
 					else:
 						assert False, f"{lineNumber}: Face format expected: (v0 v1 v2 v3), got: {line}"
 				else:
@@ -791,16 +769,16 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 			continue
 
 		for f4 in b.faces4:
-			f0 = BoundaryFace3(f4.v0, f4.v1, f4.v2)
-			f1 = BoundaryFace3(f4.v2, f4.v3, f4.v0)
+			f0 = (f4[0], f4[1], f4[2])
+			f1 = (f4[2], f4[3], f4[0])
 
-			f0v0 = tuple([x * convertToMeters for x in vertices[f0.v0]])
-			f0v1 = tuple([x * convertToMeters for x in vertices[f0.v1]])
-			f0v2 = tuple([x * convertToMeters for x in vertices[f0.v2]])
+			f0v0 = tuple([x * convertToMeters for x in vertices[f0[0]]])
+			f0v1 = tuple([x * convertToMeters for x in vertices[f0[1]]])
+			f0v2 = tuple([x * convertToMeters for x in vertices[f0[2]]])
 
-			f1v0 = tuple([x * convertToMeters for x in vertices[f1.v0]])
-			f1v1 = tuple([x * convertToMeters for x in vertices[f1.v1]])
-			f1v2 = tuple([x * convertToMeters for x in vertices[f1.v2]])
+			f1v0 = tuple([x * convertToMeters for x in vertices[f1[0]]])
+			f1v1 = tuple([x * convertToMeters for x in vertices[f1[1]]])
+			f1v2 = tuple([x * convertToMeters for x in vertices[f1[2]]])
 
 			facets.append(utils.facet((f0v0, f0v1, f0v2), **kw))
 			facets.append(utils.facet((f1v0, f1v1, f1v2), **kw))
