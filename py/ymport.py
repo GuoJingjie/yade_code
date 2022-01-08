@@ -10,7 +10,7 @@ from yade import utils
 from yade.minieigenHP import *
 
 
-def textExt(fileName,format='x_y_z_r',shift=Vector3.Zero,scale=1.0,attrs=[],**kw):
+def textExt(fileName, format='x_y_z_r', shift=Vector3.Zero, scale=1.0, attrs=[], **kw):
 	"""Load sphere coordinates from file in a format selected by the ``format`` argument, returns a list of corresponding bodies; that may be inserted to the simulation with O.bodies.append().
 
 	:param str filename: file name
@@ -23,40 +23,41 @@ def textExt(fileName,format='x_y_z_r',shift=Vector3.Zero,scale=1.0,attrs=[],**kw
 
 	Lines starting with # are skipped
 	"""
-	infile = open(fileName,"r")
+	infile = open(fileName, "r")
 	lines = infile.readlines()
 	infile.close()
-	ret=[]
+	ret = []
 	for line in lines:
 		data = line.split()
 		if (data[0] == "#format"):
-			format=data[1]
+			format = data[1]
 			continue
-		elif (data[0][0] == "#"): continue
-		
-		if (format=='x_y_z_r'):
-			pos = Vector3(float(data[0]),float(data[1]),float(data[2]))
-			ret.append(utils.sphere(shift+scale*pos,scale*float(data[3]),**kw))
-		elif (format=='x_y_z_r_matId'):
-			pos = Vector3(float(data[0]),float(data[1]),float(data[2]))
-			ret.append(utils.sphere(shift+scale*pos,scale*float(data[3]),material=int(data[4]),**kw))
-		
-		elif (format=='id_x_y_z_r_matId'):
-			pos = Vector3(float(data[1]),float(data[2]),float(data[3]))
-			ret.append(utils.sphere(shift+scale*pos,scale*float(data[4]),material=int(data[5]),**kw))
+		elif (data[0][0] == "#"):
+			continue
 
-		elif (format=='x_y_z_r_attrs'):
-			pos = Vector3(float(data[0]),float(data[1]),float(data[2]))
-			s = utils.sphere(shift+scale*pos,scale*float(data[3]),**kw)
+		if (format == 'x_y_z_r'):
+			pos = Vector3(float(data[0]), float(data[1]), float(data[2]))
+			ret.append(utils.sphere(shift + scale * pos, scale * float(data[3]), **kw))
+		elif (format == 'x_y_z_r_matId'):
+			pos = Vector3(float(data[0]), float(data[1]), float(data[2]))
+			ret.append(utils.sphere(shift + scale * pos, scale * float(data[3]), material=int(data[4]), **kw))
+
+		elif (format == 'id_x_y_z_r_matId'):
+			pos = Vector3(float(data[1]), float(data[2]), float(data[3]))
+			ret.append(utils.sphere(shift + scale * pos, scale * float(data[4]), material=int(data[5]), **kw))
+
+		elif (format == 'x_y_z_r_attrs'):
+			pos = Vector3(float(data[0]), float(data[1]), float(data[2]))
+			s = utils.sphere(shift + scale * pos, scale * float(data[3]), **kw)
 			ret.append(s)
 			attrs.append(data[4:])
-			
+
 		else:
-			raise RuntimeError("Please, specify a correct format output!");
+			raise RuntimeError("Please, specify a correct format output!")
 	return ret
 
 
-def textFacets(fileName,format='x1_y1_z1_x2_y2_z2_x3_y3_z3',shift=Vector3.Zero,scale=1.0,attrs=[],**kw):
+def textFacets(fileName, format='x1_y1_z1_x2_y2_z2_x3_y3_z3', shift=Vector3.Zero, scale=1.0, attrs=[], **kw):
 	"""Load facet coordinates from file in a format selected by the ``format`` argument, returns a list of corresponding bodies; that may be inserted to the simulation with O.bodies.append().
 	
 	:param str filename: file name
@@ -69,39 +70,49 @@ def textFacets(fileName,format='x1_y1_z1_x2_y2_z2_x3_y3_z3',shift=Vector3.Zero,s
 
 	Lines starting with # are skipped
 	"""
-	infile = open(fileName,"r")
+	infile = open(fileName, "r")
 	lines = infile.readlines()
 	infile.close()
-	ret=[]
+	ret = []
 	for line in lines:
 		data = line.split()
 		if (data[0] == "#format"):
-			format=data[1]
+			format = data[1]
 			continue
-		elif (data[0][0] == "#"): continue
-		
-		if (format=='x1_y1_z1_x2_y2_z2_x3_y3_z3'):
-			V1=Vector3( float(data[0]),float(data[1]),float(data[2]));	V2=Vector3( float(data[3]),float(data[4]),float(data[5]));	V3=Vector3( float(data[6]),float(data[7]),float(data[8]))
-			ret.append(utils.facet((shift+V1*scale, shift+V2*scale, shift+V3*scale),**kw))
-		
-		elif (format=='x1_y1_z1_x2_y2_z2_x3_y3_z3_matId'):
-			V1=Vector3( float(data[0]),float(data[1]),float(data[2]));	V2=Vector3( float(data[3]),float(data[4]),float(data[5]));	V3=Vector3( float(data[6]),float(data[7]),float(data[8]))
-			ret.append(utils.facet((shift+V1*scale, shift+V2*scale, shift+V3*scale),material=int(data[9]),**kw))
-		
-		elif (format=='id_x1_y1_z1_x2_y2_z2_x3_y3_z3_matId'):
-			V1=Vector3( float(data[1]),float(data[2]),float(data[3]));	V2=Vector3( float(data[4]),float(data[5]),float(data[6]));	V3=Vector3( float(data[7]),float(data[8]),float(data[9]))
-			ret.append(utils.facet((shift+V1*scale, shift+V2*scale, shift+V3*scale),material=int(data[10]),**kw))
-		
-		elif (format=='x1_y1_z1_x2_y2_z2_x3_y3_z3_attrs'):
-			V1=Vector3( float(data[0]),float(data[1]),float(data[2]));	V2=Vector3( float(data[3]),float(data[4]),float(data[5]));	V3=Vector3( float(data[6]),float(data[7]),float(data[8]))
-			ret.append(utils.facet((shift+V1*scale, shift+V2*scale, shift+V3*scale),**kw))
+		elif (data[0][0] == "#"):
+			continue
+
+		if (format == 'x1_y1_z1_x2_y2_z2_x3_y3_z3'):
+			V1 = Vector3(float(data[0]), float(data[1]), float(data[2]))
+			V2 = Vector3(float(data[3]), float(data[4]), float(data[5]))
+			V3 = Vector3(float(data[6]), float(data[7]), float(data[8]))
+			ret.append(utils.facet((shift + V1 * scale, shift + V2 * scale, shift + V3 * scale), **kw))
+
+		elif (format == 'x1_y1_z1_x2_y2_z2_x3_y3_z3_matId'):
+			V1 = Vector3(float(data[0]), float(data[1]), float(data[2]))
+			V2 = Vector3(float(data[3]), float(data[4]), float(data[5]))
+			V3 = Vector3(float(data[6]), float(data[7]), float(data[8]))
+			ret.append(utils.facet((shift + V1 * scale, shift + V2 * scale, shift + V3 * scale), material=int(data[9]), **kw))
+
+		elif (format == 'id_x1_y1_z1_x2_y2_z2_x3_y3_z3_matId'):
+			V1 = Vector3(float(data[1]), float(data[2]), float(data[3]))
+			V2 = Vector3(float(data[4]), float(data[5]), float(data[6]))
+			V3 = Vector3(float(data[7]), float(data[8]), float(data[9]))
+			ret.append(utils.facet((shift + V1 * scale, shift + V2 * scale, shift + V3 * scale), material=int(data[10]), **kw))
+
+		elif (format == 'x1_y1_z1_x2_y2_z2_x3_y3_z3_attrs'):
+			V1 = Vector3(float(data[0]), float(data[1]), float(data[2]))
+			V2 = Vector3(float(data[3]), float(data[4]), float(data[5]))
+			V3 = Vector3(float(data[6]), float(data[7]), float(data[8]))
+			ret.append(utils.facet((shift + V1 * scale, shift + V2 * scale, shift + V3 * scale), **kw))
 			attrs.append(data[4:])
-			
+
 		else:
-			raise RuntimeError("Please, specify a correct format output!");
+			raise RuntimeError("Please, specify a correct format output!")
 	return ret
 
-def textClumps(fileName,shift=Vector3.Zero,discretization=0,orientation=Quaternion((0,1,0),0.0),scale=1.0,**kw):
+
+def textClumps(fileName, shift=Vector3.Zero, discretization=0, orientation=Quaternion((0, 1, 0), 0.0), scale=1.0, **kw):
 	"""Load clumps-members from file in a format selected by the ``format`` argument, insert them to the simulation.
 
 	:param str filename: file name
@@ -113,38 +124,39 @@ def textClumps(fileName,shift=Vector3.Zero,discretization=0,orientation=Quaterni
 
 	Lines starting with # are skipped
 	"""
-	infile = open(fileName,"r")
+	infile = open(fileName, "r")
 	lines = infile.readlines()
 	infile.close()
-	ret=[]
-	
-	curClump=[]
+	ret = []
+
+	curClump = []
 	newClumpId = -1
-	
+
 	for line in lines:
 		data = line.split()
-		if (data[0][0] == "#"): continue
-		pos = orientation*Vector3(float(data[0]),float(data[1]),float(data[2]))
-	
-		if (newClumpId<0 or newClumpId==int(data[4])):
-			idD = curClump.append(utils.sphere(shift+scale*pos,scale*float(data[3]),**kw))
+		if (data[0][0] == "#"):
+			continue
+		pos = orientation * Vector3(float(data[0]), float(data[1]), float(data[2]))
+
+		if (newClumpId < 0 or newClumpId == int(data[4])):
+			idD = curClump.append(utils.sphere(shift + scale * pos, scale * float(data[3]), **kw))
 			newClumpId = int(data[4])
 		else:
 			newClumpId = int(data[4])
-			ret.append(O.bodies.appendClumped(curClump,discretization=discretization))
-			curClump=[]
-			idD = curClump.append(utils.sphere(shift+scale*pos,scale*float(data[3]),**kw))
-	
-	if (len(curClump)!=0):
-		ret.append(O.bodies.appendClumped(curClump,discretization=discretization))
-	
+			ret.append(O.bodies.appendClumped(curClump, discretization=discretization))
+			curClump = []
+			idD = curClump.append(utils.sphere(shift + scale * pos, scale * float(data[3]), **kw))
+
+	if (len(curClump) != 0):
+		ret.append(O.bodies.appendClumped(curClump, discretization=discretization))
+
 	# Set the mask to a clump the same as the first member of it
 	for i in range(len(ret)):
 		O.bodies[ret[i][0]].mask = O.bodies[ret[i][1][0]].mask
 	return ret
 
 
-def text(fileName,shift=Vector3.Zero,scale=1.0,**kw):
+def text(fileName, shift=Vector3.Zero, scale=1.0, **kw):
 	"""Load sphere coordinates from file, returns a list of corresponding bodies; that may be inserted to the simulation with O.bodies.append().
 
 	:param string filename: file which has 4 colums [x, y, z, radius].
@@ -155,11 +167,11 @@ def text(fileName,shift=Vector3.Zero,scale=1.0,**kw):
 
 	Lines starting with # are skipped
 	"""
-	
-	return textExt(fileName=fileName,format='x_y_z_r',shift=shift,scale=scale,**kw)
+
+	return textExt(fileName=fileName, format='x_y_z_r', shift=shift, scale=scale, **kw)
 
 
-def stl(file, dynamic=None,fixed=True,wire=True,color=None,highlight=False,noBound=False,material=-1,scale=1.0,shift=Vector3.Zero):
+def stl(file, dynamic=None, fixed=True, wire=True, color=None, highlight=False, noBound=False, material=-1, scale=1.0, shift=Vector3.Zero):
 	""" Import a .stl geometry in the form of a set of :yref:`Facet`-shaped bodies.
 	
 	:param string file: the .stl file serving as geometry input
@@ -174,19 +186,19 @@ def stl(file, dynamic=None,fixed=True,wire=True,color=None,highlight=False,noBou
 	:param Vector3 shift: for translating the geometry
 	:returns: a corresponding list of :yref:`Facet`-shaped bodies"""
 	imp = STLImporter()
-	facets=imp.ymport(file)
+	facets = imp.ymport(file)
 	for b in facets:
-		b.shape.setVertices(b.shape.vertices[0]*scale, b.shape.vertices[1]*scale, b.shape.vertices[2]*scale)
-		b.shape.color=color if color else utils.randomColor()
-		b.shape.wire=wire
-		b.shape.highlight=highlight
-		pos=b.state.pos*scale+shift
-		utils._commonBodySetup(b,0,Vector3(0,0,0),material=material,pos=pos,noBound=noBound,dynamic=dynamic,fixed=fixed)
-		b.aspherical=False
+		b.shape.setVertices(b.shape.vertices[0] * scale, b.shape.vertices[1] * scale, b.shape.vertices[2] * scale)
+		b.shape.color = color if color else utils.randomColor()
+		b.shape.wire = wire
+		b.shape.highlight = highlight
+		pos = b.state.pos * scale + shift
+		utils._commonBodySetup(b, 0, Vector3(0, 0, 0), material=material, pos=pos, noBound=noBound, dynamic=dynamic, fixed=fixed)
+		b.aspherical = False
 	return facets
 
 
-def gts(meshfile,shift=Vector3.Zero,scale=1.0,**kw):
+def gts(meshfile, shift=Vector3.Zero, scale=1.0, **kw):
 	""" Read given meshfile in gts format.
 
 	:Parameters:
@@ -200,14 +212,14 @@ def gts(meshfile,shift=Vector3.Zero,scale=1.0,**kw):
 				is passed to :yref:`yade.utils.facet`
 	:Returns: list of facets.
 	"""
-	import gts,yade.pack
-	surf=gts.read(open(meshfile))
-	surf.scale(scale,scale,scale)
-	surf.translate(shift[0],shift[1],shift[2]) 
-	yade.pack.gtsSurface2Facets(surf,**kw)
+	import gts, yade.pack
+	surf = gts.read(open(meshfile))
+	surf.scale(scale, scale, scale)
+	surf.translate(shift[0], shift[1], shift[2])
+	yade.pack.gtsSurface2Facets(surf, **kw)
 
 
-def gmsh(meshfile="file.mesh",shift=Vector3.Zero,scale=1.0,orientation=Quaternion((0,1,0),0.0),**kw):
+def gmsh(meshfile="file.mesh", shift=Vector3.Zero, scale=1.0, orientation=Quaternion((0, 1, 0), 0.0), **kw):
 	""" Imports geometry from .mesh file and creates facets.
 
 	:Parameters:
@@ -227,59 +239,59 @@ def gmsh(meshfile="file.mesh",shift=Vector3.Zero,scale=1.0,orientation=Quaternio
 	Additional examples of mesh-files can be downloaded from 
 	http://www-roc.inria.fr/gamma/download/download.php
 	"""
-	infile = open(meshfile,"r")
+	infile = open(meshfile, "r")
 	lines = infile.readlines()
 	infile.close()
 
-	nodelistVector3=[]
-	elementlistVector3=[] # for deformable elements
-	findVerticesString=0
-	
-	while (lines[findVerticesString].split()[0]!='Vertices'): #Find the string with the number of Vertices
-		findVerticesString+=1
-	findVerticesString+=1
+	nodelistVector3 = []
+	elementlistVector3 = []  # for deformable elements
+	findVerticesString = 0
+
+	while (lines[findVerticesString].split()[0] != 'Vertices'):  #Find the string with the number of Vertices
+		findVerticesString += 1
+	findVerticesString += 1
 	numNodes = int(lines[findVerticesString].split()[0])
-	
+
 	for i in range(numNodes):
-		nodelistVector3.append(Vector3(0.0,0.0,0.0))
+		nodelistVector3.append(Vector3(0.0, 0.0, 0.0))
 	id = 0
-	
-	for line in lines[findVerticesString+1:numNodes+findVerticesString+1]:
+
+	for line in lines[findVerticesString + 1:numNodes + findVerticesString + 1]:
 		data = line.split()
-		nodelistVector3[id] = orientation*Vector3(float(data[0])*scale,float(data[1])*scale,float(data[2])*scale)+shift
+		nodelistVector3[id] = orientation * Vector3(float(data[0]) * scale, float(data[1]) * scale, float(data[2]) * scale) + shift
 		id += 1
-	
-	findTriangleString=findVerticesString+numNodes
-	while (lines[findTriangleString].split()[0]!='Triangles'): #Find the string with the number of Triangles
-		findTriangleString+=1
-	findTriangleString+=1
+
+	findTriangleString = findVerticesString + numNodes
+	while (lines[findTriangleString].split()[0] != 'Triangles'):  #Find the string with the number of Triangles
+		findTriangleString += 1
+	findTriangleString += 1
 	numTriangles = int(lines[findTriangleString].split()[0])
 
 	triList = []
 	for i in range(numTriangles):
-		triList.append([0,0,0,0])
-	
+		triList.append([0, 0, 0, 0])
+
 	tid = 0
-	for line in lines[findTriangleString+1:findTriangleString+numTriangles+1]:
+	for line in lines[findTriangleString + 1:findTriangleString + numTriangles + 1]:
 		data = line.split()
-		id1 = int(data[0])-1
-		id2 = int(data[1])-1
-		id3 = int(data[2])-1
+		id1 = int(data[0]) - 1
+		id2 = int(data[1]) - 1
+		id3 = int(data[2]) - 1
 		triList[tid][0] = tid
 		triList[tid][1] = id1
 		triList[tid][2] = id2
 		triList[tid][3] = id3
 		tid += 1
-		ret=[]
+		ret = []
 	for i in triList:
-		a=nodelistVector3[i[1]]
-		b=nodelistVector3[i[2]]
-		c=nodelistVector3[i[3]]
-		ret.append(utils.facet((nodelistVector3[i[1]],nodelistVector3[i[2]],nodelistVector3[i[3]]),**kw))
+		a = nodelistVector3[i[1]]
+		b = nodelistVector3[i[2]]
+		c = nodelistVector3[i[3]]
+		ret.append(utils.facet((nodelistVector3[i[1]], nodelistVector3[i[2]], nodelistVector3[i[3]]), **kw))
 	return ret
 
 
-def gengeoFile(fileName="file.geo",shift=Vector3.Zero,scale=1.0,orientation=Quaternion((0,1,0),0.0),**kw):
+def gengeoFile(fileName="file.geo", shift=Vector3.Zero, scale=1.0, orientation=Quaternion((0, 1, 0), 0.0), **kw):
 	""" Imports geometry from LSMGenGeo .geo file and creates spheres. 
 	Since 2012 the package is available in Debian/Ubuntu and known as python-demgengeo
 	http://packages.qa.debian.org/p/python-demgengeo.html
@@ -308,20 +320,20 @@ def gengeoFile(fileName="file.geo",shift=Vector3.Zero,scale=1.0,orientation=Quat
 	* https://svn.esscc.uq.edu.au/svn/esys3/lsm/contrib/LSMGenGeo/"""
 	from yade.utils import sphere
 
-	infile = open(fileName,"r")
+	infile = open(fileName, "r")
 	lines = infile.readlines()
 	infile.close()
 
 	numSpheres = int(lines[6].split()[0])
-	ret=[]
-	for line in lines[7:numSpheres+7]:
+	ret = []
+	for line in lines[7:numSpheres + 7]:
 		data = line.split()
-		pos = orientation*Vector3(float(data[0]),float(data[1]),float(data[2]))
-		ret.append(utils.sphere(shift+scale*pos,scale*float(data[3]),**kw))
+		pos = orientation * Vector3(float(data[0]), float(data[1]), float(data[2]))
+		ret.append(utils.sphere(shift + scale * pos, scale * float(data[3]), **kw))
 	return ret
 
 
-def gengeo(mntable,shift=Vector3.Zero,scale=1.0,**kw):
+def gengeo(mntable, shift=Vector3.Zero, scale=1.0, **kw):
 	""" Imports geometry from LSMGenGeo library and creates spheres.
 	Since 2012 the package is available in Debian/Ubuntu and known as python-demgengeo
 	http://packages.qa.debian.org/p/python-demgengeo.html
@@ -346,19 +358,23 @@ def gengeo(mntable,shift=Vector3.Zero,scale=1.0,**kw):
 	* http://www.access.edu.au/lsmgengeo_python_doc/current/pythonapi/html/GenGeo-module.html
 	* https://svn.esscc.uq.edu.au/svn/esys3/lsm/contrib/LSMGenGeo/"""
 	try:
-		from GenGeo import MNTable3D,Sphere
+		from GenGeo import MNTable3D, Sphere
 	except ImportError:
-		from gengeo import MNTable3D,Sphere
-	ret=[]
-	sphereList=mntable.getSphereListFromGroup(0)
+		from gengeo import MNTable3D, Sphere
+	ret = []
+	sphereList = mntable.getSphereListFromGroup(0)
 	for i in range(0, len(sphereList)):
-		r=sphereList[i].Radius()
-		c=sphereList[i].Centre()
-		ret.append(utils.sphere([shift[0]+scale*float(c.X()),shift[1]+scale*float(c.Y()),shift[2]+scale*float(c.Z())],scale*float(r),**kw))
+		r = sphereList[i].Radius()
+		c = sphereList[i].Centre()
+		ret.append(
+		        utils.sphere(
+		                [shift[0] + scale * float(c.X()), shift[1] + scale * float(c.Y()), shift[2] + scale * float(c.Z())], scale * float(r), **kw
+		        )
+		)
 	return ret
 
 
-def unv(fileName,shift=(0,0,0),scale=1.0,returnConnectivityTable=False,**kw):
+def unv(fileName, shift=(0, 0, 0), scale=1.0, returnConnectivityTable=False, **kw):
 	""" Import geometry from unv file, return list of created facets.
 
 		:param string fileName: name of unv file
@@ -376,70 +392,85 @@ def unv(fileName,shift=(0,0,0),scale=1.0,returnConnectivityTable=False,**kw):
 		# class used in ymport.unv function
 		# reads and evaluate given unv file and extracts all triangles
 		# can be extended to read tetrahedrons as well
-		def __init__(self,fileName,shift=(0,0,0),scale=1.0,returnConnectivityTable=False,**kw):
+		def __init__(self, fileName, shift=(0, 0, 0), scale=1.0, returnConnectivityTable=False, **kw):
 			self.shift = shift
 			self.scale = scale
-			self.unvFile = open(fileName,'r')
+			self.unvFile = open(fileName, 'r')
 			self.flag = 0
 			self.line = self.unvFile.readline()
 			self.lineSplit = self.line.split()
 			self.nodes = []
 			self.elements = []
 			self.read(**kw)
+
 		def readLine(self):
 			self.line = self.unvFile.readline()
 			self.lineSplit = self.line.split()
-		def read(self,**kw):
+
+		def read(self, **kw):
 			while self.line:
 				self.evalLine()
 				self.line = self.unvFile.readline()
 			self.unvFile.close()
 			self.createFacets(**kw)
+
 		def evalLine(self):
 			self.lineSplit = self.line.split()
-			if len(self.lineSplit) <= 1: # eval special unv format
-				if   self.lineSplit[0] == '-1':   pass
-				elif self.lineSplit[0] == '2411': self.flag = 1; # nodes
-				elif self.lineSplit[0] == '2412': self.flag = 2; # edges (lines)
-				else: self.flag = 4; # volume elements or other, not interesting for us (at least yet)
-			elif self.flag == 1: self.evalNodes()
-			elif self.flag == 2: self.evalEdge()
-			elif self.flag == 3: self.evalFacet()
+			if len(self.lineSplit) <= 1:  # eval special unv format
+				if self.lineSplit[0] == '-1':
+					pass
+				elif self.lineSplit[0] == '2411':
+					self.flag = 1
+					# nodes
+				elif self.lineSplit[0] == '2412':
+					self.flag = 2
+					# edges (lines)
+				else:
+					self.flag = 4
+					# volume elements or other, not interesting for us (at least yet)
+			elif self.flag == 1:
+				self.evalNodes()
+			elif self.flag == 2:
+				self.evalEdge()
+			elif self.flag == 3:
+				self.evalFacet()
 			#elif self.flag == 4: self.evalGroup()
 		def evalNodes(self):
 			self.readLine()
-			self.nodes.append((
-				self.shift[0]+self.scale*float(self.lineSplit[0]),
-				self.shift[1]+self.scale*float(self.lineSplit[1]),
-				self.shift[2]+self.scale*float(self.lineSplit[2])))
+			self.nodes.append(
+			        (
+			                self.shift[0] + self.scale * float(self.lineSplit[0]), self.shift[1] + self.scale * float(self.lineSplit[1]),
+			                self.shift[2] + self.scale * float(self.lineSplit[2])
+			        )
+			)
+
 		def evalEdge(self):
-			if self.lineSplit[1]=='41':
+			if self.lineSplit[1] == '41':
 				self.flag = 3
 				self.evalFacet()
 			else:
 				self.readLine()
 				self.readLine()
+
 		def evalFacet(self):
-			if self.lineSplit[1]=='41': # triangle
+			if self.lineSplit[1] == '41':  # triangle
 				self.readLine()
-				self.elements.append((
-					int(self.lineSplit[0])-1,
-					int(self.lineSplit[1])-1,
-					int(self.lineSplit[2])-1))
-			else: # is not triangle
+				self.elements.append((int(self.lineSplit[0]) - 1, int(self.lineSplit[1]) - 1, int(self.lineSplit[2]) - 1))
+			else:  # is not triangle
 				self.readLine()
 				self.flag = 4
 				# can be added function to handle tetrahedrons
-		def createFacets(self,**kw):
-			self.facets = [utils.facet(tuple(self.nodes[i] for i in e),**kw) for e in self.elements]
+		def createFacets(self, **kw):
+			self.facets = [utils.facet(tuple(self.nodes[i] for i in e), **kw) for e in self.elements]
+
 	#
-	unvReader = UNVReader(fileName,shift,scale,returnConnectivityTable,**kw)
+	unvReader = UNVReader(fileName, shift, scale, returnConnectivityTable, **kw)
 	if returnConnectivityTable:
 		return unvReader.facets, unvReader.nodes, unvReader.elements
 	return unvReader.facets
 
 
-def iges(fileName,shift=(0,0,0),scale=1.0,returnConnectivityTable=False,**kw):
+def iges(fileName, shift=(0, 0, 0), scale=1.0, returnConnectivityTable=False, **kw):
 	""" Import triangular mesh from .igs file, return list of created facets.
 
 		:param string fileName: name of iges file
@@ -448,28 +479,24 @@ def iges(fileName,shift=(0,0,0),scale=1.0,returnConnectivityTable=False,**kw):
 		:param \*\*kw: (unused keyword arguments) is passed to :yref:`yade.utils.facet`
 		:param bool returnConnectivityTable: if True, apart from facets returns also nodes (list of (x,y,z) nodes coordinates) and elements (list of (id1,id2,id3) element nodes ids). If False (default), returns only facets
 	"""
-	nodes,elems = [],[]
+	nodes, elems = [], []
 	f = open(fileName)
 	for line in f:
-		if line.startswith('134,'): # read nodes coordinates
+		if line.startswith('134,'):  # read nodes coordinates
 			ls = line.split(',')
-			v = Vector3(
-				float(ls[1])*scale + shift[0],
-				float(ls[2])*scale + shift[1],
-				float(ls[3])*scale + shift[2]
-			)
+			v = Vector3(float(ls[1]) * scale + shift[0], float(ls[2]) * scale + shift[1], float(ls[3]) * scale + shift[2])
 			nodes.append(v)
-		if line.startswith('136,'): # read elements
+		if line.startswith('136,'):  # read elements
 			ls = line.split(',')
-			i1,i2,i3 = int(ls[3])/2, int(ls[4])/2, int(ls[5])/2 # the numbering of nodes is 1,3,5,7,..., hence this int(ls[*])/2
-			elems.append( (i1,i2,i3) )
-	facets = [utils.facet( ( nodes[e[0]], nodes[e[1]], nodes[e[2]] ), **kw) for e in elems]
+			i1, i2, i3 = int(ls[3]) / 2, int(ls[4]) / 2, int(ls[5]) / 2  # the numbering of nodes is 1,3,5,7,..., hence this int(ls[*])/2
+			elems.append((i1, i2, i3))
+	facets = [utils.facet((nodes[e[0]], nodes[e[1]], nodes[e[2]]), **kw) for e in elems]
 	if returnConnectivityTable:
 		return facets, nodes, elems
 	return facets
 
 
-def ele(nodeFileName,eleFileName,shift=(0,0,0),scale=1.0,**kw):
+def ele(nodeFileName, eleFileName, shift=(0, 0, 0), scale=1.0, **kw):
 	""" Import tetrahedral mesh from .ele file, return list of created tetrahedrons.
 
 		:param string nodeFileName: name of .node file
@@ -484,7 +511,7 @@ def ele(nodeFileName,eleFileName,shift=(0,0,0),scale=1.0,**kw):
 		line = f.readline()
 	ls = line.split()
 	nVertices = int(ls[0])
-	if int(ls[1])!=3:
+	if int(ls[1]) != 3:
 		raise RuntimeError("wrong .node file, number of dimensions should be 3")
 	vertices = [None for i in range(nVertices)]
 	shift = Vector3(shift)
@@ -495,8 +522,8 @@ def ele(nodeFileName,eleFileName,shift=(0,0,0),scale=1.0,**kw):
 		ls = line.split()
 		if not ls:
 			continue
-		v = shift + scale*Vector3(tuple(float(ls[j]) for j in (1,2,3)))
-		vertices[int(ls[0])-1] = v
+		v = shift + scale * Vector3(tuple(float(ls[j]) for j in (1, 2, 3)))
+		vertices[int(ls[0]) - 1] = v
 	f.close()
 	#
 	f = open(eleFileName)
@@ -504,17 +531,18 @@ def ele(nodeFileName,eleFileName,shift=(0,0,0),scale=1.0,**kw):
 	while line.startswith('#'):
 		line = f.readline()
 	ls = line.split()
-	if int(ls[1])!=4:
+	if int(ls[1]) != 4:
 		raise RuntimeError("wrong .ele file, unsupported tetrahedra's number of nodes")
 	nTetras = int(ls[0])
 	tetras = [None for i in range(nTetras)]
 	for i in range(nTetras):
 		ls = f.readline().split()
-		tetras[int(ls[0])-1] = utils.polyhedron([vertices[int(ls[j])-1] for j in (1,2,3,4)],**kw)
+		tetras[int(ls[0]) - 1] = utils.polyhedron([vertices[int(ls[j]) - 1] for j in (1, 2, 3, 4)], **kw)
 	f.close()
 	return tetras
 
-def textPolyhedra(fileName,material,shift=Vector3.Zero,scale=1.0,orientation=Quaternion((0,1,0),0.0),**kw):
+
+def textPolyhedra(fileName, material, shift=Vector3.Zero, scale=1.0, orientation=Quaternion((0, 1, 0), 0.0), **kw):
 	"""Load polyhedra from a text file.
 	
 	:param str filename: file name. Expected file format is the one output by export.textPolyhedra.
@@ -527,34 +555,35 @@ def textPolyhedra(fileName,material,shift=Vector3.Zero,scale=1.0,orientation=Qua
 	Lines starting with # are skipped
 	"""
 	from yade import polyhedra_utils
-	infile = open(fileName,"r")
+	infile = open(fileName, "r")
 	lines = infile.readlines()
 	infile.close()
-	ret=[]
-	i=-1
-	while (i < (len(lines)-1)):
-		i+=1
+	ret = []
+	i = -1
+	while (i < (len(lines) - 1)):
+		i += 1
 		line = lines[i]
 		data = line.split()
-		if (data[0][0] == "#"): continue
-		
-		if (len(data)!=3):
-			raise RuntimeError("Check polyhedra input file! Number of parameters in the first line is not 3!");
+		if (data[0][0] == "#"):
+			continue
+
+		if (len(data) != 3):
+			raise RuntimeError("Check polyhedra input file! Number of parameters in the first line is not 3!")
 		else:
 			vertLoad = []
-#			ids = int(data[0])
+			#			ids = int(data[0])
 			verts = int(data[1])
 			surfs = int(data[2])
-			i+=1
+			i += 1
 			for d in range(verts):
 				dataV = lines[i].split()
-				pos = orientation*Vector3(float(dataV[0])*scale,float(dataV[1])*scale,float(dataV[2])*scale)+shift
+				pos = orientation * Vector3(float(dataV[0]) * scale, float(dataV[1]) * scale, float(dataV[2]) * scale) + shift
 				vertLoad.append(pos)
-				i+=1
-			polR = polyhedra_utils.polyhedra(material=material,v=vertLoad,**kw)
+				i += 1
+			polR = polyhedra_utils.polyhedra(material=material, v=vertLoad, **kw)
 			if (polR != -1):
 				ret.append(polR)
-			i= i + surfs - 1
+			i = i + surfs - 1
 	return ret
 
 
