@@ -11,7 +11,6 @@
 #include <core/Aabb.hpp>
 #include <core/Scene.hpp>
 #include <core/Timing.hpp>
-#include <thread>
 
 namespace yade { // Cannot have #include directive inside.
 
@@ -27,30 +26,6 @@ void GlExtraDrawer::render()
 bool      OpenGLRenderer::initDone = false;
 const int OpenGLRenderer::numClipPlanes;
 OpenGLRenderer::~OpenGLRenderer() { }
-void FreeGLut30DisplayCallback()
-{
-	// make sure the dummy glutMainLoop doesn't use any CPU.
-	std::this_thread::sleep_for(std::chrono::seconds(60));
-}
-
-void FreeGLut30Window()
-{
-	// Freeglut has changed its behaviour, see https://gitlab.com/yade-dev/trunk/-/issues/155
-	// We need to create a window for that
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutInitWindowSize(1, 1);
-	auto id = glutCreateWindow("YADE (dummy window for GLUT to workaround issue #155)");
-	glutSetWindow(id);
-	glutDisplayFunc(FreeGLut30DisplayCallback);
-	glutHideWindow(); // this useless window won't hide until we call glutMainLoop();
-
-	// TODO  * uncomment the line below, and generating documentation will crash.
-	//       * comment it and we have an extra yade window in GUI, which does nothing.
-	//       → maybe make this line conditional depending if documentation is being built?
-	//       → maybe somehow ask freeglut to perform this initialisation without opening the unnecessary window?
-
-	// glutMainLoop();   // glutMainLoop finishes only when yade exits, and won't work without glutDisplayFunc
-}
 
 void OpenGLRenderer::init()
 {
@@ -68,12 +43,7 @@ void OpenGLRenderer::init()
 	static bool glutInitDone = false;
 	if (!glutInitDone) {
 		glutInit(&Omega::instance().origArgc, Omega::instance().origArgv);
-/* transparent spheres (still not working): glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE | GLUT_ALPHA); glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE); */
-#if (FREEGLUT_VERSION_MAJOR >= 3)
-// Workaround issue #155: create a dummy hidden window so that we have non-nullptr Glut Context.
-		std::thread tFreeglut30(FreeGLut30Window);
-		tFreeglut30.detach(); // must be separate thread because of glutMainLoop(); which never ends.
-#endif
+		/* transparent spheres (still not working): glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE | GLUT_ALPHA); glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE); */
 		glutInitDone = true;
 	}
 
@@ -313,8 +283,8 @@ void OpenGLRenderer::renderAllInteractionsWire()
 
 void OpenGLRenderer::renderDOF_ID()
 {
-	const GLfloat                     ambientColorSelected[4]   = { 10.0, 0.0, 0.0, 1.0 };
-	const GLfloat                     ambientColorUnselected[4] = { 0.5, 0.5, 0.5, 1.0 };
+	const GLfloat ambientColorSelected[4]   = { 10.0, 0.0, 0.0, 1.0 };
+	const GLfloat ambientColorUnselected[4] = { 0.5, 0.5, 0.5, 1.0 };
 	const std::lock_guard<std::mutex> lock(scene->bodies->drawloopmutex);
 	for (const auto& b : *scene->bodies) {
 		if (!b) continue;

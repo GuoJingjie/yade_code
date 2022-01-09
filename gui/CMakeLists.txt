@@ -6,7 +6,7 @@ IF(${ENABLE_GUI})
     ADD_LIBRARY(_GLViewer SHARED ${_GLViewer_SOURCE_FILES})
     SET_TARGET_PROPERTIES(_GLViewer PROPERTIES PREFIX "")
     TARGET_LINK_LIBRARIES(_GLViewer Qt5::Widgets Qt5::Xml Qt5::OpenGL
-                                    ${GLUT_LIBRARY} ${OPENGL_LIBRARY}
+                                    ${FREEGLUT_LIBRARY} ${OPENGL_LIBRARY}
                                     ${QGLVIEWER_LIBRARIES}
                                     ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
     IF(GL2PS_FOUND AND ENABLE_GL2PS)
@@ -30,7 +30,7 @@ IF(${ENABLE_GUI})
           )
     INSTALL(FILES ${CMAKE_BINARY_DIR}/img_rc.py ${CMAKE_BINARY_DIR}/ui_controller.py  DESTINATION ${YADE_PY_PATH}/yade/qt)
     TARGET_LINK_LIBRARIES(_GLViewer Qt5::Widgets Qt5::Xml Qt5::OpenGL
-                                    ${GLUT_LIBRARY} ${OPENGL_LIBRARY}
+                                    ${FREEGLUT_LIBRARY} ${OPENGL_LIBRARY}
                                     ${QGLVIEWER_LIBRARIES}
                                     ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
     IF(GL2PS_FOUND AND ENABLE_GL2PS)
