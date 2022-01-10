@@ -310,6 +310,64 @@ Vector3r ShopLS::grad_fioRose(Vector3r gp)
 	Vector3r grad_fio(1, -7.5 / r * cos(5 * theta) * sin(4 * phi), -6 / r * sin(5 * theta) / sin(theta) * cos(4 * phi));
 	return grad_fio;
 }
+shared_ptr<ScGeom>
+ShopLS::geomPtrForLaterRemoval(const State& rbp1, const State& rbp2, const shared_ptr<Interaction>& c)
+{
+	// to use when we can not really compute anything, e.g. bodies lsGrid do not overlap anymore, but still need to have some geom data (while returning true as per general InteractionLoop workflow because it is an existing interaction. Otherwise we would need to update InteractionLoop itself to avoid LOG_WARN messages). Data mostly include an infinite tensile stretch to insure subsequent interaction removal (by Law2)
+	return ShopLS::geomPtr(
+	        Vector3r::Zero() /* inconsequential bullsh..*/,
+	        -std::numeric_limits<Real>::infinity() /* arbitrary big tensile value to trigger interaction removal by Law2*/,
+	        1, /* inconsequential bullsh..*/
+	        1, /* inconsequential bullsh..*/
+	        rbp1,
+	        rbp2,
+	        c,
+	        Vector3r::UnitX() /* inconsequential bullsh..*/);
+}
+
+shared_ptr<ScGeom> ShopLS::geomPtr(
+        Vector3r                       ctctPt,
+        Real                           un,
+        Real                           rad1,
+        Real                           rad2,
+        const State&                   rbp1,
+        const State&                   rbp2,
+        const shared_ptr<Interaction>& c,
+        const Vector3r&                currentNormal)
+{
+	shared_ptr<ScGeom> geomPtr;
+	bool               isNew = !c->geom;
+	if (isNew) geomPtr = shared_ptr<ScGeom>(new ScGeom());
+	else
+		geomPtr = YADE_PTR_CAST<ScGeom>(c->geom);
+	geomPtr->contactPoint     = ctctPt;
+	geomPtr->penetrationDepth = un;
+	// NB radius1, radius2: those are useful for
+	// 1* contact kinematics description if and only if avoidGranularRatcheting, (not the case here)
+	// 2* applying contact forces in C-S Law2, if sphericalBodies (not the case here)
+	// 3* time step determination with respect to rotational stiffnesses
+	// and also, as refR1, refR2, for
+	// 4* contact stiffness expression in FrictPhys/FrictMat
+	geomPtr->radius1 = rad1;
+	geomPtr->radius2 = rad2;
+	geomPtr->precompute(
+	        rbp1,
+	        rbp2,
+	        Omega::instance().getScene().get(),
+	        c,
+	        currentNormal,
+	        isNew,
+	        Vector3r::Zero(),
+	        false); // the avoidGranularRatcheting=1 expression of relative velocity at contact does not make sense with radius1 and radius2 in all cases of LevelSet-sthg interaction (because the shapes are non-spherical): our present radius1+radius2 may have nothing in common with branch vector
+	// precompute will take care of
+	// * preparing the rotation of shearForce to the new tangent plane (done later, in Law2) defining these orthonormal_axis and twist_axis
+	// * updating geomPtr->normal to normal
+	// * computing the relative velocity at contact, through getIncidentVel(avoidGranularRatcheting=false), using now-defined contactPoint
+
+	// Comparing with Ig2_Sphere_Sphere_ScGeom.cpp, I think everything is here
+	return geomPtr;
+}
+
 Real ShopLS::distApproxRose(Vector3r gp)
 {
 	Vector3r grad_fio(grad_fioRose(gp));

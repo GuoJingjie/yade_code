@@ -9,6 +9,7 @@
 #include <lib/base/Logging.hpp>
 #include <lib/base/Math.hpp>
 #include <core/Clump.hpp>
+#include <pkg/dem/ScGeom.hpp>
 #include <pkg/levelSet/LevelSet.hpp>
 
 namespace yade { // Cannot have #include directive inside.
@@ -60,6 +61,18 @@ public:
                 std::array<Real, 2>,
                 std::array<Real, 2>,
                 std::array<std::array<Real, 2>, 2>); // bi-interpolation in a plane, used in LevelSet.distance()
+	static shared_ptr<ScGeom>
+	geomPtr(Vector3r                       ctctPt,
+	        Real                           un,
+	        Real                           rad1,
+	        Real                           rad2,
+	        const State&                   rbp1,
+	        const State&                   rbp2,
+	        const shared_ptr<Interaction>& c,
+	        const Vector3r&                currentNormal);
+	static shared_ptr<ScGeom>
+	     geomPtrForLaterRemoval(const State& rbp1, const State& rbp2, const shared_ptr<Interaction>& c);
+
 };
 } // namespace yade
 #endif //YADE_LS_DEM
