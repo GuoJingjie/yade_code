@@ -1,4 +1,226 @@
 ==================================================
+yade-2022.01a
+Sun, Jan 16 19:00:00 2022 +0100
+
+Short summary of 2022.01a release:
+short title (Merge Request count)
+
+Documentation                         (40 MRs)
+clang-format & reorganize             (21 MRs)
+Bug fixes                             (19 MRs)
+Small improvements                    (19 MRs)
+Tests & checks & CI                   (18 MRs)
+Fluid & thermal & particle saturation (15 MRs)
+Packaging improvements & building     (11 MRs)
+High precision RealHP<N> ComplexHP<N> ( 8 MRs)
+Examples                              ( 7 MRs)
+LevelSet                              ( 4 MRs)
+OpenMPI calculations                  ( 4 MRs)
+GUI                                   ( 3 MRs)
+Polyhedra                             ( 1 MRs)
+Alpha shapes                          ( 1 MRs)
+
+
+Documentation (40 MRs)
+  Add version badge, but only in html. In .pdf only put a link to svg.
+  Docker install section in documentation
+  Doc enhancements in CohFrict* (mostly) and NormShearPhys
+  Homepage cleaning
+  SpherePack.toSimulation docstring
+  Docs HM - Viscous damping - updated the Hertz-Mindlin docs to clarify how viscosity is currently calculated in the code
+  Fix broken links in docs
+  Affiliation update
+  Yade articles update
+  Doc of http overview: mentioning lynx
+  Updating momentRotationLaw doc in CohFrict classes
+  HarmonicForceEngine Documentation Typo
+  Add discord server link to home page, combine both wiki links into one.
+  nicer keys for some bibitems + dodge czech accents issues with bibtex (sorry Václav Šmilauer)
+  fix #219 : update docs about merging from other people's forks, cf. !511
+  Add bib reference
+  Add 3 PHD-thesis from TUBAF
+  improve git docs: add a link to the progit-book https://github.com/progit/progit2
+  Small mailmap update
+  ymport.stl documentation
+  Prog doc minor update about internal (Yade) bibliographic references
+  Docstring typos
+  Doc update of O.dynDt and O.dt
+  Doc of O.save / O.load
+  Documentation about how to add new GUI tests to the pipeline.
+  sort ENABLE_* in CMakeLists.txt and in doc/sphinx/installation.rst
+  Add comments & documentation about VTKRecorder and const Real&
+  Clump discretization doc
+  Improve documentation about clang-format / yapf3
+  Doc update about FEMLIKE feature ON by default
+  Update yade-articles.bib
+  Clump discretization doc updated again
+  Increase clarity of thermalengine doc
+  Replace obsolete YADE_REQUIRE_FEATURE in docs with info about #ifdef YADE_FEATURE
+  Better url links in gitlab doc
+  Doc 3rd edition
+  fix one affiliation and release new DOI
+  Add our high precision paper to bibliography doc/yade-articles.bib and HighPrecisionReal.rst
+  PBCdoc - better DOCs - formulation.html periodic boundary conditions and yade.wrapper.Cell
+  progTypoVector3rZero - Getting rid of historical Vector3R::ZERO in prog doc as well
+
+clang-format & reorganize (21 MRs)
+  clang format single line if
+  Small clang reformat
+  Fix #175 - standarize start line #! in all the examples
+  small clang reformat
+  Python format preparations: to start work on #228 create scripts/python-formatter.sh using yapf3
+  Remove \ at end of line from *.py files, as recommended in yapf3 docs
+  Python reformat: ./doc/sphinx
+  splitting (1/7) from pkg/* the FileGenerator and other heavy stuff which are not physical models.
+  splitting (2/7), merge after !733, split SnapshotEngine to postprocessing/image
+  splitting (3/7), merge after !733, split PotentialBlock PotentialParticle to pkg/potential
+  splitting (4/7), merge after !733, split Polyhedra to pkg/polyhedra
+  splitting (5/7), merge after !733, !738, split VTKRecorder to postprocessing/vtk
+  splitting (7/7), merge after !733, !739, split of Split Polyhedra.cpp → Polyhedra_01.cpp, Polyhedra_02.cpp
+  splitting (6/7), further split of VTKRecorder
+  splitting (7/7), split Shop and SpherePack to preprocessing/dem
+  Python yapf3 reformat of ./py/tests/
+  Python yapf3 reformat: scripts/python-formatter.sh ./scripts/checks-and-tests
+  Revert split VTKRecorder, PartialSatClayEngine, TwoPhaseFlowEngine
+  Following discussion in !783 convert all files to UNIX line endings.
+  Add line ending guard to the CI in make_minimal, just like clang-format.
+  Small progress with #228 (yapf3 reformat), part of examples.
+
+Bug fixes (19 MRs)
+  Collider optimization (fix #186)
+  Fix some boost_python37 issue with cmake
+  fix getRotStiffness for GlobalTimeStepper
+  remove extra creepedShear (copied by accident from ViscoFrictPhys)
+  Fix compilation with g++11 (a subset of !624)
+  Fix issue #184 (aka question #694548)
+  fix Qt inspector with deleted bodies (includes: don't try to find a defaut body at startup)
+  Fix #200 collider segfault + function renaming
+  fix condition that would result in missing virtual interactions when PFacets have parallel edges
+  fix use of extMaterial in cylinderConnection (https://answers.launchpad.net/yade/+question/697238)
+  extra test and fix for .def_readonly(…) function
+  fix problem https://answers.launchpad.net/yade/+question/697874
+  Fix SnapshotEngine (part of issue #230)
+  Fix #234 - On new QT5 versions: "The constructor with a shareWidget is deprecated", thanks Luc OGER!
+  small fix in GUI tests, fix long double ubuntu 20.04 compilation.
+  Lubrication keps calculation fix.
+  Fix #244 - also lock bodies drawloopmutex when drawing interactions.
+  Fix accuracy issue when solving a polynomial + don't erase active intractions in traction
+  Fix color_cycle deprecated matplotlib warning
+
+Small improvements (19 MRs)
+  remove compile warning
+  Add virtual override keyword, add some const keywords; Fix #197
+  Add -Wshadow, simpler CMakeLists.txt
+  fix #202 (-Wshadow name conflict) rename k → kParallelForeachIndexCounter in YADE_PARALLEL_FOREACH_BODY_BEGIN
+  Add -Wswitch-default to CMakeLists.txt
+  CMAKE_UNITY_BUILD (faster build times) documentation and smallfix 
+  Fix #204 - UNITY_BUILD works with cpp Logging
+  Use boost::enable_shared_from_this, this should help with #199 (mess with type casting) and #205 (unintended python variables)
+  Rename CentralGravityEngine → CentralConstantAccelerationEngine
+  Add example for making screenshots of --stdperformance (examples/test/performance/checkPerf.py)
+  Removing incomplete and unused TriaxialTest.biaxial2dTest
+  add new HarmonicForceEngine, identical to HarmonicMotionEngine but applies force instead of displacement
+  homogenize feature names and -DENABLE_FEATURE options in the cmake step
+  Add script to get LP-questions
+  Add option to allow gravity to be excluded from numerical damping in NewtonIntegrator
+  A new onlyReal in O.interactions.has
+  Not Urgent Change in Warning message
+  Add blockMeshDict() to ymport.py - openfoam's blockMeshDict file can be imported into yade.
+  ymport.py: Check FoamFile header and handle comments.
+
+Tests & checks & CI (18 MRs)
+  Test GUI enum instead.
+  skip mkHP_float in WIP and Draft.
+  Don't flood the checks with warnings from BodyContainer and add LOG_ONCE_*
+  Don't test Constants.hpp three times, small cleanup in tests.
+  Add thermal engine check script 2 to pipeline
+  temporarily increase btemp tolerance, fix #218, https://gitlab.com/yade-dev/trunk/-/jobs/1259015083
+  Fix #168 Use yade-data as submodule
+  Fix #132 - add screenshot verification to GUI tests
+  small fix in GUI test, don't print something that's not expected in a screenshot of a passed test
+  Remove attempts to filter outliers while the test is running (it was incorrect)
+  Add GUI test for hopper
+  Small progress towards issue #169 and faster compilation: split PartialSatClayEngine, TwoPhaseFlowEngine into two smaller files each
+  Add -Ofast native maximum optimization option to CMakeLists.txt
+  Add GUI test for SnapshotEngine
+  Fix #169 - 32 bit ASAN debug i386 build.
+  Maybe remove i386 from pipeline CI, maybe discuss #239
+  See #241 : temporarily run debian bookworm check only on newer processors.
+  Revert newhardware tag, because #241 is fixed.
+
+Fluid & thermal & particle saturation (15 MRs)
+  report useful runtime errors and fix PartialSatClayEngine
+  Quick bug fix for thermalengine
+  Parallelize fluid conduction in ThermalEngine, brace for distro complaints.
+  Increase checkThermalEngine.py tolerance because of ENABLE_FAST_NATIVE=ON
+  HydroForceEngine: fix small errors in the fluid resolution
+  HydroForceEngine: add initialization function and simplify turbulentFluctuations
+  HydroForceEngine: modify and simplify averageProfile()
+  HydroForceEngine: add new mixing length formulations to the fluid resolution
+  fixing delT scope bug, thanks Zoheir Khademain.
+  Pfv smallfix
+  Parallelization of fluid conduction still tricky - reverting back to a stable state until a new solution can be pushed.
+  HydroForceEngine and Law2_ScGeom_ViscElPhys_Basic: add an option to apply lubrication
+  Make decoupleForces work as 1 way coupling
+  Lubrication gap small fix
+  Turn flow.defTolerance off by default
+
+Packaging improvements & building (11 MRs)
+  Use clang-11
+  Build pkgs separately and link in one step
+  Workaround #201 linker problems
+  Add some needed dependencies for yade-deb
+  Add DISABLE_ALL option
+  Add archlinux support.
+  Add debian/bookworm
+  Update due to debian/bookworm
+  Add Ubuntu 22.04 build
+  Workaround for #155 (Freeglut 3, fgStructure.CurrentWindow is NULL - crash)
+  Revert "Workaround for #155" - Freeglut is fixed. Drop all workarounds.
+
+High precision RealHP<N> ComplexHP<N> ( 8 MRs)
+  Clang 11 RealHP, fix #193
+  small python HP improvements
+  Use LOG_ONCE_* in DecomposedReal
+  Extra static_assert tests for RealHP, ComplexHP
+  Serialization of Complex numbers: both GUI and .xml / binary.
+  Improve handling of complex numbers
+  Proper high precision Complex support. MPFR ↔ MPC, float128 ↔ complex128
+  Precising HP doc
+
+Examples ( 7 MRs)
+  Add example scripts for alpha shapes
+  Add placeholder for high precision triple-pendulum example
+  Add the triple pendulum script examples for our paper
+  More alpha shape examples
+  Conical Damage Model with pressure dependent inter-particle friction coefficient - implementation and examples of a new contact law
+  HydroForceEngine examples: update and add new examples
+  LevelSet example has been extended
+
+LevelSet ( 4 MRs)
+  ISC is forced to be serial with 0 verletDist, avoiding the LOG_ERROR in that case
+  LevelSet shape 0/N : beginning of several merge requests for giving a new LevelSet shape
+  Level set 1/N: example and VTK visualization stuff - New Python functions or files, and modifications to VTKRecorder for visualization purposes.
+  Level set (N-1)/N - LevelSet shaped bodies can now interact (without touching InteractionLoop as discussed at some point in the past). Add example & check.
+
+OpenMPI calculations ( 4 MRs)
+  Dem8 benchmarks final update
+  DEM8_Benchmarks: Silo Flow and the Penetration Test scripts using SI units (m-N-Pa-kg).
+  revert !596 - see what happens with more testing: checkMPISilo.py
+  Add mpi-default-bin to depends of yadedaily. Fixes #216 (some docker images didn't have mpirun command)
+
+GUI ( 3 MRs)
+  Fix rendering of labels in Potential* Gl1 functors for wire=True
+  Fix #27 - fix problem with wrong ETA estimation, by removing it.
+  GUI serialization shows more info if there is an unhandled type.
+
+Polyhedra ( 1 MRs)
+  Polyhedra warning about vertices number
+
+Alpha shapes ( 1 MRs)
+  Add alpha shapes support & example
+
+==================================================
 yade-2021.01a
 Sun, Jan 17 18:45:12 2021 +0100
 
