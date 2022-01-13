@@ -255,3 +255,37 @@ Post-Processing
 
 Paraview can be used to visulaize both the Yade solution (use VTKRecorder) and OpenFOAM solution. To visulaize the fluid solution, create an empty file as `name.foam` , open this file in Paraview and in the `properties`
 section below the pipeline, change "Reconstructed case" to "Decomposed case" , or you can use the reconstructed case itself but after running the `reconstructPar` utility, but this is time consuming.
+
+
+Using blockMeshDict
+===================
+
+The `blockMeshDict` file (`system/blockMeshDict`) can be loaded as facets (:yref:`yade.utils.facet`) using the :ysrc:`py/ymport.py` module's :yref:`yade.ymport.blockMeshDict` function::
+
+  from yade import ymport
+
+  facets = ymport.blockMeshDict("system/blockMeshDict")
+
+  O.bodies.append(facets)
+  
+The version of the `blockMeshDict` must be `2.0`, see: :ysrc:`py/tests/ymport-files/blockMeshDict`.
+
+Only the "boundary" section will be loaded, that is faces $f$ consists of vertices $v$ in a way that one face is defined by four vertices:
+	
+	.. math:: f_{i} = (v_{i0}, v_{i1}, v_{i2}, v_{i3}),
+	  :label: eq:face
+	
+where vertex $v$ is a point in a three dimensional space:
+
+	.. math:: v_{ij} = (x_{ij}, y_{ij}, z_{ij}).
+	  :label: eq:vertex
+	
+Two new facets $f^{*}$ are generated from every face $f$:
+
+	.. math:: f_{0i}^{*} = (v_{i0}, v_{i1}, v_{i2}),
+	  :label: eq:facets:a
+	.. math:: f_{1i}^{*} = (v_{i2}, v_{i3}, v_{i0}).
+	  :label: eq:facets:b
+         
+There are three types of faces: `patch`, `wall` and `empty`. All types are loaded by default, the `patch` and `empty` types can be discarded using the `patchasWall` and `emptyasWall` arguments of :yref:`yade.ymport.blockMeshDict`.
+

@@ -587,53 +587,58 @@ def textPolyhedra(fileName, material, shift=Vector3.Zero, scale=1.0, orientation
 	return ret
 
 
-# blockMeshDict ==================================================
-
-BOUNDARY_ERROR = 0
-BOUNDARY_PATCH = 1
-BOUNDARY_WALL = 2
-BOUNDARY_EMPTY = 3
-
-
-class Boundary:
-
-	def __init__(self):
-		self.name = ""
-		self.typ = BOUNDARY_ERROR
-		self.faces4 = []
-
-
-def tryParseFloat(x, n):
-	val = 0.0
-	try:
-		val = float(x)
-	except ValueError:
-		assert False, "{}: Expected 'float', got: {}".format(n, x)
-
-	return val
-
-
-def tryParseInt(x, n):
-	val = 0
-	try:
-		val = int(x)
-	except ValueError:
-		assert False, "{}: Expected 'int', got: {}".format(n, x)
-
-	return val
-
-
 def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
-	"""Load openfoam's blockMeshDict file's "boundary" section into facets.
+	"""Load openfoam's blockMeshDict file's "boundary" section as facets.
 
-	:param str path: file name. Typical value is: "system/blockMeshDic".
+	:param str path: file name. Typical value is: "system/blockMeshDict".
 	:param bool patchasWall: load "patch"-es as walls.
 	:param bool emptyasWall: load "empty"-es as walls.
 	:param \*\*kw: (unused keyword arguments) is passed to :yref:`yade.utils.facet`
 	:returns: list of facets.
     	"""
+
+	BOUNDARY_ERROR = 0
+	BOUNDARY_PATCH = 1
+	BOUNDARY_WALL = 2
+	BOUNDARY_EMPTY = 3
+
+	class Boundary:
+
+		def __init__(self):
+			self.name = ""
+			self.typ = BOUNDARY_ERROR
+			self.faces4 = []
+
+	def tryParseFloat(x, n):
+		val = 0.0
+		try:
+			val = float(x)
+		except ValueError:
+			assert False, "{}: Expected 'float', got: {}".format(n, x)
+
+		return val
+
+	def tryParseInt(x, n):
+		val = 0
+		try:
+			val = int(x)
+		except ValueError:
+			assert False, "{}: Expected 'int', got: {}".format(n, x)
+
+		return val
+
+	def tryParseArg(l, n):
+		parts = l.split()
+
+		assert len(parts) == 2, "{}: Wrong argument format, expected 'key value;', got '{}'".format(n, l)
+		arg = parts[1].strip()
+		assert arg[-1] == ';', "{}: Wrong argument format: '{}', missing ';'".format(n, l)
+
+		return arg[:-1]
+
 	convertToMeters = 1.0
 
+	foamFileBlock = False
 	verticesBlock = False
 	vertices = []
 	boundariesBlock = False
@@ -651,16 +656,18 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 	currentBoundary = Boundary()
 
 	for line in lines:
+		line = line.split("//")[0]
 		line = line.strip()
 		lineNumber += 1
 
 		if len(line) == 0:
 			continue
 
-		if line.startswith("convertToMeters") and blockDepth == 0:
-			convertToMetersStr = line.split(" ")[-1]
-			assert convertToMetersStr[-1] == ';', "{}: Expected ';' at the end of 'convertToMeters'.".format(lineNumber)
-			convertToMeters = tryParseFloat(convertToMetersStr[:-1], lineNumber)
+		if line.startswith("FoamFile") and blockDepth == 0:
+			foamFileBlock = True
+		elif line.startswith("convertToMeters") and blockDepth == 0:
+			convertToMetersStr = tryParseArg(line, lineNumber)
+			convertToMeters = tryParseFloat(convertToMetersStr, lineNumber)
 		elif line.startswith("vertices") and blockDepth == 0:
 			verticesBlock = True
 		elif line.startswith("boundary") and blockDepth == 0:
@@ -681,7 +688,9 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 		elif line.endswith("}"):
 			blockDepth -= 1
 
-			if blockDepth == 1:
+			if blockDepth == 0:
+				foamFileBlock = False
+			elif blockDepth == 1:
 				assert boundariesBlock, "{}: Parser error, only boundaries are supported.".format(lineNumber)
 				assert currentBoundary.name != "", "{}: Empty name for boundary.".format(lineNumber)
 				assert currentBoundary.typ != BOUNDARY_ERROR, "{}: Invalid type for boundary, supported: patch, wall, empty".format(lineNumber)
@@ -693,10 +702,30 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 
 			continue
 		else:
-			if verticesBlock:
+			if foamFileBlock:
+				if blockDepth == 1:
+					if (line.startswith("version")):
+						foamVersion = tryParseArg(line, lineNumber)
+						assert foamVersion == "2.0", "{}: Only version '2.0' is supported, got: '{}'".format(lineNumber, foamVersion)
+					elif (line.startswith("format")):
+						foamFormat = tryParseArg(line, lineNumber)
+						assert foamFormat == "ascii", "{}: Only 'ascii' format is supported, got: '{}'".format(lineNumber, foamFormat)
+					elif (line.startswith("class")):
+						foamClass = tryParseArg(line, lineNumber)
+						assert foamClass == "dictionary", "{}: Class must be 'dictionary' not '{}'".format(lineNumber, foamClass)
+					elif (line.startswith("object")):
+						foamObject = tryParseArg(line, lineNumber)
+						assert foamObject == "blockMeshDict", "{}: Object must be 'blockMeshDict' not '{}'".format(
+						        lineNumber, foamObject
+						)
+					else:
+						assert False, "{}: Unknown FoamFile-header field: {}".format(lineNumber, line)
+				else:
+					assert False, "{}: FoamFile-block must be in the top level".format(lineNumber)
+			elif verticesBlock:
 				if line.find("(") != -1 and line.find(")") != -1:
 					vStr = line[1:-1]
-					vStrs = vStr.split(" ")
+					vStrs = vStr.split()
 					assert len(vStrs) == 3, "{}: Vertex format expected: (x y z), got: {}".format(lineNumber, vStr)
 					x = tryParseFloat(vStrs[0], lineNumber)
 					y = tryParseFloat(vStrs[1], lineNumber)
@@ -712,7 +741,7 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 					currentBoundary.name = line
 				elif blockDepth == 2:
 					if line.startswith("type"):
-						typStrs = line.split(" ")
+						typStrs = line.split()
 						assert len(typStrs) == 2, "{}: Expected boundary type definition, got: {}".format(lineNumber, line)
 						assert typStrs[1][-1] == ';', "{}: Expected ';' at the end of boundary type".format(lineNumber)
 
@@ -735,7 +764,7 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 
 					if line.find("(") != -1 and line.find(")") != -1:
 						fStr = line[1:-1]
-						fStrs = fStr.split(" ")
+						fStrs = fStr.split()
 						assert len(fStrs) == 4, "{}: Face format expected: (v0 v1 v2 v3), got: {}".format(lineNumber, fStr)
 
 						v0 = tryParseInt(fStrs[0], lineNumber)
@@ -752,8 +781,10 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 					else:
 						assert False, "{}: Face format expected: (v0 v1 v2 v3), got: {}".format(lineNumber, line)
 				else:
-					assert blockDepth == 0, "{}: Parser error, only levels 0, 1, 2 and 3 are supported".format(lineNumber)
+					assert blockDepth == 0, "{}: Parser error, only block-levels 0, 1, 2 and 3 are supported".format(lineNumber)
 
+	assert blockDepth == 0, "Unmatched parentheses."
+	assert len(boundaries) != 0, "'{}' must contain at least one boundary.".format(path)
 	for b in boundaries:
 		if b.typ == BOUNDARY_PATCH and patchasWall == False:
 			continue
