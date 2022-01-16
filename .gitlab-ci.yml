@@ -15,6 +15,7 @@
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-mips64el # crashes, as predicted by warnings -Wcast-align
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-ppc64el
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-arm64
+# image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-arm64
 # image: registry.gitlab.com/yade-dev/docker-yade:archlinux-current
 #
 # Useful link to validator: https://gitlab.com/yade-dev/trunk/-/ci/lint
@@ -261,14 +262,14 @@ make_archlinux:
   <<: *artifacts_definition
   image: registry.gitlab.com/yade-dev/docker-yade:archlinux-current
 
-#mk_bll_mips64el:
-#  <<: *make_definition
-#  <<: *artifacts_definition
-# <<: *skip_WIP_and_Draft
-#  image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-mips64el
-#  tags:
-#    - fast
-#    - qemu
+mk_bookw_i386:
+  <<: *make_definition
+  <<: *artifacts_definition
+  <<: *skip_WIP_and_Draft
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-i386
+  tags:
+    - fast
+    - qemu
 
 mk_bll_ppc64el:
   <<: *make_definition
@@ -284,6 +285,15 @@ mk_bll_arm64:
   <<: *artifacts_definition
   <<: *skip_WIP_and_Draft
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-arm64
+  tags:
+    - fast
+    - qemu
+
+mk_bookw_arm64:
+  <<: *make_definition
+  <<: *artifacts_definition
+  <<: *skip_WIP_and_Draft
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-arm64
   tags:
     - fast
     - qemu
@@ -581,6 +591,17 @@ test_archlinux:
     - make_archlinux
   needs: ["make_archlinux"]
 
+tst_bookw_i386:
+  <<: *test_definition
+  <<: *skip_WIP_and_Draft
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-i386
+  dependencies:
+    - mk_bookw_i386
+  needs: ["mk_bookw_i386"]
+  tags:
+    - qemu
+  timeout: 55 minutes
+
 tst_bll_ppc64el:
   <<: *test_definition
   <<: *skip_WIP_and_Draft
@@ -599,6 +620,17 @@ tst_bll_arm64:
   dependencies:
     - mk_bll_arm64
   needs: ["mk_bll_arm64"]
+  tags:
+    - qemu
+  timeout: 55 minutes
+
+tst_bookw_arm64:
+  <<: *test_definition
+  <<: *skip_WIP_and_Draft
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-arm64
+  dependencies:
+    - mk_bookw_arm64
+  needs: ["mk_bookw_arm64"]
   tags:
     - qemu
   timeout: 55 minutes
@@ -820,6 +852,17 @@ check_archlinux:
     - make_archlinux
   needs: ["make_archlinux"]
 
+ck_bookw_i386:
+  <<: *check_definition
+  <<: *skip_WIP_and_Draft
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-i386
+  dependencies:
+    - mk_bookw_i386
+  needs: ["mk_bookw_i386"]
+  tags:
+    - qemu
+  timeout: 3 hours
+
 ck_bll_ppc64el:
   <<: *check_definition
   <<: *skip_WIP_and_Draft
@@ -838,6 +881,17 @@ ck_bll_arm64:
   dependencies:
     - mk_bll_arm64
   needs: ["mk_bll_arm64"]
+  tags:
+    - qemu
+  timeout: 3 hours
+
+ck_bookw_arm64:
+  <<: *check_definition
+  <<: *skip_WIP_and_Draft
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm-arm64
+  dependencies:
+    - mk_bookw_arm64
+  needs: ["mk_bookw_arm64"]
   tags:
     - qemu
   timeout: 3 hours

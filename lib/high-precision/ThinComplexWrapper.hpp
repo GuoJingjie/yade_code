@@ -32,7 +32,7 @@
 #endif
 // clang currently does not support float128   https://github.com/boostorg/math/issues/181
 // another similar include is in RealHP.hpp, all other checks if we have float128 should be #ifdef BOOST_MP_FLOAT128_HPP or yade::math::isFloat128<T>
-#ifndef __clang__
+#ifndef YADE_FLOAT128_UNAVAILABLE
 #include <boost/multiprecision/complex128.hpp>
 #endif
 #endif

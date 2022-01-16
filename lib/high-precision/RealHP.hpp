@@ -76,7 +76,7 @@ namespace math { // store info that ThinRealWrapper is not used.
 #endif
 // clang currently does not support float128   https://github.com/boostorg/math/issues/181
 // another similar include is in ThinRealWrapper.hpp, all other checks if we have float128 should be #ifdef BOOST_MP_FLOAT128_HPP or yade::math::isFloat128<T>
-#if (((((YADE_REAL_BIT <= 64) and (not defined(YADE_DISABLE_REAL_MULTI_HP)))) or (YADE_REAL_BIT == 128)) and (not defined(__clang__)))
+#if (((((YADE_REAL_BIT <= 64) and (not defined(YADE_DISABLE_REAL_MULTI_HP)))) or (YADE_REAL_BIT == 128)) and (not defined(YADE_FLOAT128_UNAVAILABLE)))
 #include <boost/multiprecision/float128.hpp>
 #if (BOOST_VERSION >= 107100)
 #include <boost/multiprecision/complex128.hpp>
@@ -122,7 +122,7 @@ namespace math {
 #endif
 #if ((BOOST_VERSION >= 107100) and defined(YADE_COMPLEX_MP))
 // ENABLE_COMPLEX_MP=ON : The ComplexHP type is extended with (1) complex128 and (2) mpc_complex_backend<…> and (3) complex_adaptor<cpp_bin_float<…>>
-#if (((((YADE_REAL_BIT <= 64) and (not defined(YADE_DISABLE_REAL_MULTI_HP)))) or (YADE_REAL_BIT == 128)) and (not defined(__clang__)))
+#if (((((YADE_REAL_BIT <= 64) and (not defined(YADE_DISABLE_REAL_MULTI_HP)))) or (YADE_REAL_BIT == 128)) and (not defined(YADE_FLOAT128_UNAVAILABLE)))
 		template <> struct MakeComplex<boost::multiprecision::float128> {
 			using type = boost::multiprecision::complex128;
 		};

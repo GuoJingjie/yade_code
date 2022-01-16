@@ -123,6 +123,9 @@ namespace math {
 /*************************  float128 128 bits   **************************/
 /*************************************************************************/
 #elif YADE_REAL_BIT <= 128
+#ifdef YADE_FLOAT128_UNAVAILABLE
+#error "float128 is not supported, possible reasons: clang compiler https://github.com/boostorg/math/issues/181 or architecture arm64, mips64el, ppc64el, s390x"
+#endif
 #include <boost/multiprecision/float128.hpp>
 namespace yade {
 namespace math {

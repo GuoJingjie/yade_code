@@ -636,6 +636,14 @@ IF(REAL_USE_ARBITRARY EQUAL "ON")
   MESSAGE(FATAL_ERROR " there's an error in CMakeLists.txt, REAL_USE_ARBITRARY == ${REAL_USE_ARBITRARY}, but should be OFF,MPFR,BOOST_BIN_FLOAT")
 ENDIF()
 
+# On clang and other architectures the boost::float128 type is not available. The RealHP<N> still works! It simply uses MPFR.
+IF((${ARCHITECTURE} STREQUAL "arm64") OR (${ARCHITECTURE} STREQUAL "mips64el") OR (${ARCHITECTURE} STREQUAL "ppc64el") OR (${ARCHITECTURE} STREQUAL "s390x") OR ("${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILER_ARG1}" MATCHES ".*clang"))
+  SET(MARK_FLOAT128_AVAILABLE "OFF")
+  ADD_DEFINITIONS("-DYADE_FLOAT128_UNAVAILABLE")
+ELSE()
+  SET(MARK_FLOAT128_AVAILABLE "ON")
+ENDIF()
+
 MESSAGE(STATUS "Will use ${Esc}[93m${REAL_PREC_NAME}${Esc}[0m as Real type with ${Esc}[36m${REAL_DECIMAL_PLACES}${Esc}[0m decimal places precision and use ${Esc}[36m${REAL_PRECISION_BITS}${Esc}[0m bits of storage.")
 #======================================
 #====== * Unsupported features * ======
@@ -1216,7 +1224,7 @@ TARGET_LINK_LIBRARIES(boot ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${LINKLIBS} ${
 ADD_LIBRARY(yade SHARED ${SRC_CORE} ${SRC_LIB})
 TARGET_LINK_LIBRARIES(boot yade)
 
-IF(REAL_PRECISION_BITS EQUAL 128 OR ((REAL_MULTI_HP) AND (REAL_PRECISION_BITS LESS 128)))
+IF((REAL_PRECISION_BITS EQUAL 128 OR ((REAL_MULTI_HP) AND (REAL_PRECISION_BITS LESS 128))) AND (MARK_FLOAT128_AVAILABLE))
   # the quadmath library is a part of g++ package, no need to check if it is installed.
   TARGET_LINK_LIBRARIES(boot -lquadmath)
   MESSAGE(STATUS "linking -lquadmath")
