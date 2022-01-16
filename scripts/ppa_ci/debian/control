@@ -76,6 +76,9 @@ Description: Platform for discrete element modeling
  allowing independent implementation of new algorithms and interfaces.
  Python is used for rapid and concise scene construction,
  simulation control, postprocessing and debugging.
+ The high precision versions of Yade are provided for long double,
+ float128 and MPFR with 150 decimal places following open access
+ publication https://www.sciencedirect.com/science/article/pii/S0010465521002794
  .
  This package contains speed-optimized build of yade.
 
@@ -97,6 +100,9 @@ Description: Platform for discrete element modeling. Libraries
  allowing independent implementation of new algorithms and interfaces.
  Python is used for rapid and concise scene construction,
  simulation control, postprocessing and debugging.
+ The high precision versions of Yade are provided for long double,
+ float128 and MPFR with 150 decimal places following open access
+ publication https://www.sciencedirect.com/science/article/pii/S0010465521002794
  .
  This package contains yade`s libraries.
 
@@ -130,6 +136,9 @@ Description: Platform for discrete element modeling. Python bindings
  allowing independent implementation of new algorithms and interfaces.
  Python is used for rapid and concise scene construction,
  simulation control, postprocessing and debugging.
+ The high precision versions of Yade are provided for long double,
+ float128 and MPFR with 150 decimal places following open access
+ publication https://www.sciencedirect.com/science/article/pii/S0010465521002794
  .
  This package contains python bindings for yade.
 
@@ -150,5 +159,8 @@ Description: Platform for discrete element modeling. Documentation
  allowing independent implementation of new algorithms and interfaces.
  Python is used for rapid and concise scene construction,
  simulation control, postprocessing and debugging.
+ The high precision versions of Yade are provided for long double,
+ float128 and MPFR with 150 decimal places following open access
+ publication https://www.sciencedirect.com/science/article/pii/S0010465521002794
  .
  This package contains examples, test scripts and documentation.

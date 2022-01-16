@@ -986,7 +986,7 @@ pages:
     - master
   script:
     - export PYTHONUNBUFFERED=1
-    - cd $CI_PROJECT_DIR/deb/yadedaily
+    - cd $CI_PROJECT_DIR/deb/yadedaily$PREC_NAME
     # see comments in make_template, but here give smaller JOBSNUM because this runs on master only, so the cores can be better utilized on merge_request
     - export JOBSNUM=$(case $CI_RUNNER_DESCRIPTION in
         "y4pak") echo "11" ;;
@@ -1007,7 +1007,7 @@ pages:
     - export CCACHE_DIR=/root/.ccache
     - ccache -s
     - DEB_BUILD_OPTIONS=noddebs dpkg-buildpackage -j$JOBSNUM
-    - rm -rf $CI_PROJECT_DIR/deb/yadedaily
+    - rm -rf $CI_PROJECT_DIR/deb/yadedaily$PREC_NAME
     - ls -l $CI_PROJECT_DIR/deb
     - ccache -s
   dependencies: []
@@ -1048,6 +1048,30 @@ deb_bookworm:
     - rm -rf ./deb
     - ./scripts/ppa_ci/builddeb.py -d "bookworm"
 
+deb_bookworm_long_double:
+  <<: *deb_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
+  before_script:
+    - rm -rf ./deb
+    - export PREC_NAME="-long-double"
+    - ./scripts/ppa_ci/builddeb.py -d "bookworm" -p "long-double"
+
+deb_bookworm_float128:
+  <<: *deb_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
+  before_script:
+    - rm -rf ./deb
+    - export PREC_NAME="-float128"
+    - ./scripts/ppa_ci/builddeb.py -d "bookworm" -p "float128"
+
+deb_bookworm_mpfr150:
+  <<: *deb_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
+  before_script:
+    - rm -rf ./deb
+    - export PREC_NAME="-mpfr150"
+    - ./scripts/ppa_ci/builddeb.py -d "bookworm" -p "mpfr150"
+
 deb_xenial:
   <<: *deb_definition
   image: registry.gitlab.com/yade-dev/docker-yade:ubuntu16.04
@@ -1075,3 +1099,28 @@ deb_jammy:
   before_script:
     - rm -rf ./deb
     - ./scripts/ppa_ci/builddeb.py -d "jammy"
+
+deb_jammy_long_double:
+  <<: *deb_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:ubuntu22.04
+  before_script:
+    - rm -rf ./deb
+    - export PREC_NAME="-long-double"
+    - ./scripts/ppa_ci/builddeb.py -d "jammy" -p "long-double"
+
+deb_jammy_float128:
+  <<: *deb_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:ubuntu22.04
+  before_script:
+    - rm -rf ./deb
+    - export PREC_NAME="-float128"
+    - ./scripts/ppa_ci/builddeb.py -d "jammy" -p "float128"
+
+deb_jammy_mpfr150:
+  <<: *deb_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:ubuntu22.04
+  before_script:
+    - rm -rf ./deb
+    - export PREC_NAME="-mpfr150"
+    - ./scripts/ppa_ci/builddeb.py -d "jammy" -p "mpfr150"
+

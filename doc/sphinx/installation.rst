@@ -13,6 +13,8 @@ Installation
 .. toctree::
   :maxdepth: 2
 
+.. _provided-packages:
+
 Packages
 ----------
 
@@ -60,7 +62,7 @@ To install the daily-version you need to add the repository to your
 	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ bullseye main" >> /etc/apt/sources.list'
 
 
-- Debian 12 **bookworm**::
+- Debian 12 **bookworm** also with :ref:`high precision<highPrecisionReal>` ``long double``, ``float128`` and ``mpfr150`` packages::
 
 	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ bookworm main" >> /etc/apt/sources.list'
 
@@ -79,7 +81,7 @@ To install the daily-version you need to add the repository to your
 
 	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ focal main" >> /etc/apt/sources.list'
 
-- Ubuntu 22.04 **jammy**::
+- Ubuntu 22.04 **jammy** also with :ref:`high precision<highPrecisionReal>` ``long double``, ``float128`` and ``mpfr150`` packages::
 
 	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ jammy main" >> /etc/apt/sources.list'
 

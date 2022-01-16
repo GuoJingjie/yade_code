@@ -33,7 +33,8 @@ The last two types are arbitrary precision, and their number of bits ``Nbit`` or
 Installation
 ===========================================
 
-The precompiled Yade package uses ``double`` type by default. In order to use high precision type Yade has to be compiled and installed from source code by following the
+The :ref:`precompiled Yade Daily packages <provided-packages>` for Ubuntu 22.04 and Debian Bookworm are provided for high precision types ``long double``, ``float128`` and ``mpfr150``.
+To use high precision on other linux distributions Yade has to be compiled and installed from source code by following the
 regular :ref:`installation instructions <install-from-source-code>`. With extra following caveats:
 
 1. Following packages are required to be installed: ``python3-mpmath`` ``libmpfr-dev`` ``libmpfrc++-dev`` ``libmpc-dev`` (the ``mpfr`` and ``mpc`` related
