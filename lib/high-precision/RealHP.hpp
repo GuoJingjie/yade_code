@@ -180,7 +180,7 @@ namespace math {
 #else // clang does not support float128   https://github.com/boostorg/math/issues/181
 	using RealHPLadder = boost::mpl::vector<Real>; // when float128 is not available the RealHPLadder does not include it.
 #endif
-#elif YADE_REAL_BIT <= 80
+#elif ((YADE_REAL_BIT <= 80) or defined(YADE_NON_386_LONG_DOUBLE))
 	// Real == long double
 	// Here it might become interesting in few years when templatized versions of doubling-* and quadding-* of types are implemented in boost::multiprecision.
 	// Then it will be high speed, high precision. Because long double although not standarized is pretty fast, and then if it's doubled or quadded it might be good and fast.

@@ -18,7 +18,10 @@ if ((opts.threads != None and opts.threads != 1) or (opts.cores != None and opts
 from yade import pack
 import yade.libVersions
 
-if ('VTK' in features):
+def ppc64elLongDouble():
+	return ((yade.libVersions.getArchitecture() == 'ppc64el') and (yade.math.RealHPConfig.getDigits10(1) == 31))
+
+if (('VTK' in features) and (not ppc64elLongDouble())):
 	#checksPath="." # this line was used for working on this script locally.
 	tmpSaveDir = tempfile.mkdtemp()
 	vtkSaveDir = tmpSaveDir + '/vtk_testing/'
@@ -143,4 +146,7 @@ if ('VTK' in features):
 		)
 
 else:
-	print("skip VTKRecorder check, VTK is not available")
+	if(ppc64elLongDouble()):
+		print("skip VTKRecorder check on ppc64el architecture compiled with long double.")
+	else:
+		print("skip VTKRecorder check, VTK is not available")

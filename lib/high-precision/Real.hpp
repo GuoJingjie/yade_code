@@ -112,10 +112,14 @@ namespace math {
 /*************************************************************************/
 /************************* long double 80 bits  **************************/
 /*************************************************************************/
-#elif YADE_REAL_BIT <= 80
+#elif ((YADE_REAL_BIT <= 80) or defined(YADE_NON_386_LONG_DOUBLE))
 namespace yade {
 namespace math {
+#ifdef YADE_NON_386_LONG_DOUBLE // other architectures: arm64, ppc64el, s390x
+	using UnderlyingReal = long double;
+#else
 	using UnderlyingReal = boost::float_fast80_t;
+#endif
 }
 }
 
@@ -178,7 +182,7 @@ namespace math {
 /*************************     declare Real     **************************/
 /*************************************************************************/
 
-#if (YADE_REAL_BIT <= 80) and (YADE_REAL_BIT > 64)
+#if (((YADE_REAL_BIT <= 80) and (YADE_REAL_BIT > 64)) or defined(YADE_NON_386_LONG_DOUBLE))
 // `long double` needs special consideration to workaround boost::python losing 3 digits precision
 #include "ThinComplexWrapper.hpp"
 #include "ThinRealWrapper.hpp"

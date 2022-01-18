@@ -16,14 +16,14 @@
 
 #include <lib/high-precision/RealIO.hpp>
 
-#if (YADE_REAL_BIT > 80)
+#if ((YADE_REAL_BIT > 80) and (not defined(YADE_NON_386_LONG_DOUBLE)))
 #include <boost/serialization/split_free.hpp>
 BOOST_SERIALIZATION_SPLIT_FREE(::yade::math::Real);
 BOOST_IS_BITWISE_SERIALIZABLE(::yade::math::Real); // faster serialization because does not store versioning, which is unnecessary here
 BOOST_SERIALIZATION_SPLIT_FREE(::yade::math::Complex);
 BOOST_IS_BITWISE_SERIALIZABLE(::yade::math::Complex);
 #endif
-#if (YADE_REAL_BIT == 80)
+#if ((YADE_REAL_BIT == 80) or defined(YADE_NON_386_LONG_DOUBLE))
 #include <boost/serialization/split_free.hpp>
 BOOST_IS_BITWISE_SERIALIZABLE(::yade::math::Real);
 BOOST_SERIALIZATION_SPLIT_FREE(::yade::math::Complex);
@@ -48,7 +48,7 @@ BOOST_IS_BITWISE_SERIALIZABLE(yade::Matrix6r);
 namespace boost {
 namespace serialization {
 
-#if (YADE_REAL_BIT > 80)
+#if ((YADE_REAL_BIT > 80) and (not defined(YADE_NON_386_LONG_DOUBLE)))
 	template <class Archive> void save(Archive& ar, const ::yade::math::Real& a, unsigned int)
 	{
 		// TODO: maybe we can find a faster method for float128
@@ -78,7 +78,7 @@ namespace serialization {
 		a = ::yade::math::Complex { ::yade::math::fromStringReal(re), ::yade::math::fromStringReal(im) };
 	}
 #endif
-#if (YADE_REAL_BIT == 80)
+#if ((YADE_REAL_BIT == 80) or defined(YADE_NON_386_LONG_DOUBLE))
 	template <class Archive> void serialize(Archive& ar, ::yade::math::Real& a, unsigned int)
 	{
 		::yade::math::UnderlyingReal& v = a.operator ::yade::math::UnderlyingReal&();
