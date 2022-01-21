@@ -1781,6 +1781,6 @@ http://www.yade-dem.org/wiki/
 
 Private and/or paid support
 ----------------------------
-You might contact developers by their private mail (rather than by mailing list) if you do not want to disclose details on the mailing list. This is also a suitable method for proposing financial reward for implementation of a substantial feature that is not yet in Yade -- typically, though, we will request this feature to be part of the public codebase once completed, so that the rest of the community can benefit from it as well.
+You might contact developers by their private email (rather than by mailing list) or the generic adress consult|A|yade-dem.org if you do not want to disclose details on the mailing list. This is also a suitable method for proposing financial reward for implementation of a substantial feature that is not yet in Yade -- typically, though, we will request this feature to be part of the public codebase once completed, so that the rest of the community can benefit from it as well.
 
 
