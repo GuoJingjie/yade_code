@@ -1133,7 +1133,7 @@ To avoid big range differences on the $y$ axis, it is possible to have left and 
 Exporting
 ^^^^^^^^^
 
-Plots and data can be exported to external files for later post-processing in `Gnuplot <http://www.gnuplot.info/>` via that :yref:`yade.plot.saveGnuplot` function. Note that all data you added via plot.addData is saved - even data that you don't plot live during simulation.
+Plots and data can be exported to external files for later post-processing in `Gnuplot <http://www.gnuplot.info/>`_ via that :yref:`yade.plot.saveGnuplot` function. Note that all data you added via plot.addData is saved - even data that you don't plot live during simulation.
 By editing the generated .gnuplot file you can plot any of the added Data afterwards.
 
 
