@@ -42,7 +42,7 @@ void Facet::postLoad(Facet&)
 		vu[i] = vertices[i] / vl[i];
 	}
 	Real p = e[0].norm() + e[1].norm() + e[2].norm();
-	icr    = e[0].norm() * ne[0].dot(e[2]) / p;
+	icr    = e[0].norm() * ne[0].dot(e[2]) / p; // = 2. * area / p
 }
 
 YADE_PLUGIN((Facet));

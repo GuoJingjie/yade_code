@@ -25,13 +25,13 @@ public:
 
 	/// Facet's normal
 	//Vector3r nf;
-	/// Normals of edges
+	/// Outwards normals of edges
 	Vector3r ne[3];
-	/// Inscribing cirle radius
+	/// Inscribed circle radius
 	Real icr;
-	/// Length of the vertice vectors
+	/// Length of the vertice vectors (vl[i] = vertices[i].norm())
 	Real vl[3];
-	/// Unit vertice vectors
+	/// Unit vertice vectors (vu[i] = vertices[i]/vl[i])
 	Vector3r vu[3];
 
 	void postLoad(Facet&);
@@ -47,7 +47,7 @@ public:
 	// clang-format off
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(Facet,Shape,"Facet (triangular particle) geometry.",
 		((vector<Vector3r>,vertices,vector<Vector3r>(3,Vector3r(NaN,NaN,NaN)),(Attr::triggerPostLoad | Attr::noResize),"Vertex positions in local coordinates."))
-		((Vector3r,normal,Vector3r(NaN,NaN,NaN),(Attr::readonly | Attr::noSave),"Facet's normal (in local coordinate system)"))
+		((Vector3r,normal,Vector3r(NaN,NaN,NaN),(Attr::readonly | Attr::noSave),"Facet's normal $\\vec n$ (in local coordinate system) oriented towards $\\vec{e_0} \\times \\vec {e_1}$ with $\\vec {e_0} = \\vec{V_0V_1}$, $\\vec {e_1} = \\vec{V_1V_2}$ and $\\vec {V_i}$ the :yref:`vertices<Facet.vertices>`"))
 		((Real,area,NaN,(Attr::readonly | Attr::noSave),"Facet's area"))
 		#ifdef FACET_TOPO
 		((vector<Body::id_t>,edgeAdjIds,vector<Body::id_t>(3,Body::ID_NONE),,"Facet id's that are adjacent to respective edges [experimental]"))
@@ -55,7 +55,12 @@ public:
 		#endif
 		,
 		/* ctor */ createIndex();,
-		.def("setVertices",&Facet::setVertices,"TODO")
+		.def("setVertices",&Facet::setVertices,py::args("v0","v1","v2"),R"""(Defines :yref:`vertices<Facet.vertices>`
+
+:param Vector3 v0: first vertex
+:param Vector3 v1: second vertex
+:param Vector3 v2: third vertex
+:returns: nothing)""")
 	);
 	// clang-format on
 	DECLARE_LOGGER;

@@ -38,7 +38,15 @@ public:
 	        const bool&                    force,
 	        const shared_ptr<Interaction>& c) override;
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS(Ig2_Facet_Sphere_ScGeom,IGeomFunctor,"Create/update a :yref:`ScGeom` instance representing intersection of :yref:`Facet` and :yref:`Sphere`. The equivalent radius for the Facet (:yref:`ScGeom.refR1`) is chosen as twice the Sphere's one.",
+	YADE_CLASS_BASE_DOC_ATTRS(Ig2_Facet_Sphere_ScGeom,IGeomFunctor,R"""(Create/update a :yref:`ScGeom` instance representing intersection of :yref:`Facet` and :yref:`Sphere`. Denoting $u_n$ the corresponding :yref:`overlap<ScGeom.penetrationDepth>`, $\vec{C}$ the :yref:`contact point<ScGeom.contactPoint>` and $\vec{n}$ the contact :yref:`normal<ScGeom.normal>` while $\vec{S}$ stands for sphere's center, $\vec{H}$ for its projection into the facet plane, and $R$ for the sphere's radius, we have:
+
+* $u_n = R - ||\vec{HS}||$
+* $\vec{n} = \dfrac{\vec{HS}}{||\vec{HS}||}$
+when $\vec{H}$ strictly belongs to the Facet surface (different expressions otherwise) and
+
+* $\vec{C} = \vec{S} - (||\vec{HS}||-u_n/2)\vec{n}$
+
+)""",
 		((Real,shrinkFactor,((void)"no shrinking",0),,"The radius of the inscribed circle of the facet is decreased by the value of the sphere's radius multiplied by *shrinkFactor*. From the definition of contact point on the surface made of facets, the given surface is not continuous and becomes in effect surface covered with triangular tiles, with gap between the separate tiles equal to the sphere's radius multiplied by 2×*shrinkFactor*. If zero, no shrinking is done."))
 		((bool,hertzian,false,,"The equivalent radius for the Facet (:yref:`ScGeom.refR1`) is chosen as 1e8 times the Sphere's radius (closer to Hertzian therory, where it is infinite)."))
 	);

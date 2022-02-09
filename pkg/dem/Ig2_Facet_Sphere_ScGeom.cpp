@@ -40,7 +40,9 @@ bool Ig2_Facet_Sphere_ScGeom::go(
 	Matrix3r facetAxisT = se31.orientation.toRotationMatrix();
 	Matrix3r facetAxis  = facetAxisT.transpose();
 	// local orientation
-	Vector3r cl = facetAxis * (se32.position + shift2 - se31.position); // "contact line" in facet-local coords
+	Vector3r cl = facetAxis
+	        * (se32.position + shift2
+	           - se31.position); // "contact line" = branch vector from Facet center (= inscribed circle center) to Sphere center, in facet-local coords
 
 	//
 	// BEGIN everything in facet-local coordinates
@@ -60,12 +62,12 @@ bool Ig2_Facet_Sphere_ScGeom::go(
 		return false;
 	}
 
-	Vector3r        cp = cl - L * normal;
-	const Vector3r* ne = facet->ne;
+	Vector3r        cp = cl - L * normal; // in-plane component of branch vector
+	const Vector3r* ne = facet->ne;       // edges normals
 
 	Real penetrationDepth = 0;
 
-	Real bm = ne[0].dot(cp);
+	Real bm = ne[0].dot(cp); // a trilinear coordinate (https://en.wikipedia.org/wiki/Trilinear_coordinates) of in-plane branch vector
 	int  m  = 0;
 	for (int i = 1; i < 3; ++i) {
 		Real b = ne[i].dot(cp);
@@ -74,10 +76,11 @@ bool Ig2_Facet_Sphere_ScGeom::go(
 			m  = i;
 		}
 	}
+	// bm is now the biggest trilinear coordinate of in-plane branch vector
+	// index of corresponding edge is m
 
 	Real sh  = sphereRadius * shrinkFactor;
 	Real icr = facet->icr - sh;
-
 	if (icr < 0) {
 		LOG_WARN("a radius of a facet's inscribed circle less than zero! So, shrinkFactor is too large and would be reduced to zero.");
 		shrinkFactor = 0;
@@ -86,11 +89,14 @@ bool Ig2_Facet_Sphere_ScGeom::go(
 	}
 
 
-	if (bm < icr) // contact with facet's surface
+	if (bm < icr) // projection of sphere's center is strictly within facet's surface (shrinking considerations left aside)
+	// precise proof should come from considering trilinear and barycentric coordinates
 	{
+		LOG_DEBUG("Contact within facet surface");
 		penetrationDepth = sphereRadius - L;
 		normal.normalize();
-	} else {
+	} else { // projection of sphere's center is outside the facet's surface
+		LOG_DEBUG("The 'else' part for Facet-Sphere contact");
 		cp = cp + ne[m] * (icr - bm);
 		if (cp.dot(ne[(m - 1 < 0) ? 2 : m - 1]) > icr) // contact with vertex m
 		                                               //			cp = facet->vertices[m];

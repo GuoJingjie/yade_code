@@ -256,7 +256,7 @@ def wall(position,axis,sense=0,color=None,material=-1,mask=1):
 
 
 def facet(vertices,dynamic=None,fixed=True,wire=True,color=None,highlight=False,noBound=False,material=-1,mask=1,chain=-1):
-	"""Create facet with given parameters.
+	"""Create a :yref:`Facet`-shaped body with given parameters. Body center is chosen as the center of the inscribed circle of the *vertices* triangle
 
 	:param [Vector3,Vector3,Vector3] vertices: coordinates of vertices in the global coordinate system.
 	:param bool wire: if ``True``, facets are shown as skeleton; otherwise facets are filled
