@@ -271,11 +271,10 @@ def facet(vertices,dynamic=None,fixed=True,wire=True,color=None,highlight=False,
 	_commonBodySetup(b,0,Vector3(0,0,0),material,noBound=noBound,pos=center,fixed=fixed)
 	b.aspherical=False # mass and inertia are 0 anyway; fell free to change to ``True`` if needed
 	b.mask=mask
-	b.chain=chain
 	return b
 
 
-def tetraPoly(vertices,fixed=False,wire=True,color=None,highlight=False,noBound=False,material=-1,mask=1,chain=-1):
+def tetraPoly(vertices,fixed=False,wire=True,color=None,highlight=False,noBound=False,material=-1,mask=1):
 	"""Create tetrahedron (actually simple Polyhedra) with given parameters.
 
 	:param [Vector3,Vector3,Vector3,Vector3] vertices: coordinates of vertices in the global coordinate system.
@@ -290,10 +289,9 @@ def tetraPoly(vertices,fixed=False,wire=True,color=None,highlight=False,noBound=
 	b.aspherical=True
 	b.state.ori = b.shape.GetOri()
 	b.mask=mask
-	b.chain=chain
 	return b
 
-def tetra(vertices,strictCheck=True,fixed=False,wire=True,color=None,highlight=False,noBound=False,material=-1,mask=1,chain=-1):
+def tetra(vertices,strictCheck=True,fixed=False,wire=True,color=None,highlight=False,noBound=False,material=-1,mask=1):
 	"""Create tetrahedron with given parameters.
 
 	:param [Vector3,Vector3,Vector3,Vector3] vertices: coordinates of vertices in the global coordinate system.
@@ -318,10 +316,9 @@ def tetra(vertices,strictCheck=True,fixed=False,wire=True,color=None,highlight=F
 	b.state.ori = b.state.refOri = ori
 	b.aspherical = True
 	b.mask = mask
-	b.chain = chain
 	return b
 
-def polyhedron(vertices,fixed=False,wire=True,color=None,highlight=False,noBound=False,material=-1,mask=1,chain=-1):
+def polyhedron(vertices,fixed=False,wire=True,color=None,highlight=False,noBound=False,material=-1,mask=1):
 	"""Create polyhedron with given parameters.
 
 	:param [Vector3] vertices: coordinates of vertices in the global coordinate system.
@@ -336,7 +333,6 @@ def polyhedron(vertices,fixed=False,wire=True,color=None,highlight=False,noBound
 	b.aspherical=True
 	b.state.ori = b.shape.GetOri()
 	b.mask=mask
-	b.chain=chain
 	return b
 
 def levelSetBody(shape="",center=Vector3.Zero,radius=0,extents=Vector3.Zero,epsilons = Vector2.Zero,clump=None,spacing=0.1,grid=None,distField=[],nSurfNodes=27,nodesPath = 2,nodesTol = 50,orientation=Quaternion(1,0,0,0),dynamic=True,material=-1):
