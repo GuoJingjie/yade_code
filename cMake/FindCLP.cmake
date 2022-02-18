@@ -4,16 +4,19 @@ ELSE(CLP_INCLUDE_DIR AND CLP2_INCLUDE_DIR AND CLP_LIBRARY AND CLP2_LIBRARY AND C
 	FIND_LIBRARY(CLP_LIBRARY NAMES Clp 
 		PATHS
 		/usr/lib/x86_64-linux-gnu
+		/usr/lib
 	    )
 
 	FIND_LIBRARY(CLP2_LIBRARY NAMES OsiClp 
 		PATHS
 		/usr/lib/x86_64-linux-gnu
+		/usr/lib
 	    )
 
 	FIND_LIBRARY(CLP3_LIBRARY NAMES CoinUtils
 		PATHS
 		/usr/lib/x86_64-linux-gnu
+		/usr/lib
 	    )
 
 
@@ -27,6 +30,7 @@ ELSE(CLP_INCLUDE_DIR AND CLP2_INCLUDE_DIR AND CLP_LIBRARY AND CLP2_LIBRARY AND C
 	      CLP2_INCLUDE_DIR coinutils.pc
 	    PATHS
 	      /usr/lib/x86_64-linux-gnu/pkgconfig
+	      /usr/lib/pkgconfig
 	    )
     
     IF(CLP_INCLUDE_DIR AND CLP2_INCLUDE_DIR AND CLP_LIBRARY AND CLP2_LIBRARY AND CLP3_LIBRARY)

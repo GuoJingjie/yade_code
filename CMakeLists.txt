@@ -257,7 +257,7 @@ INCLUDE(FindMissingVersions)
 SET(Boost_NO_BOOST_CMAKE ON)  # solved issues on HPC/Nix, see https://github.com/YosysHQ/nextpnr/issues/322#issuecomment-536177724
 INCLUDE(YadePythonHelpers)
 
-SET(PY3_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0) #append newer python versions at the beginning here.
+SET(PY3_VERSIONS 3.10 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0) #append newer python versions at the beginning here.
 SET(PY2_VERSIONS 2.7 2.6)
 
 IF (DEFINED PYTHON_EXECUTABLE)

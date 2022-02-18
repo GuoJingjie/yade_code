@@ -29,7 +29,7 @@ message( STATUS "Architecture: ${ARCHITECTURE}" )
 
 IF(ENABLE_GUI)
 FIND_PACKAGE(GLUT)
-find_path(FORCE_FREEGLUT_PATH freeglut_std.h ${GLUT_INCLUDE_DIR}/GL)
+find_path(FORCE_FREEGLUT_PATH freeglut_std.h ${GLUT_INCLUDE_DIR}/GL "/usr/include/GL")
 message(STATUS "Found freeglut: ${FORCE_FREEGLUT_PATH}")
 
 execute_process(COMMAND "/usr/bin/md5sum" "${FORCE_FREEGLUT_PATH}/freeglut_std.h"
