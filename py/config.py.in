@@ -12,7 +12,10 @@ libPATH='${LIBRARY_OUTPUT_PATH}'
 if (libPATH[1:] == '{LIBRARY_OUTPUT_PATH}'): libPATH='lib'
 
 libDir=os.path.abspath(prefix+'/'+libPATH+'/yade${SUFFIX}')
-confDir=os.environ['HOME']+'/.yade${SUFFIX}'
+if "XDG_CONFIG_HOME" in os.environ.keys():
+	confDir=os.path.join(os.environ['XDG_CONFIG_HOME'],'yade${SUFFIX}')
+else:
+	confDir=os.path.join(os.environ['HOME'],'.config','yade${SUFFIX}')
 libstdcxx='${libstdcxx}'
 highPrecisionBits         =${REAL_PRECISION_BITS}
 highPrecisionDecimalPlaces=${REAL_DECIMAL_PLACES}

@@ -1,4 +1,3 @@
-from __future__ import print_function
 #!${pyExecutable}
 # encoding: utf-8
 #
@@ -8,6 +7,7 @@ from __future__ import print_function
 # This script is to be used with OAR task scheduler. May be an example to use use with other task scheduler for clusters
 # Adapted from yade-batch
 
+from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
 
