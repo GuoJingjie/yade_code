@@ -6,6 +6,7 @@ from builtins import range
 from builtins import object
 from yade.wrapper import *
 from yade import utils
+from yade._ymport import *
 
 from yade.minieigenHP import *
 
@@ -595,7 +596,7 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 	:param bool emptyasWall: load "empty"-es as walls.
 	:param \*\*kw: (unused keyword arguments) is passed to :yref:`yade.utils.facet`
 	:returns: list of facets.
-    	"""
+    """
 
 	BOUNDARY_ERROR = 0
 	BOUNDARY_PATCH = 1
@@ -806,5 +807,24 @@ def blockMeshDict(path, patchasWall=True, emptyasWall=True, **kw):
 
 			facets.append(utils.facet((f0v0, f0v1, f0v2), **kw))
 			facets.append(utils.facet((f1v0, f1v1, f1v2), **kw))
+
+	return facets
+
+
+def polyMesh(path, patchasWall=True, emptyasWall=True, **kw):
+	"""Load openfoam's polyMesh directory as facets.
+
+	:param str path: directory path. Typical value is: "constant/polyMesh".
+	:param bool patchAsWall: load "patch"-es as walls.
+	:param bool emptyAsWall: load "empty"-es as walls.
+	:param \*\*kw: (unused keyword arguments) is passed to :yref:`yade.utils.facet`
+	:returns: list of facets.
+    """
+
+	facetCoords = readPolyMesh(path, patchasWall, emptyasWall)
+
+	facets = []
+	for fc in facetCoords:
+		facets.append(utils.facet(fc, **kw))
 
 	return facets

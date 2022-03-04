@@ -1,0 +1,36 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version 2.0;
+    format ascii;
+    class labelList;
+    note "nPoints: 93 nCells: 40 nFaces: 160 nInternalFaces: 80";
+    location "constant/polyMesh";
+    object neighbour;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+80(
+    1 2 4 3 5 16 3 6 7 18 5 6 7 20 7 22 9 10 12 11 13 24 11 14 16 15 17 26 13 14 15 28 15 20 21 30 17 18 20 19 21 32 19 22 23 34 21 22 23 36 23 38 25 26 28 27 29 27 30 32 31 33 29 30 31 31 36 37 33 34 36 35 37 35 38 39 37 38 39 39)
+
+    // ************************************************************************* //

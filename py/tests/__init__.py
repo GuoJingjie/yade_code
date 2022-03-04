@@ -18,7 +18,7 @@ allTests = [
  , 'testMinieigenHP'
  , 'testMath'
  , 'enumTest'
- , 'ymport-blockMeshDict'
+ , 'ymport-foamfiles'
         #, 'testColliderByGiulia' # to investigate later maybe, my impression is that due to issue #7 the results are randomly different in that ill-posed periodic problem
 ]
 # yapf: enable
