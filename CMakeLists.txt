@@ -49,6 +49,7 @@
 #  CHOLMOD_GPU link Yade to custom SuiteSparse installation and activate GPU accelerated PFV (OFF by default)
 #  SUITESPARSEPATH: define this variable with the path to a custom suitesparse install
 #  PYTHON_VERSION: force python version to the given one, set -1 to automatically use the last version on the system. (-1 by default)
+#  DISABLE_PKGS : comma-separated list of disabled packages from 'pkg', 'preprocessing' or 'postprocessing', if empty all packages will be built.The packages `common` and `dem` are required to run, but the project can be compiled without them. (EMPTY by default)
 
 project(Yade C CXX)
 cmake_minimum_required(VERSION 3.5.0)
@@ -121,8 +122,11 @@ OPTION(ENABLE_USEFUL_ERRORS "enable useful compiler errors which help a lot in e
 OPTION(ENABLE_VTK "Enable VTK" ${DEFAULT_ON})
 OPTION(CHOLMOD_GPU "Enable GPU acceleration flow engine direct solver" ${DEFAULT_OFF})
 OPTION(USE_QT5 "USE Qt5 for GUI" ${DEFAULT_ON})
+
 #Set -DPYTHON_VERSION numeric option below:
 set(PYTHON_VERSION -1 CACHE STRING "Force python version to the given one. Defaults to -DPYTHON_VERSION=-1 which automatically uses the newest available python version on the system.")
+
+set(DISABLE_PKGS "" CACHE STRING "Comma-separated list of disabled packages from 'pkg', 'preprocessing' or 'postprocessing', if empty all packages will be built.")
 #===========================================================
 
 
@@ -179,6 +183,46 @@ ENDIF()
 #===========================================================
 
 FIND_PACKAGE(Eigen3 REQUIRED)
+
+#===========================================================
+# disabling yade packages
+#===========================================================
+# this is the third way to disable packages, may be unnecessary
+
+# create CMAKE LIST (,,,, -> ;;;;)
+string(REGEX REPLACE "[,]+" ";" disabled_pkgs_list "${DISABLE_PKGS}")
+
+# if package was disabled via list set flags
+IF("fem" IN_LIST disabled_pkgs_list)
+	SET(ENABLE_FEMLIKE OFF)
+ENDIF()
+
+IF("lbm" IN_LIST disabled_pkgs_list)
+	SET(ENABLE_LBMFLOW OFF)
+ENDIF()
+
+IF("levelSet" IN_LIST disabled_pkgs_list)
+	SET(ENABLE_LS_DEM OFF)
+ENDIF()
+
+# not sure if this is the only flag
+IF("pfv" IN_LIST disabled_pkgs_list)
+	SET(ENABLE_PFVFLOW OFF)
+ENDIF()
+
+IF("potential" IN_LIST disabled_pkgs_list)
+	SET(ENABLE_POTENTIAL_BLOCKS OFF)
+	SET(ENABLE_POTENTIAL_PARTICLES OFF)
+ENDIF()
+
+IF("vtk" IN_LIST disabled_pkgs_list)
+	SET(ENABLE_VTK OFF)
+ENDIF()
+
+# no flags for:
+#   + pkg/openfoam
+#   + pkg/polyhedra
+#   + postprocessing/image
 
 #===========================================================
 # AddressSanitizer build
@@ -1285,20 +1329,56 @@ ENDIF(ENABLE_GUI)
 # So we did an extra check to make sure that boot is loadedd first.
 
 # this is one shared library per /pkg subfolder, for some reason they need to link Boost_LIBRARIES, else segfault (although boot also has this link)
+
+# if package was disabled via flags append it to the list
+IF((NOT ENABLE_FEMLIKE) AND (NOT "fem" IN_LIST disabled_pkgs_list))
+	LIST(APPEND disabled_pkgs_list "fem")
+ENDIF()
+
+IF((NOT ENABLE_LBMFLOW) AND (NOT "lbm" IN_LIST disabled_pkgs_list))
+	LIST(APPEND disabled_pkgs_list "lbm")
+ENDIF()
+
+IF((NOT ENABLE_LS_DEM) AND (NOT "levelSet" IN_LIST disabled_pkgs_list))
+	LIST(APPEND disabled_pkgs_list "levelSet")
+ENDIF()
+
+# not sure if this is the only flag
+IF((NOT ENABLE_PFVFLOW) AND (NOT "pfv" IN_LIST disabled_pkgs_list))
+	LIST(APPEND disabled_pkgs_list "pfv")
+ENDIF()
+
+IF((NOT ENABLE_POTENTIAL_BLOCKS) AND (NOT ENABLE_POTENTIAL_PARTICLES) AND (NOT "potential" IN_LIST disabled_pkgs_list))
+	LIST(APPEND disabled_pkgs_list "potential")
+ENDIF()
+
+IF((NOT ENABLE_VTK) AND (NOT "vtk" IN_LIST disabled_pkgs_list))
+	LIST(APPEND disabled_pkgs_list "vtk")
+ENDIF()
+
 SUBDIRLIST(SUBDIRS_PKG ${CMAKE_SOURCE_DIR}/pkg)
 MESSAGE("-- pkg:")
 FOREACH(subdir ${SUBDIRS_PKG})
-    MESSAGE(" + " ${subdir})
-    FILE(GLOB_RECURSE files "pkg/${subdir}/*.cpp")
-    ADD_LIBRARY("pkg_${subdir}" SHARED ${files})
-    SET_TARGET_PROPERTIES("pkg_${subdir}"  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
-    TARGET_LINK_LIBRARIES("pkg_${subdir}" ${Boost_LIBRARIES} )
-    TARGET_LINK_LIBRARIES(boot "pkg_${subdir}")
-    INSTALL(TARGETS "pkg_${subdir}" DESTINATION ${YADE_LIB_PATH})
+	IF(subdir IN_LIST disabled_pkgs_list)
+		MESSAGE(" + " ${subdir} " (disabled)")
+	ELSE()
+		MESSAGE(" + " ${subdir})
+		FILE(GLOB_RECURSE files "pkg/${subdir}/*.cpp")
+		ADD_LIBRARY("pkg_${subdir}" SHARED ${files})
+		SET_TARGET_PROPERTIES("pkg_${subdir}"  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
+		TARGET_LINK_LIBRARIES("pkg_${subdir}" ${Boost_LIBRARIES} )
+		TARGET_LINK_LIBRARIES(boot "pkg_${subdir}")
+		INSTALL(TARGETS "pkg_${subdir}" DESTINATION ${YADE_LIB_PATH})
+	ENDIF()
 ENDFOREACH()
 # see comment https://gitlab.com/yade-dev/trunk/-/merge_requests/616#note_527636625 for details.
-TARGET_LINK_LIBRARIES(pkg_potential  ${VTK_LIBRARIES})
-TARGET_LINK_LIBRARIES(pkg_pfv        ${VTK_LIBRARIES})
+IF(NOT "potential" IN_LIST disabled_pkgs_list)
+	TARGET_LINK_LIBRARIES(pkg_potential  ${VTK_LIBRARIES})
+ENDIF()
+
+IF(NOT "pfv" IN_LIST disabled_pkgs_list)
+	TARGET_LINK_LIBRARIES(pkg_pfv        ${VTK_LIBRARIES})
+ENDIF()
 
 #======================================
 #==== ** scan ./preprocessing/ ** =====
@@ -1306,16 +1386,22 @@ TARGET_LINK_LIBRARIES(pkg_pfv        ${VTK_LIBRARIES})
 SUBDIRLIST(SUBDIRS_PRE ${CMAKE_SOURCE_DIR}/preprocessing)
 MESSAGE("-- preprocessing:")
 FOREACH(subdir ${SUBDIRS_PRE})
-    MESSAGE(" + " ${subdir})
-    FILE(GLOB_RECURSE files "preprocessing/${subdir}/*.cpp")
-    ADD_LIBRARY("pre_${subdir}" SHARED ${files})
-    SET_TARGET_PROPERTIES("pre_${subdir}"  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
-    TARGET_LINK_LIBRARIES("pre_${subdir}" ${Boost_LIBRARIES} )
-    TARGET_LINK_LIBRARIES(boot "pre_${subdir}")
-    INSTALL(TARGETS "pre_${subdir}" DESTINATION ${YADE_LIB_PATH})
+	IF(subdir IN_LIST disabled_pkgs_list)
+		MESSAGE(" + " ${subdir} " (disabled)")
+	ELSE()
+		MESSAGE(" + " ${subdir})
+		FILE(GLOB_RECURSE files "preprocessing/${subdir}/*.cpp")
+		ADD_LIBRARY("pre_${subdir}" SHARED ${files})
+		SET_TARGET_PROPERTIES("pre_${subdir}"  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
+		TARGET_LINK_LIBRARIES("pre_${subdir}" ${Boost_LIBRARIES} )
+		TARGET_LINK_LIBRARIES(boot "pre_${subdir}")
+		INSTALL(TARGETS "pre_${subdir}" DESTINATION ${YADE_LIB_PATH})
+	ENDIF()
 ENDFOREACH()
 # see comment https://gitlab.com/yade-dev/trunk/-/merge_requests/616#note_527636625 for details.
-TARGET_LINK_LIBRARIES(pre_dem ${VTK_LIBRARIES})
+IF(NOT "dem" IN_LIST disabled_pkgs_list)
+	TARGET_LINK_LIBRARIES(pre_dem ${VTK_LIBRARIES})
+ENDIF()
 
 #======================================
 #==== ** scan ./postprocessing/ ** ====
@@ -1323,15 +1409,22 @@ TARGET_LINK_LIBRARIES(pre_dem ${VTK_LIBRARIES})
 SUBDIRLIST(SUBDIRS_PRE ${CMAKE_SOURCE_DIR}/postprocessing)
 MESSAGE("-- postprocessing:")
 FOREACH(subdir ${SUBDIRS_PRE})
-    MESSAGE(" + " ${subdir})
-    FILE(GLOB_RECURSE files "postprocessing/${subdir}/*.cpp")
-    ADD_LIBRARY("post_${subdir}" SHARED ${files})
-    SET_TARGET_PROPERTIES("post_${subdir}"  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
-    TARGET_LINK_LIBRARIES("post_${subdir}" ${Boost_LIBRARIES} )
-    TARGET_LINK_LIBRARIES(boot "post_${subdir}")
-    INSTALL(TARGETS "post_${subdir}" DESTINATION ${YADE_LIB_PATH})
+	IF(subdir IN_LIST disabled_pkgs_list)
+		MESSAGE(" + " ${subdir} " (disabled)")
+	ELSE()
+		MESSAGE(" + " ${subdir})
+		FILE(GLOB_RECURSE files "postprocessing/${subdir}/*.cpp")
+		ADD_LIBRARY("post_${subdir}" SHARED ${files})
+		SET_TARGET_PROPERTIES("post_${subdir}"  PROPERTIES LINK_FLAGS "-Wl,--as-needed" )
+		TARGET_LINK_LIBRARIES("post_${subdir}" ${Boost_LIBRARIES} )
+		TARGET_LINK_LIBRARIES(boot "post_${subdir}")
+		INSTALL(TARGETS "post_${subdir}" DESTINATION ${YADE_LIB_PATH})
+	ENDIF()
 ENDFOREACH()
-TARGET_LINK_LIBRARIES(post_vtk ${VTK_LIBRARIES})
+
+IF(NOT "vtk" IN_LIST disabled_pkgs_list)
+	TARGET_LINK_LIBRARIES(post_vtk ${VTK_LIBRARIES})
+ENDIF()
 
 #======================================
 #==== ******* END scanning ******* ====
@@ -1419,6 +1512,15 @@ INSTALL(TARGETS yade DESTINATION ${YADE_LIB_PATH})
 MESSAGE(STATUS "===========================================================")
 MESSAGE(STATUS "Yade configured with following features:${Esc}[36m${CONFIGURED_FEATS}${Esc}[0m")
 MESSAGE(STATUS "Disabled features:${Esc}[33m${DISABLED_FEATS}${Esc}[0m")
+
+IF("dem" IN_LIST disabled_pkgs_list)
+	MESSAGE(FATAL_ERROR "${Esc}[31m'dem' package is disabled, yade won't run.${Esc}[0m")
+ENDIF()
+
+IF("common" IN_LIST disabled_pkgs_list)
+	MESSAGE(FATAL_ERROR "${Esc}[31m'common' package is disabled, yade won't run.${Esc}[0m")
+ENDIF()
+
 IF(ENABLE_LOGGER)
   MESSAGE(STATUS "${Esc}[36mUsing MAX_LOG_LEVEL=${MAX_LOG_LEVEL}, ENABLE_LOGGER=ON${Esc}[0m")
 ELSE(ENABLE_LOGGER)

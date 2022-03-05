@@ -374,6 +374,7 @@ The following cmake options are available: (see the `source code <https://gitlab
 	* CHOLMOD_GPU link Yade to custom SuiteSparse installation and activate GPU accelerated PFV (OFF by default)
 	* SUITESPARSEPATH: define this variable with the path to a custom suitesparse install
 	* PYTHON_VERSION: force Python version to the given one, e.g. ``-DPYTHON_VERSION=3.5``. Set to -1 to automatically use the last version on the system (-1 by default)
+	* DISABLE_PKGS: comma-separated list of disabled packages from 'pkg', 'preprocessing' or 'postprocessing', if empty all packages will be built. The packages `common` and `dem` are required to run, but the project can be compiled without them. (EMPTY by default)
 
 It is possible to disable all options to create the slim build::
 
@@ -392,6 +393,15 @@ documentation on `https://cmake.org/documentation <https://cmake.org/documentati
  ``Segmentation fault`` will appear just after Yade is started. To provide
  necessary build dependencies for Qt5, install ``python-pyqt5 pyqt5-dev-tools``.
 
+An alternative way to disable specific packages, in this case `fem`, `pfv` and `image`::
+
+	cmake -DDISABLE_PKGS=fem,pfv,image
+	
+where the names of the packages are the names of the directories under 'pkg', 
+'preprocessing' or 'postprocessing'.
+	
+.. warning:: The packages `common` and `dem` are required to run, but the project 
+ can be compiled without them.
 
 If cmake finishes without errors, you will see all enabled
 and disabled options at the end. Then start the actual compilation process with::
