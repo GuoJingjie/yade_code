@@ -9,8 +9,8 @@
 #include <core/Scene.hpp>
 #include <pkg/levelSet/LevelSet.hpp>
 #include <pkg/levelSet/ShopLS.hpp>
-#include <preprocessing/dem/Shop.hpp>
 #include <boost/math/tools/roots.hpp>
+#include <preprocessing/dem/Shop.hpp>
 
 namespace yade {
 YADE_PLUGIN((LevelSet));
@@ -52,7 +52,7 @@ void LevelSet::rayTrace(const Vector3r& ray)
 		diffSign = false;
 		for (unsigned int gp = 0; gp < 8; gp++) { // passing through 8 cell gridpoints to check whether they all have the same distance sign
 			xInd   = (gp % 2 ? indices[0] + 1
-                                       : indices[0]); // better put parenthesis: "=" and ternary have same precedence, let s not look at associativity
+			                 : indices[0]); // better put parenthesis: "=" and ternary have same precedence, let s not look at associativity
 			yInd   = ((gp & 2) / 2 ? indices[1] + 1 : indices[1]);
 			zInd   = ((gp & 4) / 4 ? indices[2] + 1 : indices[2]);
 			gpDist = distField[xInd][yInd][zInd]; // distance value for current gp
@@ -202,18 +202,6 @@ bool LevelSet::rayTraceInCell(const Vector3r& ray, const Vector3r& pointP, const
 		if (normNode > maxRad) maxRad = normNode;
 	}
 	return touched;
-}
-
-vector<Vector3r> LevelSet::marchingCubes()
-{
-	MarchingCube mc;
-	Vector3i     gpPerAxis = lsGrid->nGP;
-	int          nGPx(gpPerAxis[0]), nGPy(gpPerAxis[1]), nGPz(gpPerAxis[2]);
-	mc.init(nGPx, nGPy, nGPz, lsGrid->min, lsGrid->max());
-	mc.computeTriangulation(distField, 0);
-	vector<Vector3r> obtTriangles(mc.getTriangles()); // obtTriangles is here still much longer than 3*mc.getNbTriangles(), with a lot of garbage values
-	obtTriangles.resize(3 * mc.getNbTriangles());     // removing those garbage values
-	return obtTriangles;
 }
 
 Vector3r LevelSet::normal(const Vector3r& pt) const
@@ -413,6 +401,55 @@ Vector3r LevelSet::getInertia()
 {
 	if (!initDone) init();
 	return inertia;
+}
+
+void LevelSet::computeMarchingCubes()
+{
+	// Clear possible existing marching cube data
+	// (might matter later if the level set grid changes size)
+	marchingCubesData.triangles.clear();
+	marchingCubesData.normals.clear();
+
+	// Compute the Marching Cubes triangulation
+	MarchingCube mc;
+	Vector3i     gpPerAxis = lsGrid->nGP;
+	int          nGPx(gpPerAxis[0]), nGPy(gpPerAxis[1]), nGPz(gpPerAxis[2]);
+	mc.init(nGPx, nGPy, nGPz, lsGrid->min, lsGrid->max());
+	mc.computeTriangulation(distField, 0);
+
+	// Removing garbage values
+	vector<Vector3r> obtTriangles(mc.getTriangles());
+	obtTriangles.resize(3 * mc.getNbTriangles());
+	vector<Vector3r> obtNormals(mc.getNormals());
+	obtNormals.resize(3 * mc.getNbTriangles());
+
+	// Store newly computed marching cube data
+	marchingCubesData.triangles   = obtTriangles;
+	marchingCubesData.normals     = obtNormals;
+	marchingCubesData.nbTriangles = mc.getNbTriangles();
+
+	initDoneMarchingCubes = true;
+}
+
+vector<Vector3r> LevelSet::getMarchingCubeTriangles()
+{
+	if (!initDone) init();
+	if (!initDoneMarchingCubes) computeMarchingCubes();
+	return marchingCubesData.triangles;
+}
+
+vector<Vector3r> LevelSet::getMarchingCubeNormals()
+{
+	if (!initDone) init();
+	if (!initDoneMarchingCubes) computeMarchingCubes();
+	return marchingCubesData.normals;
+}
+
+int LevelSet::getMarchingCubeNbTriangles()
+{
+	if (!initDone) init();
+	if (!initDoneMarchingCubes) computeMarchingCubes();
+	return marchingCubesData.nbTriangles;
 }
 
 } // namespace yade

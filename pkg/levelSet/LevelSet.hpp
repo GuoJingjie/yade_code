@@ -5,6 +5,7 @@
 
 #ifdef YADE_LS_DEM
 #pragma once
+#include <lib/computational-geometry/MarchingCube.hpp>
 #include <core/Shape.hpp>
 #include <pkg/levelSet/RegularGrid.hpp>
 
@@ -17,18 +18,28 @@ private:
 	Real     volume, lengthChar;
 	Vector3r inertia; // the eigenvalues of the inertia matrix: its diagonal expression in localAxes basis (in a Vector3r form here)
 	bool     initDone;
+	bool     initDoneMarchingCubes;
 	int      nVoxInside;
-	void     init();                                                 // compute nVoxInside, center, volume, and inertia and calls initSurfNodes
-	void     initSurfNodes();                                        // fills surfNodes
-	bool     rayTraceInCell(const Vector3r&, const Vector3r&, const Vector3r&, const Vector3i&); // handles the ray tracing from a given point in a given cell
-	void     rayTrace(const Vector3r&); // recursively calls rayTraceInCell, walking accross the whole grid along a ray starting from center
+	void     init();          // compute nVoxInside, center, volume, and inertia and calls initSurfNodes
+	void     initSurfNodes(); // fills surfNodes
+	bool rayTraceInCell(const Vector3r&, const Vector3r&, const Vector3r&, const Vector3i&); // handles the ray tracing from a given point in a given cell
+	void rayTrace(const Vector3r&); // recursively calls rayTraceInCell, walking accross the whole grid along a ray starting from center
+	struct mcData {                 // Structure for holding marching cubes triangulation of level set particle
+		vector<Vector3r> triangles;
+		vector<Vector3r> normals;
+		int              nbTriangles;
+	};
+	mcData marchingCubesData; // Actual marching cubes data holder
 public:
 	Real             distance(const Vector3r&) const; // gives through interpolation the distance from a point to the surface
 	Vector3r         normal(const Vector3r&) const;   // gives the outwards normal at some point
 	Real             getVolume();                     // these 3 get*() may call init() if not already done, they can not be const-declared
 	Vector3r         getCenter();
 	Vector3r         getInertia();
-	vector<Vector3r> marchingCubes();
+	void             computeMarchingCubes();       // Compute the marching cube triangulation for the LS shape
+	vector<Vector3r> getMarchingCubeTriangles();   // Retrieve marching cube triangles
+	vector<Vector3r> getMarchingCubeNormals();     // Retrieve marching cube normals
+	int              getMarchingCubeNbTriangles(); // Retrieve marching cube number of triangles
 	virtual ~LevelSet() {};
 	// clang-format off
   YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(LevelSet,Shape,"A level set description of particle shape based on a :yref:`discrete distance field<LevelSet.distField>` and :yref:`surface nodes<LevelSet.surfNodes>` [Duriez2021a]_ [Duriez2021b]_. Visualization of corresponding bodies is currently absent from YADE 3D view and relies upon a :yref:`VTKRecorder` export with ``lsBodies'' among :yref:`recorders<VTKRecorder.recorders>`. File :ysrc:`examples/levelSet/pvVisu.py` provides a Python function dedicated for such a purpose.",
@@ -46,6 +57,7 @@ public:
 		maxRad = 0;
 		inertia = Vector3r::Zero();
 		initDone = false; // after hesitation, it is finally chosen to save the least of data, but to recall init() after a save/load
+		initDoneMarchingCubes = false;
 		lengthChar = -1;
 		volume = -1;
 		nVoxInside = -1;
@@ -57,9 +69,12 @@ public:
  		.def("inertia",&LevelSet::getInertia,"The eigenvalues of the geometric inertia matrix (the one considering the infinitesimal volume as the integrand, instead of infinitesimal mass) as a Vector3r.")
 // 		.def("nodesInCell",&LevelSet::getNodesInCellCube,(boost::python::args("i", "j", "k")),"Which boundary nodes belong to a given grid cube (given by its i,j,k indices)")
 		.def("distance",&LevelSet::distance,(boost::python::arg("pt")),"Distance to surface value at pt, pt being expressed in local frame.")
-		.def("marchingCubes",&LevelSet::marchingCubes,"Vertices of a triangulation of the particle surface after executing the Marching Cubes algorithm on :yref:`distField<LevelSet.distField>`.")
 		.def("normal",&LevelSet::normal,(boost::python::arg("pt")),"Normal vector to the surface, at some pt. Local frame applies to both output normal and input pt.")
 		.def("rayTrace",&LevelSet::rayTrace,(boost::python::arg("ray")),"Performs one ray tracing, possibly modifying :yref:`surfNodes<LevelSet.surfNodes>`. Provided for debugging purposes")
+		.def("computeMarchingCubes",&LevelSet::computeMarchingCubes,"Compute or recompute the triangulation of the particle surface after using the Marching Cubes algorithm on :yref:`distField<LevelSet.distField>`.")
+		.def("marchingCubesVertices",&LevelSet::getMarchingCubeTriangles,"Returns the vertices for a surface triangulation obtained after executing the Marching Cubes algorithm on :yref:`distField<LevelSet.distField>`.")
+		.def("marchingCubesNormals",&LevelSet::getMarchingCubeNormals,"Returns the normals for a surface triangulation obtained after executing the Marching Cubes algorithm on :yref:`distField<LevelSet.distField>`.")
+		.def("marchingCubesNbTriangles",&LevelSet::getMarchingCubeNbTriangles,"Returns the number of triangles forming the surface triangulation as per the Marching Cubes algorithm (executed on :yref:`distField<LevelSet.distField>`).")
 	)
 	// clang-format on
 	REGISTER_CLASS_INDEX(LevelSet, Shape); // necessary for such a Shape-derived class, see https://yade-dem.org/doc/prog.html#indexing-dispatch-types

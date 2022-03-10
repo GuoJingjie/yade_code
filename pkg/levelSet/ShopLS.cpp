@@ -310,8 +310,7 @@ Vector3r ShopLS::grad_fioRose(Vector3r gp)
 	Vector3r grad_fio(1, -7.5 / r * cos(5 * theta) * sin(4 * phi), -6 / r * sin(5 * theta) / sin(theta) * cos(4 * phi));
 	return grad_fio;
 }
-shared_ptr<ScGeom>
-ShopLS::geomPtrForLaterRemoval(const State& rbp1, const State& rbp2, const shared_ptr<Interaction>& c)
+shared_ptr<ScGeom> ShopLS::geomPtrForLaterRemoval(const State& rbp1, const State& rbp2, const shared_ptr<Interaction>& c)
 {
 	// to use when we can not really compute anything, e.g. bodies lsGrid do not overlap anymore, but still need to have some geom data (while returning true as per general InteractionLoop workflow because it is an existing interaction. Otherwise we would need to update InteractionLoop itself to avoid LOG_WARN messages). Data mostly include an infinite tensile stretch to insure subsequent interaction removal (by Law2)
 	return ShopLS::geomPtr(
@@ -326,14 +325,7 @@ ShopLS::geomPtrForLaterRemoval(const State& rbp1, const State& rbp2, const share
 }
 
 shared_ptr<ScGeom> ShopLS::geomPtr(
-        Vector3r                       ctctPt,
-        Real                           un,
-        Real                           rad1,
-        Real                           rad2,
-        const State&                   rbp1,
-        const State&                   rbp2,
-        const shared_ptr<Interaction>& c,
-        const Vector3r&                currentNormal)
+        Vector3r ctctPt, Real un, Real rad1, Real rad2, const State& rbp1, const State& rbp2, const shared_ptr<Interaction>& c, const Vector3r& currentNormal)
 {
 	shared_ptr<ScGeom> geomPtr;
 	bool               isNew = !c->geom;
