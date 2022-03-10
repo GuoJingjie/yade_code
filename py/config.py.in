@@ -5,6 +5,7 @@ Compile-time configuration for yade.
 Template file is processed by cmake to create the actual configuration at build-time.
 """
 import os,datetime,os.path
+import shutil
 prefix='${runtimePREFIX}' if 'YADE_PREFIX' not in os.environ else os.environ['YADE_PREFIX']
 suffix='${SUFFIX}'
 
@@ -16,6 +17,9 @@ if "XDG_CONFIG_HOME" in os.environ.keys():
 	confDir=os.path.join(os.environ['XDG_CONFIG_HOME'],'yade${SUFFIX}')
 else:
 	confDir=os.path.join(os.environ['HOME'],'.config','yade${SUFFIX}')
+oldConfDir=os.path.join(os.environ['HOME'],'.yade${SUFFIX}')
+if os.path.exists(oldConfDir):
+	shutil.move(oldConfDir,confDir)
 libstdcxx='${libstdcxx}'
 highPrecisionBits         =${REAL_PRECISION_BITS}
 highPrecisionDecimalPlaces=${REAL_DECIMAL_PLACES}
