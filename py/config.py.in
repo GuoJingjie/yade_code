@@ -19,6 +19,7 @@ else:
 	confDir=os.path.join(os.environ['HOME'],'.config','yade${SUFFIX}')
 oldConfDir=os.path.join(os.environ['HOME'],'.yade${SUFFIX}')
 if os.path.exists(oldConfDir):
+	print('\033[93m'+"Note: moving yade config dir from ",oldConfDir," to ",confDir,'\033[0m')
 	shutil.move(oldConfDir,confDir)
 libstdcxx='${libstdcxx}'
 highPrecisionBits         =${REAL_PRECISION_BITS}
