@@ -20,7 +20,7 @@ public:
 			((Real, frictionAngle, 0.0,,"Friction angle"))
 //				((Real,tanFrictionAngle,0.0,,"tangent of fric angle"))
 //				((Vector3r, contactDetectionPt, Vector3r::Zero(),,"contact detection result"))
-			((Real, viscousDamping, 0.0,,"Viscous damping"))//FIXME: We don't need to store this attr for each contact. It can be stored only in the Law2
+			((Real, viscousDamping, 0.0,,"Viscous damping ratio, taken equal to :yref:`Ip2_FrictMat_FrictMat_KnKsPhys.viscousDamping`"))//FIXME: We don't need to store this attr for each contact. It can be stored only in the Law2
 //			((Real, unitWidth2D, 1.0,,"Unit width in 2D")) // Moved this attr in Ig2_PP_PP_ScGeom @vsangelidakis
 				((Real, maxClosure, 0.0002,,"not fully in use, vmi")) //FIXME: It is used once; check this
 //				((Real, u_peak, 0.05,,"peak shear displacement, not fully in use"))
@@ -149,7 +149,7 @@ public:
 			((Real, ks_i, ,,"Currently, we assume ks_i and Kshear are adopting the same value in Ip2 initialisation"))
 //				((Real, u_peak, -1.0,,"not used"))
 				((Real, maxClosure, 0.002,,"not fully in use")) //FIXME: It is used once; check this
-			((Real, viscousDamping, 0.0,,"Viscous damping"))
+			((Real, viscousDamping, 0.0,,"Viscous damping ratio $\\beta_n$, see :yref:`Ip2_FrictMat_FrictMat_MindlinPhys` documentation"))
 			((Real, cohesion, 0.0,,"Cohesion"))
 			((Real, tension, 0.0,,"Tension"))
 			((bool, cohesionBroken, true,,"Whether cohesion is already broken"))

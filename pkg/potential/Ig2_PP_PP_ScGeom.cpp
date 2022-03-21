@@ -53,9 +53,6 @@ bool Ig2_PP_PP_ScGeom::go(
 	/* Short circuit if both particles are boundary particles */
 	if ((s1->isBoundary == true) && (s2->isBoundary == true)) { return false; }
 
-	/* Short circuit if both particles are fixed */
-	if ((state1.blockedDOFs == State::DOF_ALL) && (state2.blockedDOFs == State::DOF_ALL)) { return false; }
-
 	bool                 hasGeom = false;
 	Vector3r             contactPt(0, 0, 0);
 	shared_ptr<ScGeom>   scm;

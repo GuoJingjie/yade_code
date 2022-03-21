@@ -237,6 +237,11 @@ py::list openblasVer()
 	ret.append(boost::lexical_cast<std::string>(OPENBLAS_VERSION));
 	return ret;
 }
+#else
+py::list openblasVer() { return {}; }
+#endif
+
+#if defined(LINSOLV) || defined(FLOW_ENGINE)
 // 16. metis
 #include <metis.h>
 py::list metisVer()
@@ -265,7 +270,6 @@ py::list metisVer()
 	return ret;
 }
 #else
-py::list openblasVer() { return {}; }
 py::list metisVer() { return {}; }
 #endif
 
