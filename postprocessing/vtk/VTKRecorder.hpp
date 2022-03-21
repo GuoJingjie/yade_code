@@ -89,7 +89,7 @@ public:
 	``boxes``
 		Save :yref:`boxes<Box>` positions (edges).
 	``lsBodies``
-		Exports :yref:`LevelSet` shaped bodies in global frame, after mapping to current positions and orientations their :yref:`grid<LevelSet.lsGrid>` with :yref:`distance fields<LevelSet.distField>`.
+		Exports :yref:`LevelSet` shaped bodies in global frame, after mapping to current positions and orientations their :yref:`grid<LevelSet.lsGrid>` with :yref:`distance fields<LevelSet.distField>`. A Python function (to use within Paraview) is provided at :ysrc:`examples/levelSet/pvVisu.py` for helping bodies' surfaces rendering in Paraview.
 	``intr``
 		Store interactions as lines between nodes at respective particles positions. Additionally stores magnitude of normal (``forceN``) and shear (``absForceT``) forces on interactions (the :yref:`geom<Interaction.geom> must be of type :yref:`NormShearPhys`).
 
