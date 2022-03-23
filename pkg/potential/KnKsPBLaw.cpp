@@ -367,6 +367,8 @@ bool Law2_SCG_KnKsPBPhys_KnKsPBLaw::go(shared_ptr<IGeom>& ig /* contact geometry
 	/* Add normal viscous component if damping is included */
 	phys->normalViscous = cn * incidentVn;
 
+	phys->normalForce -= phys->normalViscous;
+
 	/* Check whether to allow fictitious (unnatural) attractive forces due to viscous damping, near the end of a collision */
 	if (not allowViscousAttraction) {
 // viscous force should not exceed the value of current normal force, i.e. no attraction force should be permitted if particles are non-adhesive
@@ -379,15 +381,11 @@ bool Law2_SCG_KnKsPBPhys_KnKsPBLaw::go(shared_ptr<IGeom>& ig /* contact geometry
 			phys->normalViscous = phys->normalForce;
 		}
 #endif
-
-		//		#if 0
-		if (phys->normalViscous.norm() > phys->normalForce.norm()) { phys->normalViscous = phys->normalForce; }
-		//		#endif
-
+		if (phys->normalForce.dot(geom->normal) < 0) { // if the total normal force is attractive
+			phys->normalForce = Vector3r::Zero();// set normal force to 0
+		}
 		//FIXME: The same must be done for the shearForce, if viscous damping is to be considered in the shear direction as well in the future
 	}
-
-	phys->normalForce -= phys->normalViscous;
 
 	TIMING_DELTAS_CHECKPOINT("After viscous coeffs");
 
