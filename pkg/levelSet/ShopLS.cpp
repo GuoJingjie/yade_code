@@ -349,7 +349,7 @@ shared_ptr<ScGeom> ShopLS::geomPtr(
 	        c,
 	        currentNormal,
 	        isNew,
-	        Vector3r::Zero(),
+	        Vector3r::Zero(), // needs shift2
 	        false); // the avoidGranularRatcheting=1 expression of relative velocity at contact does not make sense with radius1 and radius2 in all cases of LevelSet-sthg interaction (because the shapes are non-spherical): our present radius1+radius2 may have nothing in common with branch vector
 	// precompute will take care of
 	// * preparing the rotation of shearForce to the new tangent plane (done later, in Law2) defining these orthonormal_axis and twist_axis

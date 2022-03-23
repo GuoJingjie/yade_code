@@ -100,16 +100,21 @@ bool Law2_ScGeom_FrictPhys_CundallStrack::go(shared_ptr<IGeom>& ig, shared_ptr<I
 		        elastPotentialIx,
 		        /*reset at every timestep*/ true);
 	}
-	if (!scene->isPeriodic && !sphericalBodies) {
+	if (!scene->isPeriodic && !sphericalBodies) { // For non-periodic simulations only
 		State* de1 = Body::byId(id1, scene)->state.get();
 		State* de2 = Body::byId(id2, scene)->state.get();
 		applyForceAtContactPoint(-phys->normalForce - shearForce, geom->contactPoint, id1, de1->se3.position, id2, de2->se3.position);
-	} else { //we need to use correct branches in the periodic case, the following apply for spheres only
+	} else if (sphericalBodies) { // For spheres only
 		Vector3r force = -phys->normalForce - shearForce;
 		scene->forces.addForce(id1, force);
 		scene->forces.addForce(id2, -force);
 		scene->forces.addTorque(id1, (geom->radius1 - 0.5 * geom->penetrationDepth) * geom->normal.cross(force));
 		scene->forces.addTorque(id2, (geom->radius2 - 0.5 * geom->penetrationDepth) * geom->normal.cross(force));
+	} else { // The general case
+		Vector3r shift2 = scene->cell->hSize * contact->cellDist.cast<Real>();
+		State* de1 = Body::byId(id1, scene)->state.get();
+		State* de2 = Body::byId(id2, scene)->state.get();
+		applyForceAtContactPoint(-phys->normalForce - shearForce, geom->contactPoint, id1, de1->se3.position, id2, de2->se3.position+shift2);
 	}
 	return true;
 }
