@@ -201,7 +201,7 @@ variables:
     - if grep -q "Arch Linux" /etc/issue; then /usr/sbin/uname -m; else  /usr/bin/dpkg --print-architecture ; fi
     - echo -e "\n\e[93m===\n(make_minimal only) clang-format reports CHANGED_LINES = "$CHANGED_LINES"\n===\e[0m\n";
   tags:
-    - fast
+    - grenoble
 
 .artifacts_template: &artifacts_definition
   artifacts:
