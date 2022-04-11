@@ -652,7 +652,7 @@ copyright = u'2009, Václav Šmilauer'
 # built documents.
 #
 # The short X.Y version.
-version = '3rd ed.'
+version = yade.config.version
 # The full version, including alpha/beta/rc tags.
 release = '3rd ed.'
 
