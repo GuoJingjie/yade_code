@@ -75,19 +75,6 @@ public:
 #ifdef YADE_DEFORM
 		((Real,dR, 0.0,,   "Sphere deformation"))
 #endif
-#ifdef THERMAL
-		((Real,temp,0,,"temperature of the body"))
-		((Real,oldTemp,0,,"change of temp (for thermal expansion)"))
-		((Real,stepFlux,0,,"flux during current step"))
-		((Real,Cp,0,,"Heat capacity of the body"))
-		((Real,k,0,,"thermal conductivity of the body"))
-		((Real,alpha,0,,"coefficient of thermal expansion"))
-		((bool,Tcondition,false,,"indicates if particle is assigned dirichlet (constant temp) condition"))
-		((int,boundaryId,-1,,"identifies if a particle is associated with constant temperature thrermal boundary condition"))
-        	((Real,stabilityCoefficient,0,,"sum of solid and fluid thermal resistivities for use in automatic timestep estimation"))
-        	((Real,delRadius,0,,"radius change due to thermal expansion"))
-		((bool,isCavity,false,,"flag used for unbounding cavity bodies"))
-#endif
 		,
 		/* additional initializers */
 			((pos,se3.position))
@@ -107,5 +94,32 @@ public:
 	DECLARE_LOGGER;
 };
 REGISTER_SERIALIZABLE(State);
+
+class ThermalState : public State {
+	// clang-format off
+	YADE_CLASS_BASE_DOC_ATTRS_INIT_CTOR_PY(ThermalState,State,"State containing quantities for thermal physics.",
+		((Real,temp,0,,"temperature of the body"))
+		((Real,oldTemp,0,,"change of temp (for thermal expansion)"))
+		((Real,stepFlux,0,,"flux during current step"))
+		((Real,Cp,0,,"Heat capacity of the body"))
+		((Real,k,0,,"thermal conductivity of the body"))
+		((Real,alpha,0,,"coefficient of thermal expansion"))
+		((bool,Tcondition,false,,"indicates if particle is assigned dirichlet (constant temp) condition"))
+		((int,boundaryId,-1,,"identifies if a particle is associated with constant temperature thrermal boundary condition"))
+    ((Real,stabilityCoefficient,0,,"sum of solid and fluid thermal resistivities for use in automatic timestep estimation"))
+    ((Real,delRadius,0,,"radius change due to thermal expansion"))
+		((bool,isCavity,false,,"flag used for unbounding cavity bodies"))
+		,
+		,
+		createIndex();
+		,
+		YADE_PY_TOPINDEXABLE(ThermalState)
+	);
+	// clang-format on
+	REGISTER_INDEX_COUNTER(ThermalState);
+	DECLARE_LOGGER;
+	//REGISTER_CLASS_INDEX(ThermalState, State);
+};
+REGISTER_SERIALIZABLE(ThermalState);
 
 } // namespace yade

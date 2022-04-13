@@ -10,7 +10,7 @@
 
 /* Theoretical framework and experimental validation presented in:
 
-Caulk, R., Scholtès, L., Krzaczek, M., & Chareyre, B. (2020). A pore-scale thermo–hydro-mechanical model for particulate systems. Computer Methods in Applied Mechanics and Engineering, 372, 113292. 
+Caulk, R., Scholtès, L., Krzaczek, M., & Chareyre, B. (2020). A pore-scale thermo–hydro-mechanical model for particulate systems. Computer Methods in Applied Mechanics and Engineering, 372, 113292.
 
 Caulk, R. and Chareyre, B. (2019) An open framework for the simulation of thermal-hydraulic-mechanical processes in discrete element systems. Thermal Process Engineering: Proceedings of DEM8, Enschede Netherlands, July 2019.
 
@@ -164,7 +164,20 @@ void ThermalEngine::setInitialValues()
 	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 	{
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-		auto* state = b->state.get();
+		/* b->state is the parent class "State," but we need to add information
+		from the child class "ThermalState" */
+
+		/* avoid resetting state for JCFpm since state is already replaced upon body
+		creation with newAssocState() */
+		if (dynamic_cast<ThermalState*>(b->state.get()) == nullptr)
+		{
+			/*all other materials need the ThermalState members, but body state will
+			always need to be the parent class "state," so we create our new child
+			class and then upcast a new ThermalState */
+			b->state = YADE_PTR_CAST<State>(makeThermalState(b->state));
+		}
+		// we can downcast now because we know the child ptr origin
+		auto* state = dynamic_cast<ThermalState*>(b->state.get());
 		state->temp = particleT0;
 		state->k = particleK;
 		state->Cp = particleCp;
@@ -174,12 +187,31 @@ void ThermalEngine::setInitialValues()
 	YADE_PARALLEL_FOREACH_BODY_END();
 }
 
+shared_ptr<ThermalState> ThermalEngine::makeThermalState(const shared_ptr<State> state)
+{
+	shared_ptr<ThermalState> thState(new ThermalState);
+	thState->se3 = state->se3;
+	thState->vel = state->vel;
+	thState->mass = state->mass;
+	thState->angVel = state->angVel;
+	thState->angMom = state->angMom;
+	thState->inertia = state->inertia;
+	thState->refPos = state->refPos;
+	thState->refOri = state->refOri;
+	thState->blockedDOFs = state->blockedDOFs;
+	thState->isDamped = state->isDamped;
+	thState->densityScaling = state->densityScaling;
+	thState->pos = state->se3.position;
+	thState->ori = state->se3.orientation;
+	return thState;
+}
+
 void ThermalEngine::timeStepEstimate()
 {
 	//	#pragma omp parallel for
 	for (const auto& b : *scene->bodies) {
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-		auto*      thState = b->state.get();
+		auto*      thState = dynamic_cast<ThermalState*>(b->state.get());
 		Sphere*    sphere = dynamic_cast<Sphere*>(b->shape.get());
 		const Real mass = (particleDensity > 0 ? particleDensity * M_PI * pow(sphere->radius, 2) : thState->mass);
 		const Real bodyTimeStep = mass * thState->Cp / thState->stabilityCoefficient;
@@ -256,7 +288,7 @@ void ThermalEngine::setConductionBoundary()
 						if (!Body::byId(id2)) continue;
 						const shared_ptr<Body>& b = (*bodies)[id2];
 						if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-						auto* thState = b->state.get();
+						auto* thState = dynamic_cast<ThermalState*>(b->state.get());
 						thState->Tcondition = true;
 						thState->temp = bi.value;
 						thState->boundaryId = bound;
@@ -325,7 +357,7 @@ void ThermalEngine::computeSolidFluidFluxes()
 			if (!Body::byId(id)) continue;
 			const shared_ptr<Body>& b = (*bodies)[id];
 			if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-			auto* thState = b->state.get();
+			auto* thState = dynamic_cast<ThermalState*>(b->state.get());
 			if (!cell->info().isCavity
 			    && unboundCavityBodies) { // nothing to do with fluxes, but the difficulty required to get here warrants tracking cavitybodies while we are here
 				thState->isCavity = false;
@@ -343,7 +375,7 @@ void ThermalEngine::unboundCavityParticles()
 	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 	{
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-		auto* thState = b->state.get();
+		auto* thState = dynamic_cast<ThermalState*>(b->state.get());
 		if (thState->isCavity) {
 			b->setBounded(false);
 			if (debug) cout << "cavity body unbounded" << endl;
@@ -391,7 +423,7 @@ void ThermalEngine::computeVertexSphericalArea()
 void ThermalEngine::computeFlux(CellHandle& cell, const shared_ptr<Body>& b, const Real surfaceArea)
 {
 	const Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
-	auto*         thState = b->state.get();
+	auto*         thState = dynamic_cast<ThermalState*>(b->state.get());
 	const Real    h = cell->info().NutimesFluidK / (2. * sphere->radius);
 	//const Real h = cell->info().NutimesFluidK / (2.*sphere->radius); // heat transfer coeff assuming Re<<1 (stokes flow)
 	const Real flux = h * surfaceArea * (cell->info().temp() - thState->temp);
@@ -427,8 +459,8 @@ void ThermalEngine::computeSolidSolidFluxes()
 			if (b1_->shape->getClassIndex() != Sphere::getClassIndexStatic() || b2_->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b1_
 			    || !b2_)
 				continue;
-			auto*      thState1 = b1_->state.get();
-			auto*      thState2 = b2_->state.get();
+			auto*      thState1 = dynamic_cast<ThermalState*>(b1_->state.get()); //b1_->state.get();
+			auto*      thState2 = dynamic_cast<ThermalState*>(b2_->state.get()); //b2_->state.get();
 			FrictPhys* phys = static_cast<FrictPhys*>(I->phys.get());
 			if (!first && (thState1->isCavity || thState2->isCavity)) continue; // avoid conduction with placeholder cavity bodies
 			Sphere* sphere1 = dynamic_cast<Sphere*>(b1_->shape.get());
@@ -515,7 +547,7 @@ void ThermalEngine::computeFluidFluidConduction()
 	Tesselation& Tes = flow->solver->T[flow->solver->currentTes];
 	const long   sizeFacets = Tes.facetCells.size();
 //	#ifdef YADE_OPENMP
-//	#pragma omp parallel for  
+//	#pragma omp parallel for
 //	#endif
 	for (long i = 0; i < sizeFacets; i++) {
 		CVector                    fluidSurfK;
@@ -609,7 +641,7 @@ void ThermalEngine::computeNewParticleTemperatures()
 	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 	{
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-		auto* thState = b->state.get();
+		auto* thState = dynamic_cast<ThermalState*>(b->state.get());
 		if (!first && thState->isCavity) continue;
 		Sphere*    sphere = dynamic_cast<Sphere*>(b->shape.get());
 		const Real density = (particleDensity > 0 ? particleDensity : b->material->density);
@@ -631,7 +663,7 @@ void ThermalEngine::thermalExpansion()
 		{
 			if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
 			Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
-			auto*   thState = b->state.get();
+			auto*   thState = dynamic_cast<ThermalState*>(b->state.get());
 			if (!first && thState->isCavity) continue;
 			if (!thState->Tcondition) {
 				thState->delRadius = thState->alpha * sphere->radius * (thState->temp - thState->oldTemp);
@@ -693,7 +725,7 @@ void ThermalEngine::computeCellVolumeChangeFromSolidVolumeChange(CellHandle& cel
 		const shared_ptr<Body>& b = (*bodies)[id];
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
 		Sphere* sphere = dynamic_cast<Sphere*>(b->shape.get());
-		auto*   thState = b->state.get();
+		auto*   thState = dynamic_cast<ThermalState*>(b->state.get());
 		if (!first && thState->isCavity) continue; // don't consider fake cavity bodies
 		const Real surfaceArea
 		        = cell->info().sphericalVertexSurface[v]; // from last fluid engine remesh. We could store this in cell->info() if it becomes a burden
@@ -767,7 +799,7 @@ void ThermalEngine::applyTempDeltaToSolids(Real delT2)
 	YADE_PARALLEL_FOREACH_BODY_BEGIN(const shared_ptr<Body>& b, scene->bodies)
 	{
 		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
-		auto* thState = b->state.get();
+		auto* thState = dynamic_cast<ThermalState*>(b->state.get());
 		if (!thState->Tcondition) { thState->temp += delT2; }
 	}
 	YADE_PARALLEL_FOREACH_BODY_END();

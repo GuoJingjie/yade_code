@@ -97,6 +97,7 @@ public:
 	Real    getThermalDT() const { return thermalDT; }
 	int     getConductionIterPeriod() const { return conductionIterPeriod; }
 	Real    getMaxTimeStep() const { return maxTimeStep; }
+	shared_ptr<ThermalState> makeThermalState(const shared_ptr<State> state);
 	//void         applyBoundaryHeatFluxes();
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_INIT_CTOR_PY(ThermalEngine,PartialEngine,"An engine typically used in combination with FlowEngine to simulate thermal-hydraulic-mechanical processes. Framework description and demonstration presented within the following paper [Caulk2019a]_ :Caulk, R.A. and Chareyre, B. (2019) An open framework for the simulation of thermal-hydraulic-mechanical processes in discrete element systems. Thermal Process Engineering: Proceedings of DEM8 International Conference for Discrete Element Methods, Enschede Netherlands, July 2019.",
@@ -151,6 +152,29 @@ public:
 	DECLARE_LOGGER;
 };
 REGISTER_SERIALIZABLE(ThermalEngine);
+
+
+// class ThermalState : public State {
+// 	// clang-format off
+// 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(ThermalState,State,"State containing quantities for thermal physics.",
+// 		((Real,temp,0,,"temperature of the body"))
+// 		((Real,oldTemp,0,,"change of temp (for thermal expansion)"))
+// 		((Real,stepFlux,0,,"flux during current step"))
+// 		((Real,Cp,0,,"Heat capacity of the body"))
+// 		((Real,k,0,,"thermal conductivity of the body"))
+// 		((Real,alpha,0,,"coefficient of thermal expansion"))
+// 		((bool,Tcondition,false,,"indicates if particle is assigned dirichlet (constant temp) condition"))
+// 		((int,boundaryId,-1,,"identifies if a particle is associated with constant temperature thrermal boundary condition"))
+//     ((Real,stabilityCoefficient,0,,"sum of solid and fluid thermal resistivities for use in automatic timestep estimation"))
+//     ((Real,delRadius,0,,"radius change due to thermal expansion"))
+// 		((bool,isCavity,false,,"flag used for unbounding cavity bodies"))
+// 		,
+// 		createIndex();
+// 	);
+// 	// clang-format on
+// 	REGISTER_CLASS_INDEX(ThermalState, State);
+// };
+// REGISTER_SERIALIZABLE(ThermalState);
 
 } // namespace yade
 
