@@ -113,12 +113,12 @@ class ThermalState : public State {
 		,
 		createIndex();
 		,
-		YADE_PY_TOPINDEXABLE(ThermalState)
+		//YADE_PY_TOPINDEXABLE(ThermalState)
 	);
 	// clang-format on
-	REGISTER_INDEX_COUNTER(ThermalState);
+	//REGISTER_INDEX_COUNTER(ThermalState);
 	DECLARE_LOGGER;
-	//REGISTER_CLASS_INDEX(ThermalState, State);
+	REGISTER_CLASS_INDEX(ThermalState, State);
 };
 REGISTER_SERIALIZABLE(ThermalState);
 
