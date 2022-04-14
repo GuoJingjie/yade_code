@@ -32,7 +32,7 @@ Caulk, R. and Chareyre, B. (2019) An open framework for the simulation of therma
 namespace yade { // Cannot have #include directive inside.
 
 CREATE_LOGGER(ThermalEngine);
-YADE_PLUGIN((ThermalEngine));
+YADE_PLUGIN((ThermalEngine)(ThermalState));
 
 ThermalEngine::~ThermalEngine() { } // destructor
 
