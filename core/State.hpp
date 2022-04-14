@@ -113,10 +113,8 @@ class ThermalState : public State {
 		,
 		createIndex();
 		,
-		//YADE_PY_TOPINDEXABLE(ThermalState)
 	);
 	// clang-format on
-	//REGISTER_INDEX_COUNTER(ThermalState);
 	DECLARE_LOGGER;
 	REGISTER_CLASS_INDEX(ThermalState, State);
 };
