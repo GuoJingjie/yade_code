@@ -42,7 +42,7 @@ void ThermalEngine::action()
 	if (first) setInitialValues();
 	if (debug) cout << "initial values set" << endl;
 	for (const auto& e : Omega::instance().getScene()->engines) {
-		if (e->getClassName() == "FlowEngine") { flow = dynamic_cast<FlowEngineT*>(e.get()); }
+		if (dynamic_cast<FlowEngineT*>(e.get())) flow = dynamic_cast<FlowEngineT*>(e.get());
 	}
 	// some initialization stuff for timestep and efficiency.
 	elapsedTime += scene->dt;
