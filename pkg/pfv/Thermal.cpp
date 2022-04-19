@@ -169,42 +169,44 @@ void ThermalEngine::setInitialValues()
 
 		/* avoid resetting state for JCFpm since state is already replaced upon body
 		creation with newAssocState() */
-		if (dynamic_cast<ThermalState*>(b->state.get()) == nullptr)
-		{
-			/*all other materials need the ThermalState members, but body state will
-			always need to be the parent class "state," so we create our new child
-			class and then upcast a new ThermalState */
-			b->state = YADE_PTR_CAST<State>(makeThermalState(b->state));
-		}
-		// we can downcast now because we know the child ptr origin
+		// if (dynamic_cast<ThermalState*>(b->state.get()) == nullptr)
+		// {
+		// 	/*all other materials need the ThermalState members, but body state will
+		// 	always need to be the parent class "state," so we create our new child
+		// 	class and then upcast a new ThermalState */
+		// 	b->state = YADE_PTR_CAST<State>(makeThermalState(b->state));
+		// }
+		// we can downcast now because we know the child ptr origin (FlowEngine already changed the state)
 		auto* state = dynamic_cast<ThermalState*>(b->state.get());
+		cout << "downcasted to ThermalState" << endl;
 		state->temp = particleT0;
 		state->k = particleK;
 		state->Cp = particleCp;
 		state->alpha = particleAlpha;
 		if (advection) state->isCavity = true; // easiest to start by assuming cavity and flip if touching non-cavity
+		cout << "set thermal properties of body" << endl;
 	}
 	YADE_PARALLEL_FOREACH_BODY_END();
 }
 
-shared_ptr<ThermalState> ThermalEngine::makeThermalState(const shared_ptr<State> state)
-{
-	shared_ptr<ThermalState> thState(new ThermalState);
-	thState->se3 = state->se3;
-	thState->vel = state->vel;
-	thState->mass = state->mass;
-	thState->angVel = state->angVel;
-	thState->angMom = state->angMom;
-	thState->inertia = state->inertia;
-	thState->refPos = state->refPos;
-	thState->refOri = state->refOri;
-	thState->blockedDOFs = state->blockedDOFs;
-	thState->isDamped = state->isDamped;
-	thState->densityScaling = state->densityScaling;
-	thState->pos = state->se3.position;
-	thState->ori = state->se3.orientation;
-	return thState;
-}
+// shared_ptr<ThermalState> ThermalEngine::makeThermalState(const shared_ptr<State> state)
+// {
+// 	shared_ptr<ThermalState> thState(new ThermalState);
+// 	thState->se3 = state->se3;
+// 	thState->vel = state->vel;
+// 	thState->mass = state->mass;
+// 	thState->angVel = state->angVel;
+// 	thState->angMom = state->angMom;
+// 	thState->inertia = state->inertia;
+// 	thState->refPos = state->refPos;
+// 	thState->refOri = state->refOri;
+// 	thState->blockedDOFs = state->blockedDOFs;
+// 	thState->isDamped = state->isDamped;
+// 	thState->densityScaling = state->densityScaling;
+// 	thState->pos = state->se3.position;
+// 	thState->ori = state->se3.orientation;
+// 	return thState;
+// }
 
 void ThermalEngine::timeStepEstimate()
 {

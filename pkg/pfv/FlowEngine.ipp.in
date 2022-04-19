@@ -69,6 +69,7 @@ void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
 	  if (phiZero>0) solver->adjustCavityCompressibility(pZero);
 	  backgroundSolver=solver;
 	  backgroundCompleted=true;
+		if (thermalEngine) convertSphereStatesToThermalState();
 	}
 
 	#ifdef YADE_OPENMP
@@ -983,6 +984,58 @@ bool TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,
     {neighbor=true;break;}
   }
   return neighbor;
+}
+
+template <class _CellInfo, class _VertexInfo, class _Tesselation, class solverT>
+void TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,solverT>::convertSphereStatesToThermalState()
+{
+	YADE_PARALLEL_FOREACH_BODY_BEGIN(shared_ptr<Body>& b, scene->bodies)
+	{
+		if (b->shape->getClassIndex() != Sphere::getClassIndexStatic() || !b) continue;
+		/* b->state is the parent class "State," but we need to add information
+		from the child class "ThermalState" */
+
+		/* avoid resetting state for JCFpm since state is already replaced upon body
+		creation with newAssocState() */
+		if (dynamic_cast<ThermalState*>(b->state.get()) == nullptr)
+		{
+			/*all other materials need the ThermalState members, but body state will
+			always need to be the parent class "state," so we create our new child
+			class and then upcast a new ThermalState */
+      cout << "about to convert state on body " << b->getId() << endl;
+      shared_ptr<State> newState(new State); //makeThermalState(b->state);
+      cout << "old address " << b->state << endl;
+      cout << "new address " << newState << endl;
+			b->state = newState;
+      cout << "set new state to b->state" << endl;
+		}
+		// we can downcast now because we know the child ptr origin
+		// auto* state = dynamic_cast<ThermalState*>(b->state.get());
+		// cout << "downcasted to ThermalState" << endl;
+		// cout << "set thermal properties of body" << endl;
+	}
+	YADE_PARALLEL_FOREACH_BODY_END();
+  cout << "finished thermal state creation" << endl;
+}
+
+template <class _CellInfo, class _VertexInfo, class _Tesselation, class solverT>
+shared_ptr<State> TemplateFlowEngine_@TEMPLATE_FLOW_NAME@<_CellInfo,_VertexInfo,_Tesselation,solverT>::makeThermalState(const shared_ptr<State> state)
+{
+	shared_ptr<ThermalState> thState(new ThermalState);
+	thState->se3 = state->se3;
+	thState->vel = state->vel;
+	thState->mass = state->mass;
+	thState->angVel = state->angVel;
+	thState->angMom = state->angMom;
+	thState->inertia = state->inertia;
+	thState->refPos = state->refPos;
+	thState->refOri = state->refOri;
+	thState->blockedDOFs = state->blockedDOFs;
+	thState->isDamped = state->isDamped;
+	thState->densityScaling = state->densityScaling;
+	thState->pos = state->se3.position;
+	thState->ori = state->se3.orientation;
+	return thState;
 }
 
 } // namespace yade
