@@ -96,7 +96,7 @@ try {
 	              boost::python::arg("periodic") = false,
 	              boost::python::arg("num")      = -1,
 	              boost::python::arg("seed")     = -1),
-	             R"""(Create a random loose packing of clumps the same way `makeCloud <https://yade-dem.org/doc/yade.pack.html?highlight=makecloud#yade._packSpheres.SpherePack.makeCloud>`_ does with spheres. The parameters ``minCorner``, ``maxCorner``, ``periodic``, ``num`` and ``seed`` are the same as in makeCloud_. The parameter ``clumps`` is a list containing all the different clumps to be appended as ``SpherePack`` objects. Here is an exemple that shows how to create a cloud made of 10 identical clumps :
+	             R"""(Create a random (in particles positions and orientations) cloud of clumps the same way `makeCloud <https://yade-dem.org/doc/yade.pack.html?highlight=makecloud#yade._packSpheres.SpherePack.makeCloud>`_ does with spheres. The parameters ``minCorner``, ``maxCorner``, ``periodic``, ``num`` and ``seed`` are the same as in makeCloud_. The parameter ``clumps`` is a list containing all the different clumps to be appended as ``SpherePack`` objects. Here is an exemple that shows how to create a cloud made of 10 identical clumps :
 
 				.. code-block:: python
 

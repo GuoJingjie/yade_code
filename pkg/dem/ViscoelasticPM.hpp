@@ -68,8 +68,8 @@ public:
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(ViscElPhys,FrictPhys,"IPhys created from :yref:`ViscElMat`, for use with :yref:`Law2_ScGeom_ViscElPhys_Basic`.",
 		((Real,cn,NaN,,"Normal viscous constant"))
 		((Real,cs,NaN,,"Shear viscous constant"))
-		((Real,Fn,0.0,,"Normal force of the contact"))
-		((Real,Fv,0.0,,"Viscous force of the contact"))
+		((Real,Fn,0.0,,"Linear-elastic part of the normal force of the contact"))
+		((Real,Fv,0.0,,"Viscous part of the normal force of the contact"))
 		((Real,mR,0.0,,"Rolling resistance, see [Zhou1999536]_."))
 #ifdef YADE_SPH
 		((bool,SPHmode,false,,"True, if SPH-mode is enabled."))
@@ -141,7 +141,7 @@ public:
       "In this case, the equivalent parameters are evaluated the same way as the previous case with $kn_x = E_x d_x$, "
       "$ks_x = v_x kn_x$, where $E_x$, $v_x$ and $d_x$ are Young's modulus, Poisson's ratio and diameter of particle x. "
       "\n\n - If Young's modulus (young), Poisson's ratio (poisson), normal and tangential restitution coefficient (en,et)"
-      "are precised, the equivalent stiffnesses are evaluated as previously:  $K_n = 2\\frac{kn_1 kn_2}{kn_1 + kn_2}$, "
+      " are precised, the equivalent stiffnesses are evaluated as previously:  $K_n = 2\\frac{kn_1 kn_2}{kn_1 + kn_2}$, "
       "$kn_x = E_x d_x$, $K_s = 2(ks_1 ks_2)/(ks_1 + ks_2)$, $ks_x = v kn_x$. The damping constant is computed at each "
       "contact in order to fulfill the normal restitution coefficient $e_n = (en_1 + en_2)/2$. This is "
       "achieved resolving numerically equation 21 of [Schwager2007]_ (There is in fact a mistake in the article from "

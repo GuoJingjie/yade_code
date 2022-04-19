@@ -3,10 +3,10 @@ Installation
 ###############
 
 * Linux systems:
-  Yade can be installed from packages (pre-compiled binaries) or source code. The choice depends on what you need: if you don't plan to modify Yade itself, package installation is easier. In the contrary case, you must download and install the source code.
+  Yade can be installed from :ref:`packages <provided-packages>` (pre-compiled binaries) or :ref:`source code <install-from-source-code>`. The choice depends on what you need: if you don't plan to modify Yade itself, package installation is easier. In the contrary case, you must download and install the source code.
 
 * Other Operating Systems:
-  Jump to the `last section <https://yade-dem.org/doc/installation.html#yubuntu>`_ of this page.
+  Emulating Linux systems including Yade is proposed in this case, through :ref:`docker images <docker-install>` as well as `flash-drive or virtual machines <https://yade-dem.org/doc/installation.html#yubuntu>`_ images.
 
 * 64 bit Operating Systems required; no support for 32 bit (i386).
 
@@ -113,14 +113,13 @@ To remove our key from keyring, execute the following command::
 Daily and stable Yade versions can coexist without any conflicts, i.e., you can use ``yade`` and ``yadedaily``
 at the same time.
 
-.. _install-from-source-code:
-
+.. _docker-install:
 
 Docker
 ----------
 
 Yade can be installed using docker images, which are daily built.
-Images contain both stable and dialy versions of packages.
+Images contain both stable and daily versions of packages.
 Docker images are based on supported distributions:
 
 
@@ -168,6 +167,7 @@ After the container is pulled and is running, Yade functionality can be checked:
 	yadedaily --test
 	yadedaily --check
 
+.. _install-from-source-code:
 
 Source code
 ------------
@@ -318,7 +318,7 @@ For the folder structure given above call the following command in the folder "b
 
 	cmake -DCMAKE_INSTALL_PREFIX=../install ../trunk
 
-Additional options can be configured in the same line with the following
+Additional options (e.g., optional YADE features) can be configured in the same line with the following
 syntax::
 
 	cmake -DOPTION1=VALUE1 -DOPTION2=VALUE2
@@ -376,6 +376,8 @@ The following cmake options are available: (see the `source code <https://gitlab
 	* PYTHON_VERSION: force Python version to the given one, e.g. ``-DPYTHON_VERSION=3.5``. Set to -1 to automatically use the last version on the system (-1 by default)
 	* DISABLE_PKGS: comma-separated list of disabled packages from 'pkg', 'preprocessing' or 'postprocessing', if empty all packages will be built. The packages `common` and `dem` are required to run, but the project can be compiled without them. (EMPTY by default)
 
+Maintaining a consistent choice for options values, in addition to using the same version of source code, is often necessary for successfully reloading previous Yade saves, see :yref:`O.load<Omega.load>`.
+
 It is possible to disable all options to create the slim build::
 
 	cmake -DDISABLE_ALL=ON
@@ -409,7 +411,7 @@ and disabled options at the end. Then start the actual compilation process with:
 	make
 
 The compilation process can take a considerable amount of time, be patient.
-If you are using a multi-core systems you can use the parameter ``-j`` to speed-up the compilation
+If you are using a multi-core system you can use the parameter ``-j`` to speed-up the compilation
 and split the compilation onto many cores. For example, on 4-core machines
 it would be reasonable to set the parameter ``-j4``. Note, Yade requires
 approximately 3GB RAM per core for compilation, otherwise the swap-file will be used
