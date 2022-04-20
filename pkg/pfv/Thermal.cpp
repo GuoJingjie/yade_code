@@ -36,6 +36,43 @@ YADE_PLUGIN((ThermalEngine)(ThermalState));
 
 ThermalEngine::~ThermalEngine() { } // destructor
 
+void ThermalEngine::convertSphereStatesToThermalState()
+{
+	FOREACH(const shared_ptr<Body>& b, *Omega::instance().getScene()->bodies)
+	{
+        cerr << "first test " << b->getId();
+		if (!b || (b->shape->getClassIndex() != Sphere::getClassIndexStatic())) continue;
+        cerr << "ok" << endl;
+		/* b->state is the parent class "State," but we need to add information
+		from the child class "ThermalState" */
+
+		/* avoid resetting state for JCFpm since state is already replaced upon body
+		creation with newAssocState() */
+		if (!dynamic_cast<ThermalState*>(b->state.get()))
+		{
+			/*all other materials need the ThermalState members, but body state will
+			always need to be the parent class "state," so we create our new child
+			class and then upcast a new ThermalState */
+      cerr << "about to convert state on body " << b->getId() << endl;
+      shared_ptr<State> newState(new State); //makeThermalState(b->state);
+      shared_ptr<State> newState2(new State); //makeThermalState(b->state);
+      cerr<<"dumb test"<<endl;
+      newState = newState2;
+      cerr << "old address " << b->state << " "<< b->state->getClassIndexStatic()<< " "<< b->shape->getClassIndex()<<endl;
+      cerr << "new address " << newState << " "<< newState->getClassIndexStatic()<< " " <<Sphere::getClassIndexStatic() <<endl;
+			b->state = newState;
+      cerr << "set new state to b->state" << endl;
+		}
+		// we can downcast now because we know the child ptr origin
+		// auto* state = dynamic_cast<ThermalState*>(b->state.get());
+		// cout << "downcasted to ThermalState" << endl;
+		// cout << "set thermal properties of body" << endl;
+	}
+// 	YADE_PARALLEL_FOREACH_BODY_END();
+  cerr << "finished thermal state creation" << endl;
+}
+
+
 void ThermalEngine::action()
 {
 	scene = Omega::instance().getScene().get();
