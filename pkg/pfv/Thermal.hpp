@@ -140,7 +140,6 @@ public:
         	((Real,minimumFluidCondDist,0,,"Useful for maintaining stability despite poor external triangulations involving flat tetrahedrals. Consider setting to minimum particle diameter to keep scale."))
 		,
 		/* extra initializers */
-                //
 		,
 		/* ctor */
 		energySet=false;timeStepEstimated=false;thermalDT=0;elapsedTime=0;elapsedIters=0;conductionIterPeriod=1;first=true;runConduction=false;maxTimeStep=10000;Nu=0;NutimesFluidK=0;Pr=0;
