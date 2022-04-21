@@ -98,8 +98,8 @@ public:
 	int     getConductionIterPeriod() const { return conductionIterPeriod; }
 	Real    getMaxTimeStep() const { return maxTimeStep; }
 	shared_ptr<State> makeThermalState(const shared_ptr<State> state);
-        bool convertSphereStatesToThermalState();
-        bool    setThermalStates () { return convertSphereStatesToThermalState();}
+        // bool convertSphereStatesToThermalState();
+        // bool    setThermalStates () { return convertSphereStatesToThermalState();}
 	//void         applyBoundaryHeatFluxes();
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_INIT_CTOR_PY(ThermalEngine,PartialEngine,"An engine typically used in combination with FlowEngine to simulate thermal-hydraulic-mechanical processes. Framework description and demonstration presented within the following paper [Caulk2019a]_ :Caulk, R.A. and Chareyre, B. (2019) An open framework for the simulation of thermal-hydraulic-mechanical processes in discrete element systems. Thermal Process Engineering: Proceedings of DEM8 International Conference for Discrete Element Methods, Enschede Netherlands, July 2019.",
@@ -150,7 +150,7 @@ public:
         	.def("getConductionIterPeriod",&ThermalEngine::getConductionIterPeriod,"let user check estimated conductionIterPeriod .")
         	.def("getMaxTimeStep",&ThermalEngine::getMaxTimeStep,"let user check estimated maxTimeStep.")
 		.def("setReynoldsNumbers",&ThermalEngine::setReynoldsNumbers,"update the cell reynolds numbers manually (computationally expensive)")
-                .def("setThermalStates",&ThermalEngine::setThermalStates,"Must be explicitly called before the first iteration.")
+                // .def("setThermalStates",&ThermalEngine::setThermalStates,"Must be explicitly called before the first iteration.")
 	)
 	// clang-format on
 	DECLARE_LOGGER;
