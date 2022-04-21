@@ -124,8 +124,8 @@ class TemplateFlowEngine_@TEMPLATE_FLOW_NAME@ : public PartialEngine
 		void initializeVolumes (Solver& flow);
 		void boundaryConditions(Solver& flow);
 		void thermalBoundaryConditions(Solver& flow);
-    void convertSphereStatesToThermalState();
-    shared_ptr<State> makeThermalState(shared_ptr<State> state);
+                void convertSphereStatesToThermalState();
+                shared_ptr<State> makeThermalState(shared_ptr<State> state);
 		void remeshForFreshlyBrokenBonds ();
 		void pyInitializeVolumes () {if (solver) initializeVolumes(*solver); else LOG_WARN("Solver not initialized");}
 		void pyUpdateVolumes () {if (solver) updateVolumes(*solver); else LOG_WARN("Solver not initialized");}
