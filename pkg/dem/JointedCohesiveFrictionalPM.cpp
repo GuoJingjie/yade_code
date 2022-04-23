@@ -18,7 +18,7 @@ namespace yade { // Cannot have #include directive inside.
 using math::max;
 using math::min; // using inside .cpp file is ok.
 
-YADE_PLUGIN((JCFpmMat)(JCFpmState)(JCFpmPhys)(Ip2_JCFpmMat_JCFpmMat_JCFpmPhys)(Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM)(ThermalState));
+YADE_PLUGIN((JCFpmMat)(JCFpmState)(JCFpmPhys)(Ip2_JCFpmMat_JCFpmMat_JCFpmPhys)(Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM));
 
 /********************** Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM ****************************/
 CREATE_LOGGER(Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM);
