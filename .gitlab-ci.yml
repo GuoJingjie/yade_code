@@ -359,7 +359,7 @@ make_asan:
     - export ASAN_OPTIONS=detect_leaks=0:log_path=stdout:verify_asan_link_order=false
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
   tags:
-    - debug
+    - grenoble
   artifacts:
     when: always
     paths:
@@ -394,7 +394,7 @@ make_asan_HP:
     - export ASAN_OPTIONS=detect_leaks=0:log_path=stdout:verify_asan_link_order=false
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
   tags:
-    - debug
+    - grenoble
   artifacts:
     when: always
     paths:
