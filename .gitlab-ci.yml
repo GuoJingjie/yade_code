@@ -185,7 +185,8 @@ variables:
     - if [[ ${CI_RUNNER_DESCRIPTION} == "y8pak" || ${CI_RUNNER_DESCRIPTION} == "c8pak" || ${CI_RUNNER_DESCRIPTION} == "y9pak" || ${CI_RUNNER_DESCRIPTION} == "c9pak" ]] ; then export MAX_CCACHE="500.0G"; else export MAX_CCACHE="500.0G"; fi
     - if [[ ${CI_RUNNER_DESCRIPTION} == "atak0" ]] ; then export MAX_CCACHE="100.0G"; fi
     - echo "max_size = ${MAX_CCACHE}" > ~/.ccache/ccache.conf
-    - echo "temporary_dir = /data/ccache_tempdir" > ~/.ccache/ccache.conf
+    - mkdir /tmp/ccache_tmp
+    - echo "temporary_dir = /tmp/ccache_tmp" > ~/.ccache/ccache.conf
     - ccache -s
     - make install -j $JOBSNUM
     - make clean
