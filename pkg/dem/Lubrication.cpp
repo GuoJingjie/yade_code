@@ -342,7 +342,8 @@ Real Law2_ScGeom_ImplicitLubricationPhys::trapz_integrate_u(
         const Real& eps,
         Real        dt,
         bool        withContact,
-        int         depth)
+        int         depth,
+        bool        force)
 {
 	Real         u = 0; // gap distance (by which normal lubrication terms are divided)
 	Real /*a=1*/ b, c;
@@ -399,23 +400,16 @@ Real Law2_ScGeom_ImplicitLubricationPhys::trapz_integrate_u(
                 }
 		bool hasContact = u < eps;
 		// if contact appeared/disappeared recalculate with different coefficients (another recursion)
-		if (withContact and not hasContact) {
-			// 			LOG_WARN("withContact and not hasContact");
-			// 			prevDotU*=keff/k;
-			// 			keff=k; un_eff=un_curr;// for calculating the relevant prevDotU later
-			return trapz_integrate_u(prevDotU, un_prev, u_prev, un_curr, nu, k, keps, eps, dt, false, depth);
-		} else if (not withContact and hasContact) {
-			// 			LOG_WARN("withContact=false and hasContact");
-			// 			prevDotU*=k/keff;
-			return trapz_integrate_u(prevDotU, un_prev, u_prev, un_curr, nu, k, keps, eps, dt, true, depth);
-		}
-
-		// The normal case non-recursive case, finally.
+        // the argument "force=true" is used here to avoid entering a (rare) infinite recursion when "u" (the gap) and "eps" are nearly equal;
+        // in such case roundoff errors make it possible that the no-contact integration predicts a contact, whereas the with-contact intergation predicts no contact.
+        // with force=true the status is switched only once
+		if (withContact != hasContact and not force) return trapz_integrate_u(prevDotU, un_prev, u_prev, un_curr, nu, k, keps, eps, dt, hasContact, depth, /*force?*/ true);
+		
+		// The normal non-recursive case, finally.
 		// After a successful integration update the variables and return total force
 		prevDotU = keff * u * (un_eff - u); //set for next iteration
 		un_prev  = un_curr;
 		u_prev   = u;
-//                 if (u<=1e-15) LOG_WARN("u<=1e-15, rr0="<<rr[0]<<" "<<rr[1]<<" "<<delta<<" "<<b<<" "<<c<<" "<<u )
 		return k * (un_curr - u);
 	}
 }

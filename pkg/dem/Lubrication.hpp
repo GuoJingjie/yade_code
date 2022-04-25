@@ -138,7 +138,8 @@ public:
 	        const Real& eps,
 	        Real        dt,
 	        bool        withContact,
-	        int         depth = 0);
+	        int         depth = 0,
+            bool        force=false);
 
 	Real normalForce_trpz_adim(LubricationPhys* phys, ScGeom* geom, Real undot, bool isNew);
 	Real trapz_integrate_u_adim(Real const& u_n, Real const& eps, Real const& dt, Real const& prev_d, bool const& inContact, Real& prevDotU);
