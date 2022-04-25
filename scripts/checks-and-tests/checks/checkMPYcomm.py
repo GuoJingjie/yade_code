@@ -2,13 +2,13 @@ if 'MPI' in yade.config.features:
 
 	try:
 		from yade import mpy as mp
-		mp.initialize(10)
+		mp.initialize(3)
 	except:
 		raise YadeCheckError("Error in initializing mpy ")
 
 	if mp.rank == 0:
 		lenOther = mp.sendCommand(executors="all", command="len(O.bodies)", wait=True)
-		if lenOther != [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]:
+		if lenOther != [0, 0, 0]:
 			raise YadeCheckError("wrong subdomains sizes")
 
 		## pickable objects
@@ -28,23 +28,23 @@ if 'MPI' in yade.config.features:
 		wallId = O.bodies.append(box(center=(0, 0, 0), extents=(2, 0, 1), fixed=True))  #master only
 
 		added = mp.sendCommand(executors="all", command="len(O.bodies)", wait=True)
-		if added != [1, 4, 3, 3, 3, 3, 3, 3, 3, 3]:
+		if added != [1, 4, 3]:
 			raise YadeCheckError("wrong subdomains sizes")
 
 		# set remote attributes
 		mp.sendCommand(executors="slaves", command="list(map(lambda b: setattr(b,'subdomain',rank),O.bodies))", wait=True)
 		assigned = mp.sendCommand("slaves", "len([b for b in O.bodies if b.subdomain==rank])", True)
 
-		if assigned != [4, 3, 3, 3, 3, 3, 3, 3, 3]:
+		if assigned != [4, 3]:
 			raise YadeCheckError("failed setting remote attribute")
 
 		# Kill workers pool, then start again with a new
 		# any data in the old threads is lost
 		mp.disconnect()
-		mp.initialize(8)
+		mp.initialize(4)
 		# not all workers will be displayed because mp.MAX_RANK_OUTPUT=5 by default
 		newSizes = mp.sendCommand(executors="slaves", command="len(O.bodies)", wait=True)
-		if newSizes != [0, 0, 0, 0, 0, 0, 0]:
+		if newSizes != [0, 0, 0]:
 			raise YadeCheckError("dirty scenes after a reconnexion")
 
 	elif mp.rank == None:
