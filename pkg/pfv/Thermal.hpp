@@ -97,6 +97,8 @@ public:
 	Real    getThermalDT() const { return thermalDT; }
 	int     getConductionIterPeriod() const { return conductionIterPeriod; }
 	Real    getMaxTimeStep() const { return maxTimeStep; }
+    void    makeThermal(); 
+    bool    checkThermal(); // return false and print warning if some bodies don't have a thermal state
 	//void         applyBoundaryHeatFluxes();
 	// clang-format off
 		YADE_CLASS_BASE_DOC_ATTRS_INIT_CTOR_PY(ThermalEngine,PartialEngine,"An engine typically used in combination with FlowEngine to simulate thermal-hydraulic-mechanical processes. Framework description and demonstration presented within the following paper [Caulk2019a]_ :Caulk, R.A. and Chareyre, B. (2019) An open framework for the simulation of thermal-hydraulic-mechanical processes in discrete element systems. Thermal Process Engineering: Proceedings of DEM8 International Conference for Discrete Element Methods, Enschede Netherlands, July 2019.",
@@ -126,8 +128,7 @@ public:
 		((Real,fluidConductionAreaFactor,1.,,"Factor for the porethroat area (used for fluid-fluid conduction model)"))
 		((Real,particleAlpha,11.6e-6,,"Particle volumetric thermal expansion coeffcient"))
 		((Real,particleDensity,0,,"If > 0, this value will override material density for thermodynamic calculations (useful for quasi-static simulations involving unphysical particle densities)"))
-        	((Real
-,fluidK,0.580,,"Thermal conductivity of the fluid."))
+        ((Real,fluidK,0.580,,"Thermal conductivity of the fluid."))
 		((Real,uniformReynolds,-1.,,"Control reynolds number in all cells (mostly debugging purposes). "))
 		((Real,fluidBulkModulus,0,,"If > 0, thermalEngine uses this value instead of flow.fluidBulkModulus."))
 		((Real, delT, 0,,"Allows user to apply a delT to solids and observe macro thermal expansion. Resets to 0 after one conduction step."))
@@ -135,17 +136,21 @@ public:
         	((Real,porosityFactor,0,,"If >0, factors the fluid thermal expansion. Useful for simulating low porosity matrices."))
         	((bool,tempDependentFluidBeta,false,,"If true, fluid volumetric thermal expansion coefficient, :yref:`ThermalEngine::fluidBeta`, is temperature dependent (linear model between 20-70 degC)"))
         	((Real,minimumFluidCondDist,0,,"Useful for maintaining stability despite poor external triangulations involving flat tetrahedrals. Consider setting to minimum particle diameter to keep scale."))
+            ((unsigned,lenBodies,0,,"cache the number of thermal bodies to perform checks and raise warnings if newly inserted bodies are not thermal"))
 		,
 		/* extra initializers */
 		,
 		/* ctor */
-		energySet=false;timeStepEstimated=false;thermalDT=0;elapsedTime=0;elapsedIters=0;conductionIterPeriod=1;first=true;runConduction=false;maxTimeStep=10000;Nu=0;NutimesFluidK=0;Pr=0;
+		energySet=false;timeStepEstimated=false;thermalDT=0;elapsedTime=0;elapsedIters=0;conductionIterPeriod=1;first=true;runConduction=false;maxTimeStep=10000;Nu=0;NutimesFluidK=0;Pr=0;flow=NULL;
+        makeThermal(); // automatically turn State's into ThermalState's, will not work if more spheres are instantiated after this engine
 		,
 		/* py */
         	.def("getThermalDT",&ThermalEngine::getThermalDT,"let user check estimated thermalDT .")
         	.def("getConductionIterPeriod",&ThermalEngine::getConductionIterPeriod,"let user check estimated conductionIterPeriod .")
         	.def("getMaxTimeStep",&ThermalEngine::getMaxTimeStep,"let user check estimated maxTimeStep.")
-		.def("setReynoldsNumbers",&ThermalEngine::setReynoldsNumbers,"update the cell reynolds numbers manually (computationally expensive)")
+            .def("setReynoldsNumbers",&ThermalEngine::setReynoldsNumbers,"update the cell reynolds numbers manually (computationally expensive)")
+            .def("makeThermal",&ThermalEngine::makeThermal,"Assign thermal states to all bodies.")
+            .def("checkThermal",&ThermalEngine::checkThermal,"Check if all bodies have thermal states.")
 	)
 	// clang-format on
 	DECLARE_LOGGER;

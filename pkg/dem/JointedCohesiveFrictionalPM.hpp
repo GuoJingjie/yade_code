@@ -11,14 +11,17 @@ Yade Technical Archive. DOI: 10.5281/zenodo.1202039 */
 #include <pkg/common/ElastMat.hpp>
 #include <pkg/common/NormShearPhys.hpp>
 #include <pkg/dem/ScGeom.hpp>
+#include <core/State.hpp>
 #include <random>
 
 namespace yade { // Cannot have #include directive inside.
 
-/** This class holds information associated with each body state*/
-class JCFpmState : public State {
+/* This class holds information associated with each body state
+We inherit from ThermalState to ensure users can continue using JCFpm with
+ThermalEngine */
+class JCFpmState : public ThermalState {
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS_CTOR(JCFpmState,State,"JCFpm state information about each body.",
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR(JCFpmState,ThermalState,"JCFpm state information about each body.",
 		((int,nbInitBonds,0,,"Number of initial bonds. [-]"))
 		((int,nbBrokenBonds,0,,"Number of broken bonds. [-]"))
 		((Real,damageIndex,0,,"Ratio of broken bonds over initial bonds. [-]"))
@@ -31,7 +34,7 @@ class JCFpmState : public State {
 		createIndex();
 	);
 	// clang-format on
-	REGISTER_CLASS_INDEX(JCFpmState, State);
+	REGISTER_CLASS_INDEX(JCFpmState, ThermalState);
 };
 REGISTER_SERIALIZABLE(JCFpmState);
 
@@ -51,7 +54,7 @@ public:
 		((Real,jointShearStiffness,0.,,"Defines the shear stiffness on the joint surface. [Pa/m]"))
 		((Real,jointTensileStrength,0.,,"Defines the :yref:`maximum admissible normal force in traction<JCFpmPhys.FnMax>` on the joint surface. [Pa]"))
 		((Real,jointCohesion,0.,,"Defines the :yref:`maximum admissible tangential force in shear<JCFpmPhys.FsMax>`, for Fn=0, on the joint surface. [Pa]"))
-		((Real,jointDilationAngle,0,,"Defines the dilatancy of the joint surface (only valid for :yref:`smooth contact logic<Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM.smoothJoint>`). [rad]"))	
+		((Real,jointDilationAngle,0,,"Defines the dilatancy of the joint surface (only valid for :yref:`smooth contact logic<Law2_ScGeom_JCFpmPhys_JointedCohesiveFrictionalPM.smoothJoint>`). [rad]"))
 		((Real,jointFrictionAngle,-1,,"Defines Coulomb friction on the joint surface. [rad]"))
 		,
 		createIndex();
@@ -96,7 +99,7 @@ public:
 			((bool,originalClusterEvent,false,,"the original AE event for a cluster"))
 			((bool,clusteredEvent,false,,"is this interaction part of a cluster?"))
 			((bool,momentBroken,false,,"Flag for moment calculation"))
-			((Real,eventBeginTime,0,,"The time at which event initiated"))			
+			((Real,eventBeginTime,0,,"The time at which event initiated"))
 			((bool,interactionsAdded,false,,"have we added the ints associated with this event?"))
 			((int,nearbyFound,0,,"Count used to debug moment calc"))
 			((int,eventNumber,0,,"cluster event number"))
@@ -125,7 +128,7 @@ public:
 	FUNCTOR2D(JCFpmMat, JCFpmMat);
 	DECLARE_LOGGER;
 	// clang-format off
-		YADE_CLASS_BASE_DOC_ATTRS(Ip2_JCFpmMat_JCFpmMat_JCFpmPhys,IPhysFunctor,"Converts 2 :yref:`JCFpmMat` instances to one :yref:`JCFpmPhys` instance, with corresponding parameters. See :yref:`JCFpmMat` and [Duriez2016]_ for details",                   
+		YADE_CLASS_BASE_DOC_ATTRS(Ip2_JCFpmMat_JCFpmMat_JCFpmPhys,IPhysFunctor,"Converts 2 :yref:`JCFpmMat` instances to one :yref:`JCFpmPhys` instance, with corresponding parameters. See :yref:`JCFpmMat` and [Duriez2016]_ for details",
 			((int,cohesiveTresholdIteration,1,,"should new contacts be cohesive? If strictly negativ, they will in any case. If positiv, they will before this iter, they won't afterward."))
 			((Real,xSectionWeibullShapeParameter,0,,"Shape parameter used to generate interaction radii for the crossSectional areas (changing strength criteria only) according to Weibull distribution. Activated for any value other than 0. Needs to be combined with a :yref:`scale parameter<Ip2_JCFpmMat_JCFpmPhys.xSectionScaleParameter>`)"))
 			((Real,xSectionWeibullScaleParameter,1,,"Scale parameter used to generate interaction radii for the crosssectional areas (changing strength criteria only) according to Weibull distribution. Activated for any value other than 0. Needs to be combined with a :yref:`shape parameter<Ip2_JCFpmMat_JCFpmPhys.xSectionShapeParameter>`"))

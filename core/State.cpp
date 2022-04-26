@@ -4,6 +4,7 @@
 namespace yade { // Cannot have #include directive inside.
 
 CREATE_LOGGER(State);
+CREATE_LOGGER(ThermalState);
 
 void State::setDOFfromVector3r(Vector3r disp, Vector3r rot)
 {

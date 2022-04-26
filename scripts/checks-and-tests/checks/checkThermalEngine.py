@@ -125,10 +125,10 @@ if ('THERMAL' in features):
 	btemp = O.bodies[bodyOfInterest.id].state.temp
 
 	print('ftemp', ftemp, 'btemp', btemp)
-	ftolerance = 1
-	btolerance = 2.15  # see https://gitlab.com/yade-dev/trunk/-/jobs/1259015083
-	ftarget = 44.97315073512225
-	btarget = 29.372079897010256
+	ftolerance = 0.02
+	btolerance = 0.02  
+	ftarget = 45
+	btarget = 25
 	if abs(ftemp - ftarget) / ftarget > ftolerance:
 		raise YadeCheckError('ThermalEngine checktest: fluid temp incorrect')
 	if abs(btemp - btarget) / btarget > btolerance:

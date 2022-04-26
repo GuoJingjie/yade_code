@@ -759,7 +759,7 @@ void VTKRecorder::action()
 
 #ifdef THERMAL
 				if (recActive[REC_TEMP]) {
-					auto* thState = b->state.get();
+					auto* thState = dynamic_cast<ThermalState*>(b->state.get());
 					spheresTemp->InsertNextValue(thState->temp);
 				}
 #endif

@@ -31,7 +31,7 @@ BOOST_CLASS_EXPORT_IMPLEMENT(yade::InteractionContainer);
 namespace yade { // Cannot have #include directive inside.
 
 YADE_PLUGIN((Body)(Bound)(Aabb)(Cell)(Dispatcher)(EnergyTracker)(Engine)(FileGenerator)(Functor)(GlobalEngine)(Interaction)(IGeom)(IPhys)(Material)(
-        PartialEngine)(Shape)(State)(TimeStepper)(IntrCallback)
+        PartialEngine)(Shape)(State)(ThermalState)(TimeStepper)(IntrCallback)
 #ifdef YADE_BODY_CALLBACK
                     (BodyCallback)
 #endif
