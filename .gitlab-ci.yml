@@ -512,6 +512,8 @@ make_SSE:
   <<: *platforms_definition
   <<: *gitlab_runner_retry_definition
   stage: test
+  tags:
+    - grenoble
   script:
     - cd ./data
     - git log --oneline -n 5
@@ -769,6 +771,8 @@ test_SSE:
 #    - export OMPI_MCA_rmaps_base_oversubscribe=1
 #    - export OMPI_MCA_btl_vader_single_copy_mechanism=none
 #    - export OMPI_MCA_mpi_yield_when_idle=1 #degraded mode when oversubscribing (https://www.open-mpi.org/faq/?category=running#oversubscribing)
+  tags:
+    - grenoble
   script:
     - cd ./data
     - git log --oneline -n 5
@@ -989,6 +993,8 @@ check_SSE:
   <<: *check_definition
   <<: *skip_WIP_and_Draft
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
+  tags:
+    - grenoble
   dependencies:
     - make_SSE
   needs: ["make_SSE"]
@@ -999,6 +1005,8 @@ check_SSE:
     - export PYTHONUNBUFFERED=1
     - cd build
     - xvfb-run -s "-screen 0 1600x1200x24" make doc
+  tags:
+    - grenoble
   stage: test
   timeout: 45 minutes
   artifacts:
