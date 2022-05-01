@@ -179,12 +179,12 @@ variables:
         "atak0") echo "2"  ;;
         "yade-runner") echo "12" ;;
         "yade-runner-01") echo "1" ;;
-        *) echo "5";;
+        *) echo "4";;
         esac)
     - echo $JOBSNUM
-    - if [[ ${CI_RUNNER_DESCRIPTION} == "y8pak" || ${CI_RUNNER_DESCRIPTION} == "c8pak" || ${CI_RUNNER_DESCRIPTION} == "y9pak" || ${CI_RUNNER_DESCRIPTION} == "c9pak" || ${CI_RUNNER_DESCRIPTION} == "yade-nova1" || ${CI_RUNNER_DESCRIPTION} == "yade-nova2" ]] ; then export MAX_CCACHE="500.0G"; else export MAX_CCACHE="200.0G"; fi
-    - if [[ ${CI_RUNNER_DESCRIPTION} == "atak0" ]] ; then export MAX_CCACHE="100.0G"; fi
-    - echo "max_size = ${MAX_CCACHE}" > ~/.ccache/ccache.conf
+    # Don't touch ~/.ccache/ccache.conf , edit them locally on the server.
+    # Check that it's correct:
+    - cat ~/.ccache/ccache.conf
     - ccache -s
     - make install -j $JOBSNUM
     - make clean
@@ -194,7 +194,7 @@ variables:
     - cd ..
     - if [[ ${TESTS_AFTER_MAKE} == "TESTS_AFTER_MAKE" ]] ; then echo -e "\n===\n\e[44mSingle core test yade --test\e[0m\n===\n"; install/bin/yade-ci --test ; fi
     - if [[ ${TESTS_AFTER_MAKE} == "TESTS_AFTER_MAKE" ]] ; then echo -e "\n===\n\e[44mSingle core check yade --checkall\e[0m\n===\n"; install/bin/yade-ci --checkall; fi
-    - if [[ ${TESTS_AFTER_MAKE} == "TESTS_AFTER_MAKE" ]] ; then echo -e "\n===\n\e[44mParallel check yade -j5 --checkall\e[0m\n===\n"; install/bin/yade-ci -j5 --checkall; fi
+    - if [[ ${TESTS_AFTER_MAKE} == "TESTS_AFTER_MAKE" ]] ; then echo -e "\n===\n\e[44mParallel check yade -j4 --checkall\e[0m\n===\n"; install/bin/yade-ci -j5 --checkall; fi
     - if [[ ${TESTS_AFTER_MAKE} == "TESTS_AFTER_MAKE" ]] ; then xvfb-run -a -s "-screen 0 1600x1200x24" scripts/checks-and-tests/gui/testGui.sh; fi
     - if [[ ${TESTS_AFTER_MAKE} == "TESTS_AFTER_MAKE" ]] ; then install/bin/yade-ci --quickperformance -j8; fi
     - cat /etc/os-release
@@ -774,8 +774,8 @@ test_SSE:
     - export PYTHONUNBUFFERED=1
     - echo -e "\n===\n\e[44mSingle core check yade --checkall\e[0m\n===\n"
     - install/bin/yade-ci --checkall
-    - echo -e "\n===\n\e[44mParallel check yade -j5 --checkall\e[0m\n===\n"
-    - install/bin/yade-ci -j5 --checkall
+    - echo -e "\n===\n\e[44mParallel check yade -j4 --checkall\e[0m\n===\n"
+    - install/bin/yade-ci -j4 --checkall
     - cat /etc/os-release
     - if grep -q "Arch Linux" /etc/issue; then /usr/sbin/uname -m; else  /usr/bin/dpkg --print-architecture ; fi
   timeout: 35 minutes
