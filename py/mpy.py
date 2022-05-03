@@ -666,40 +666,57 @@ def genLocalIntersections(subdomains):
 	for sdId in subdomains:
 		#grid nodes or grid connections could be appended twice or more, as they can participate in multiple pfacets and connexions
 		#this bool list is used to append only once
-		if (ENABLE_PFACETS):
-			if rank==0: print("this one makes mpi inneficient when ENABLE_PFACETS, contact yade devs if you are interested in developping MPI for PFacets")
-			appended = np.repeat([False],len(O.bodies))
 		subdIdx=O.bodies[sdId].subdomain
 		intrs=O.interactions.withBodyAll(sdId)
+		if (ENABLE_PFACETS):
+			appended = np.repeat([False],len(O.bodies))
+		
 		#special case when we get interactions with current domain, only used to define interactions with master, otherwise some intersections would appear twice
 		if subdIdx==rank:
+			if not ENABLE_PFACETS: # no PFacets, same block duplicated below for the opposite case - only way to move ENABLE_PFACETS condition out of the loop
+				for i in intrs:
+					otherId=i.id1 if i.id2==sdId else i.id2
+					b=O.bodies[otherId]
+					if not b:continue #in case the body was deleted
+					if b.subdomain==0: intersections[0].append(otherId)
+
+			else:
+				for i in intrs:
+					otherId=i.id1 if i.id2==sdId else i.id2
+					b=O.bodies[otherId]
+					if not b:continue #in case the body was deleted
+					if b.subdomain==0:
+						if isinstance(b.shape,PFacet):
+							intersections[0]+= maskedPFacet(b, appended); continue
+						if isinstance(b.shape,GridConnection):
+							intersections[0]+=maskedConnection(b, appended); continue
+						#else (standalone body, normal case)
+						intersections[0].append(otherId)
+			if len(intersections[0])>0: intersections[subdIdx].append(0)
+			continue
+		# normal case
+		if not ENABLE_PFACETS: # same as above
 			for i in intrs:
 				otherId=i.id1 if i.id2==sdId else i.id2
 				b=O.bodies[otherId]
 				if not b:continue #in case the body was deleted
-				if b.subdomain==0:
+				if b.subdomain!=rank: continue
+				if b.isSubdomain : intersections[rank].append(subdIdx) #intersecting subdomain (will need to receive updated positions from there)
+				else: intersections[subdIdx].append(otherId)
+		else:
+			for i in intrs:
+				otherId=i.id1 if i.id2==sdId else i.id2
+				b=O.bodies[otherId]
+				if not b:continue #in case the body was deleted
+				if b.subdomain!=rank: continue
+				if b.isSubdomain : intersections[rank].append(subdIdx) #intersecting subdomain (will need to receive updated positions from there)
+				else:
 					if isinstance(b.shape,PFacet):
-						intersections[0]+= maskedPFacet(b, appended); continue
+							intersections[subdIdx]+= maskedPFacet(b, appended); continue
 					if isinstance(b.shape,GridConnection):
-						intersections[0]+=maskedConnection(b, appended); continue
+							intersections[subdIdx]+=maskedConnection(b, appended); continue
 					#else (standalone body, normal case)
-					intersections[0].append(otherId)
-			if len(intersections[0])>0: intersections[subdIdx].append(0)
-			continue
-		# normal case
-		for i in intrs:
-			otherId=i.id1 if i.id2==sdId else i.id2
-			b=O.bodies[otherId]
-			if not b:continue #in case the body was deleted
-			if b.subdomain!=rank: continue
-			if b.isSubdomain : intersections[rank].append(subdIdx) #intersecting subdomain (will need to receive updated positions from there)
-			else:
-				if isinstance(b.shape,PFacet):
-						intersections[subdIdx]+= maskedPFacet(b, appended); continue
-				if isinstance(b.shape,GridConnection):
-						intersections[subdIdx]+=maskedConnection(b, appended); continue
-				#else (standalone body, normal case)
-				intersections[subdIdx].append(otherId)
+					intersections[subdIdx].append(otherId)
 		#for master domain set list of interacting subdomains (could be handled above but for the sake of clarity complex if-else-if are avoided for now)
 		if rank==0 and len(intersections[subdIdx])>0:
 			intersections[0].append(subdIdx)

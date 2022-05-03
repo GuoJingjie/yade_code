@@ -148,6 +148,7 @@ O.bodies.append( pfacet(wall2[2],wall2[0],wall2[1],color=color,material='facetma
 O.dt = 1e-05
 numThreads = 5
 mp.DOMAIN_DECOMPOSITION = True 
+mp.ENABLE_PFACETS = True
 mp.fibreList = fibreList
 NSTEPS = 500
 mp.mpirun(NSTEPS, numThreads)
