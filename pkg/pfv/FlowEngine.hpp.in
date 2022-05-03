@@ -8,7 +8,7 @@
 
 /*!
 
-FlowEngine is an interface between Yade and the fluid solvers defined in lib/triangulation and using the PFV scheme.
+FlowEngine is an interface between Yade and the fluid solvers defined in pkg/pfv and using the PFV scheme.
 There are also a few non-trivial functions defined here, such has building triangulation and computating elements volumes.
 The code strongly relies on CGAL library for building triangulations on the top of sphere packings.
 CGAL's trangulations introduce the data associated to each element of the triangulation through template parameters (Cell_info and Vertex_info).
@@ -36,10 +36,10 @@ The files are
 #include<core/PartialEngine.hpp>
 #include<pkg/dem/TriaxialCompressionEngine.hpp>
 // #include<pkg/dem/TesselationWrapper.hpp>
-#include<lib/triangulation/FlowBoundingSphere.hpp>
-#include<lib/triangulation/PeriodicFlow.hpp>
+#include<pkg/pfv/FlowBoundingSphere.hpp>
+#include<pkg/pfv//PeriodicFlow.hpp>
 #ifdef PARTIALSAT
-#include<lib/triangulation/PartialSatLinSolv.hpp>
+#include<pkg/pfv/PartialSatLinSolv.hpp>
 #endif
 #include<pkg/pfv/FlowEngine.hpp>
 #include<pkg/common/Sphere.hpp>

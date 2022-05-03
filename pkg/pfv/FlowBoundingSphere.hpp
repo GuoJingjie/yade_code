@@ -11,8 +11,7 @@
 #pragma once
 
 #include "Network.hpp"
-#include "Timer.h"
-#include "basicVTKwritter.hpp"
+#include "lib/triangulation/basicVTKwritter.hpp"
 
 namespace yade { // Cannot have #include directive inside.
 
@@ -290,9 +289,9 @@ namespace CGT {
 
 }; // namespace yade
 
-#include <lib/triangulation/FlowBoundingSphere.ipp>
+#include <pkg/pfv/FlowBoundingSphere.ipp>
 #ifdef LINSOLV
-#include "lib/triangulation/FlowBoundingSphereLinSolv.hpp"
+#include <pkg/pfv//FlowBoundingSphereLinSolv.hpp>
 #endif
 
 #endif //FLOW_ENGINE

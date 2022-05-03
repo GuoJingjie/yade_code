@@ -8,9 +8,8 @@
 
 #pragma once
 
-#include "Tesselation.h"
-#include "Timer.h"
-#include "basicVTKwritter.hpp"
+#include "lib/triangulation/Tesselation.h"
+#include "lib/triangulation/basicVTKwritter.hpp"
 
 /**
 Defines class Network. Which contains the geometrical representation of a pore network on the basis of regular triangulation (using CGAL lib)

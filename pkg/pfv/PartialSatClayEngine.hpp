@@ -14,8 +14,8 @@
 #ifdef LINSOLV
 #ifdef PARTIALSAT
 #include "FlowEngine_PartialSatClayEngineT.hpp"
-#include <lib/triangulation/FlowBoundingSphere.hpp>
-#include <lib/triangulation/Network.hpp>
+#include <pkg/pfv/FlowBoundingSphere.hpp>
+#include <pkg/pfv/Network.hpp>
 #include <lib/triangulation/Tesselation.h>
 #include <core/Body.hpp>
 #include <core/Dispatching.hpp>

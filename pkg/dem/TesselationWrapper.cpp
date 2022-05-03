@@ -10,7 +10,6 @@
 
 #include "TesselationWrapper.hpp"
 #include <lib/high-precision/Constants.hpp>
-#include <lib/triangulation/Timer.h>
 #include <preprocessing/dem/Shop.hpp>
 #include <preprocessing/dem/SpherePack.hpp>
 
