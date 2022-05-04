@@ -120,7 +120,7 @@ public:
 	``pericell``
 		Saves the shape of the cell (simulation has to be periodic).
 	``bstresses``
-		Considering the per-particle stress tensors as given by :yref:`bodyStressTensors<yade.utils.bodyStressTensors>`, saves the per-particle principal stresses, sigI (most tensile) $\\geq$ sigII $\\geq$ sigIII (most compressive), and the associated principal directions dirI, dirII, dirIII.
+		Considering the per-particle stress tensors as given by :yref:`bodyStressTensors<yade.utils.bodyStressTensors>`, saves the per-particle principal stresses, sigI (most tensile) $\geq$ sigII $\geq$ sigIII (most compressive), and the associated principal directions dirI, dirII, dirIII.
 
 **Specific recorders**
 
