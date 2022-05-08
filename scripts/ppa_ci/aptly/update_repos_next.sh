@@ -9,7 +9,7 @@ OLD_ID=$(cat ${PATHDEB}/OLD_ID)
 NEW_ID=$(curl -L "https://gitlab.com/api/v4/projects/10133144/repository/commits/master" | jq --raw-output '.short_id')
 if [ "$OLD_ID" != "$NEW_ID" ]
 then
-	for i in stretch buster bullseye bookworm bionic xenial focal
+	for i in bionic buster stretch xenial bullseye focal bookworm jammy
 	do
 		cd ${PATHDEB}
 		wget https://gitlab.com/api/v4/projects/10133144/jobs/artifacts/master/download?job=deb_$i -O yade.zip
