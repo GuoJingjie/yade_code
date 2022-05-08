@@ -49,46 +49,46 @@ To install the daily-version you need to add the repository to your
 
 - Debian 9 **stretch**::
 
-	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ stretch main" >> /etc/apt/sources.list'
+	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ stretch main" >> /etc/apt/sources.list.d/yadedaily.list'
 
 
 - Debian 10 **buster**::
 
-	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ buster main" >> /etc/apt/sources.list'
+	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ buster main" >> /etc/apt/sources.list.d/yadedaily.list'
 
 
 - Debian 11 **bullseye**::
 
-	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ bullseye main" >> /etc/apt/sources.list'
+	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ bullseye main" >> /etc/apt/sources.list.d/yadedaily.list'
 
 
 - Debian 12 **bookworm** also with :ref:`high precision<highPrecisionReal>` ``long double``, ``float128`` and ``mpfr150`` packages::
 
-	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ bookworm main" >> /etc/apt/sources.list'
+	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ bookworm main" >> /etc/apt/sources.list.d/yadedaily.list'
 
 
 - Ubuntu 16.04 **xenial**::
 
-	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ xenial main" >> /etc/apt/sources.list'
+	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ xenial main" >> /etc/apt/sources.list.d/yadedaily.list'
 
 
 - Ubuntu 18.04 **bionic**::
 
-	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ bionic main" >> /etc/apt/sources.list'
+	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ bionic main" >> /etc/apt/sources.list.d/yadedaily.list'
 
 
 - Ubuntu 20.04 **focal**::
 
-	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ focal main" >> /etc/apt/sources.list'
+	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ focal main" >> /etc/apt/sources.list.d/yadedaily.list'
 
 - Ubuntu 22.04 **jammy** also with :ref:`high precision<highPrecisionReal>` ``long double``, ``float128`` and ``mpfr150`` packages::
 
-	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ jammy main" >> /etc/apt/sources.list'
+	sudo bash -c 'echo "deb http://www.yade-dem.org/packages/ jammy main" >> /etc/apt/sources.list.d/yadedaily.list'
 
 
 Add the PGP-key AA915EEB as trusted and install ``yadedaily``::
 
-	wget -O - http://www.yade-dem.org/packages/yadedev_pub.gpg | sudo apt-key add -
+	wget -O - http://www.yade-dem.org/packages/yadedev_pub.gpg | sudo tee /etc/apt/trusted.gpg.d/yadedaily.asc
 	sudo apt-get update
 	sudo apt-get install yadedaily
 
