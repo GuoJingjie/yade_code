@@ -35,7 +35,9 @@
 #  ENABLE_POTENTIAL_BLOCKS    : enable potential blocks option (ON by default)
 #  ENABLE_POTENTIAL_PARTICLES : enable potential particles option (ON by default)
 #  ENABLE_PROFILING           : enable profiling, e.g. shows some more metrics, which can define bottlenecks of the code (OFF by default)
-#  ENABLE_REAL_HP             : allow using twice, quadruple or higher precisions of Real
+#  ENABLE_REAL_HP             : allow using twice, quadruple or higher precisions of Real. It is not advertised in yade.config.features because of frequent confusion
+#                               with output of yade.math.usesHP() as described in https://gitlab.com/yade-dev/trunk/-/issues/247
+#                               Please call yade.math.getRealHPCppDigits10() and yade.math.getRealHPPythonDigits10() instead.
 #  ENABLE_SPH                 : enable SPH-option, Smoothed Particle Hydrodynamics (OFF by default)
 #  ENABLE_THERMAL             : enable thermal engine (ON by default, experimental)"
 #  ENABLE_TWOPHASEFLOW        : enable TWOPHASEFLOW-option, TwoPhaseFlowEngine (ON by default)
@@ -625,11 +627,12 @@ ELSE()
 ENDIF()
 IF(REAL_MULTI_HP)
   SET(REAL_USE_MPMATH "ON")
-  SET(CONFIGURED_FEATS "${CONFIGURED_FEATS} REAL_HP")
+  # don't add this to yade.config.features, see https://gitlab.com/yade-dev/trunk/-/issues/247 - it is too confusing.
+  #SET(CONFIGURED_FEATS "${CONFIGURED_FEATS} MULTIPLE_HIGH_PRECISIONS")
   MESSAGE(STATUS "${Esc}[32mEnabling RealHP<N>, double, quadruple and more precisions are available: RealHP<N> for N ∈ {1,2,3,4,8,10,20}. See file lib/high-precision/RealHPConfig.hpp${Esc}[0m")
 ELSE()
   ADD_DEFINITIONS("-DYADE_DISABLE_REAL_MULTI_HP")
-  SET(DISABLED_FEATS "${DISABLED_FEATS} REAL_HP")
+  #SET(DISABLED_FEATS "${DISABLED_FEATS} MULTIPLE_HIGH_PRECISIONS")
 ENDIF()
 
 IF(Boost_MAJOR_VERSION EQUAL 1 AND Boost_MINOR_VERSION LESS 71)
