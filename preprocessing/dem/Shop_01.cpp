@@ -84,7 +84,7 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 	int j,k;
 	double alpha, theta_1, theta_2, theta;
 	Vector3r tmp_vect_1, tmp_vect_2;
-	std::vector<std::tuple<int, int>> planes = { {0,1}, {0,2}, {1,2}};
+	std::vector<std::tuple<int, int>> planes = { {0,1}, {0,2}, {1,2}, {1,0}, {2,0}, {2,1}};
 	for (auto plane : planes) {
 		k = std::get<0>(plane);
 		j = std::get<1>(plane);
