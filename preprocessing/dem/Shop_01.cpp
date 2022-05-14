@@ -96,11 +96,11 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 		// Compute the angles if we flip to neighboor grid points
 			// If we flip left
 		tmp_vect_1 = hSize.col(k) - hSize.col(j);
-		theta_1 = acos(tmp_vect_1(k) / tmp_vect_1.norm());
+		theta_1 = acos(tmp_vect_1(k) / pow((pow(tmp_vect_1(k), 2)+pow(tmp_vect_1(j), 2)), .5));
 
 			// If we flip right
 		tmp_vect_2 = hSize.col(k) + hSize.col(j);
-		theta_2 = acos(tmp_vect_2(k) / tmp_vect_2.norm());
+		theta_2 = acos(tmp_vect_2(k) / pow((pow(tmp_vect_2(k), 2)+pow(tmp_vect_2(j), 2)), .5));
 
 		// Keep the best angle (the smallest)
 		theta = std::min({alpha, theta_1, theta_2});
