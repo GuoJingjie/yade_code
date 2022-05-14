@@ -61,7 +61,7 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 	const shared_ptr<Cell>& cell(scene->cell);
 	Matrix3r&               hSize = cell->hSize;
 	Matrix3r&               new_hSize = cell->hSize;
-	Matrix3i                flip;
+	Matrix3r                flip;
 	// if (_flip == Matrix3r::Zero()) {
 	// 	bool hasNonzero = false;
 	// 	for (int i = 0; i < 3; i++)
@@ -112,20 +112,20 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 
 	cell->hSize = new_hSize;
 
-	flip = _flip.cast<int>(); // Just so -Werror=unused-parameter doesn't bother me for now (to be improved)
-	flip = (cell->hSize.inverse() * new_hSize -  Matrix3r::Identity()).cast<int>();
+	flip = _flip; // Just so -Werror=unused-parameter doesn't bother me for now (to be improved)
+	flip = cell->hSize.inverse() * new_hSize -  Matrix3r::Identity();
 
 	cell->postLoad(*cell);
 
 	// adjust Interaction::cellDist for interactions;
 	// adjunct matrix of (Id + flip) is the inverse since det=1, below is the transposed co-factor matrix of (Id+flip).
 	// note that Matrix3::adjoint is not the adjunct, hence the in-place adjunct below
-	Matrix3i invFlip;
+	Matrix3r invFlip;
 	invFlip << 1 - flip(2, 1) * flip(1, 2), flip(2, 1) * flip(0, 2) - flip(0, 1), flip(0, 1) * flip(1, 2) - flip(0, 2),
 	        flip(1, 2) * flip(2, 0) - flip(1, 0), 1 - flip(0, 2) * flip(2, 0), flip(0, 2) * flip(1, 0) - flip(1, 2), flip(1, 0) * flip(2, 1) - flip(2, 0),
 	        flip(2, 0) * flip(0, 1) - flip(2, 1), 1 - flip(1, 0) * flip(0, 1);
 	for (const auto& i : *scene->interactions)
-		i->cellDist = invFlip * i->cellDist;
+		i->cellDist = invFlip.cast<int>() * i->cellDist;
 
 	// force reinitialization of the collider
 	bool colliderFound = false;
