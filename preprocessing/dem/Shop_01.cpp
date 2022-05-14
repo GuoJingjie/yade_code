@@ -91,15 +91,15 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 		j = std::get<1>(plane);
 
 		// Get the angle between projection of the ith base vector and the ith axis
-		alpha = acos(hSize(k,k) / hSize.col(k).norm());
+		alpha = acos(new_hSize(k,k) / new_hSize.col(k).norm());
 
 		// Compute the angles if we flip to neighboor grid points
 			// If we flip left
-		tmp_vect_1 = hSize.col(k) - hSize.col(j);
+		tmp_vect_1 = new_hSize.col(k) - new_hSize.col(j);
 		theta_1 = acos(tmp_vect_1(k) / pow((pow(tmp_vect_1(k), 2)+pow(tmp_vect_1(j), 2)), .5));
 
 			// If we flip right
-		tmp_vect_2 = hSize.col(k) + hSize.col(j);
+		tmp_vect_2 = new_hSize.col(k) + new_hSize.col(j);
 		theta_2 = acos(tmp_vect_2(k) / pow((pow(tmp_vect_2(k), 2)+pow(tmp_vect_2(j), 2)), .5));
 
 		// Keep the best angle (the smallest)
