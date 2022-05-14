@@ -59,7 +59,6 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 {
 	Scene*                  scene = Omega::instance().getScene().get();
 	const shared_ptr<Cell>& cell(scene->cell);
-	Matrix3r&               hSize = cell->hSize;
 	Matrix3r&               new_hSize = cell->hSize;
 	Matrix3r                flip;
 	// if (_flip == Matrix3r::Zero()) {
