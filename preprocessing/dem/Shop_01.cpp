@@ -106,8 +106,8 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 		theta = std::min({alpha, theta_1, theta_2});
 		
 		// Flip in the best direction (if there is a grid point which gives a lower angle)
-		if (theta==theta_1) new_hSize.col(i) = tmp_vect_1;
-		else if (theta==theta_2) new_hSize.col(i) = tmp_vect_1;
+		if (theta==theta_1) new_hSize.col(k) = tmp_vect_1;
+		else if (theta==theta_2) new_hSize.col(k) = tmp_vect_1;
 	}
 
 	cell->hSize = new_hSize;
