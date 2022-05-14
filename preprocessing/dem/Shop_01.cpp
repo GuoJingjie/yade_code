@@ -89,10 +89,9 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 		else if (theta==phi_2b) new_hSize.col(k) = vect_b;
 	}
 
-	cell->hSize = new_hSize;
-
 	flip = _flip; // Just so -Werror=unused-parameter doesn't bother me for now (to be improved)
 	flip = cell->hSize.inverse() * new_hSize -  Matrix3r::Identity();
+	cell->hSize = new_hSize;
 
 	cell->postLoad(*cell);
 
