@@ -120,7 +120,7 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 	// adjust Interaction::cellDist for interactions;
 	// adjunct matrix of (Id + flip) is the inverse since det=1, below is the transposed co-factor matrix of (Id+flip).
 	// note that Matrix3::adjoint is not the adjunct, hence the in-place adjunct below
-	Matrix3i invFlip;
+	Matrix3r invFlip;
 	invFlip << 1 - flip(2, 1) * flip(1, 2), flip(2, 1) * flip(0, 2) - flip(0, 1), flip(0, 1) * flip(1, 2) - flip(0, 2),
 	        flip(1, 2) * flip(2, 0) - flip(1, 0), 1 - flip(0, 2) * flip(2, 0), flip(0, 2) * flip(1, 0) - flip(1, 2), flip(1, 0) * flip(2, 1) - flip(2, 0),
 	        flip(2, 0) * flip(0, 1) - flip(2, 1), 1 - flip(1, 0) * flip(0, 1);
