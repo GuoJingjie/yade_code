@@ -112,8 +112,8 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 
 	cell->hSize = new_hSize;
 
-	flip = _flip; // Just so -Werror=unused-parameter doesn't bother me for now (to be improved)
-	flip = (cell->hSize.inverse() * new_hSize -  Matrix3r::Identity()).cast<int>();
+	flip = _flip.cast<int>(); // Just so -Werror=unused-parameter doesn't bother me for now (to be improved)
+	flip = cell->hSize.inverse() * new_hSize -  Matrix3r::Identity();
 
 	cell->postLoad(*cell);
 
