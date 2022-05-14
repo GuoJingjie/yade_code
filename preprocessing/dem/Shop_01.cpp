@@ -82,25 +82,25 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 	// 	flip = _flip.cast<int>();
 	// }
 	// cell->hSize += cell->hSize * flip.cast<Real>();
-	int i,j,k;
+	int j,k;
 	double alpha, theta_1, theta_2, theta;
 	Vector3r tmp_vect_1, tmp_vect_2;
 	std::vector<std::tuple<int, int>> planes = { {0,1}, {0,2}, {1,2}, {1,0}, {2,0}, {2,1} };
 	for (auto plane : planes) {
-		i = std::get<0>(plane);
+		k = std::get<0>(plane);
 		j = std::get<1>(plane);
 
 		// Get the angle between projection of the ith base vector and the ith axis
-		alpha = acos(hSize(i,i) / hSize.col(i).norm());
+		alpha = acos(hSize(k,k) / hSize.col(k).norm());
 
 		// Compute the angles if we flip to neighboor grid points
 			// If we flip left
-		tmp_vect_1 = hSize.col(i) - hSize.col(j);
-		theta_1 = acos(tmp_vect(i) / tmp_vect.norm());
+		tmp_vect_1 = hSize.col(k) - hSize.col(j);
+		theta_1 = acos(tmp_vect_1(k) / tmp_vect_1.norm());
 
 			// If we flip right
-		tmp_vect_2 = hSize.col(i) + hSize.col(j);
-		theta_2 = acos(tmp_vect(i) / tmp_vect.norm());
+		tmp_vect_2 = hSize.col(k) + hSize.col(j);
+		theta_2 = acos(tmp_vect_2(k) / tmp_vect_2.norm());
 
 		// Keep the best angle (the smallest)
 		theta = std::min({alpha, theta_1, theta_2});
@@ -112,8 +112,9 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 
 	cell->hSize = new_hSize;
 
+	flip = _flip; // Just so -Werror=unused-parameter doesn't bother me for now (to be improved)
 	flip = cell->hSize.inverse() * new_hSize -  Matrix3r::Identity();
-	
+
 	cell->postLoad(*cell);
 
 	// adjust Interaction::cellDist for interactions;
