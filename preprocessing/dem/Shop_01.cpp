@@ -90,7 +90,7 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 		j = std::get<1>(plane);
 
 		// Get the angle between projection of the ith base vector and the ith axis
-		alpha = acos(new_hSize(k,k) / pow((pow(cell->hSize(k), 2)+pow(cell->hSize(j), 2)), .5));
+		alpha = acos(cell->hSize(k,k) / pow((pow(cell->hSize(k), 2)+pow(cell->hSize(j), 2)), .5));
 
 		// Compute the angles if we flip to neighboor grid points
 			// If we flip left
