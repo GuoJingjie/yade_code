@@ -11,6 +11,8 @@
 #include <lib/base/AliasNamespaces.hpp>
 #include <boost/function.hpp>
 
+#include <cmath>
+
 namespace yade { // Cannot have #include directive inside.
 
 class Scene;

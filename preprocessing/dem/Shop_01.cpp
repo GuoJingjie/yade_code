@@ -60,27 +60,60 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 	Scene*                  scene = Omega::instance().getScene().get();
 	const shared_ptr<Cell>& cell(scene->cell);
 	Matrix3r&               hSize = cell->hSize;
+	Matrix3r&               new_hSize = cell->hSize;
 	Matrix3i                flip;
-	if (_flip == Matrix3r::Zero()) {
-		bool hasNonzero = false;
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++) {
-				if (i == j) {
-					flip(i, j) = 0;
-					continue;
-				}
-				flip(i, j) = -int(math::floor(hSize.col(j).dot(hSize.col(i)) / hSize.col(i).dot(hSize.col(i))));
-				if (flip(i, j) != 0) hasNonzero = true;
-			}
-		if (!hasNonzero) {
-			LOG_TRACE("No flip necessary.");
-			return Matrix3r::Zero();
-		}
-	} else {
-		if ((_flip + Matrix3r::Identity()).determinant() != 1) LOG_WARN("Flipping cell needs det(Id+flip)=1, check your input.");
-		flip = _flip.cast<int>();
+	// if (_flip == Matrix3r::Zero()) {
+	// 	bool hasNonzero = false;
+	// 	for (int i = 0; i < 3; i++)
+	// 		for (int j = 0; j < 3; j++) {
+	// 			if (i == j) {
+	// 				flip(i, j) = 0;
+	// 				continue;
+	// 			}
+	// 			flip(i, j) = -int(math::floor(hSize.col(j).dot(hSize.col(i)) / hSize.col(i).dot(hSize.col(i))));
+	// 			if (flip(i, j) != 0) hasNonzero = true;
+	// 		}
+	// 	if (!hasNonzero) {
+	// 		LOG_TRACE("No flip necessary.");
+	// 		return Matrix3r::Zero();
+	// 	}
+	// } else {
+	// 	if ((_flip + Matrix3r::Identity()).determinant() != 1) LOG_WARN("Flipping cell needs det(Id+flip)=1, check your input.");
+	// 	flip = _flip.cast<int>();
+	// }
+	// cell->hSize += cell->hSize * flip.cast<Real>();
+	int i,j,k;
+	double alpha, theta_1, theta_2, theta;
+	Vector3r tmp_vect_1, tmp_vect_2;
+	std::vector<std::tuple<int, int>> planes = { {0,1}, {0,2}, {1,2}, {1,0}, {2,0}, {2,1} };
+	for (auto plane : planes) {
+		i = std::get<0>(plane);
+		j = std::get<1>(plane);
+
+		// Get the angle between projection of the ith base vector and the ith axis
+		alpha = acos(hSize(i,i) / hSize.col(i).norm());
+
+		// Compute the angles if we flip to neighboor grid points
+			// If we flip left
+		tmp_vect_1 = hSize.col(i) - hSize.col(j);
+		theta_1 = acos(tmp_vect(i) / tmp_vect.norm());
+
+			// If we flip right
+		tmp_vect_2 = hSize.col(i) + hSize.col(j);
+		theta_2 = acos(tmp_vect(i) / tmp_vect.norm());
+
+		// Keep the best angle (the smallest)
+		theta = std::min({alpha, theta_1, theta_2});
+		
+		// Flip in the best direction (if there is a grid point which gives a lower angle)
+		if (theta==theta_1) new_hSize.col(i) = tmp_vect_1;
+		else if (theta==theta_2) new_hSize.col(i) = tmp_vect_1;
 	}
-	cell->hSize += cell->hSize * flip.cast<Real>();
+
+	cell->hSize = new_hSize;
+
+	flip = cell->hSize.inverse() * new_hSize -  Matrix3r::Identity();
+	
 	cell->postLoad(*cell);
 
 	// adjust Interaction::cellDist for interactions;
