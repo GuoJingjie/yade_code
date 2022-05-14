@@ -107,7 +107,7 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 		
 		// Flip in the best direction (if there is a grid point which gives a lower angle)
 		if (theta==theta_1) new_hSize.col(k) = tmp_vect_1;
-		else if (theta==theta_2) new_hSize.col(k) = tmp_vect_1;
+		else if (theta==theta_2) new_hSize.col(k) = tmp_vect_2;
 	}
 
 	cell->hSize = new_hSize;
