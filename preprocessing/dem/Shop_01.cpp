@@ -61,7 +61,7 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 	const shared_ptr<Cell>& cell(scene->cell);
 	Matrix3r&               hSize = cell->hSize;
 	Matrix3r&               new_hSize = cell->hSize;
-	Matrix3i                flip;
+	Matrix3r                flip;
 	// if (_flip == Matrix3r::Zero()) {
 	// 	bool hasNonzero = false;
 	// 	for (int i = 0; i < 3; i++)
@@ -112,7 +112,7 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 
 	cell->hSize = new_hSize;
 
-	flip = _flip.cast<int>(); // Just so -Werror=unused-parameter doesn't bother me for now (to be improved)
+	flip = _flip; // Just so -Werror=unused-parameter doesn't bother me for now (to be improved)
 	flip = cell->hSize.inverse() * new_hSize -  Matrix3r::Identity();
 
 	cell->postLoad(*cell);
