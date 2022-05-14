@@ -61,53 +61,32 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 	const shared_ptr<Cell>& cell(scene->cell);
 	Matrix3r&               new_hSize = cell->hSize;
 	Matrix3r                flip;
-	// if (_flip == Matrix3r::Zero()) {
-	// 	bool hasNonzero = false;
-	// 	for (int i = 0; i < 3; i++)
-	// 		for (int j = 0; j < 3; j++) {
-	// 			if (i == j) {
-	// 				flip(i, j) = 0;
-	// 				continue;
-	// 			}
-	// 			flip(i, j) = -int(math::floor(hSize.col(j).dot(hSize.col(i)) / hSize.col(i).dot(hSize.col(i))));
-	// 			if (flip(i, j) != 0) hasNonzero = true;
-	// 		}
-	// 	if (!hasNonzero) {
-	// 		LOG_TRACE("No flip necessary.");
-	// 		return Matrix3r::Zero();
-	// 	}
-	// } else {
-	// 	if ((_flip + Matrix3r::Identity()).determinant() != 1) LOG_WARN("Flipping cell needs det(Id+flip)=1, check your input.");
-	// 	flip = _flip.cast<int>();
-	// }
-	// cell->hSize += cell->hSize * flip.cast<Real>();
 	int j,k;
-	double alpha, theta_1, theta_2, theta;
-	Vector3r tmp_vect_1, tmp_vect_2;
-	std::vector<std::tuple<int, int>> planes = { {0,1}, {0,2}, {1,2}, {1,0}, {2,0}, {2,1}};
+	double phi_1, phi_2a, phi_2b, theta;
+	Vector3r vect_a, vect_b;
+	std::vector<std::tuple<int, int>> planes = {{0,1}, {0,2}, {1,2}, {1,0}, {2,0}, {2,1}};
 	for (auto plane : planes) {
 		k = std::get<0>(plane);
 		j = std::get<1>(plane);
 
-		// Get the angle between projection of the ith base vector and the ith axis
-		alpha = acos(cell->hSize(k,k) / pow((pow(cell->hSize(k,k), 2)+pow(cell->hSize(j,k), 2)), .5) );
+		// Get the angle between `the projection of the ith base cell vector on the current plane` and `the ith axis`
+		phi_1 = acos(cell->hSize(k,k) / pow((pow(cell->hSize(k,k), 2)+pow(cell->hSize(j,k), 2)), .5) );
 
 		// Compute the angles if we flip to neighboor grid points
 			// If we flip left
-		tmp_vect_1 = cell->hSize.col(k) - cell->hSize.col(j);
-		theta_1 = acos(tmp_vect_1(k) / pow((pow(tmp_vect_1(k), 2)+pow(tmp_vect_1(j), 2)), .5));
+		vect_a = cell->hSize.col(k) - cell->hSize.col(j);
+		phi_2a = acos(vect_a(k) / pow((pow(vect_a(k), 2)+pow(vect_a(j), 2)), .5));
 
 			// If we flip right
-		tmp_vect_2 = cell->hSize.col(k) + cell->hSize.col(j);
-		theta_2 = acos(tmp_vect_2(k) / pow((pow(tmp_vect_2(k), 2)+pow(tmp_vect_2(j), 2)), .5));
+		vect_b = cell->hSize.col(k) + cell->hSize.col(j);
+		phi_2b = acos(vect_b(k) / pow((pow(vect_b(k), 2)+pow(vect_b(j), 2)), .5));
 
-		// std::cout << "i: " << k << "; j: " << j << "; theta_1: " << theta_1 << "; theta_2: " << theta_2 <<  "; alpha: " << alpha << std::endl; // Just in case
 		// Keep the best angle (the smallest)
-		theta = std::min({alpha, theta_1, theta_2});
+		theta = std::min({phi_1, phi_2a, phi_2b});
 		
 		// Flip in the best direction (if there is a grid point which gives a lower angle)
-		if (theta==theta_1) new_hSize.col(k) = tmp_vect_1;
-		else if (theta==theta_2) new_hSize.col(k) = tmp_vect_2;
+		if (theta==phi_2a) new_hSize.col(k) = vect_a;
+		else if (theta==phi_2b) new_hSize.col(k) = vect_b;
 	}
 
 	cell->hSize = new_hSize;
