@@ -64,6 +64,7 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 	int j,k;
 	double phi_1, phi_2a, phi_2b, theta;
 	Vector3r vect_a, vect_b;
+	shared_ptr<Body> b1, b2;
 	std::vector<std::tuple<int, int>> planes = {{0,1}, {0,2}, {1,2}, {1,0}, {2,0}, {2,1}};
 	for (auto plane : planes) {
 		k = std::get<0>(plane);
@@ -90,20 +91,17 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 	}
 
 	flip = _flip; // Just so -Werror=unused-parameter doesn't bother me for now (to be improved)
-	flip = cell->hSize.inverse() * new_hSize -  Matrix3r::Identity();
 	cell->hSize = new_hSize;
 
 	cell->postLoad(*cell);
 
-	// adjust Interaction::cellDist for interactions;
-	// adjunct matrix of (Id + flip) is the inverse since det=1, below is the transposed co-factor matrix of (Id+flip).
-	// note that Matrix3::adjoint is not the adjunct, hence the in-place adjunct below
-	Matrix3r invFlip;
-	invFlip << 1 - flip(2, 1) * flip(1, 2), flip(2, 1) * flip(0, 2) - flip(0, 1), flip(0, 1) * flip(1, 2) - flip(0, 2),
-	        flip(1, 2) * flip(2, 0) - flip(1, 0), 1 - flip(0, 2) * flip(2, 0), flip(0, 2) * flip(1, 0) - flip(1, 2), flip(1, 0) * flip(2, 1) - flip(2, 0),
-	        flip(2, 0) * flip(0, 1) - flip(2, 1), 1 - flip(1, 0) * flip(0, 1);
-	for (const auto& i : *scene->interactions)
-		i->cellDist = invFlip.cast<int>() * i->cellDist;
+	// Recompute Interaction::cellDist for interactions;
+	for (const auto& I : *scene->interactions) {
+		b1 = Body::byId(I->getId1(), scene);
+		b2 = Body::byId(I->getId2(), scene);
+		for (int i = 0; i < 3; i++)
+			I->cellDist[i] = -(int)((b2->state->pos[i] - b1->state->pos[i]) / cell->getSize()[i] + .5);
+	}
 
 	// force reinitialization of the collider
 	bool colliderFound = false;
