@@ -91,7 +91,7 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 			new_hSize.col(k) = vect_a;
 			hSize_changed = true;
 		}
-		else if (theta==phi_2a) {
+		else if (theta==phi_2b) {
 			new_hSize.col(k) = vect_b;
 			hSize_changed = true;
 		}
