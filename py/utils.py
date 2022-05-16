@@ -337,6 +337,7 @@ def polyhedron(vertices,fixed=False,wire=True,color=None,highlight=False,noBound
 
 def levelSetBody(shape="",center=Vector3.Zero,radius=0,extents=Vector3.Zero,epsilons = Vector2.Zero,clump=None,spacing=0.1,grid=None,distField=[],nSurfNodes=27,nodesPath = 2,nodesTol = 50,orientation=Quaternion(1,0,0,0),dynamic=True,material=-1):
 	"""Creates a :yref:`LevelSet` shaped body through various workflows: one can choose among pre-defined shapes (through *shape* and related attributes), or to mimick a :yref:`Clump` instance (*clump* attribute, for comparison purposes), or directly assign the discrete distance field on some grid (*distField* and *grid* attributes)
+
 	:param string shape: use this argument to enjoy predefined shapes among 'sphere', 'box' (for a rectangular parallelepiped), 'disk' (for a 2D analysis in (x,y) plane), or 'superellipsoid'; in conjunction with *extents* or *radius* attributes. Superellipsoid surfaces are defined in local axes (inertial frame) by the following equation: $f(x,y,z) = ( |x/r_x|^{2/\\epsilon_e} + |y/r_y|^{2/\\epsilon_e} )^{\\epsilon_e/\\epsilon_n} + |z/r_z|^{2/\\epsilon_n} = 1$ and their distance field is obtained thanks to a :yref:`Fast Marching Method<FastMarchingMethod>`.
 	:param Vector3 center: (initial) position of that body
 	:param Clump clump: pass here a multi-sphere instance to mimick, if desired
