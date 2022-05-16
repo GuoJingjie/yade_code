@@ -65,6 +65,7 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 	double phi_1, phi_2a, phi_2b, theta;
 	Vector3r vect_a, vect_b;
 	shared_ptr<Body> b1, b2;
+	bool hSize_changed = false;
 	std::vector<std::tuple<int, int>> planes = {{0,1}, {0,2}, {1,2}, {1,0}, {2,0}, {2,1}};
 	for (auto plane : planes) {
 		k = std::get<0>(plane);
@@ -86,33 +87,41 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 		theta = std::min({phi_1, phi_2a, phi_2b});
 		
 		// Flip in the best direction (if there is a grid point which gives a lower angle)
-		if (theta==phi_2a) new_hSize.col(k) = vect_a;
-		else if (theta==phi_2b) new_hSize.col(k) = vect_b;
-	}
-
-	flip = _flip; // Just so -Werror=unused-parameter doesn't bother me for now (to be improved)
-	cell->hSize = new_hSize;
-
-	cell->postLoad(*cell);
-
-	// Recompute Interaction::cellDist for interactions;
-	for (const auto& I : *scene->interactions) {
-		b1 = Body::byId(I->getId1(), scene);
-		b2 = Body::byId(I->getId2(), scene);
-		for (int i = 0; i < 3; i++)
-			I->cellDist[i] = -(int)((b2->state->pos[i] - b1->state->pos[i]) / cell->getSize()[i] + .5);
-	}
-
-	// force reinitialization of the collider
-	bool colliderFound = false;
-	for (const auto& e : scene->engines) {
-		Collider* c = dynamic_cast<Collider*>(e.get());
-		if (c) {
-			colliderFound = true;
-			c->invalidatePersistentData();
+		if (theta==phi_2a) {
+			new_hSize.col(k) = vect_a;
+			hSize_changed = true;
+		}
+		else if (theta==phi_2a) {
+			new_hSize.col(k) = vect_b;
+			hSize_changed = true;
 		}
 	}
-	if (!colliderFound) LOG_WARN("No collider found while flipping cell; continuing simulation might give garbage results.");
+
+	if (hSize_changed) {
+		flip = _flip; // Just so -Werror=unused-parameter doesn't bother me for now (to be improved)
+		cell->hSize = new_hSize;
+
+		cell->postLoad(*cell);
+
+		// Recompute Interaction::cellDist for interactions;
+		for (const auto& I : *scene->interactions) {
+			b1 = Body::byId(I->getId1(), scene);
+			b2 = Body::byId(I->getId2(), scene);
+			for (int i = 0; i < 3; i++)
+				I->cellDist[i] = -(int)((b2->state->pos[i] - b1->state->pos[i]) / cell->getSize()[i] + .5);
+		}
+
+		// force reinitialization of the collider
+		bool colliderFound = false;
+		for (const auto& e : scene->engines) {
+			Collider* c = dynamic_cast<Collider*>(e.get());
+			if (c) {
+				colliderFound = true;
+				c->invalidatePersistentData();
+			}
+		}
+		if (!colliderFound) LOG_WARN("No collider found while flipping cell; continuing simulation might give garbage results.");
+	}
 	return flip.cast<Real>();
 }
 
