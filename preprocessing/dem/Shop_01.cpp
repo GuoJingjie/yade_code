@@ -55,7 +55,7 @@ using math::min; // using inside .cpp file is ok.
 CREATE_LOGGER(Shop);
 
 /*! Flip periodic cell for shearing indefinitely.*/
-Matrix3r Shop::flipCell(const Matrix3r& _flip)
+bool Shop::flipCell(const Matrix3r& _flip)
 {
 	Scene*                  scene = Omega::instance().getScene().get();
 	const shared_ptr<Cell>& cell(scene->cell);
@@ -122,7 +122,7 @@ Matrix3r Shop::flipCell(const Matrix3r& _flip)
 		}
 		if (!colliderFound) LOG_WARN("No collider found while flipping cell; continuing simulation might give garbage results.");
 	}
-	return flip.cast<Real>();
+	return hSize_changed;
 }
 
 /* Apply force on contact point to 2 bodies; the force is oriented as it applies on the first body and is reversed on the second.

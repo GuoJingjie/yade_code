@@ -103,7 +103,7 @@ public:
 
 	//! Flip cell shear without affecting interactions; if flip is zeros, it will be computed such that abs of shear strain is minimal for each shear component
 	//! Diagonal terms of flip are meaningless and ignored.
-	static Matrix3r flipCell(const Matrix3r& flip = Matrix3r::Zero());
+	static bool flipCell(const Matrix3r& flip = Matrix3r::Zero());
 
 	//! Class for storing stresses, affected on bodies, obtained from Interactions
 	struct bodyState {
