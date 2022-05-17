@@ -7,7 +7,7 @@ import numpy as np
 step, planes = 1, [(0,1), (0,2), (1,2)]
 def print_hSize(step_print=True, hSize_types="int"):
 	global step
-	if step_print: print("\n_______________\nStep {:d}".format(step))
+	if step_print: print("\n__________________________________________________________________________________________\nStep {:d}".format(step))
 
 	print("\tCell's base vectors (O.cell.hSize) are:")
 	if hSize_types=="int":
@@ -17,7 +17,7 @@ def print_hSize(step_print=True, hSize_types="int"):
 
 	print("\n\tAngles between the cell's base vectors and the global axes on the (i,j) plane")
 	for ax1, ax2 in planes: 
-		phi_1a = np.arccos(O.cell.hSize[ax1,ax1] / np.sqrt((O.cell.hSize[ax1,ax1]**2 + O.cell.hSize[ax2,ax1]**2))) * *180/np.pi
+		phi_1a = np.arccos(O.cell.hSize[ax1,ax1] / np.sqrt((O.cell.hSize[ax1,ax1]**2 + O.cell.hSize[ax2,ax1]**2)))*180/np.pi
 		phi_1b = np.arccos(O.cell.hSize[ax2,ax2] / np.sqrt((O.cell.hSize[ax2,ax2]**2 + O.cell.hSize[ax1,ax2]**2)))*180/np.pi
 		print("\t\t(i={:d}, j={:d})".format(ax1, ax2))
 		for ax, phi_1 in zip([ax1, ax2], [phi_1a, phi_1b]): print("\t\t\tfor cell's base vector {:d} = {:.2f} degrees".format(ax, phi_1))
@@ -64,6 +64,6 @@ print_hSize()
 O.cell.hSize = Matrix3(0.001767398585873738732,-3.402651098340004036e-22,-2.455726386595863492e-23, 2.840638172828420518e-23,0.004990738513508447341,-0.0009967331209356602214, -1.550207193852494163e-22,-0.001442690301487606743,0.00144229021430840711)
 print_hSize(hSize_types="float")
 flipCell()
-print("\nStep 7 - After flipping")
+print("\nStep 7 - After flipping\n")
 print_hSize(False, "float")
 
