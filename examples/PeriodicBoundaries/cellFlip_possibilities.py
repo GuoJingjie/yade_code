@@ -32,18 +32,18 @@ O.cell.hSize = Matrix3(1,0,0, 0,1,0, 0,0,1)
 print_hSize()
 
 # Step 2
-# For instance, we can use flipCell to shift the top face of the cell 1 unit to the left along the axis 0
+# For instance, we can use flipCell to shift the top face (whose outer unit normal is (0,1,0)) of the cell 1 unit to the left along the axis 0
 flipCell(Matrix3(0,-1,0, 0,0,0, 0,0,0))
 print_hSize()
 
 # Step 3
-# If we call flipCell without input argument, the best flip is automatically sought among the neighboor grid points
+# If we call flipCell without input argument, the best flip is automatically sought among the neighbour grid points
 # The best flip is the one that minimizes the angles between the cell's base vectors and the global axes
 flipCell()
 print_hSize()
 
 # Step 4
-# When passing a flip matrix, one can shift the faces of the cell by several grid points (usualy giving an extremly sheared cell)
+# When passing a flip matrix, one can shift the faces of the cell by several grid points (in our case the result is an extremly sheared cell)
 flipCell(Matrix3(0,-5,0, 0,0,0, 0,0,0))
 print_hSize()
 
@@ -53,7 +53,7 @@ flipCell(Matrix3(0,0,1, 0,0,0, 0,-2,0))
 print_hSize()
 
 # Step 6
-# flipCell returns True if it found an advantageous flip, False otherwise
+# flipCell returns True if it found and performed an advantageous flip, False otherwise (but always True if a flip matrix is passed, even if it is Matrix3::Zero())
 # If the cell has been sheared a lot (i.e. by several grid points), one can thus easily find the best hSize by calling it in a while loop
 cell_flipped = True
 while cell_flipped: cell_flipped = flipCell() # Note that flipCell performs at least 11 tests when called
