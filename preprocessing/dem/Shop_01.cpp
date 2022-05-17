@@ -66,39 +66,42 @@ bool Shop::flipCell(const Matrix3r& _flip)
 	Vector3r vect_a, vect_b;
 	shared_ptr<Body> b1, b2;
 	bool hSize_changed = false;
+	bool matrix_passed = !(_flip==Matrix3r::Zero());
 	std::vector<std::tuple<int, int>> planes = {{0,1}, {0,2}, {1,2}, {1,0}, {2,0}, {2,1}};
 	for (auto plane : planes) {
 		k = std::get<0>(plane);
 		j = std::get<1>(plane);
 
-		// Get the angle between `the projection of the ith base cell vector on the current plane` and `the ith axis`
-		phi_1 = acos(cell->hSize(k,k) / pow((pow(cell->hSize(k,k), 2)+pow(cell->hSize(j,k), 2)), .5) );
+		if (matrix_passed) new_hSize.col(k) += _flip(k,j) * cell->hSize.col(j);
+		else {
+			// Get the angle between `the projection of the ith base cell vector on the current plane` and `the ith axis`
+			phi_1 = acos(cell->hSize(k,k) / pow((pow(cell->hSize(k,k), 2)+pow(cell->hSize(j,k), 2)), .5) );
 
-		// Compute the angles if we flip to neighboor grid points
-			// If we flip left
-		vect_a = cell->hSize.col(k) - cell->hSize.col(j);
-		phi_2a = acos(vect_a(k) / pow((pow(vect_a(k), 2)+pow(vect_a(j), 2)), .5));
+			// Compute the angles if we flip to neighboor grid points
+				// If we flip left
+			vect_a = cell->hSize.col(k) - cell->hSize.col(j);
+			phi_2a = acos(vect_a(k) / pow((pow(vect_a(k), 2)+pow(vect_a(j), 2)), .5));
 
-			// If we flip right
-		vect_b = cell->hSize.col(k) + cell->hSize.col(j);
-		phi_2b = acos(vect_b(k) / pow((pow(vect_b(k), 2)+pow(vect_b(j), 2)), .5));
+				// If we flip right
+			vect_b = cell->hSize.col(k) + cell->hSize.col(j);
+			phi_2b = acos(vect_b(k) / pow((pow(vect_b(k), 2)+pow(vect_b(j), 2)), .5));
 
-		// Keep the best angle (the smallest)
-		theta = std::min({phi_1, phi_2a, phi_2b});
-		
-		// Flip in the best direction (if there is a grid point which gives a lower angle)
-		if (theta==phi_2a) {
-			new_hSize.col(k) = vect_a;
-			hSize_changed = true;
-		}
-		else if (theta==phi_2b) {
-			new_hSize.col(k) = vect_b;
-			hSize_changed = true;
+			// Keep the best angle (the smallest)
+			theta = std::min({phi_1, phi_2a, phi_2b});
+			
+			// Flip in the best direction (if there is a grid point which gives a lower angle)
+			if (theta==phi_2a) {
+				new_hSize.col(k) = vect_a;
+				hSize_changed = true;
+			}
+			else if (theta==phi_2b) {
+				new_hSize.col(k) = vect_b;
+				hSize_changed = true;
+			}
 		}
 	}
 
-	if (hSize_changed) {
-		flip = _flip; // Just so -Werror=unused-parameter doesn't bother me for now (to be improved)
+	if (hSize_changed || matrix_passed) {
 		cell->hSize = new_hSize;
 
 		cell->postLoad(*cell);
@@ -122,7 +125,7 @@ bool Shop::flipCell(const Matrix3r& _flip)
 		}
 		if (!colliderFound) LOG_WARN("No collider found while flipping cell; continuing simulation might give garbage results.");
 	}
-	return hSize_changed;
+	return hSize_changed || matrix_passed;
 }
 
 /* Apply force on contact point to 2 bodies; the force is oriented as it applies on the first body and is reversed on the second.
