@@ -27,12 +27,12 @@ def print_hSize(step_print=True, hSize_types="int"):
 O.periodic = True
 
 # Step 1
-# Initially, the cell is a unit cube
+# Initially, we setup the cell as an unit cube
 O.cell.hSize = Matrix3(1,0,0, 0,1,0, 0,0,1)
 print_hSize()
 
 # Step 2
-# For instance, we can use flipCell to shift the top face (whose outer unit normal is (0,1,0)) of the cell 1 unit to the left along the axis 0
+# We can use flipCell to shift the top face (whose outer unit normal is (0,1,0)) of the cell 1 grid point to the left along the axis 0
 flipCell(Matrix3(0,-1,0, 0,0,0, 0,0,0))
 print_hSize()
 
@@ -40,7 +40,7 @@ print_hSize()
 # If we call flipCell without input argument, the best flip is automatically sought among the neighbour grid points
 # The best flip is the one that minimizes the angles between the cell's base vectors and the global axes
 flipCell()
-print_hSize()
+print_hSize() # The unit cube is recovered
 
 # Step 4
 # When passing a flip matrix, one can shift the faces of the cell by several grid points (in our case the result is an extremly sheared cell)
@@ -57,7 +57,7 @@ print_hSize()
 # If the cell has been sheared a lot (i.e. by several grid points), one can thus easily find the best hSize by calling it in a while loop
 cell_flipped = True
 while cell_flipped: cell_flipped = flipCell() # Note that flipCell performs at least 11 tests when called
-print_hSize()
+print_hSize() # The unit cube is recovered
 
 # Step 7
 # flipCell works for any hSize
@@ -65,5 +65,5 @@ O.cell.hSize = Matrix3(0.001767398585873738732,-3.402651098340004036e-22,-2.4557
 print_hSize(hSize_types="float")
 flipCell()
 print("\nStep 7 - After flipping\n")
-print_hSize(False, "float")
+print_hSize(False, "float") # The best flip was found
 
