@@ -14,8 +14,8 @@ def print_hSize(step_print=True):
 
 	print("\tAngles between the cell's base vectors and the global axes on the (i,j) plane")
 	for ax1, ax2 in planes: 
-		phi_1a = np.arccos(O.cell.hSize(ax1,ax1) / np.sqrt((O.cell.hSize(ax1,ax1)**2 + O.cell.hSize(ax2,ax1)**2)))
-		phi_1b = np.arccos(O.cell.hSize(ax2,ax2) / np.sqrt((O.cell.hSize(ax2,ax2)**2 + O.cell.hSize(ax1,ax2)**2)))*180/np.pi
+		phi_1a = np.arccos(O.cell.hSize[ax1,ax1] / np.sqrt((O.cell.hSize[ax1,ax1]**2 + O.cell.hSize[ax2,ax1]**2)))
+		phi_1b = np.arccos(O.cell.hSize[ax2,ax2] / np.sqrt((O.cell.hSize[ax2,ax2]**2 + O.cell.hSize[ax1,ax2]**2)))*180/np.pi
 		print("\t\t(i={:d}, j={:d})").format(ax1, ax2)
 		for ax, phi_1 in zip([ax1, ax2], [phi_1a, phi_1b]): print("\t\t\tfor cell's base vector {:d} = {:.2f} degrees".format(ax, phi_1))
 	if step_print: step += 1
