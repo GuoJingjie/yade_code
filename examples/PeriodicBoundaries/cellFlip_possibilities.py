@@ -53,10 +53,10 @@ flipCell(Matrix3(0,0,1, 0,0,0, 0,-2,0))
 print_hSize()
 
 # Step 6
-# flipCell returns True if it found and performed an advantageous flip, False otherwise (but always True if a flip matrix is passed, even if it is Matrix3::Zero())
-# If the cell has been sheared a lot (i.e. by several grid points), one can thus easily find the best hSize by calling it in a while loop
-cell_flipped = True
-while cell_flipped: cell_flipped = flipCell() # Note that flipCell performs at least 11 tests when called
+# flipCell returns the flip matrix it used on the cell. Since it only flip the cell on grid node at the time, one might need to call it sevral times
+# Also, hSize changes between each call of flipCell, the sum of all flip matrices is not the "overall" flip matrix.
+flip_matrix = Matrix3(0,0,0, 0,0,0, 0,0,1) 
+while flip_matrix!=Matrix3(0,0,0, 0,0,0, 0,0,0): flip_matrix = flipCell() # Note that flipCell performs at least 11 tests when called
 print_hSize() # The unit cube is recovered
 
 # Step 7

@@ -55,12 +55,12 @@ using math::min; // using inside .cpp file is ok.
 CREATE_LOGGER(Shop);
 
 /*! Flip periodic cell for shearing indefinitely.*/
-bool Shop::flipCell(const Matrix3r& _flip)
+Matrix3r Shop::flipCell(const Matrix3r& _flip)
 {
 	Scene*                  scene = Omega::instance().getScene().get();
 	const shared_ptr<Cell>& cell(scene->cell);
 	Matrix3r&               new_hSize = cell->hSize;
-	Matrix3r                flip;
+	Matrix3r                flip = _flip;
 	int j,k;
 	double phi_1, phi_2a, phi_2b, theta;
 	Vector3r vect_a, vect_b;
@@ -90,13 +90,16 @@ bool Shop::flipCell(const Matrix3r& _flip)
 			theta = std::min({phi_1, phi_2a, phi_2b});
 			
 			// Flip in the best direction (if there is a grid point which gives a lower angle)
-			if (theta==phi_2a) {
+			if (theta==phi_1) {} // If all angles are equal this line is necessary
+			else if (theta==phi_2a) {
 				new_hSize.col(k) = vect_a;
 				hSize_changed = true;
+				flip(k,j) -= 1;
 			}
 			else if (theta==phi_2b) {
 				new_hSize.col(k) = vect_b;
 				hSize_changed = true;
+				flip(k,j) += 1;
 			}
 		}
 	}
@@ -125,7 +128,7 @@ bool Shop::flipCell(const Matrix3r& _flip)
 		}
 		if (!colliderFound) LOG_WARN("No collider found while flipping cell; continuing simulation might give garbage results.");
 	}
-	return hSize_changed || matrix_passed;
+	return flip;
 }
 
 /* Apply force on contact point to 2 bodies; the force is oriented as it applies on the first body and is reversed on the second.
