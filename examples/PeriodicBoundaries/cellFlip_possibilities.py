@@ -55,8 +55,7 @@ print_hSize()
 # Step 6
 # flipCell returns the flip matrix it used on the cell. Since it only flip the cell on grid node at the time, one might need to call it sevral times
 # Also, hSize changes between each call of flipCell, the sum of all flip matrices is not the "overall" flip matrix.
-flip_matrix = Matrix3(0,0,0, 0,0,0, 0,0,1) 
-while flip_matrix!=Matrix3(0,0,0, 0,0,0, 0,0,0): flip_matrix = flipCell() # Note that flipCell performs at least 11 tests when called
+while flipCell()!=Matrix3(0,0,0, 0,0,0, 0,0,0): pass # Note that flipCell performs at least 11 tests when called
 print_hSize() # The unit cube is recovered
 
 # Step 7
