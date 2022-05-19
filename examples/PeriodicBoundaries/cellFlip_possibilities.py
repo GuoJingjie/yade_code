@@ -66,3 +66,18 @@ flipCell()
 print("\nStep 7 - After flipping\n")
 print_hSize(False, "float") # The best flip was found
 
+# Step 8 /!\ PROBLEM /!\
+# In some configurations (e.g. after a rigid body rotation), the grid points that give the lowest angles with the global axes give an even more sheared cell
+# flipCell is not advantageous in this case
+O.cell.hSize = Matrix3(1,0,0, 0,1,0, 0,0,1)
+print_hSize()
+O.cell.velGrad = [[0,1,0], [-1,0,0], [0,0,0]]
+O.run(2, wait=True)
+
+print("\nStep 8 - After rigid body rotation\n")
+print_hSize(False, "float")
+
+n_call = 1
+while flipCell()!=Matrix3(0,0,0, 0,0,0, 0,0,0): n_call += 1
+print("\nStep 8 - After calling flipCell {:d} times\n".format(n_call))
+print_hSize(False, "float") # flipCell gave worse angles between each cell's base vector (they were the best before) 
