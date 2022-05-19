@@ -828,7 +828,7 @@ The restriction of a single particle not spanning more than half of the transfor
 This algorithm is implemented in :yref:`InsertionSortCollider` and is used whenever simulation is periodic (:yref:`Omega.isPeriodic`); individual :yref:`BoundFunctor's<BoundFunctor>` are responsible for computing sheared :yref:`Aabb's<Aabb>`; currently it is implemented for spheres and facets (in :yref:`Bo1_Sphere_Aabb` and :yref:`Bo1_Facet_Aabb` respectively).
 
 .. _fig-cell-shear-aabb:
-.. figure:: fig/cell-shear-aabb.pdf
+.. figure:: fig/cell-shear-aabb.*
    
    Constructing axis-aligned bounding box (:yref:`Aabb`) of a sphere in simulation space coordinates (without periodic cell -- left) and transformed cell coordinates (right), where collision detection axes $x'$, $y'$ are not identical with simulation space axes $x$, $y$. Bounds' projection to axes is shown by orange lines.
 
