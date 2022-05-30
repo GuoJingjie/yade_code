@@ -86,6 +86,18 @@ def linspace(a,b,num):
 		import numpy
 		return numpy.linspace(a,b,num=num)
 
+def eig(a):
+	"""
+	This function calls ``numpy.linalg.eig(…)`` or ``mpmath.eig(…)``, because ``numpy.linalg.eig`` function does not work with mpmath.
+	"""
+	if(needsMpmathAtN(1)):
+		import mpmath
+		return mpmath.eig(a)
+	else:
+		import numpy
+		return numpy.linalg.eig(a)
+
+
 def toHP1(arg):
 	"""
 	This function is for compatibility of calls like: ``g = yade.math.toHP1("-9.81")``. If yade is compiled with default ``Real`` precision set as ``double``,
