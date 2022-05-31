@@ -52,7 +52,7 @@ void LevelSet::rayTrace(const Vector3r& ray)
 		diffSign = false;
 		for (unsigned int gp = 0; gp < 8; gp++) { // passing through 8 cell gridpoints to check whether they all have the same distance sign
 			xInd   = (gp % 2 ? indices[0] + 1
-			                 : indices[0]); // better put parenthesis: "=" and ternary have same precedence, let s not look at associativity
+                                       : indices[0]); // better put parenthesis: "=" and ternary have same precedence, let s not look at associativity
 			yInd   = ((gp & 2) / 2 ? indices[1] + 1 : indices[1]);
 			zInd   = ((gp & 4) / 4 ? indices[2] + 1 : indices[2]);
 			gpDist = distField[xInd][yInd][zInd]; // distance value for current gp
@@ -206,7 +206,8 @@ bool LevelSet::rayTraceInCell(const Vector3r& ray, const Vector3r& pointP, const
 
 Vector3r LevelSet::normal(const Vector3r& pt) const
 {
-	// returns the normal vector at pt, according to (2) Kawamoto2016
+	// Returns the normal vector at pt
+	// Checking which cell we're in:
 	Vector3i indices = lsGrid->closestCorner(pt);
 	int      xInd(indices[0]), yInd(indices[1]), zInd(indices[2]);
 
@@ -214,12 +215,13 @@ Vector3r LevelSet::normal(const Vector3r& pt) const
 		LOG_ERROR("Can not compute the normal, returning a NaN vector");
 		return Vector3r(NaN, NaN, NaN);
 	}
-
+	// Some declarations:
 	Real     spac   = lsGrid->spacing;
 	Vector3r corner = lsGrid->gridPoint(xInd, yInd, zInd);
 	Real     xRed((pt[0] - corner[0]) / spac), yRed((pt[1] - corner[1]) / spac),
-	        zRed((pt[2] - corner[2]) / spac); // dimensionless x,y,z of 3., top p. 4 Kawamoto2016
-	Real nx(0), ny(0), nz(0);                 // the x, y, z components of normal, computed below
+	        zRed((pt[2] - corner[2]) / spac); // dimensionless x,y,z in [0;1] in one cell (3., top p. 4 Kawamoto2016)
+	Real nx(0), ny(0), nz(0);                 // x, y, z components of normal
+	// Computing normal as the gradient of trilinear interpolation (e.g. Eq. (2) Kawamoto2016):
 	for (int indA = 0; indA < 2; indA++) {
 		for (int indB = 0; indB < 2; indB++) {
 			for (int indC = 0; indC < 2; indC++) {
@@ -230,7 +232,7 @@ Vector3r LevelSet::normal(const Vector3r& pt) const
 			}
 		}
 	}
-	return Vector3r(nx, ny, nz).normalized();
+	return Vector3r(nx, ny, nz).normalized(); // do we really need the normalized() ?.. normally, no
 }
 
 void LevelSet::initSurfNodes()
@@ -349,10 +351,15 @@ void LevelSet::init() // computes stuff (nVoxInside, center, volume, inertia, bo
 			}
 		}
 	}
-	if (math::abs(Ixy) + math::abs(Ixz) + math::abs(Iyz) > 9.e-3 * (math::abs(Ixx) + math::abs(Iyy) + math::abs(Izz))) // TODO: sthg else than 9.e-3 ?
+	Matrix3r matI, diagI;
+	matI << Ixx, Ixy, Ixz, Ixy, Iyy, Iyz, Ixz, Iyz, Izz; // full inertia matrix
+	diagI << Ixx, 0, 0, 0, Iyy, 0, 0, 0, Izz;            // just its diagonal components
+	Real ratio((matI - diagI).norm() / diagI.norm());    // how much non-diagonal matI is
+	if (ratio > 5.e-3) // 0.005 is a convenient value for jduriez .stl data and usual grids, while being probably small enough
 		LOG_ERROR(
-		        "Incorrect LevelSet description: local frame is non_inertial with a out-of-diagonal / diagonal terms ratio = "
-		        << (math::abs(Ixy) + math::abs(Ixz) + math::abs(Iyz)) / (math::abs(Ixx) + math::abs(Iyy) + math::abs(Izz)));
+		        "Incorrect LevelSet input: local frame is non-inertial. Indeed, Ixx = "
+		        << Ixx << " ; Iyy = " << Iyy << " ; Izz = " << Izz << " ; Ixy = " << Ixy << " ; Ixz = " << Ixz << " ; Iyz = " << Iyz
+		        << " for inertia matrix I, making for a " << ratio << " non-diagonality ratio.");
 	inertia = Vector3r(Ixx, Iyy, Izz);
 	if (!surfNodes
 	             .size()) { // 0 boundary nodes as of now. Condition could be false after save/load, where we do not need to duplicate the nodes. Other choice to avoid this test would be to save everything else that's computed by init(), eg center, ..
@@ -403,6 +410,23 @@ Vector3r LevelSet::getInertia()
 	return inertia;
 }
 
+Real LevelSet::getSurface() const
+{
+	Real nbrAngles(sqrt(surfNodes.size() - 2));
+	if (nodesPath != 1 or nbrAngles != int(nbrAngles)) {
+		LOG_ERROR(
+		        "Impossible to compute surface with nodesPath = " << nodesPath << " (1 expected) and " << surfNodes.size()
+		                                                          << " surface nodes (squared integer + 2 expected). Returning -1");
+		return -1.;
+	}
+	Real dtheta(Mathr::PI / (nbrAngles + 1)), dphi(2 * Mathr::PI / nbrAngles);
+	Real surf(0.);
+	for (unsigned int idx = 2; idx < surfNodes.size(); idx++) {
+		Vector3r spher = ShopLS::cart2spher(surfNodes[idx]); // (r,theta,phi) spherical coordinates
+		surf += pow(spher[0], 2) * sin(spher[1]) * dtheta * dphi;
+	}
+	return surf;
+}
 void LevelSet::computeMarchingCubes()
 {
 	// Clear possible existing marching cube data

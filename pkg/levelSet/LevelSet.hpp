@@ -36,6 +36,7 @@ public:
 	Real             getVolume();                     // these 3 get*() may call init() if not already done, they can not be const-declared
 	Vector3r         getCenter();
 	Vector3r         getInertia();
+	Real             getSurface() const;           // this one can be const-declared
 	void             computeMarchingCubes();       // Compute the marching cube triangulation for the LS shape
 	vector<Vector3r> getMarchingCubeTriangles();   // Retrieve marching cube triangles
 	vector<Vector3r> getMarchingCubeNormals();     // Retrieve marching cube normals
@@ -71,6 +72,7 @@ public:
 		.def("distance",&LevelSet::distance,(boost::python::arg("pt")),"Distance to surface value at pt, pt being expressed in local frame.")
 		.def("normal",&LevelSet::normal,(boost::python::arg("pt")),"Normal vector to the surface, at some pt. Local frame applies to both output normal and input pt.")
 		.def("rayTrace",&LevelSet::rayTrace,(boost::python::arg("ray")),"Performs one ray tracing, possibly modifying :yref:`surfNodes<LevelSet.surfNodes>`. Provided for debugging purposes")
+		.def("getSurface",&LevelSet::getSurface,"Returns particle surface as computed from numeric integration over the :yref:`surface nodes<LevelSet.surfNodes>`. Requires :yref:`nodesPath<LevelSet.nodesPath>` = 1.")
 		.def("computeMarchingCubes",&LevelSet::computeMarchingCubes,"Compute or recompute the triangulation of the particle surface after using the Marching Cubes algorithm on :yref:`distField<LevelSet.distField>`.")
 		.def("marchingCubesVertices",&LevelSet::getMarchingCubeTriangles,"Returns the vertices for a surface triangulation obtained after executing the Marching Cubes algorithm on :yref:`distField<LevelSet.distField>`.")
 		.def("marchingCubesNormals",&LevelSet::getMarchingCubeNormals,"Returns the normals for a surface triangulation obtained after executing the Marching Cubes algorithm on :yref:`distField<LevelSet.distField>`.")

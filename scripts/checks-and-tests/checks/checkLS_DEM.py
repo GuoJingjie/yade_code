@@ -18,12 +18,14 @@ if ('LS_DEM' in features):
 	# Starting with some volume and surface comparisons
 	###################################################
 	# sphere case:
-	lsSph = levelSetBody('sphere', radius=1, spacing=0.05)
+	lsSph = levelSetBody('sphere', radius=1, spacing=0.05, nodesPath = 1)
 	if not equalNbr(lsSph.shape.volume(), 4. / 3. * pi, 4.e-3):
 		raise YadeCheckError("Failed because of an incorrect sphere volume in LS-DEM:", lsSph.shape.volume(), "vs", 4. / 3. * pi, "expected")
 	lNorm = [nod.norm() for nod in lsSph.shape.surfNodes]
 	if not equalNbr(max(lNorm), 1, 1.e-3) or not equalNbr(min(lNorm), 1, 1.e-3):
 		raise YadeCheckError("Failed because of incorrect boundary nodes on a sphere in LS-DEM")
+	if not equalNbr(lsSph.shape.getSurface(), 4*pi, 0.025): # tolerance could be 1.1e-3 with 2502 surface nodes
+        	raise YadeCheckError("Failed because of incorrect getSurface() for a sphere in LS-DEM")
 
 	# superellipsoid case:
 	rx, ry, rz, epsE, epsN = 0.5, 1.2, 1., 0.1, 0.5
