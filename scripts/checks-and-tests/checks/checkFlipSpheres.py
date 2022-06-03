@@ -26,7 +26,7 @@ O.engines= [
     InteractionLoop(
         [Ig2_Sphere_Sphere_ScGeom()],
         [Ip2_FrictMat_FrictMat_FrictPhys()],
-        law,
+        [law],
     ),
     NewtonIntegrator()
 ]
