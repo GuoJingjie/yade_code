@@ -19,14 +19,13 @@ for i in range(nSpheres):
         for k in range(nSpheres):
             O.bodies.append(sphere([i*dx,j*dx,k*dx],0.58*dx,fixed=True))
 
-law = Law2_ScGeom_FrictPhys_CundallStrack()
 O.engines= [
     ForceResetter(),
     InsertionSortCollider([Bo1_Sphere_Aabb()],verletDist=-0.1,label='collider'),
     InteractionLoop(
         [Ig2_Sphere_Sphere_ScGeom()],
         [Ip2_FrictMat_FrictMat_FrictPhys()],
-        [law],
+        [Law2_ScGeom_FrictPhys_CundallStrack(label="lawCStrack")],
     ),
     NewtonIntegrator()
 ]
@@ -42,15 +41,15 @@ def testFlip(velGrad,time,reset):
     O.run(time,True)
     O.cell.velGrad=Matrix3.Zero
     O.step()
-    E = law.elasticEnergy()
+    E = lawCStrack.elasticEnergy()
     stress = getStress()
     init_hsize = O.cell.hSize
     try:
-        flip=flipCell() # flip and run one step, see if the forces are unchanged through elastic energy and stress
+        flip=O.cell.flipCell() # flip and run one step, see if the forces are unchanged through elastic energy and stress
     except:
         raise YadeCheckError("Internal error while flipping")
     O.step()
-    energyChange = (E - law.elasticEnergy())/E
+    energyChange = (E - lawCStrack.elasticEnergy())/E
     stressChange = (stress - getStress()).norm() / stress.norm()
     if energyChange>1e-10 or stressChange>1e-10:
         assert_passed(init_hsize, energyChange, stressChange)
