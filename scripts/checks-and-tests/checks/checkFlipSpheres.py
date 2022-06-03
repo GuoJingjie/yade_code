@@ -19,13 +19,14 @@ for i in range(nSpheres):
         for k in range(nSpheres):
             O.bodies.append(sphere([i*dx,j*dx,k*dx],0.58*dx,fixed=True))
 
+law = Law2_ScGeom_FrictPhys_CundallStrack()
 O.engines= [
     ForceResetter(),
     InsertionSortCollider([Bo1_Sphere_Aabb()],verletDist=-0.1,label='collider'),
     InteractionLoop(
         [Ig2_Sphere_Sphere_ScGeom()],
         [Ip2_FrictMat_FrictMat_FrictPhys()],
-        [Law2_ScGeom_FrictPhys_CundallStrack(label="law"),],
+        law,
     ),
     NewtonIntegrator()
 ]
@@ -35,6 +36,7 @@ O.step()
 O.saveTmp()
 
 def testFlip(velGrad,time,reset):
+    global fail_flag
     if reset: O.reload() # start from unit cube
     O.cell.velGrad=velGrad
     O.run(time,True)
@@ -51,7 +53,7 @@ def testFlip(velGrad,time,reset):
     energyChange = (E - law.elasticEnergy())/E
     stressChange = (stress - getStress()).norm() / stress.norm()
     if energyChange>1e-10 or stressChange>1e-10:
-        assert_passed(init_hsize, deltaE, deltaS)
+        assert_passed(init_hsize, energyChange, stressChange)
         fail_flag = True
     return flip
 
