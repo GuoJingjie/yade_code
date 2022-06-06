@@ -13,14 +13,7 @@ class TestEnum(unittest.TestCase):
 		pass  # here finalize the tests, maybe close an opened file, or something else
 
 	def canTest(self):
-		return (
-		        ('QT5' in yade.config.features)
-		        # This is to workaround https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1009739
-		        # I could not reproduce the crash inside i386 chroot. So the workaround disables the test
-		        # for the special case of python 3.10.4 on i386
-		        # FIXME: hopefully remove this workaround later.
-		        and (not ((yade.libVersions.getArchitecture() == 'i386') and (yade.libVersions.getVersion('python') >= (3, 10, 4))))
-		)
+		return 'QT5' in yade.config.features
 
 	def thisTestsException1(self):
 		self.r.blinkHighlight = -100
@@ -30,7 +23,6 @@ class TestEnum(unittest.TestCase):
 
 	def testException(self):
 		if (not self.canTest()):
-			print("\n  enumTest testException skipped")
 			return
 		# make sure it's impossible to assign incorrect values.
 		print("\n  Here it must throw two exceptions:")
@@ -39,7 +31,6 @@ class TestEnum(unittest.TestCase):
 
 	def testAssignment(self):
 		if (not self.canTest()):
-			print("\n  enumTest testAssignment skipped")
 			return
 		# This is not to test if useSolver by default equals CholeskyFactorization, if you need to change the default then change the test here. Or test a different eum.
 		# Because this is to test function ArbitraryEnum_from_python<…> if assignment to any enum works as expected and if it throws when it should.
