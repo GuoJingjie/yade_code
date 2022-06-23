@@ -52,7 +52,7 @@ class Interaction;
 ///This container class is used to check if meniscii overlap. Wet interactions are put in a series of lists, with one list per body.
 class BodiesMenisciiList1 {
 private:
-	vector<list<shared_ptr<Interaction>>> interactionsOnBody;
+	std::vector<std::list<shared_ptr<Interaction>>> interactionsOnBody;
 
 	//shared_ptr<Interaction> empty;
 
@@ -62,7 +62,7 @@ public:
 	bool                           prepare(Scene* scene);
 	bool                           insert(const shared_ptr<Interaction>& interaction);
 	bool                           remove(const shared_ptr<Interaction>& interaction);
-	list<shared_ptr<Interaction>>& operator[](int index);
+	std::list<shared_ptr<Interaction>>& operator[](int index);
 	int                            size();
 	void                           display();
 
@@ -83,7 +83,7 @@ public:
 
 	BodiesMenisciiList1 bodiesMenisciiList;
 
-	void action();
+	void action() override;
 	Real intEnergy();
 	Real swInterface();
 	Real wnInterface();

@@ -108,7 +108,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::triangulateData()
 		LOG_WARN("Law2_ScGeom_CapillaryPhys_Capillarity1 asking triangulation for the second time. Ignored.");
 		return;
 	}
-	ifstream file(inputFilename.c_str());
+	std::ifstream file(inputFilename.c_str());
 	if (!file.is_open()) {
 		LOG_ERROR("No data file found for capillary law. Check path and inputFilename.");
 		return;
@@ -327,7 +327,7 @@ bool BodiesMenisciiList1::prepare(Scene* scene)
 	BodyContainer::iterator bi    = bodies->begin();
 	BodyContainer::iterator biEnd = bodies->end();
 	for (; bi != biEnd; ++bi) {
-		MaxId = max(MaxId, (*bi)->getId());
+		MaxId = math::max(MaxId, (*bi)->getId());
 	}
 	interactionsOnBody.resize(MaxId + 1);
 	for (unsigned int i = 0; i < interactionsOnBody.size(); ++i) {
@@ -360,14 +360,14 @@ bool BodiesMenisciiList1::remove(const shared_ptr<Interaction>& interaction)
 	return true;
 }
 
-list<shared_ptr<Interaction>>& BodiesMenisciiList1::operator[](int index) { return interactionsOnBody[index]; }
+std::list<shared_ptr<Interaction>>& BodiesMenisciiList1::operator[](int index) { return interactionsOnBody[index]; }
 
 int BodiesMenisciiList1::size() { return interactionsOnBody.size(); }
 
 void BodiesMenisciiList1::display()
 {
-	list<shared_ptr<Interaction>>::iterator firstMeniscus;
-	list<shared_ptr<Interaction>>::iterator lastMeniscus;
+	std::list<shared_ptr<Interaction>>::iterator firstMeniscus;
+	std::list<shared_ptr<Interaction>>::iterator lastMeniscus;
 	for (unsigned int i = 0; i < interactionsOnBody.size(); ++i) {
 		if (!interactionsOnBody[i].empty()) {
 			lastMeniscus = interactionsOnBody[i].end();
@@ -438,8 +438,6 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 			Real R1    = alpha * std::max(currentContactGeometry->radius2, currentContactGeometry->radius1);
 			Real R2    = alpha * std::min(currentContactGeometry->radius2, currentContactGeometry->radius1);
 
-			shared_ptr<BodyContainer>& bodies = scene->bodies;
-
 			Real N = bodies->size();
 			Real epsilon1, epsilon2;
 			Real ran1 = (N - id1 + 0.5) / (N + 1);
@@ -501,8 +499,8 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 							mindlinContactPhysics->meniscus = false;
 					}
 					if (cundallContactPhysics->meniscus == false)
-						cundallContactPhysics->SInterface = 4 * 3.141592653589793238462643383279502884 * (pow(R1, 2))
-						        + 4 * 3.141592653589793238462643383279502884 * (pow(R2, 2));
+						cundallContactPhysics->SInterface = 4 * Mathr::PI * (pow(R1, 2))
+						        + 4 * Mathr::PI * (pow(R2, 2));
 					if (!Vinterpol) {
 						if ((fusionDetection) || (hertzOn ? mindlinContactPhysics->isBroken : cundallContactPhysics->isBroken))
 							bodiesMenisciiList.remove((*ii));
@@ -513,11 +511,11 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 					}
 					/// wetting angles
 					if (!hertzOn) {
-						cundallContactPhysics->Delta1 = max(solution.delta1, solution.delta2);
-						cundallContactPhysics->Delta2 = min(solution.delta1, solution.delta2);
+						cundallContactPhysics->Delta1 = math::max(solution.delta1, solution.delta2);
+						cundallContactPhysics->Delta2 = math::min(solution.delta1, solution.delta2);
 					} else {
-						mindlinContactPhysics->Delta1 = max(solution.delta1, solution.delta2);
-						mindlinContactPhysics->Delta2 = min(solution.delta1, solution.delta2);
+						mindlinContactPhysics->Delta1 = math::max(solution.delta1, solution.delta2);
+						mindlinContactPhysics->Delta2 = math::min(solution.delta1, solution.delta2);
 					}
 				}
 
@@ -558,8 +556,8 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 								mindlinContactPhysics->meniscus = false;
 						}
 						if (cundallContactPhysics->meniscus == false)
-							cundallContactPhysics->SInterface = 4 * 3.141592653589793238462643383279502884 * (pow(R1, 2))
-							        + 4 * 3.141592653589793238462643383279502884 * (pow(R2, 2));
+							cundallContactPhysics->SInterface = 4 * Mathr::PI * (pow(R1, 2))
+							        + 4 * Mathr::PI * (pow(R2, 2));
 						if (!Vinterpol) {
 							if ((fusionDetection) || (hertzOn ? mindlinContactPhysics->isBroken : cundallContactPhysics->isBroken))
 								bodiesMenisciiList.remove((*ii));
@@ -569,11 +567,11 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 						}
 						/// wetting angles
 						if (!hertzOn) {
-							cundallContactPhysics->Delta1 = max(solution.delta1, solution.delta2);
-							cundallContactPhysics->Delta2 = min(solution.delta1, solution.delta2);
+							cundallContactPhysics->Delta1 = math::max(solution.delta1, solution.delta2);
+							cundallContactPhysics->Delta2 = math::min(solution.delta1, solution.delta2);
 						} else {
-							mindlinContactPhysics->Delta1 = max(solution.delta1, solution.delta2);
-							mindlinContactPhysics->Delta2 = min(solution.delta1, solution.delta2);
+							mindlinContactPhysics->Delta1 = math::max(solution.delta1, solution.delta2);
+							mindlinContactPhysics->Delta2 = math::min(solution.delta1, solution.delta2);
 						}
 					}
 				} else {
@@ -621,11 +619,11 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 						}
 						/// wetting angles
 						if (!hertzOn) {
-							cundallContactPhysics->Delta1 = max(solution.delta1, solution.delta2);
-							cundallContactPhysics->Delta2 = min(solution.delta1, solution.delta2);
+							cundallContactPhysics->Delta1 = math::max(solution.delta1, solution.delta2);
+							cundallContactPhysics->Delta2 = math::min(solution.delta1, solution.delta2);
 						} else {
-							mindlinContactPhysics->Delta1 = max(solution.delta1, solution.delta2);
-							mindlinContactPhysics->Delta2 = min(solution.delta1, solution.delta2);
+							mindlinContactPhysics->Delta1 = math::max(solution.delta1, solution.delta2);
+							mindlinContactPhysics->Delta2 = math::min(solution.delta1, solution.delta2);
 						}
 					}
 				}

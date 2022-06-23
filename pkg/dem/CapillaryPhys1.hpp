@@ -165,7 +165,7 @@ REGISTER_SERIALIZABLE(CapillaryPhys1);
 
 class Ip2_FrictMat_FrictMat_CapillaryPhys1 : public IPhysFunctor {
 public:
-	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction);
+	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
 
 	FUNCTOR2D(FrictMat, FrictMat);
 	// clang-format off

@@ -140,7 +140,10 @@ interpolate1(const Dt& dt, const typename Dt::Geom_traits::Point_3& Q, DataOwner
 	        = CGAL::getIncidentVtxWeights(dt, Q, std::back_inserter(coords), norm, owner.normals, owner.cell);
 
 	typename DataOwner::Data data = typename DataOwner::Data(); //initialize null solution
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-copy"                  // TODO: fix it later
 	if (!result.third) return data;                             // out of the convex hull, we return the null solution
+#pragma GCC diagnostic pop
 	//else, we compute the weighted sum
 	for (unsigned int k = 0; k < coords.size(); k++)
 		data += (rawData[coords[k].first->id()] * coords[k].second);
@@ -159,7 +162,10 @@ interpolate2(const Dt& dt, const typename Dt::Geom_traits::Point_3& Q, DataOwner
 	        = CGAL::getIncidentVtxWeights(dt, Q, std::back_inserter(coords), norm, owner.normals, owner.cell);
 
 	typename DataOwner::Data data = typename DataOwner::Data(); //initialize null solution
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-copy"                  // TODO: fix it later
 	if (!result.third) return data;                             // out of the convex hull, we return the null solution
+#pragma GCC diagnostic pop
 	//else, we compute the weighted sum
 	for (unsigned int k = 0; k < coords.size(); k++)
 		data += (rawData[coords[k].first->id()] * coords[k].second);
