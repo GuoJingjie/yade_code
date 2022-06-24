@@ -1,5 +1,7 @@
 //keep this #ifdef as long as you don't really want to realize a final version publicly, it will save compilation time for everyone else
 //when you want it compiled, you can just uncomment the following line
+
+#ifdef YADE_CGAL
 #define CAPILLARYPHYS1
 #ifdef CAPILLARYPHYS1
 
@@ -57,3 +59,4 @@ void Ip2_FrictMat_FrictMat_CapillaryPhys1::go(
 } // namespace yade
 
 #endif //CAPILLARYPHYS1
+#endif //YADE_CGAL
