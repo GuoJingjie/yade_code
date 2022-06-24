@@ -141,6 +141,7 @@ interpolate1(const Dt& dt, const typename Dt::Geom_traits::Point_3& Q, DataOwner
 
 	typename DataOwner::Data data = typename DataOwner::Data(); //initialize null solution
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"                  // TODO: fix it later
 	if (!result.third) return data;                             // out of the convex hull, we return the null solution
 #pragma GCC diagnostic pop
@@ -163,6 +164,7 @@ interpolate2(const Dt& dt, const typename Dt::Geom_traits::Point_3& Q, DataOwner
 
 	typename DataOwner::Data data = typename DataOwner::Data(); //initialize null solution
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"                  // TODO: fix it later
 	if (!result.third) return data;                             // out of the convex hull, we return the null solution
 #pragma GCC diagnostic pop
