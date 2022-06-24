@@ -11,6 +11,8 @@
 //FIXME : in triaxialStressController, change test about null force in updateStiffnessccc
 //keep this #ifdef as long as you don't really want to realize a final version publicly, it will save compilation time for everyone else
 //when you want it compiled, you can just uncomment the following line
+#ifdef YADE_CGAL
+
 #define LAW2_SCGEOM_CAPILLARYPHYS_Capillarity1
 #ifdef LAW2_SCGEOM_CAPILLARYPHYS_Capillarity1
 
@@ -639,4 +641,5 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 
 } // namespace yade
 
-#endif //LAW2_SCGEOM_CAPILLARYPHYS_Capillarity1
+#endif // LAW2_SCGEOM_CAPILLARYPHYS_Capillarity1
+#endif // YADE_CGAL
