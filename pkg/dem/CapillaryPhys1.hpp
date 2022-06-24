@@ -15,16 +15,16 @@ namespace yade { // Cannot have #include directive inside.
 
 class MeniscusPhysicalData {
 public:
-	double R;
-	double volume;
-	double distance;
-	double surface;
-	double energy;
-	double force;
-	double succion;
-	double delta1;
-	double delta2;
-	double arcLength;
+	Real R;
+	Real volume;
+	Real distance;
+	Real surface;
+	Real energy;
+	Real force;
+	Real succion;
+	Real delta1;
+	Real delta2;
+	Real arcLength;
 	bool   ending;
 	//default ctor
 	MeniscusPhysicalData()
@@ -43,16 +43,16 @@ public:
 	}
 	//ctor with input values
 	MeniscusPhysicalData(
-	        const double& r,
-	        const double& v,
-	        const double& d,
-	        const double& s,
-	        const double& e,
-	        const double& f,
-	        const double& p,
-	        const double& a1,
-	        const double& a2,
-	        const double& arc,
+	        const Real& r,
+	        const Real& v,
+	        const Real& d,
+	        const Real& s,
+	        const Real& e,
+	        const Real& f,
+	        const Real& p,
+	        const Real& a1,
+	        const Real& a2,
+	        const Real& arc,
 	        bool          end)
 	        : R(r)
 	        , volume(v)
@@ -87,7 +87,7 @@ public:
 		return *this;
 	}
 
-	MeniscusPhysicalData operator*(const double& fact) const
+	MeniscusPhysicalData operator*(const Real& fact) const
 	{
 		return MeniscusPhysicalData(
 		        fact * R,
