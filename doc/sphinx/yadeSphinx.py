@@ -106,10 +106,10 @@ def childSet(klasses):
 	return ret
 
 
-def autodocClass(klass):
+def autodocClass(klass,exclude=[]):
 	global docClasses
 	docClasses.add(klass)
-	return ".. autoclass:: %s\n\t:members:\n\t:undoc-members:\n\t:inherited-members:\n\n" % (klass)  # \t:inherited-members:\n # \n\t:show-inheritance:
+	return ".. autoclass:: %s\n\t:members:\n\t:undoc-members:\n\t:inherited-members:\n\t:exclude-members: %s\n\n" % (klass,','.join(exclude))  # \t:inherited-members:\n # \n\t:show-inheritance:
 
 
 def autodocDerived(klass, doSections=True, willBeLater=set()):
@@ -120,12 +120,13 @@ def autodocDerived(klass, doSections=True, willBeLater=set()):
 	#the hyperlinks to those graphs work like: :ref:`inheritanceGraphBoundFunctor`  or  :ref:`BoundFunctor<inheritanceGraphBoundFunctor>`
 	ret += ".. _inheritanceGraph%s:\n\n" % klass
 	ret += inheritanceDiagram(klass, willBeLater)
-	ret += autodocClass(klass)
+	ret += autodocClass(klass, exclude=[]) # XXX: the top class has nothing excluded, is this what is expected?
+	exclude=[] # TODO: somehow fill the exclude list here
 	childs = list(yade.system.childClasses(klass))
 	childs.sort()
 	for k in childs:
 		if not k in (docClasses | willBeLater):
-			ret += autodocClass(k)
+			ret += autodocClass(k, exclude=exclude)
 	return ret
 
 
