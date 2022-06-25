@@ -186,6 +186,7 @@ def inheritanceDiagram(klass, willBeLater):
 				continue  # skip classes deriving from classes that are already documented
 			# TODO: mkNode should accept fillcolor depending on getSupportStatus enum: green, yellow, red, maybe more colors
 			# TODO: maybe make two lines for each box in diagram. Put the creation year in the second line
+			# 
 			if c not in (docClasses | willBeLater):
 				ret += mkNode(c)
 				extraPdfCaptionSet.add(c)  # I use set() to make sure they are sorted alphabetically
