@@ -9,7 +9,7 @@
 
 namespace yade { // Cannot have #include directive inside.
 
-YADE_ENUM(yade::SupportStatus, STATUS, (MATURE)(DEVELOPMENT)(ABANDONED));
-YADE_PLUGIN((SupportStatus));
+YADE_ENUM(yade::Status, SupportStatus, (MATURE)(DEVELOPMENT)(ABANDONED)(UNKNOWN));
+YADE_PLUGIN((Support));
 
 }
