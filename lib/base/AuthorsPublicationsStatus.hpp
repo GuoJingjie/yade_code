@@ -7,6 +7,7 @@
 
 /*
  * Each class is getting 4 or 5 extra functions. The goal is to show in documentation automatically retreived information from code:
+ *
  *  1. the color in the inheritance graph says: green - mature and supported, yellow - in development, red - abandoned
  *  2. we can call getAuthors() to check who wrote this class
  *  3. we can call getPublications() to see what publications mention or use this class
@@ -18,10 +19,10 @@
 #ifndef SUPPORT_HPP
 #define SUPPORT_HPP
 
-class Status : public Factorable {
+class AuthorsPublicationsStatus : public Factorable {
 public:
-	Status() { }
-	virtual ~Status() { }
+	AuthorsPublicationsStatus() { }
+	virtual ~AuthorsPublicationsStatus() { }
 
 	enum class SupportStatus { MATURE, DEVELOPMENT, ABANDONED, UNKNOWN };
 	// The first returned argument is always getClassName() so that self inspection in yade --test can discover an error when the

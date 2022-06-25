@@ -5,11 +5,11 @@
 *  GNU General Public License v2 or later. See file LICENSE for details. *
 *************************************************************************/
 
-#include "SupportStatus.hpp"
+#include "AuthorsPublicationsStatus.hpp"
 
 namespace yade { // Cannot have #include directive inside.
 
-YADE_ENUM(yade::Status, SupportStatus, (MATURE)(DEVELOPMENT)(ABANDONED)(UNKNOWN));
+YADE_ENUM(yade::AuthorsPublicationsStatus, SupportStatus, (MATURE)(DEVELOPMENT)(ABANDONED)(UNKNOWN));
 YADE_PLUGIN((Support));
 
 }
