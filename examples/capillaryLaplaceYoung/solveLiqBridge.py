@@ -9,12 +9,12 @@ from __future__ import print_function
 # --- End of "ipython necessary imports" ---
 
 from builtins import range
-import scipy  # for root finding function (see below), requires installing python-scipy package
+import scipy  # for root finding function (see below), requires installing python3-scipy package
 from scipy import optimize
 
 
 def solveLiqBridge(rRatio, theta, uStar, delta1, deltaZ, plot, plot3D, speak):
-	'''Computes one single liquid (capillary) bridge
+    '''Computes one single liquid (capillary) bridge
     Using Lian's method: iterative determination using Taylor expansion with finite difference (FD) increment = deltaZ (a function attribute)
 
     :param rRatio: the radius ratio, R2/R1 >=1
