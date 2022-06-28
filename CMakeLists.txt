@@ -123,7 +123,7 @@ OPTION(ENABLE_TWOPHASEFLOW "Enable two-phase flow engines" ${DEFAULT_ON})
 OPTION(ENABLE_USEFUL_ERRORS "enable useful compiler errors which help a lot in error-free development." ${DEFAULT_ON})
 OPTION(ENABLE_VTK "Enable VTK" ${DEFAULT_ON})
 OPTION(CHOLMOD_GPU "Enable GPU acceleration flow engine direct solver" ${DEFAULT_OFF})
-OPTION(USE_QT5 "USE Qt5 for GUI" ${DEFAULT_ON})
+OPTION(USE_QT5 "USE Qt5 for GUI" ON)
 
 #Set -DPYTHON_VERSION numeric option below:
 set(PYTHON_VERSION -1 CACHE STRING "Force python version to the given one. Defaults to -DPYTHON_VERSION=-1 which automatically uses the newest available python version on the system.")
