@@ -125,6 +125,9 @@ variables:
                   git reset --hard ;
                   git status ;
                   /usr/bin/find . -type f -print0 | xargs -0 dos2unix -q;
+                  echo " Some files listed in scripts/files_with_DOS_line_endings.txt are FORCED to have DOS line endings.";
+                  echo " Feel free to add more files to this ↑ list.";
+                  cat scripts/files_with_DOS_line_endings.txt | dos2unix | grep -v '@' | xargs unix2dos -q;
                   export CHANGED_LINE_ENDINGS=`git diff --shortstat | sed -e 's/^.*,\s\([0-9]\+\)\sdeletion.*$/\1/g'` ;
                   echo "CHANGED_LINE_ENDINGS = "$CHANGED_LINE_ENDINGS ;
                   if [[ ${CHANGED_LINE_ENDINGS} -ge "10" ]] ; then

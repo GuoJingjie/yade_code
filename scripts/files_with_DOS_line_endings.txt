@@ -1,0 +1,9 @@
+@ Here are listed files with enforced DOS line endings. Feel free to add more to the list.
+@ This list is used by the pipeline CI (.gitlab-ci.yml around line 127) to verify line endings of the files.
+@ It is assumed that all files except those listed here have unix line endings.
+@
+@ There cannot be empty lines in this file, so that xarg command in .gitlab-ci.yml will work correctly.
+@ Files must be listed here with a full path.
+@ Comments start with '@' (not #, which is another .gitlab-ci.yml limitation)
+@
+scripts/files_with_DOS_line_endings.txt
