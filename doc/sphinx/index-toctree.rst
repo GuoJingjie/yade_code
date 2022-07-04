@@ -84,6 +84,16 @@ Performance enhancements
 
   HighPrecisionReal.rst
 
+######################################
+Short-courses
+######################################
+
+.. toctree::
+  :maxdepth: 2
+  
+  tutorial-short-course.rst
+
+
 
 ######################################
 Literature
