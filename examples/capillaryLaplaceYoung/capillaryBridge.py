@@ -12,8 +12,8 @@ O.engines = [
         InsertionSortCollider([Bo1_Sphere_Aabb()]),
         InteractionLoop([Ig2_Sphere_Sphere_ScGeom()], [Ip2_FrictMat_FrictMat_CapillaryPhys()], [Law2_ScGeom_FrictPhys_CundallStrack(neverErase=1)]),
         Law2_ScGeom_CapillaryPhys_Capillarity(capillaryPressure=1e3),
-        NewtonIntegrator(),
         GlobalStiffnessTimeStepper(),
+        NewtonIntegrator(),
         PyRunner(command='computeThings()', iterPeriod=1)
 ]
 
