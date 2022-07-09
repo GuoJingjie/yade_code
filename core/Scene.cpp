@@ -105,7 +105,10 @@ void Scene::moveToNextTimeStep()
 		/* set substep to 0 during the loop, so that engines/nextEngines handler know whether we are inside the loop currently */
 		subStep = 0;
 		// ** 1. ** prologue
-		if (isPeriodic) cell->integrateAndUpdate(dt);
+		if (isPeriodic) {
+			cell->integrateAndUpdate(dt);
+			if (cell->flipFlippable) cell->flipCell();
+		}
 		//forces.reset(); // uncomment if ForceResetter is removed
 		const bool TimingInfo_enabled = TimingInfo::
 		        enabled; // cache the value, so that when it is changed inside the step, the engine that was just running doesn't get bogus values

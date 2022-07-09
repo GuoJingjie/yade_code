@@ -16,8 +16,6 @@ The transformation is split between "normal" part and "rotation/shear" part for 
 #include <lib/base/Math.hpp>
 #include <lib/serialization/Serializable.hpp>
 
-//#include<preprocessing/dem/Shop.hpp>
-
 namespace yade { // Cannot have #include directive inside.
 
 class Cell : public Serializable {
@@ -75,6 +73,8 @@ public:
 
 	//! "integrate" velGrad, update cached values used by public getter.
 	void integrateAndUpdate(Real dt);
+	/*! flip cell shape in order to maximize compactness (default) or flip using argument matrix if not zero */
+	Matrix3r flipCell();
 	/*! Return point inside periodic cell, even if shear is applied */
 	Vector3r wrapShearedPt(const Vector3r& pt) const { return shearPt(wrapPt(unshearPt(pt))); }
 	/*! Return point inside periodic cell, even if shear is applied; store cell coordinates in period. */
@@ -236,7 +236,8 @@ public:
 		((Matrix3r,nextVelGrad,Matrix3r::Zero(),Attr::readonly,"see :yref:`Cell.velGrad`."))
 		((Matrix3r,prevVelGrad,Matrix3r::Zero(),Attr::readonly,"Velocity gradient in the previous step."))
 		((int,homoDeform,2,,"If >0, deform (:yref:`velGrad<Cell.velGrad>`) the cell homothetically by adjusting positions and velocities of bodies. The velocity change is obtained by deriving the expression v=∇v.x with respect to time, where ∇v is the :yref:`macroscopic velocity gradient<Cell.velGrad>`, giving in an incremental form: Δv=Δ ∇v x + ∇v Δx across one DEM iteration. As a result, velocities are modified as soon as ``velGrad`` changes, according to the first term: Δv(t)=Δ ∇v x(t), while the 2nd term reflects a convective term: Δv'= ∇v v(t-dt/2). The second term is neglected if homoDeform=1. All terms are included if homoDeform=2 (default)"))
-		((bool,velGradChanged,false,Attr::readonly,"true when velGrad has been changed manually (see also :yref:`Cell.nextVelGrad`)")),
+		((bool,velGradChanged,false,Attr::readonly,"true when velGrad has been changed manually (see also :yref:`Cell.nextVelGrad`)"))
+		((bool,flipFlippable,false,,"flip automatically as soon as a more compact geometry is possible (see :yref:`trsf<Cell.flipCell>`)")),
 		/*ctor*/ _invTrsf=Matrix3r::Identity(); integrateAndUpdate(0),
 		/*py*/
 		// override some attributes above
@@ -251,6 +252,10 @@ public:
 		// functions
 		.def("setBox",&Cell::setBox,"Set :yref:`Cell` shape to be rectangular, with dimensions along axes specified by given argument. Shorthand for assigning diagonal matrix with respective entries to :yref:`hSize<Cell.hSize>`.")
 		.def("setBox",&Cell::setBox3,"Set :yref:`Cell` shape to be rectangular, with dimensions along $x$, $y$, $z$ specified by arguments. Shorthand for assigning diagonal matrix with the respective entries to :yref:`hSize<Cell.hSize>`.")
+		.def("flipCell",&Cell::flipCell,"Flip periodic cell so that angles between $R^3$ axes and transformed axes are as small as possible, using the two following facts:"
+	    "1. repeating in $R^3$ space the corners of a periodic cell defines a regular grid; 2. two cells leading through this process to a unique grid are "
+	    "equivalent and can be flipped one over another. Flipping includes adjustment of :yref:`Interaction.cellDist` for interactions that cross "
+	    "the boundary and didn't before (or vice versa), and re-initialization of collider. See also :ref:`collision detection<sect-cell-approx-collision>`")
 		// debugging only
 		.def("wrap",&Cell::wrapShearedPt_py,"Transform an arbitrary point into a point in the reference cell")
 		.def("unshearPt",&Cell::unshearPt,"Apply inverse shear on the point (removes skew+rot of the cell)")

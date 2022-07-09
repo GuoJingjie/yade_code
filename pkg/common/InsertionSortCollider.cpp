@@ -796,7 +796,7 @@ bool InsertionSortCollider::spatialOverlapPeri(Body::id_t id1, Body::id_t id2, S
 			} else {
 				LOG_FATAL(
 				        "Body #" << ((lmax - lmin) > 0.5 ? id2 : id1) << " spans over half of the cell size " << dim << " (axis=" << axis
-				                 << ", see flag allowBiggerThanPeriod)");
+				                 << ", see flags allowBiggerThanPeriod and Cell.flipFlippable)");
 				throw runtime_error(__FILE__ ": Body larger than half of the cell size encountered.");
 			}
 		}

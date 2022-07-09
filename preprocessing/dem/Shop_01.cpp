@@ -55,55 +55,10 @@ using math::min; // using inside .cpp file is ok.
 CREATE_LOGGER(Shop);
 
 /*! Flip periodic cell for shearing indefinitely.*/
-Matrix3r Shop::flipCell(const Matrix3r& _flip)
+Matrix3r Shop::flipCell()
 {
-	Scene*                  scene = Omega::instance().getScene().get();
-	const shared_ptr<Cell>& cell(scene->cell);
-	Matrix3r&               hSize = cell->hSize;
-	Matrix3i                flip;
-	if (_flip == Matrix3r::Zero()) {
-		bool hasNonzero = false;
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++) {
-				if (i == j) {
-					flip(i, j) = 0;
-					continue;
-				}
-				flip(i, j) = -int(math::floor(hSize.col(j).dot(hSize.col(i)) / hSize.col(i).dot(hSize.col(i))));
-				if (flip(i, j) != 0) hasNonzero = true;
-			}
-		if (!hasNonzero) {
-			LOG_TRACE("No flip necessary.");
-			return Matrix3r::Zero();
-		}
-	} else {
-		if ((_flip + Matrix3r::Identity()).determinant() != 1) LOG_WARN("Flipping cell needs det(Id+flip)=1, check your input.");
-		flip = _flip.cast<int>();
-	}
-	cell->hSize += cell->hSize * flip.cast<Real>();
-	cell->postLoad(*cell);
-
-	// adjust Interaction::cellDist for interactions;
-	// adjunct matrix of (Id + flip) is the inverse since det=1, below is the transposed co-factor matrix of (Id+flip).
-	// note that Matrix3::adjoint is not the adjunct, hence the in-place adjunct below
-	Matrix3i invFlip;
-	invFlip << 1 - flip(2, 1) * flip(1, 2), flip(2, 1) * flip(0, 2) - flip(0, 1), flip(0, 1) * flip(1, 2) - flip(0, 2),
-	        flip(1, 2) * flip(2, 0) - flip(1, 0), 1 - flip(0, 2) * flip(2, 0), flip(0, 2) * flip(1, 0) - flip(1, 2), flip(1, 0) * flip(2, 1) - flip(2, 0),
-	        flip(2, 0) * flip(0, 1) - flip(2, 1), 1 - flip(1, 0) * flip(0, 1);
-	for (const auto& i : *scene->interactions)
-		i->cellDist = invFlip * i->cellDist;
-
-	// force reinitialization of the collider
-	bool colliderFound = false;
-	for (const auto& e : scene->engines) {
-		Collider* c = dynamic_cast<Collider*>(e.get());
-		if (c) {
-			colliderFound = true;
-			c->invalidatePersistentData();
-		}
-	}
-	if (!colliderFound) LOG_WARN("No collider found while flipping cell; continuing simulation might give garbage results.");
-	return flip.cast<Real>();
+	LOG_WARN("flipCell from utils module is deprecated, use O.cell.flipCell() or O.cell.flipFlippable=True instead")
+	return Omega::instance().getScene()->cell->flipCell(); 
 }
 
 /* Apply force on contact point to 2 bodies; the force is oriented as it applies on the first body and is reversed on the second.

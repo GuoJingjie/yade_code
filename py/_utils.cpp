@@ -716,14 +716,7 @@ try {
 	py::def("wireNoSpheres", wireNoSpheres, "Set :yref:`Shape::wire` to True on non-spherical bodies (:yref:`Facets<Facet>`, :yref:`Walls<Wall>`).");
 	py::def("flipCell",
 	        &Shop::flipCell,
-	        (py::arg("flip") = Matrix3r(Matrix3r::Zero())),
-	        "Flip periodic cell so that angles between $R^3$ axes and transformed axes are as small as possible, using the two following facts:"
-	        "1. repeating in $R^3$ space the corners of a periodic cell defines a regular grid; 2. two cells leading through this process to a unique grid "
-	        "are "
-	        "equivalent and can be flipped one over another. Flipping necessitates adjustment of :yref:`Interaction.cellDist` for interactions that cross "
-	        "the boundary and didn't before (or vice versa), and re-initialization of collider. The *flip* argument can be used to specify desired flip: "
-	        "integers, each column for one axis; if zero matrix, best fit (minimizing the angles) is computed automatically.\n\nIn c++, this function is "
-	        "accessible as ``Shop::flipCell``.");
+	        "utils.flipCell is deprecated, use :yref:`O.cell.flipCell<Cell::flipCell>` or :yref:`O.cell.flipFlippable<Cell::flipFlippable>`");
 	py::def("getViscoelasticFromSpheresInteraction",
 	        getViscoelasticFromSpheresInteraction,
 	        (py::arg("tc"), py::arg("en"), py::arg("es")),
