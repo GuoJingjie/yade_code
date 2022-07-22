@@ -78,13 +78,13 @@ ScGeom::getIncidentVel(const State* rbp1, const State* rbp2, Real /*dt*/, const 
 		The solution adopted here to avoid ratcheting is as proposed by McNamara and co-workers.
 		They analyzed the ratcheting problem in detail - even though they comment on the basis of a cycle that differs from the one shown above. One will find interesting discussions in e.g. DOI 10.1103/PhysRevE.77.031304, even though solution it suggests is not fully applied here (equations of motion are not incorporating alpha, in contradiction with what is suggested by McNamara et al.).
 		 */
-		// For sphere-facet contact this will give an erroneous value of relative velocity...
+		// In case one of two bodies is not actually Sphere-shaped, this will give an erroneous value of relative velocity...
 		Real     alpha            = (radius1 + radius2) / (radius1 + radius2 - penetrationDepth);
 		Vector3r relativeVelocity = (rbp2->vel - rbp1->vel) * alpha + rbp2->angVel.cross(-radius2 * normal) - rbp1->angVel.cross(radius1 * normal);
 		relativeVelocity += alpha * shiftVel;
 		return relativeVelocity;
 	} else {
-		// It is correct for sphere-sphere and sphere-facet contact
+		// Here, the following is always correct (even for non Sphere-shaped bodies)
 		Vector3r c1x              = (contactPoint - rbp1->pos);
 		Vector3r c2x              = (contactPoint - (rbp2->pos + shift2));
 		Vector3r relativeVelocity = (rbp2->vel + rbp2->angVel.cross(c2x)) - (rbp1->vel + rbp1->angVel.cross(c1x));
