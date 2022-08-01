@@ -193,8 +193,10 @@ shared_ptr<LevelSet> ShopLS::lsSimpleShape(int shape, const AlignedBox3r& aabb, 
 		minGrid       = -maxGrid;
 		lsShape->twoD = true;
 	} else if (shape <= 4) { // sphere, box, superellipsoid, clump of spherical particles, all combined
-		minGrid       = minBod - step * Vector3r::Ones();
-		maxGrid       = maxBod + step * Vector3r::Ones();
+//		NB: pay attention to the following line, it has to enable the origin to belong to the grid (on all 3 axes)
+		int nIntX(int(ceil(maxBod[0]/step)) + 1 ), nIntY( int(ceil(maxBod[1]/step)) + 1), nIntZ( int(ceil(maxBod[2]/step)) + 1);
+		maxGrid       = Vector3r(nIntX*step,nIntY*step,nIntZ*step);
+		minGrid       = -maxGrid;
 		lsShape->twoD = false;
 	} else
 		LOG_FATAL("You asked for some shape value=" << shape << " which is not supported");
