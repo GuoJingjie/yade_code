@@ -173,14 +173,22 @@ Source code
 ------------
 
 Installation from source code is reasonable, when you want to add or
-modify constitutive laws, engines, functions etc. Installing the latest
-trunk version allows one to use newly added features, which are not yet
+modify constitutive laws, engines, functions etc., or use the recently added features, which are not yet
 available in packaged versions.
+
+Doing so, we recommend to separate source-code-folder from a build-place-folder, where Yade will be configured
+and where the source code will be compiled. Here is an example for a folder structure::
+
+	myYade/       		## base directory
+		trunk/		## folder for git-handled source code, see "Download" section below
+		build/		## folder in which the sources will be compiled; build-directory; use cmake here, see "Compilation.." sections below
+		install/	## install folder; contains the executables
+
 
 Download
 ^^^^^^^^^^
 
-If you want to install from source, you can install either a release
+Installing from source, you can adopt either a release
 (numbered version, which is frozen) or the current development version
 (updated by the developers frequently). You should download the development
 version (called ``trunk``) if you want to modify the source code, as you
@@ -192,11 +200,11 @@ easy-to-fix bugs), but generally they are more stable than the trunk.
 #. The development version (``trunk``) can be obtained from the `code repository <https://gitlab.com/yade-dev/>`_ at GitLab.
 
 We use `GIT <http://git-scm.com/>`_ (the ``git`` command) for code
-management (install the ``git`` package on your system and create a `GitLab account <https://gitlab.com/users/sign_in>`__)::
+management (install the ``git`` package on your system and create a `GitLab account <https://gitlab.com/users/sign_in>`__). From the top of of the above folder structure::
 
 		git clone git@gitlab.com:yade-dev/trunk.git
 
-will download the whole code repository of the ``trunk``. Check out :ref:`yade-gitrepo-label`
+will download the whole code repository into ``trunk`` folder. Check out :ref:`yade-gitrepo-label`
 for more details on how to collaborate using ``git``.
 
 Alternatively, a read-only checkout is possible via https without a GitLab account (easier if you don't want to modify the trunk version)::
@@ -212,43 +220,24 @@ Release and trunk sources are compiled in exactly the same way.
 Prerequisites
 ^^^^^^^^^^^^^
 
-Yade relies on a number of external software to run; they are checked before the compilation starts.
-Some of them are only optional.
+Yade compilation and execution rely on a number of mandatory and optional external softwares; they are checked before the compilation starts.
+Following dependencies are for instance mandatory:
 
 * `cmake <http://www.cmake.org/>`_ build system
-* `gcc <https://gcc.gnu.org/>`_ compiler (g++); other compilers will not work; you need g++>=4.2 for openMP support
+* `gcc <https://gcc.gnu.org/>`_ compiler (``g++``); other compilers will not work; you need g++>=4.2 for openMP support
 * `boost <http://www.boost.org/>`_ 1.47 or later
 * `Qt <http://www.qt.io/>`_ library
 * `freeglut3 <http://freeglut.sourceforge.net>`_
 * `libQGLViewer <http://www.libqglviewer.com>`_
-* `python <http://www.python.org>`_, `numpy <https://www.numpy.org/>`_, `ipython <https://ipython.org/>`_, `sphinx <https://www.sphinx-doc.org/en/master/>`_, `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_
+* `python <http://www.python.org>`_, `numpy <https://www.numpy.org/>`_, `ipython <https://ipython.org/>`_, `sphinx <https://www.sphinx-doc.org/en/master/>`_
 * `matplotlib <http://matplotlib.sf.net>`_
 * `eigen <http://eigen.tuxfamily.org>`_ algebra library (minimal required version 3.2.1)
 * `gdb <http://www.gnu.org/software/gdb>`_ debugger
 * `sqlite3 <http://www.sqlite.org>`_ database engine
-* `VTK <http://www.vtk.org/>`_ library (optional but recommended)
-* `CGAL <http://www.cgal.org/>`_ library (optional)
-* `SuiteSparse <http://www.suitesparse.com>`_ sparse algebra library (fluid coupling, optional, requires eigen>=3.1)
-* `OpenBLAS <http://www.openblas.net/>`_ optimized and parallelized alternative to the standard blas+lapack (fluid coupling :yref:`FlowEngine`, optional)
-* `Metis <http://glaros.dtc.umn.edu/gkhome/metis/metis/overview/>`_ matrix preconditioning (fluid coupling, optional)
-* `OpenMPI <https://www.open-mpi.org/software/>`_ library for parallel distributed computing (For MPI and OpenFOAM coupling, optional)
-* `python3-mpi4py <https://bitbucket.org/mpi4py/>`_ MPI for Python (For MPI, optional)
-* `coin-or <https://github.com/coin-or/Clp>`_ COIN-OR Linear Programming Solver (For :yref:`PotentialBlock`, optional)
-* `mpfr <https://www.mpfr.org/>`_ in ``C++`` and `mpmath <http://mpmath.org/>`_ in ``python`` for high precision ``Real`` or for CGAL exact predicates (optional)
-* `mpc <http://www.multiprecision.org/mpc/>`_ is an MPFR extension to complex numbers. It is used explicitly together with MPFR.
 
-Most of the list above is very likely already packaged for your distribution. In case you are confronted
-with some errors concerning not available packages (e.g., package libmetis-dev is not available) it may be necessary
-to add yade external ppa from https://launchpad.net/~yade-users/+archive/external (see below) as well as http://www.yade-dem.org/packages (see the top of this page)::
+They can be installed from the command line of your Linux distribution, assuming you have root privileges.
 
-	sudo add-apt-repository ppa:yade-users/external
-	sudo apt-get update
-
-The following commands have to be executed in the command line of your corresponding
-distribution. Just copy&paste to the terminal. Note, to execute these commands you
-need root privileges.
-
-* **Ubuntu 20.04, 18.04**, **Debian 9, 10, 11** and their derivatives::
+**For Ubuntu 20.04, 18.04**, **Debian 9, 10, 11** and their derivatives, just copy&paste to the terminal the following code block for installing all mandatory and optional dependencies (for Ubuntu 16.04 ``libqglviewer-dev-qt5`` is to be replaced by ``libqglviewer-dev`` and ``python3-ipython`` by ``ipython3``)::
 
 		sudo apt install cmake git freeglut3-dev libloki-dev libboost-all-dev fakeroot \
 		dpkg-dev build-essential g++ python3-dev python3-ipython python3-matplotlib \
@@ -258,29 +247,85 @@ need root privileges.
 		python3-pil libjs-jquery python3-sphinx python3-git libxmu-dev libxi-dev libcgal-dev \
 		help2man libbz2-dev zlib1g-dev libopenblas-dev libsuitesparse-dev \
 		libmetis-dev python3-bibtexparser python3-future coinor-clp coinor-libclp-dev \
-		python3-mpmath libmpfr-dev libmpfrc++-dev libmpc-dev
+		python3-mpmath libmpfr-dev libmpfrc++-dev libmpc-dev texlive-xetex
 
-* For **Ubuntu 16.04** ``libqglviewer-dev-qt5`` is to be replaced by ``libqglviewer-dev`` and ``python3-ipython`` by ``ipython3``.
+Most of the list above is very likely already packaged for your distribution. In case you are still confronted
+with some errors concerning not available packages (e.g., package ``libmetis-dev`` is not available) it may be necessary
+to add yade external ppa from https://launchpad.net/~yade-users/+archive/external (see below) as well as http://www.yade-dem.org/packages (see the top of this page)::
 
-* The packages ``python3-mpmath libmpfr-dev libmpfrc++-dev`` in above list are required only if one wants to use high precision calculations. The latter two only if `mpfr <https://www.mpfr.org/>`_ will be used. See :ref:`high precision documentation<highPrecisionReal>` for more details.
-
-* For building documentation (the ``make doc`` invocation explained below) additional package ``texlive-xetex`` is required. On some multi-language systems an error ``Building format(s) --all. This may take some time... fmtutil failed.`` may occur, in that case a package ``locales-all`` is required.
-
-Some of the packages (for example, cmake, eigen3) are mandatory, some of them
-are optional. Watch for notes and warnings/errors, which are shown
-by ``cmake`` during the configuration step. If the missing package is optional,
-some of Yade features will be disabled (see the messages at the end of the configuration).
-
-Some packages listed here are relatively new and they can be absent
-in your distribution (for example, libmetis-dev). They can be
-installed from `yade-dem.org/packages <http://yade-dem.org/packages/>`_ or
-from our `external PPA <https://launchpad.net/~yade-users/+archive/external/>`_.
-If not installed the related features will be disabled automatically.
+	sudo add-apt-repository ppa:yade-users/external
+	sudo apt-get update
 
 If you are using other distributions than Debian or its derivatives you should
-install the software packages listed above. Their names in other distributions can differ from the
+install by yourself the software packages listed above. Their names in other distributions can differ from the
 names of the Debian-packages.
 
+Some of the above packages are only required for some choice of Yade compilation options, for desired Yade features, in the subsequent ``cmake`` configuration of compilation. If a required package is eventually not installed the related features will be disabled automatically with a message appearing during ``cmake`` output (at the end, in particular). Generally speaking, it is advised to watch for notes and warnings/errors, which are shown by ``cmake`` in the following.
+
+Compilation configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Then, inside the build-directory of the above folder structure, you should call ``cmake`` to configure the compilation process, passing a path to install folder (as an option) and the path to sources::
+
+	cmake -DCMAKE_INSTALL_PREFIX=../install ../trunk
+
+In the above, note the ``cmake -DOPTION1=VALUE1 -DOPTION2=VALUE2`` syntax which is here applied to the lone ``CMAKE_INSTALL_PREFIX`` option, being part of a first group of ``cmake`` options that control the compilation process in itself or just slightly modify the behavior of the executable:
+
+	* CMAKE_INSTALL_PREFIX: path where Yade should be installed (/usr/local by default)
+	* CMAKE_VERBOSE_MAKEFILE: output additional information during compiling (OFF by default)
+	* CHOLMOD_GPU link Yade to custom SuiteSparse installation and activate GPU accelerated PFV, see :ref:`GPUacceleration` (OFF by default)
+	* DEBUG: compile in debug-mode (OFF by default)
+	* DISABLE_ALL: for switching off all available boolean options, before possibly enabling explicitely just some of them, e.g. ``cmake -DDISABLE_ALL=ON -DENABLE_VTK=ON`` (OFF by default)
+	* DISABLE_PKGS: comma-separated list of disabled packages i.e. names of source subdirectories under `pkg`, `preprocessing` or `postprocessing`, e.g. ``cmake -DDISABLE_PKGS=fem,pfv,image``. If empty all packages will be built. The packages `common` and `dem` are required to run, but the project can be compiled without them. (EMPTY by default)
+	* ENABLE_ASAN: AddressSanitizer allows detection of memory errors, memory leaks, heap corruption errors and out-of-bounds accesses but it is slow (OFF by default)
+	* ENABLE_FAST_NATIVE: use maximum optimization compiler flags including ``-Ofast`` and ``-mtune=native``. Note: ``native`` means that code will **only** run on the same processor type on which it was compiled. Observed speedup was 2% (below standard deviation measurement error) and above 5% if clang compiler was used. (OFF by default)
+	* ENABLE_OAR: generate a script for oar-based task scheduler (OFF by default)
+	* ENABLE_USEFUL_ERRORS: enable useful compiler errors which help a lot in error-free development (ON by default)
+	* LIBRARY_OUTPUT_PATH: path to install libraries (lib by default)
+	* MAX_LOG_LEVEL: :ref:`set maximum level <maximum-log-level>` for LOG_* macros compiled with below ``ENABLE_LOGGER``, (default is 5)
+	* NOSUFFIX: do not add a suffix after binary-name, see also ``SUFFIX`` option (OFF by default)
+	* PYTHON_VERSION: force Python version to the given one, e.g. ``-DPYTHON_VERSION=3.5``. Set to -1 to automatically use the last version on the system (-1 by default)
+	* REAL_PRECISION_BITS, REAL_DECIMAL_PLACES: specify either of them to use a custom calculation precision of ``Real`` type. By default ``double`` (64 bits, 15 decimal places) precision is used as the ``Real`` type. See :ref:`high precision documentation<highPrecisionReal>` for additional details.
+	* runtimePREFIX: used for packaging, when install directory is not the same as runtime directory (/usr/local by default)
+	* SUFFIX: suffix, added after binary-names, see also ``NOSUFFIX`` option (version number by default)
+	* SUITESPARSEPATH: define this variable with the path to a custom suitesparse install
+	* USE_QT5: use QT5 for GUI. It is actually the only choice when GUI is requested through ``ENABLE_GUI`` option below, since libQGLViewer of version 2.6.3 and higher are compiled against Qt5 on Debian/Ubuntu operating systems (ON by default)
+	* VECTORIZE: enables vectorization and alignment in Eigen3 library, experimental (OFF by default)
+	* YADE_VERSION: explicitly set version number (is defined from git-directory by default)
+
+As a more precise alternative to the above ``DISABLE_*`` options, other ``cmake`` options will select or unselect specific Yade classes for compilation, enabling or disabling additional Yade features while possibly requiring additional dependencies in form of external packages. They obey a ``ENABLE_OPTION=ON`` or ``OFF`` syntax as follows (see also the `source code <https://gitlab.com/yade-dev/trunk/blob/master/CMakeLists.txt>`_ for a most up-to-date list):
+
+	* ENABLE_CGAL: enables a number of code sections using the `CGAL <http://www.cgal.org/>`_ library, requires ``libcgal-dev`` package (ON by default)
+	* ENABLE_COMPLEX_MP: use `boost multiprecision complex <https://www.boost.org/doc/libs/1_77_0/libs/multiprecision/doc/html/boost_multiprecision/tut/complex.html>`__ and `mpc <http://www.multiprecision.org/mpc/>`_ (as an extension to MPFR, see ``ENABLE_MPFR``) for ``ComplexHP<N>``, otherwise use ``std::complex<RealHP<N>>``. See :ref:`high precision documentation<highPrecisionReal>` for additional details. Requires ``libmpc-dev`` (ON by default if possible: requires boost >= 1.71)
+	* ENABLE_DEFORM: enable the constant volume deformation approach for bodies [Haustein2017]_ (OFF by default)
+	* ENABLE_FEMLIKE: enable FEM-like meshed solids (ON by default)
+	* ENABLE_GL2PS: enable GL2PS-option (ON by default)
+	* ENABLE_GTS: enable GTS-option (ON by default)
+	* ENABLE_GUI: enable a Qt5 GUI. Requires ``python-pyqt5 pyqt5-dev-tools`` (ON by default)
+	* ENABLE_LBMFLOW: enable LBM computations, e.g. the use of :yref:`HydrodynamicsLawLBM` (ON by default)
+	* ENABLE_LS_DEM: enable a :yref:`LevelSet` shape description (ON by default)
+	* ENABLE_LINSOLV: enable the use of optimized algebra libraries `SuiteSparse <http://www.suitesparse.com>`_ (sparse algebra, requires eigen>=3.1), `OpenBLAS <http://www.openblas.net/>`_ (optimized and parallelized alternative to the standard blas+lapack) and `Metis <http://glaros.dtc.umn.edu/gkhome/metis/metis/overview/>`_ (matrix preconditioning) for the optional fluid coupling :yref:`FlowEngine`, see ``ENABLE_PFVFLOW`` below. Requires ``libopenblas-dev libsuitesparse-dev libmetis-dev`` packages (ON by default)
+	* ENABLE_LIQMIGRATION: enable LIQMIGRATION-option, see [Mani2013]_ for details (OFF by default)
+	* ENABLE_LOGGER: provides :ref:`logging<logging>` possibilities for each class thanks to `boost::log <https://www.boost.org/doc/libs/release/libs/log/>`_ library. See also ``MAX_LOG_LEVEL`` in the above (ON by default)
+	* ENABLE_MASK_ARBITRARY: enable arbitrary precision of bitmask variables (only ``Body::groupMask`` yet implemented) (experimental). If ON, use -DMASK_ARBITRARY_SIZE=int to set number of used bits (256 by default) (OFF by default)
+	* ENABLE_MPFR: use `mpfr <https://www.mpfr.org/>`_ in ``C++`` and `mpmath <http://mpmath.org/>`_ in ``python`` for higher precision ``Real`` or for CGAL exact predicates, see :ref:`high precision documentation<highPrecisionReal>` for more details. Requires ``python3-mpmath libmpfr-dev libmpfrc++-dev`` packages (OFF by default)
+	* ENABLE_MPI: enable MPI environment and communication thanks to `OpenMPI <https://www.open-mpi.org/software/>`_ and `python3-mpi4py <https://bitbucket.org/mpi4py/>`_ (see also `there <https://mpi4py.readthedocs.io/en/stable/>`_), for parallel distributed computing (distributed memory) and Yade-OpenFOAM coupling. Requires ``python3-mpi4py`` (ON by default)
+	* ENABLE_OPENMP: enable OpenMP-parallelizing of Yade execution (ON by default)
+	* ENABLE_PARTIALSAT : enable the partially saturated clay engine :yref:`PartialSatClayEngine`, under construction (ON by default)
+	* ENABLE_PFVFLOW: enable PFV :yref:`FlowEngine` (ON by default)
+	* ENABLE_POTENTIAL_BLOCKS: enable :yref:`PotentialBlock` shape description thanks for instance to the `COIN-OR <https://github.com/coin-or/Clp>`_ Linear Programming Solver, requires ``coinor-clp coinor-libclp-dev libopenblas-dev`` (ON by default)
+	* ENABLE_POTENTIAL_PARTICLES: enable :yref:`PotentialParticle` shape description, requires ``libopenblas-dev`` (ON by default)
+	* ENABLE_PROFILING: enable profiling, e.g., shows some more metrics, which can define bottlenecks of the code (OFF by default)
+	* ENABLE_REAL_HP: allow using twice, quadruple or higher precisions of ``Real`` as ``RealHP<2>``, ``RealHP<4>`` or ``RealHP<N>`` in computationally demanding sections of ``C++`` code. See :ref:`high precision documentation<highPrecisionReal>` for additional details (ON by default).
+	* ENABLE_SPH: enable Smoothed Particle Hydrodynamics (OFF by default)
+	* ENABLE_THERMAL : enable :yref:`ThermalEngine` (ON by default, experimental)
+	* ENABLE_TWOPHASEFLOW: enable :yref:`TwoPhaseFlowEngine` (ON by default)
+	* ENABLE_VTK: enable exports of data using the `VTK <http://www.vtk.org/>`_ library, e.g. :yref:`VTKRecorder` engine, requires ``libvtk6-dev`` package (ON by default)
+
+Maintaining a consistent choice for options values, in addition to using the same version of source code, is often necessary for successfully reloading previous Yade saves, see :yref:`O.load<Omega.load>`.
+
+For using more extended parameters of cmake, please follow the corresponding
+documentation on `https://cmake.org/documentation <https://cmake.org/documentation/>`_.
 
 .. warning:: If you have Ubuntu 14.04 Trusty, you need to add -DCMAKE_CXX_FLAGS=-frounding-math
  during the configuration step of compilation (see below) or to install libcgal-dev
@@ -296,114 +341,10 @@ names of the Debian-packages.
     Aborted
 
 
-
 .. _yadeCompilation:
 
-Compilation
+Compilation and usage
 ^^^^^^^^^^^
-
-You should create a separate build-place-folder, where Yade will be configured
-and where the source code will be compiled. Here is an example for a folder structure::
-
-	myYade/       		## base directory
-		trunk/		## folder for source code in which you use git
-		build/		## folder in which the sources will be compiled; build-directory; use cmake here
-		install/	## install folder; contains the executables
-
-Then, inside this build-directory you should call ``cmake`` to configure the compilation process::
-
-	cmake -DCMAKE_INSTALL_PREFIX=/path/to/installfolder /path/to/sources
-
-For the folder structure given above call the following command in the folder "build"::
-
-	cmake -DCMAKE_INSTALL_PREFIX=../install ../trunk
-
-Additional options (e.g., optional YADE features) can be configured in the same line with the following
-syntax::
-
-	cmake -DOPTION1=VALUE1 -DOPTION2=VALUE2
-
-For example::
-
-    cmake -DENABLE_POTENTIAL_BLOCKS=ON
-
-The following cmake options are available: (see the `source code <https://gitlab.com/yade-dev/trunk/blob/master/CMakeLists.txt>`_ for a most up-to-date list)
-
-	* CMAKE_INSTALL_PREFIX: path where Yade should be installed (/usr/local by default)
-	* LIBRARY_OUTPUT_PATH: path to install libraries (lib by default)
-	* DEBUG: compile in debug-mode (OFF by default)
-	* MAX_LOG_LEVEL: :ref:`set maximum level <maximum-log-level>` for LOG_* macros compiled with ENABLE_LOGGER, (default is 5)
-	* CMAKE_VERBOSE_MAKEFILE: output additional information during compiling (OFF by default)
-	* SUFFIX: suffix, added after binary-names (version number by default)
-	* NOSUFFIX: do not add a suffix after binary-name (OFF by default)
-	* YADE_VERSION: explicitly set version number (is defined from git-directory by default)
-	* ENABLE_ASAN: AddressSanitizer allows detection of memory errors, memory leaks, heap corruption errors and out-of-bounds accesses (but it is slow) 
-	* ENABLE_CGAL: enable CGAL option (ON by default)
-	* ENABLE_COMPLEX_MP: use `boost multiprecision complex <https://www.boost.org/doc/libs/1_77_0/libs/multiprecision/doc/html/boost_multiprecision/tut/complex.html>`__ for ``ComplexHP<N>``, otherwise use ``std::complex<RealHP<N>>``. See :ref:`high precision documentation<highPrecisionReal>` for additional details. (ON by default if possible: requires boost >= 1.71)
-	* ENABLE_DEFORM: enable constant volume deformation engine (OFF by default)
-	* ENABLE_FAST_NATIVE: use maximum optimization compiler flags including ``-Ofast`` and ``-mtune=native``. Note: ``native`` means that code will **only** run on the same processor type on which it was compiled. Observed speedup was 2% (below standard deviation measurement error) and above 5% if clang compiler was used. (OFF by default)
-	* ENABLE_FEMLIKE: enable meshed solids, FEM-like (ON by default)
-	* ENABLE_GL2PS: enable GL2PS-option (ON by default)
-	* ENABLE_GTS: enable GTS-option (ON by default)
-	* ENABLE_GUI: enable GUI option (ON by default)
-	* ENABLE_LBMFLOW: enable LBMFLOW-option, LBM_ENGINE (ON by default)
-	* ENABLE_LS_DEM: enable a :yref:`LevelSet` shape description (ON by default)
-	* ENABLE_LINSOLV: enable LINSOLV-option (ON by default)
-	* ENABLE_LIQMIGRATION: enable LIQMIGRATION-option, see [Mani2013]_ for details (OFF by default)
-	* ENABLE_LOGGER: use `boost::log <https://www.boost.org/doc/libs/release/libs/log/>`_ library for :ref:`logging<logging>` separately for each class (ON by default)
-	* ENABLE_MASK_ARBITRARY: enable MASK_ARBITRARY option (OFF by default)
-	* ENABLE_MPFR: use `mpfr <https://www.mpfr.org/>`_ in ``C++`` and `mpmath <http://mpmath.org/>`_ in ``python``. It can be used for higher precision ``Real`` or for CGAL exact predicates (OFF by default)
-	* ENABLE_MPI: Enable MPI enviroment and communication, required distributed memory and for Yade-OpenFOAM coupling (ON by default)
-	* ENABLE_OAR: generate a script for oar-based task scheduler (OFF by default)
-	* ENABLE_OPENMP: enable OpenMP-parallelizing option (ON by default)
-	* ENABLE_PARTIALSAT : enable the partially saturated clay engine, under construction (ON by default)
-	* ENABLE_PFVFLOW: enable PFVFLOW-option, FlowEngine (ON by default)
-	* ENABLE_POTENTIAL_BLOCKS: enable potential blocks option (ON by default)
-	* ENABLE_POTENTIAL_PARTICLES: enable potential particles option (ON by default)
-	* ENABLE_PROFILING: enable profiling, e.g., shows some more metrics, which can define bottlenecks of the code (OFF by default)
-	* ENABLE_REAL_HP: allow using twice, quadruple or higher precisions of ``Real`` as ``RealHP<2>``, ``RealHP<4>`` or ``RealHP<N>`` in computationally demanding sections of ``C++`` code. See :ref:`high precision documentation<highPrecisionReal>` for additional details (ON by default).
-	* ENABLE_SPH: enable SPH-option, Smoothed Particle Hydrodynamics (OFF by default)
-	* ENABLE_THERMAL : enable thermal engine (ON by default, experimental)"
-	* ENABLE_TWOPHASEFLOW: enable TWOPHASEFLOW-option, TwoPhaseFlowEngine (ON by default)
-	* ENABLE_USEFUL_ERRORS: enable useful compiler errors which help a lot in error-free development (ON by default)
-	* ENABLE_VTK: enable VTK-export option (ON by default)
-	* REAL_PRECISION_BITS, REAL_DECIMAL_PLACES: specify either of them to use a custom calculation precision of ``Real`` type. By default ``double`` (64 bits, 15 decimal places) precision is used as the ``Real`` type. See :ref:`high precision documentation<highPrecisionReal>` for additional details.
-	* runtimePREFIX: used for packaging, when install directory is not the same as runtime directory (/usr/local by default)
-	* VECTORIZE: enables vectorization and alignment in Eigen3 library, experimental (OFF by default)
-	* USE_QT5: use QT5 for GUI (ON by default)
-	* CHOLMOD_GPU link Yade to custom SuiteSparse installation and activate GPU accelerated PFV (OFF by default)
-	* SUITESPARSEPATH: define this variable with the path to a custom suitesparse install
-	* PYTHON_VERSION: force Python version to the given one, e.g. ``-DPYTHON_VERSION=3.5``. Set to -1 to automatically use the last version on the system (-1 by default)
-	* DISABLE_PKGS: comma-separated list of disabled packages from 'pkg', 'preprocessing' or 'postprocessing', if empty all packages will be built. The packages `common` and `dem` are required to run, but the project can be compiled without them. (EMPTY by default)
-
-Maintaining a consistent choice for options values, in addition to using the same version of source code, is often necessary for successfully reloading previous Yade saves, see :yref:`O.load<Omega.load>`.
-
-It is possible to disable all options to create the slim build::
-
-	cmake -DDISABLE_ALL=ON
-
-In this case all available options will be switched off. In this case some required options can be enabled explicitely::
-
-	cmake -DDISABLE_ALL=ON -DENABLE_VTK=ON
-
-For using more extended parameters of cmake, please follow the corresponding
-documentation on `https://cmake.org/documentation <https://cmake.org/documentation/>`_.
-
-.. warning:: Only Qt5 is supported. On Debian/Ubuntu operating systems libQGLViewer
- of version 2.6.3 and higher are compiled against Qt5 (for other operating systems
- refer to the package archive of your distribution). If you mix Qt-versions a
- ``Segmentation fault`` will appear just after Yade is started. To provide
- necessary build dependencies for Qt5, install ``python-pyqt5 pyqt5-dev-tools``.
-
-An alternative way to disable specific packages, in this case `fem`, `pfv` and `image`::
-
-	cmake -DDISABLE_PKGS=fem,pfv,image
-	
-where the names of the packages are the names of the directories under 'pkg', 
-'preprocessing' or 'postprocessing'.
-	
-.. warning:: The packages `common` and `dem` are required to run, but the project 
- can be compiled without them.
 
 If cmake finishes without errors, you will see all enabled
 and disabled options at the end. Then start the actual compilation process with::
@@ -434,7 +375,9 @@ the new built can be started by navigating to /path/to/installfolder/bin and cal
 .. comment: is it possible to invoke python yade.config.revision and put it above as a text in the doc?
 
 For building the documentation you should at first execute the command ``make install``
-and then ``make doc`` to build it. The generated files will be stored in your current
+and then ``make doc`` to build it, provided that package ``texlive-xetex`` is present. On some multi-language systems an error ``Building format(s) --all. This may take some time... fmtutil failed.`` may occur, in that case a package ``locales-all`` is required.
+
+The generated files will be stored in your current
 install directory /path/to/installfolder/share/doc/yade-your-version. Once again writing permissions are necessary for installing into /usr/local/share/doc/. To open your local documentation go into the folder html and open the file index.html with a browser.
 
 ``make manpage`` command generates and moves manpages in a standard place.
