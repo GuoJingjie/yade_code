@@ -641,7 +641,11 @@ namespace CGT {
 		for (int bound = 0; bound < 6; bound++) {
 			int& id = *boundsIds[bound];
 			if (id < 0) continue;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wunused-result"
 			T[currentTes].vertexHandles[id];
+#pragma GCC diagnostic pop
 			VectorCell tmpCells;
 			tmpCells.resize(10000); // limiting if we have >10000 fictitious cells?
 			VCellIterator cells_it = tmpCells.begin();

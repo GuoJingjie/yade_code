@@ -972,7 +972,7 @@ private:
 	}
 	static std::string __str__(const py::object& obj)
 	{
-		const Box&         self = py::extract<Box>(obj)();
+		const Box          self = py::extract<Box>(obj)();
 		std::ostringstream oss;
 		oss << object_class_name(obj) << "((";
 		VectorVisitor<VectorType>::template Vector_data_stream<VectorType>(self.min(), oss);
@@ -1115,7 +1115,7 @@ private:
 	}
 	static std::string __str__(const py::object& obj)
 	{
-		const QuaternionT& self = py::extract<QuaternionT>(obj)();
+		const QuaternionT  self = py::extract<QuaternionT>(obj)();
 		AngleAxisT         aa(self);
 		return std::string(object_class_name(obj) + "((") + ::yade::minieigenHP::numToStringHP(aa.axis()[0]) + ","
 		        + ::yade::minieigenHP::numToStringHP(aa.axis()[1]) + "," + ::yade::minieigenHP::numToStringHP(aa.axis()[2]) + "),"

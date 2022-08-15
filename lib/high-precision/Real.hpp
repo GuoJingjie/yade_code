@@ -153,7 +153,11 @@ namespace math {
 /************************* boost::cpp_bin_float **************************/
 /*************************************************************************/
 #elif defined(YADE_REAL_BBFLOAT)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Warray-bounds"
 #include <boost/multiprecision/cpp_bin_float.hpp>
+#pragma GCC diagnostic pop
 namespace yade {
 namespace math {
 	template <unsigned int DecimalPlaces> using UnderlyingRealBackend = boost::multiprecision::cpp_bin_float<DecimalPlaces>;

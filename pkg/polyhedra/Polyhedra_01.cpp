@@ -198,7 +198,23 @@ void Polyhedra::Initialize()
 		        rot_mat(2, 2),
 		        1.);
 		std::transform(P.points_begin(), P.points_end(), P.points_begin(), t_rot);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Wuse-after-free" // this warning is triggered in line 204
 	}
+/*
+ * Error in this closing bracket is following:
+
+In member function ‘void CGAL::Ref_counted_virtual::remove_reference()’,
+    inlined from ‘CGAL::Handle_for_virtual<RefCounted>::~Handle_for_virtual() [with RefCounted = CGAL::Aff_transformation_rep_baseC3<CGAL::ERealHP<1> >]’ at /usr/include/CGAL/Handle_for_virtual.h:83:28,
+    inlined from ‘CGAL::Aff_transformationC3<CGAL::ERealHP<1> >::~Aff_transformationC3()’ at /usr/include/CGAL/Cartesian/Aff_transformation_3.h:40:7,
+    inlined from ‘CGAL::Aff_transformation_3<CGAL::ERealHP<1> >::~Aff_transformation_3()’ at /usr/include/CGAL/Aff_transformation_3.h:31:7,
+    inlined from ‘void yade::Polyhedra::Initialize()’ at /home/ytest/yade/trunk/pkg/polyhedra/Polyhedra_01.cpp:204:2:
+ usr/include/CGAL/Handle_for_virtual.h:34:34: error: pointer used after ‘void operator delete(void*, std::size_t)’ [-Werror=use-after-free]
+ 34 |     void  remove_reference() { --count; }
+
+*/
+#pragma GCC diagnostic pop
 	//initialization done
 	init = 1;
 }

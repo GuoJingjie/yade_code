@@ -48,7 +48,11 @@ struct ComplexHP {
 #include <boost/multiprecision/mpc.hpp>
 #endif
 #else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Warray-bounds"
 #include <boost/multiprecision/cpp_bin_float.hpp>
+#pragma GCC diagnostic pop
 #if (BOOST_VERSION >= 107100)
 #include <boost/multiprecision/cpp_complex.hpp>
 #endif

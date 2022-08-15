@@ -55,7 +55,11 @@
 #ifdef YADE_MPFR
 #include <boost/multiprecision/mpfr.hpp>
 #else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpragmas"
+#pragma GCC diagnostic ignored "-Warray-bounds"
 #include <boost/multiprecision/cpp_bin_float.hpp>
+#pragma GCC diagnostic pop
 #endif
 // clang currently does not support float128   https://github.com/boostorg/math/issues/181
 // another similar include is in RealHP.hpp, all other checks if we have float128 should be #ifdef BOOST_MP_FLOAT128_HPP or yade::math::isFloat128<T>
