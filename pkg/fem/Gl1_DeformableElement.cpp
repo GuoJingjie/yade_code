@@ -39,9 +39,9 @@ void                               Gl1_DeformableElement::go(const shared_ptr<Sh
 				// I accept it is very uncommon
 				int oppositevertexindex = 6 - int(math::round(vertices.sum())); /// XXX: this is suspicious
 
-				std::advance(i1, vertices[0]);
-				std::advance(i2, vertices[1]);
-				std::advance(i3, vertices[2]);
+				std::advance(i1, int(math::round(vertices[0])));
+				std::advance(i2, int(math::round(vertices[1])));
+				std::advance(i3, int(math::round(vertices[2])));
 				std::advance(i4, oppositevertexindex);
 
 				const shared_ptr<Body>& member1 = i1->first;
@@ -77,9 +77,9 @@ glBegin(GL_LINE_LOOP)
 		NodeMap::iterator i2(i1);
 		NodeMap::iterator i3(i1);
 
-		std::advance(i1, vertices[0]);
-		std::advance(i2, vertices[1]);
-		std::advance(i3, vertices[2]);
+		std::advance(i1, int(math::round(vertices[0])));
+		std::advance(i2, int(math::round(vertices[1])));
+		std::advance(i3, int(math::round(vertices[2])));
 
 		const shared_ptr<Body>& member1 = i1->first;
 		const shared_ptr<Body>& member2 = i2->first;
