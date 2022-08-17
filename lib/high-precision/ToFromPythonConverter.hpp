@@ -47,8 +47,13 @@ template <typename ArbitraryReal> struct ArbitraryReal_to_python {
 	static PyObject* convert(const ArbitraryReal& val)
 	{
 		::boost::python::object mpmath = prepareMpmath<ArbitraryReal>::work();
-		::boost::python::object result = mpmath.attr("mpf")(::yade::math::toStringHP<ArbitraryReal>(val));
-		return boost::python::incref(result.ptr());
+		if (yade::math::isnan(val)) { // mpmath does not tolerate '-nan' values. So any NaN will be a "nan".
+			::boost::python::object result = mpmath.attr("mpf")("nan");
+			return boost::python::incref(result.ptr());
+		} else { // other numbers are normally converted
+			::boost::python::object result = mpmath.attr("mpf")(::yade::math::toStringHP<ArbitraryReal>(val));
+			return boost::python::incref(result.ptr());
+		}
 	}
 };
 

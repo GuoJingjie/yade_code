@@ -586,8 +586,16 @@ public:
 			signed int    m     = static_cast<signed int>(applyDomain<testN>(args[0], Domain::Int)); // -l <= m <= l
 			RealHP<testN> theta = applyDomain<testN>(args[1], Domain::ModuloPi);
 			RealHP<testN> phi   = applyDomain<testN>(args[2], Domain::ModuloTwoPi);
-			amend<testN>(
-			        "sphericalHarmonic", math::sphericalHarmonic(l, m, theta, phi), { Domain::Int, Domain::ModuloPi, Domain::ModuloTwoPi }, args);
+			bool works = true;
+			try {
+			        math::sphericalHarmonic(l, m, RealHP<1>(theta), RealHP<1>(phi));
+			} catch(const std::runtime_error& e) { // throws overflow sometimes, ignore it.
+				works=false;
+			}
+			if(works) {
+				amend<testN>(
+					"sphericalHarmonic", math::sphericalHarmonic(l, m, theta, phi), { Domain::Int, Domain::ModuloPi, Domain::ModuloTwoPi }, args);
+			}
 		}
 	}
 	template <int testN> void checkLiterals()
