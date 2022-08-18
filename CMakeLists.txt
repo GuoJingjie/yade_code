@@ -584,6 +584,11 @@ IF( (NOT REAL_DECIMAL_PLACES) AND (    REAL_PRECISION_BITS))
   ENDIF()
 ENDIF()
 
+IF(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 11.3.0)
+  SET(ENABLE_MPFR "OFF")
+  MESSAGE(STATUS "Warning: g++ version >= 11.3.0 causes MPFR to crash upon exit from YADE. Will use boost::multiprecision::cpp_bin_float until this gets resolved.")
+ENDIF()
+
 IF(REAL_USE_ARBITRARY)
   IF(NOT ENABLE_MPFR)
     SET(REAL_PREC_NAME "PrecisionBoostBinFloat${REAL_DECIMAL_PLACES}")
