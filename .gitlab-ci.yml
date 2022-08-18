@@ -1038,7 +1038,6 @@ pages:
   <<: *gitlab_runner_retry_definition
   only:
     - master
-    - merge_request
   script:
     - export PYTHONUNBUFFERED=1
     - cd $CI_PROJECT_DIR/deb/yadedaily$PREC_NAME
