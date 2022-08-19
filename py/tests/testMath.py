@@ -589,25 +589,25 @@ class SimpleTests(unittest.TestCase):
 		        "complex asin real": 3e5,
 		        "complex asinh imag": 3e5,
 		        "complex asinh real": 1e5,
-		        "complex atan imag": 5e6,
+		        "complex atan imag": 6e6,
 		        "complex atanh real": 5e5 if mpfr else 8e8,  # boost::cpp_bin_float has larger error
-		        "complex cos imag": 8 if mpfr else 2e5,
+		        "complex cos imag": 8 if mpfr else 4e5,
 		        "complex cos real": 8 if mpfr else 2e5,
-		        "complex cosh imag": 8 if mpfr else 8e4,
-		        "complex cosh real": 8 if mpfr else 2e5,
-		        "complex exp imag": 8 if mpfr else 7e4,
-		        "complex exp real": 8 if mpfr else 2e5,
-		        "complex polar imag": 8 if mpfr else 9e4,
-		        "complex polar real": 8 if mpfr else 2e5,
+		        "complex cosh imag": 8 if mpfr else 6e5,
+		        "complex cosh real": 8 if mpfr else 7e5,
+		        "complex exp imag": 8 if mpfr else 4e5,
+		        "complex exp real": 8 if mpfr else 7e5,
+		        "complex polar imag": 8 if mpfr else 5e5,
+		        "complex polar real": 8 if mpfr else 1e6,
 		        "complex pow imag": 3e7 if isFast else
 		                            (9e6 if longDouble else
 		                             (4e6 if mpfr else 7e8)),  # std::complex<double> -Ofast has 3e7 error then std::complex<long double> has 9e6.
 		        "complex pow real": 5e7 if self.incompleteComplex() else (4e6 if mpfr else 2e7),
 		        "complex sin imag": 8 if mpfr else 2e5,
-		        "complex sin real": 8 if mpfr else 2e5,
-		        "complex sinh imag": 8 if mpfr else 7e4,
-		        "complex sinh real": 8 if mpfr else 2e5,
-		        "complex tan imag": 8 if mpfr else 500,
+		        "complex sin real": 8 if mpfr else 4e5,
+		        "complex sinh imag": 8 if mpfr else 6e5,
+		        "complex sinh real": 8 if mpfr else 7e5,
+		        "complex tan imag": 8 if mpfr else 520,
 		        "complex tan real": 8 if mpfr else 500,
 		        "complex tanh imag": 8 if mpfr else 500,
 		        "complex tanh real": 8 if mpfr else 500,
@@ -625,7 +625,7 @@ class SimpleTests(unittest.TestCase):
 		tolerancesInUnitsOfULP = {
 		        "cylBesselJ": 6e5,
 		        "laguerre": 1e6,
-		        "complex sphericalHarmonic imag": 3e7,
+		        "complex sphericalHarmonic imag": 5e7,
 		        "complex sphericalHarmonic real": 3e7 if mpfr else 2e8,
 		}
 		if ((func in tolerancesInUnitsOfULP)):
@@ -637,7 +637,7 @@ class SimpleTests(unittest.TestCase):
 			for bits in testULP[func]:
 				tolerateErrorULP = 8
 				if (self.nowUsesBoostBinFloat(self.bitsToLevelHP(bits))):
-					tolerateErrorULP = 127  # cpp_bin_float has larger errors
+					tolerateErrorULP = 256  # cpp_bin_float has larger errors
 					if (func in ["tgamma", "acos", "erfc"]):
 						tolerateErrorULP = 50000
 					elif (func == "lgamma"):
