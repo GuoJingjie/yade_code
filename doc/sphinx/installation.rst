@@ -239,7 +239,7 @@ They can be installed from the command line of your Linux distribution, assuming
 
 **For Ubuntu 20.04, 18.04**, **Debian 9, 10, 11** and their derivatives, just copy&paste to the terminal the following code block for installing all mandatory and optional dependencies (for Ubuntu 16.04 ``libqglviewer-dev-qt5`` is to be replaced by ``libqglviewer-dev`` and ``python3-ipython`` by ``ipython3``)::
 
-		sudo apt install cmake git freeglut3-dev libloki-dev libboost-all-dev fakeroot \
+		sudo apt install cmake git freeglut3-dev libboost-all-dev fakeroot \
 		dpkg-dev build-essential g++ python3-dev python3-ipython python3-matplotlib \
 		libsqlite3-dev python3-numpy python3-tk gnuplot libgts-dev python3-pygraphviz \
 		libvtk6-dev libeigen3-dev python3-xlib python3-pyqt5 pyqt5-dev-tools python3-mpi4py \
