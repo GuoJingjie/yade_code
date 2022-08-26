@@ -10,6 +10,7 @@
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-buster
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
+# image: registry.gitlab.com/yade-dev/docker-yade:debian-sid
 # image: registry.gitlab.com/yade-dev/docker-yade:suse15
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-i386     # crashes in CI, see https://gitlab.com/yade-dev/trunk/-/issues/239
 # image: registry.gitlab.com/yade-dev/docker-yade:debian-bullseye-mips64el # crashes, as predicted by warnings -Wcast-align
@@ -256,6 +257,11 @@ make_bookworm:
   <<: *make_definition
   <<: *artifacts_definition
   image: registry.gitlab.com/yade-dev/docker-yade:debian-bookworm
+
+make_sid:
+  <<: *make_definition
+  <<: *artifacts_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-sid
 
 make_archlinux:
   <<: *make_definition
@@ -584,6 +590,13 @@ test_bookworm:
     - make_bookworm
   needs: ["make_bookworm"]
 
+test_sid:
+  <<: *test_definition
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-sid
+  dependencies:
+    - make_sid
+  needs: ["make_sid"]
+
 test_archlinux:
   <<: *test_definition
   image: registry.gitlab.com/yade-dev/docker-yade:archlinux-current
@@ -835,6 +848,14 @@ check_bookworm:
   dependencies:
     - make_bookworm
   needs: ["make_bookworm"]
+
+check_sid:
+  <<: *check_definition
+  before_script:
+  image: registry.gitlab.com/yade-dev/docker-yade:debian-sid
+  dependencies:
+    - make_sid
+  needs: ["make_sid"]
 
 check_bullseye:
   <<: *check_definition
