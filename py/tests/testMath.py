@@ -554,10 +554,10 @@ class SimpleTests(unittest.TestCase):
 		if (len(self.testLevelsHP) < 2):
 			return
 		testUlpRandom = yade.math.getRealHPErrors(
-		        list(self.testLevelsHP), testCount=10000, minX=-100, maxX=100, useRandomArgs=True, printEveryNth=100000, extraChecks=False
+		        list(self.testLevelsHP), testCount=2000, minX=-100, maxX=100, useRandomArgs=True, printEveryNth=100000, extraChecks=False
 		)
 		testUlpLinear = yade.math.getRealHPErrors(
-		        list(self.testLevelsHP), testCount=10000, minX=-100, maxX=100, useRandomArgs=False, printEveryNth=100000, extraChecks=False
+		        list(self.testLevelsHP), testCount=2000, minX=-100, maxX=100, useRandomArgs=False, printEveryNth=100000, extraChecks=False
 		)
 		self.showRealHPResults(testUlpRandom)
 		self.showRealHPResults(testUlpLinear)
