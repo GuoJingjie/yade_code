@@ -654,8 +654,8 @@ class SimpleTests(unittest.TestCase):
 					if (func == 'acosh'):  # the failing function name is printed in red.
 						tolerateErrorULP = 32
 				if (yade.libVersions.getArchitecture() in ['ppc64el', 's390x']):
-					if ('sphericalHarmonic' in func or func in ['complex tan real', 'complex tanh imag']):
-						tolerateErrorULP = 5e18  # TODO: these migh need a fix later. Or it may be just older boost library
+					if ('sphericalHarmonic' in func or func in ['complex tan real', 'complex tanh imag', 'cylBesselJ']):
+						tolerateErrorULP = 2e19  # TODO: these migh need a fix later. Or it may be just older boost library
 					if (yade.math.RealHPConfig.getDigits10(1) == 31): # ppc64el with long double
 						tolerateErrorULP = 40000
 						if(func in ['asinh']):
