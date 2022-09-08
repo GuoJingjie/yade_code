@@ -25,6 +25,12 @@ Vector3r LevelSet::getCenter()
 // // vector<int> LevelSet::getNodesInCellCube(int i, int j, int k){ Vector3i ?
 // // 	return nodesIndicesInCell[Vector3i(i,j,k)];
 // // }
+Real LevelSet::smearedHeaviside(Real x)
+{
+  // Passing smoothly (increasing sine-sort) from y = 0 to 1 when x goes from -1 to 1.
+  return 0.5 * (1.0 + x + sin( M_PI * x) / M_PI);
+}
+
 void LevelSet::rayTrace(const Vector3r& ray)
 {
 	// we launch a ray from shape's center (= 0), and go through all grid cells until the end of the grid, looking for ray-surface intersection
@@ -295,9 +301,15 @@ void LevelSet::init() // computes stuff (nVoxInside, center, volume, inertia, bo
 		LOG_ERROR("There is a size-inconsistency between the current level set grid and shape.distField for this body! The level set grid has changed "
 		          "since the creation of this body, this is not supported.");
 	Real spac = lsGrid->spacing;
-	Real dV   = pow(spac, 3);
-	Real xMean(0), yMean(0), zMean(0); // the center of the level set volume, as determined below
+	Real Vcell   = pow(spac, 3);
+	Real phiRef(0.);
+	if (smearCoeff != 0)
+	  phiRef = sqrt(3.0/4.0)*spac/smearCoeff; // Smearing parameter (reference distance value) for the smeared Heaviside step function. Equals the cell half-diagonal divided by smearCoeff.
+	else LOG_WARN("You passed smearCoeff = 0, was that intended ? (there will be no smearing)");
+	Real xMean(0.), yMean(0.), zMean(0.); // the center of the level set volume, as determined below
 	nVoxInside = 0;
+	volume = 0.0; // Initializing volume to zero
+	Real phi, dV(-1.); // Distance value and considered particle volume for the current cell (the latter can be less than Vcell due to smearing)
 	Vector3r gp;
 	// We will base our level set volume description upon the voxellised description using "inside" voxels.
 	// A voxel is said to be inside according to its minimum gridpoint only, boundary effects are thus unavoidable for now.
@@ -306,37 +318,45 @@ void LevelSet::init() // computes stuff (nVoxInside, center, volume, inertia, bo
 	     xIndex++) { // to nGPx-1 to avoid counting twice the last voxel (or the first if the test would consider the level set value at the max gridpoint)
 		for (int yIndex = 0; yIndex < nGPy - 1; yIndex++) {
 			for (int zIndex = 0; zIndex < nGPz - 1; zIndex++) {
-				if (distField[xIndex][yIndex][zIndex] <= 0) {
+				phi = distField[xIndex][yIndex][zIndex];
+				if (math::abs(phi) < phiRef) dV = smearedHeaviside( -phi / phiRef) * Vcell; // we are within the smeared boundary (avoiding smearing if smearCoeff < 0)
+				else if (phi < 0) dV = Vcell; // inside, and away from boundary
+				else if (phi > 0) dV = 0.; // outside
+				if (dV > 0.){
 					nVoxInside++;
+				  	volume += dV;
 					gp = lsGrid->gridPoint(xIndex, yIndex, zIndex);
-					xMean += gp[0] + spac / 2.;
-					yMean += gp[1] + spac / 2.;
-					zMean += gp[2] + spac / 2.;
+					xMean += (gp[0] + spac / 2.)*dV;
+					yMean += (gp[1] + spac / 2.)*dV;
+					zMean += (gp[2] + spac / 2.)*dV;
 				}
 			}
 		}
 	}
 	if (nVoxInside == 0)
 		LOG_ERROR(
-		        "We have a level set body with nVoxInside = 0, this is not expected neither supported."); // may happen when positive values restrict to point, line, or surface just along some lsGrid boundaries. Note that a body with only one gridpoint with a positive level set value, strictly within lsGrid, leads to a non zero volume
+		        "We have a level set body with 0 voxels being considered inside, this is not expected neither supported."); // may happen when positive values restrict to point, line, or surface just along some lsGrid boundaries. Note that a body with only one gridpoint with a positive level set value, strictly within lsGrid, leads to a non zero volume
 
-	volume = nVoxInside * dV;
-	xMean /= nVoxInside;
-	yMean /= nVoxInside;
-	zMean /= nVoxInside;
+	xMean /= volume;
+	yMean /= volume;
+	zMean /= volume;
 	center = Vector3r(xMean, yMean, zMean);
 	if (center.norm()
 	    > pow(3., 0.5) * spac) // possible offsets almost reach one voxel edge in 1D (e.g. an external but tangent voxel is considered to be inside)
 		LOG_ERROR(
 		        "Incorrect LevelSet description: shape center is equal to " << center << " in local axes, instead of 0 (modulo a " << spac
 		                                                                    << " grid spacing).");
-	// we had to first compute center before being able to compute inertia now (in a 2nd loop):
+	// Computing inertia in a 2nd loop, now that we firstd compute center above (in an unavoidable 1st loop):
 	Real Ixx(0), Ixy(0), Ixz(0), Iyy(0), Iyz(0), Izz(0);
 	Real xV, yV, zV;
 	for (int xIndex = 0; xIndex < nGPx - 1; xIndex++) { // we will stop before the last grid points to avoid counting twice the last (or first) voxels
 		for (int yIndex = 0; yIndex < nGPy - 1; yIndex++) {
 			for (int zIndex = 0; zIndex < nGPz - 1; zIndex++) {
-				if (distField[xIndex][yIndex][zIndex] <= 0) {
+				phi = distField[xIndex][yIndex][zIndex];
+				if (math::abs(phi) < phiRef) dV = smearedHeaviside( -phi / phiRef) * Vcell; // we are within the smeared boundary (avoiding smearing if smearCoeff < 0)
+				else if (phi < 0) dV = Vcell; // inside, and away from boundary
+				else if (phi > 0) dV = 0.; // outside
+				if (dV > 0.){
 					gp = lsGrid->gridPoint(xIndex, yIndex, zIndex);
 					xV = gp[0] + spac / 2.; // again, we choose taking the middle of this inside voxel, instead of the gridpoint
 					yV = gp[1] + spac / 2.;

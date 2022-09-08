@@ -24,6 +24,7 @@ private:
 	void     initSurfNodes(); // fills surfNodes
 	bool rayTraceInCell(const Vector3r&, const Vector3r&, const Vector3r&, const Vector3i&); // handles the ray tracing from a given point in a given cell
 	void rayTrace(const Vector3r&); // recursively calls rayTraceInCell, walking accross the whole grid along a ray starting from center
+	Real smearedHeaviside(Real);
 	struct mcData {                 // Structure for holding marching cubes triangulation of level set particle
 		vector<Vector3r> triangles;
 		vector<Vector3r> normals;
@@ -53,6 +54,8 @@ public:
 		((Real,sphericity,-1,Attr::readonly,"Shape sphericity computed from boundary nodes and assuming both largest inscribed sphere and smallest circumscribed sphere have the origin (of local axes) as center."))
 		((shared_ptr<RegularGrid>,lsGrid,new RegularGrid,Attr::readonly,"The :yref:`regular grid<RegularGrid>` carrying :yref:`distField<LevelSet.distField>`, in local axes."))
 		((bool,twoD,false,Attr::readonly,"True for z-invariant shapes. Serves to restrict the definition of :yref:`surfNodes<LevelSet.surfNodes>` in the (x,y) plane."))
+		((Real,smearCoeff,1.5,,"Smearing coefficient $\varepsilon$ of the Heaviside step function for a smooth integration of the particle's volume close to its surface. Given in reciprocal multiples of the half diagonal of the cells of the :yref:`lsGrid<LevelSet.lsGrid>` (smearing is deactivated if negative)."))
+
 		,
 		minRad = std::numeric_limits<Real>::infinity();
 		maxRad = 0;

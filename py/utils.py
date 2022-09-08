@@ -335,7 +335,7 @@ def polyhedron(vertices,fixed=False,wire=True,color=None,highlight=False,noBound
 	b.mask=mask
 	return b
 
-def levelSetBody(shape="",center=Vector3.Zero,radius=0,extents=Vector3.Zero,epsilons = Vector2.Zero,clump=None,spacing=0.1,grid=None,distField=[],nSurfNodes=27,nodesPath = 2,nodesTol = 50,orientation=Quaternion(1,0,0,0),dynamic=True,material=-1):
+def levelSetBody(shape="",center=Vector3.Zero,radius=0,extents=Vector3.Zero,epsilons = Vector2.Zero,clump=None,spacing=0.1,grid=None,distField=[],smearCoeff = 1.5,nSurfNodes=27,nodesPath = 2,nodesTol = 50,orientation=Quaternion(1,0,0,0),dynamic=True,material=-1):
 	"""Creates a :yref:`LevelSet` shaped body through various workflows: one can choose among pre-defined shapes (through *shape* and related attributes), or to mimick a :yref:`Clump` instance (*clump* attribute, for comparison purposes), or directly assign the discrete distance field on some grid (*distField* and *grid* attributes)
 
 	:param string shape: use this argument to enjoy predefined shapes among 'sphere', 'box' (for a rectangular parallelepiped), 'disk' (for a 2D analysis in (x,y) plane), or 'superellipsoid'; in conjunction with *extents* or *radius* attributes. Superellipsoid surfaces are defined in local axes (inertial frame) by the following equation: $f(x,y,z) = ( |x/r_x|^{2/\\epsilon_e} + |y/r_y|^{2/\\epsilon_e} )^{\\epsilon_e/\\epsilon_n} + |z/r_z|^{2/\\epsilon_n} = 1$ and their distance field is obtained thanks to a :yref:`Fast Marching Method<FastMarchingMethod>`.
@@ -347,6 +347,7 @@ def levelSetBody(shape="",center=Vector3.Zero,radius=0,extents=Vector3.Zero,epsi
 	:param Real spacing: spatial increment of the :yref:`level set grid<LevelSet.lsGrid>`, if you picked a pre-defined *shape* or a *clump*
 	:param list distField: the :yref:`discrete distance field<LevelSet.distField>` on *grid* (if given) as a list (of list of list; use .tolist() if working initially with 3D numpy arrays), where distField[i][j][k] is the distance value at grid.gridPoint(i,j,k)
 	:param RegularGrid grid: the :yref:`grid carrying the distance field<LevelSet.lsGrid>`, when the latter is directly assigned through *distField*
+        :param Real smearCoeff: passed to :yref:`LevelSet.smearCoeff`
 	:param int nSurfNodes: number of boundary nodes, passed to :yref:`LevelSet.nSurfNodes`
 	:param int nodesPath: path for the boundary nodes, passed to :yref:`LevelSet.nodesPath`
 	:param Real nodesTol: tolerance while ray tracing boundary nodes, passed to :yref:`LevelSet.nodesTol`
@@ -361,18 +362,18 @@ def levelSetBody(shape="",center=Vector3.Zero,radius=0,extents=Vector3.Zero,epsi
 		raise ValueError("Inconsistent use of levelSetBody, see the doc.")
 	b = Body()
 	if shape == "disk":
-		b.shape = lsSimpleShape(0,AlignedBox3(-radius*Vector3.Ones,radius*Vector3.Ones),step=spacing)
+		b.shape = lsSimpleShape(0,AlignedBox3(-radius*Vector3.Ones,radius*Vector3.Ones),step=spacing,smearCoeff = smearCoeff)
 	elif shape == "sphere":
-		b.shape = lsSimpleShape(1,AlignedBox3(-radius*Vector3.Ones,radius*Vector3.Ones),step=spacing)
+		b.shape = lsSimpleShape(1,AlignedBox3(-radius*Vector3.Ones,radius*Vector3.Ones),step=spacing,smearCoeff = smearCoeff)
 	elif shape == "box":
 		if not isinstance(extents,Vector3): extents = Vector3(extents[0],extents[1],extents[2])
-		b.shape = lsSimpleShape(2,AlignedBox3(-extents,extents),step=spacing)
+		b.shape = lsSimpleShape(2,AlignedBox3(-extents,extents),step=spacing,smearCoeff = smearCoeff)
 	elif shape == "superellipsoid":
 		if epsilons[0] == epsilons[1] == 0: raise ValueError("Please define non zero epsilons for superellipsoid shape.")
 		if not isinstance(extents,Vector3): extents = Vector3(extents[0],extents[1],extents[2])
-		b.shape = lsSimpleShape(3,AlignedBox3(-extents,extents),epsilons = epsilons,step=spacing)
+		b.shape = lsSimpleShape(3,AlignedBox3(-extents,extents),epsilons = epsilons,step=spacing,smearCoeff = smearCoeff)
 	elif len(distField):
-		b.shape = LevelSet(lsGrid=grid,distField=distField)
+		b.shape = LevelSet(lsGrid=grid,distField=distField,smearCoeff=smearCoeff)
 	if clump != None:
 		if not isinstance(clump,Clump): raise ValueError("Please give a Clump instance as a clump attribute, instead of ",clump)
 		memb = clump.members
@@ -380,7 +381,7 @@ def levelSetBody(shape="",center=Vector3.Zero,radius=0,extents=Vector3.Zero,epsi
 		minExt = [ min([memb[axis] for memb in minMembers]) for axis in range(3)] # minimum of the Clump Aabb
 		maxMembers = [list(memb.values())[membId][0] + O.bodies[list(memb.keys())[membId]].shape.radius*Vector3(1,1,1) for membId in range(len(memb))] # list with greatest points for each (Aabb of a) Clump member
 		maxExt = [ max([memb[axis] for memb in maxMembers]) for axis in range(3)] # maximum of the Clump Aabb
-		b.shape = lsSimpleShape(4,AlignedBox3(minExt,maxExt),step=spacing,clump = clump)
+		b.shape = lsSimpleShape(4,AlignedBox3(minExt,maxExt),step=spacing,clump = clump,smearCoeff = smearCoeff)
 	b.shape.nSurfNodes = nSurfNodes # this was not done in lsSimpleShape()
 	b.shape.nodesPath = nodesPath # ditto
 	b.shape.nodesTol = nodesTol

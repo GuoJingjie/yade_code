@@ -29,6 +29,7 @@ public:
 	        int,
 	        const AlignedBox3r&,
 	        const Real&,
+		const Real&,
 	        const Vector2r&,
 	        shared_ptr<
 	                Clump>); // will be passed to Python in eg levelSetBody() and "returning shared_ptr<…> objects is the preferred way of passing objects from c++ to python" according to https://yade-dem.org/doc/prog.html#reference-counting

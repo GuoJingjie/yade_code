@@ -177,12 +177,13 @@ vector<vector<vector<Real>>> ShopLS::distIniSE(const Vector3r& radii, const Vect
 	return phiIni(1, radii, epsilons, clump, grid);
 }
 
-shared_ptr<LevelSet> ShopLS::lsSimpleShape(int shape, const AlignedBox3r& aabb, const Real& step, const Vector2r& epsilons, shared_ptr<Clump> clump)
+shared_ptr<LevelSet> ShopLS::lsSimpleShape(int shape, const AlignedBox3r& aabb, const Real& step, const Real& smearCoeff, const Vector2r& epsilons, shared_ptr<Clump> clump)
 {
 	Vector3r minBod(aabb.min()), maxBod(aabb.max()), dimAabb(maxBod - minBod);
 	if ((dimAabb[0] < 0) || (dimAabb[1] < 0) || (dimAabb[2] < 0)) LOG_ERROR("You specified negative extents for aabb, this is not expected.");
 
 	shared_ptr<LevelSet> lsShape(new LevelSet);
+	lsShape->smearCoeff = smearCoeff;
 	Vector3r             maxGrid,
 	        minGrid; // [minGrid,maxGrid] will be LevelSet->lsGrid. It may be different (bigger) than [minBod,maxBod] for the grid to go a little beyond the surface
 	                 // clang-format off

@@ -930,15 +930,16 @@ try {
 		"Converts spherical coordinates to cartesian ones.\n\n:param Vector3 vec: the $(r,\\theta,\\phi)$ spherical coordinates, see cart2spher function for conventions\n:return: a $(x,y,z)$ Vector3 of cartesian coordinates");
 	py::def("lsSimpleShape",
 		ShopLS::lsSimpleShape,
-		(py::arg("shape"),py::arg("aabb"),py::arg("step")=0.1,py::arg("epsilons")=Vector2r(Vector2r::Zero()),py::arg("clump")=boost::make_shared<Clump>()), // Vector*r(Vector*r::Zero()) is actually necessary for to-Python conversion to work (and YADE to start)
+		(py::arg("shape"),py::arg("aabb"),py::arg("step")=0.1,py::arg("smearCoeff")=1.5,py::arg("epsilons")=Vector2r(Vector2r::Zero()),py::arg("clump")=boost::make_shared<Clump>()), // Vector*r(Vector*r::Zero()) is actually necessary for to-Python conversion to work (and YADE to start)
 		R"""(Creates a LevelSet shape among pre-defined ones. Not intended to be used directly, see levelSetBody() instead.
 
 :param int shape: a shape index among supported choices
 :param AlignedBox3 aabb: the axis-aligned surrounding box of the body
 :param Real step: the LevelSet grid step size
+:param Real smearCoeff: passed to LevelSet.smearCoeff
 :param Vector2 epsilons: the epsilon exponents in case *shape* = 3 (superellipsoid)
 :param Clump clump: the Clump instance to mimick in case *shape* = 4
-:return: a list (of list of list) corresponding to LevelSet.distField.)""");
+:return: a LevelSet instance.)""");
  // NB: the rest of the code makes a mixed use of py::arg and py::args, Boost doc does not really help for this https://www.boost.org/doc/libs/1_67_0/libs/python/doc/html/reference/function_invocation_and_creation.html#function_invocation_and_creation.boost_python_args_hpp, see /usr/include/boost/python/args.hpp if you wish...
 //	NB for the two following nGP: see overloading comments in ShopLS.hpp.
 	py::def("nGP",
