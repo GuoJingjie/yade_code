@@ -1744,21 +1744,20 @@ Bugs are general name for defects (functionality shortcomings, misdocumentation,
 
 When reporting a new bug, be as specific as possible; state version of yade you use, system version and the output of :yref:`printAllVersions()<yade.libVersions.printAllVersions>`, as explained in the above section on crashes.
 
+************
+Getting in touch with Yade community
+************
+
 .. _getting-help:
-
-Getting help
-=============
-
-
-Questions and answers
----------------------
+Public questions and answers for getting help
+=============================================
 
 .. Hint:: Please use Launchpad interface at https://answers.launchpad.net/yade/ for `asking questions <http://www.yade-dem.org/wiki/Howtoask>`_ about Yade.
 
 In case you're not familiar with computer oriented discussion lists, please read `this wiki page <https://www.yade-dem.org/wiki/Howtoask>`_ (a Yade-oriented and shortened version of `How To Ask Questions The Smart Way <http://catb.org/~esr/faqs/smart-questions.html>`_) before posting, in order to increase your chances getting help. Do not forget to state what *version* of Yade you use (shown when you start Yade, or even better as printed by function :yref:`yade.libVersions.printAllVersions`), whether you installed it from source code or a package, what operating system (such as Ubuntu 18.04), and if you have done any local modifications to source code in case of compiled version.
 
 Mailing lists
---------------
+=============
 
 In addition to the Q&A Launchpad interface, Yade has two mailing-lists. Both are hosted at http://www.launchpad.net and before posting, you must register to Launchpad and subscribe to the list by adding yourself to "team" of the same name running the list.
 
@@ -1774,13 +1773,17 @@ yade-dev@lists.launchpad.net
 * https://lists.launchpad.net/yade-dev/
 * http://www.mail-archive.com/yade-dev@lists.launchpad.net/
 
+Private and/or paid support
+===========================
+You might contact developers by their private email (rather than by the Launchpad interface or the mailing lists) or the generic adress consult|A|yade-dem.org for a closer, private, support. This is also a suitable method for proposing financial reward for implementation of a substantial feature that is not yet in Yade -- typically, though, we will request this feature to be part of the public codebase once completed, so that the rest of the community can benefit from it as well.
+
 Wiki
------
+====
 
 http://www.yade-dem.org/wiki/
 
-Private and/or paid support
-----------------------------
-You might contact developers by their private email (rather than by mailing list) or the generic adress consult|A|yade-dem.org if you do not want to disclose details on the mailing list. This is also a suitable method for proposing financial reward for implementation of a substantial feature that is not yet in Yade -- typically, though, we will request this feature to be part of the public codebase once completed, so that the rest of the community can benefit from it as well.
+Discord chat
+============
 
+https://discord.gg/rku35YXZJd
 

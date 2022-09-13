@@ -196,7 +196,7 @@ might encounter problems that will be fixed by the developers. Release
 versions will not be updated (except for updates due to critical and
 easy-to-fix bugs), but generally they are more stable than the trunk.
 
-#. Releases can be downloaded from the `download page <https://launchpad.net/yade/+download>`_, as compressed archive. Uncompressing the archive gives you a directory with the sources.
+#. Releases can be downloaded from the `download page <https://gitlab.com/yade-dev/trunk/-/releases>`_, as compressed archive. Uncompressing the archive gives you a directory with the sources.
 #. The development version (``trunk``) can be obtained from the `code repository <https://gitlab.com/yade-dev/>`_ at GitLab.
 
 We use `GIT <http://git-scm.com/>`_ (the ``git`` command) for code
