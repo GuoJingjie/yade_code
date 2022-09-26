@@ -1,6 +1,7 @@
 // 2007 © Václav Šmilauer <eudoxos@arcig.cz>
 #include "Shop.hpp"
 #include <lib/high-precision/Constants.hpp>
+#include <lib/base/LoggingUtils.hpp>
 
 #include <core/Body.hpp>
 #include <core/Interaction.hpp>
@@ -382,6 +383,7 @@ Matrix3r Shop::getStress(Real volume)
 	Real   volumeNonPeri = 0;
 	if (volume == 0 && !scene->isPeriodic) {
 		const auto extrema = Shop::aabbExtrema();
+		LOG_ONCE_WARN("getStress used with default volume tend to underestimate the stress due to overlaps on the boundaries, passing actual volume could be more safe.")
 		volumeNonPeri      = (extrema.second[0] - extrema.first[0]) * (extrema.second[1] - extrema.first[1]) * (extrema.second[2] - extrema.first[2]);
 	}
 	if (volume == 0) volume = scene->isPeriodic ? scene->cell->hSize.determinant() : volumeNonPeri;
@@ -392,6 +394,9 @@ Matrix3r Shop::getStress(Real volume)
 		if (!I->isReal()) continue;
 		shared_ptr<Body> b1 = Body::byId(I->getId1(), scene);
 		shared_ptr<Body> b2 = Body::byId(I->getId2(), scene);
+		if (b1->isClumpMember()) b1 = Body::byId(b1->clumpId, scene);
+		if (b2->isClumpMember()) b2 = Body::byId(b2->clumpId, scene);
+		
 		if (b1->shape->getClassIndex() == GridNode::getClassIndexStatic())
 			continue; //no need to check b2 because a GridNode can only be in interaction with an oher GridNode.
 		NormShearPhys* nsi    = YADE_CAST<NormShearPhys*>(I->phys.get());
