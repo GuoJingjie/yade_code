@@ -60,10 +60,9 @@ inputFileName = 'inputData/' + str(int(N / 1000)) + 'KParticles.txt'
 altName = 'inputData/' + str(int(N / 1000)) + 'KParticlesSwapped.txt'
 
 urls = {}
-urls["25000"] = "https://cloud.tuhh.de/index.php/s/9BHg3p39FzC7pYL/download"
-urls["50000"] = "https://cloud.tuhh.de/index.php/s/28ETraDs3fbY3xo/download"
-urls["100000"] = "https://cloud.tuhh.de/index.php/s/Pw2Tyc7Aw9g2kCB/download"
-#urls["walls"]="https://cloud.tuhh.de/index.php/s/49HZwje9zj4R78m/download"  # <======= NOT USED / Need a fix - we are using data from yade-dem  herefafter
+urls["25000"] = "https://yade-dem.org/publi/data/DEM8/Case3_PenetrationTest_25000_Particles.txt"
+urls["50000"] = "https://yade-dem.org/publi/data/DEM8/Case3_PenetrationTest_50000_Particles.txt"
+urls["100000"] = "https://yade-dem.org/publi/data/DEM8/Case3_PenetrationTest_100000_Particles.txt"
 urls["walls"] = "http://yade-dem.org/publi/data/DEM8/Case3_PenetrationTest_Walls.txt"
 
 # download from organizer at TUHH
@@ -120,7 +119,7 @@ O.engines = [
         ForceResetter(),
         InsertionSortCollider([Bo1_Sphere_Aabb(), Bo1_Facet_Aabb()], verletDist=-0.1),
         InteractionLoop(
-                [Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom()],
+                [Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom(hertzian=True)],
                 [
                         Ip2_FrictMat_FrictMat_MindlinPhys(
                                 en=MatchMaker(
@@ -128,7 +127,7 @@ O.engines = [
                                 )  # e_ss is not needed, as the steel ball is not supposed to touch the steel box. <= I've put it back, found contact once then segfault
                         )
                 ],
-                [Law2_ScGeom_MindlinPhys_Mindlin()],
+                [Law2_ScGeom_MindlinPhys_Mindlin(preventGranularRatcheting=False)],
         ),
         NewtonIntegrator(damping=0, gravity=[0, 0, -9.81]),
 ]

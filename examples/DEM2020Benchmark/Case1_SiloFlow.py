@@ -87,12 +87,11 @@ F_gs = atan(f_gs)  # Friction Angle between granular material (g) and steel (s)
 
 # urls where data should be obtained
 urls = {}  # case name will be size+material
-urls["smallM1"] = "https://cloud.tuhh.de/index.php/s/rz4sdtAdKLTJiXX/download"
-urls["smallM2"] = "https://cloud.tuhh.de/index.php/s/dqM3yRy2TsdFDGS/download"
-urls["largeM1"] = "https://cloud.tuhh.de/index.php/s/Pa7JtpksrF5cSjp/download"
-urls["largeM2"] = "https://cloud.tuhh.de/index.php/s/cs8PJX2BHd2KfnB/download"
-#urls["small"]="https://cloud.tuhh.de/index.php/s/Eyq9K9mdcDzg8Hb/download"
-#urls["large"]="https://cloud.tuhh.de/index.php/s/mKsiEZ6YnHHJ4gJ/download"
+# FIXME: particle coordinates for M1 and M2 are the same right now, the original data needs to be retrieved
+urls["smallM1"] = "https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_PartCoordinates_SmallOrifice.txt"
+urls["smallM2"] = "https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_PartCoordinates_SmallOrifice.txt"
+urls["largeM1"] = "https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_PartCoordinates_LargeOrifice.txt"
+urls["largeM2"] = "https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_PartCoordinates_LargeOrifice.txt"
 urls["small"] = "https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_Walls_SmallOrifice.txt"
 urls["large"] = "https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_Walls_LargeOrifice.txt"
 
@@ -136,14 +135,14 @@ O.engines = [
         ForceResetter(),
         InsertionSortCollider([Bo1_Sphere_Aabb(), Bo1_Facet_Aabb()], label="collider"),
         InteractionLoop(
-                [Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom()],
+                [Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom(hertzian=True)],
                 [
                         Ip2_FrictMat_FrictMat_MindlinPhys(
                                 frictAngle=MatchMaker(matches=((1, 1, F_gg), (0, 1, F_gs))),  # 0 being the id of Steel and
                                 en=MatchMaker(matches=((1, 1, e_gg), (0, 1, e_gs)))  # 1 being the id of material
                         )
                 ],
-                [Law2_ScGeom_MindlinPhys_Mindlin()],
+                [Law2_ScGeom_MindlinPhys_Mindlin(preventGranularRatcheting=False)],
         ),
         NewtonIntegrator(damping=0, gravity=[0, 0, -9.810], label="newton"),
         #GlobalStiffnessTimeStepper(active=1,timestepSafetyCoefficient=0.8, timeStepUpdateInterval=100, parallelMode=False, label = "ts",defaultDt=PWaveTimeStep()), #FIXME Remember to reinstate parallelMode=True when we use MPI
