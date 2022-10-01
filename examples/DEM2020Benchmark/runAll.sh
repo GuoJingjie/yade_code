@@ -2,7 +2,7 @@
 
 # This script will download and run all cases from the 2020 benchmark. It is standalone and should run on every linux system with yade installed.
 # The script itself can retrieved here:
-#   $ wget https://gitlab.com/yade-dev/trunk/-/raw/ee79223a8/examples/DEM2020Benchmark/runAll.sh
+#   $ wget https://gitlab.com/yade-dev/trunk/-/raw/fae891db7/examples/DEM2020Benchmark/runAll.sh
 
 # PREREQUISITES:
 # 1. an internet connexion (else please comment out the download part and provide the scripts in current path)
@@ -27,7 +27,7 @@
 
 
 # That url should point to valid gitlab branch from where the benchmark scripts can be retrieved
-export YADE_BRANCH='https://gitlab.com/yade-dev/trunk/-/raw/0402e0071/examples/DEM2020Benchmark'
+export YADE_BRANCH='https://gitlab.com/yade-dev/trunk/-/raw/fae891db719/examples/DEM2020Benchmark'
 # latest would be:
 # export YADE_BRANCH='https://gitlab.com/yade-dev/trunk/-/raw/master/examples//DEM2020Benchmark'
 
