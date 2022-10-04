@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # 2020 © Vasileios Angelidakis <v.angelidakis2@ncl.ac.uk>
 # 2020 © Bruno Chareyre <bruno.chareyre@grenoble-inp.fr> 
 
@@ -48,11 +47,11 @@ material=str(sys.argv[2]) if len(sys.argv)>2 else 'M1'
 simulationTime = float(sys.argv[3]) if len(sys.argv)>3 else 5
 
 if size == 'large':
-    fileName='Case1_large'
+    fileName='Case1_large'+material
     z=55.4222/1000. 	# This is the height of the lowest point of the funnel (at the orifice), measuring from the lowest cylindrical cross section of the silo
 else:
     z=59.3008/1000.
-    fileName='Case1_small'
+    fileName='Case1_small'+material
 
 
 # -------------------------------------------------------------------- #
@@ -86,14 +85,14 @@ F_gs=atan(f_gs) # Friction Angle between granular material (g) and steel (s)
 
 # urls where data should be obtained
 urls = {} # case name will be size+material
-urls["smallM1"]="https://cloud.tuhh.de/index.php/s/rz4sdtAdKLTJiXX/download"
-urls["smallM2"]="https://cloud.tuhh.de/index.php/s/dqM3yRy2TsdFDGS/download"
-urls["largeM1"]="https://cloud.tuhh.de/index.php/s/Pa7JtpksrF5cSjp/download"
-urls["largeM2"]="https://cloud.tuhh.de/index.php/s/cs8PJX2BHd2KfnB/download"
-#urls["small"]="https://cloud.tuhh.de/index.php/s/Eyq9K9mdcDzg8Hb/download"
-#urls["large"]="https://cloud.tuhh.de/index.php/s/mKsiEZ6YnHHJ4gJ/download"
-urls["small"]="https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_Walls_SmallOrifice.txt"
-urls["large"]="https://yade-dem.org/publi/data/DEM8/Case1_SiloFlow_Walls_LargeOrifice.txt"
+
+baseUrl = "https://gitlab.com/yade-dev/yade-data/-/raw/dacd33f7643a/DEM2020Benchmark/Case%201%20-%20SiloFlow/"
+urls["smallM1"]= baseUrl+"PartCoordinates%20M1%20\(small%20orifice\).txt"
+urls["smallM2"]= baseUrl+"PartCoordinates%20M2%20\(small%20orifice\).txt"
+urls["largeM1"]= baseUrl+"PartCoordinates%20M1%20\(large%20orifice\).txt"
+urls["largeM2"]= baseUrl+"PartCoordinates%20M2%20\(large%20orifice\).txt"
+urls["small"]= baseUrl+"Walls%20\(small%20orifice\).txt"
+urls["large"]= baseUrl+"Walls%20\(large%20orifice\).txt"
 
 # This condition is not abolutely necessary but it would be inelegant to
 # download *.stl and generate densePack N times when we need it done only on master (centralized scene method)
@@ -125,7 +124,11 @@ if not mpi or mp.rank==0:
             os.system('wget -nc -O '+wallFile+' '+urls[size])
         except:
             print("** probably no internet connection, grab",wallFile,"by yourself **")
-
+        # yade import expects a '#' before column headers, add it here
+        import fileinput
+        for line in fileinput.input(wallFile, inplace=True):
+            if fileinput.filelineno() == 1: sys.stdout.write('#{l}'.format(l=line))
+            else: sys.stdout.write(line)
 
 
 #####################   2. YADE PART  #####################

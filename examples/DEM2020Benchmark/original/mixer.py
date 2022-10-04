@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # 2020 © Vasileios Angelidakis <v.angelidakis2@ncl.ac.uk>
 # 2020 © Bruno Chareyre <bruno.chareyre@grenoble-inp.fr> 
 # 2020 © Robert Caulk <rob.caulk@gmail.com>
@@ -59,36 +58,57 @@ F_gs=atan(f_M1_St) # Friction Angle between granular material (g) and steel (s).
 
 
 # -------------------------------------------------------------------- #
-# Load particles from .txt file
+# Get particle and wall positions
 
 from yade import ymport
 wallFile='Case2_Drum_Walls.txt'
-spheres_M1='Case2_Drum_PartCoordinates_M1.txt'
-spheres_M2='Case2_Drum_PartCoordinates_M2.txt'
+sphereFile='Case2_Drum_PartCoordinates.txt'
 
-hasInputSpheres = os.path.exists('inputData/'+spheres_M1)
-if not hasInputSpheres:
-	print("Downloading sphere file",spheres_M1)
+if not os.path.exists('inputData/'+sphereFile+'_temp'):
+	print("Downloading sphere file ",sphereFile)
 	try:
-		os.system('wget -nc -O inputData/'+spheres_M1+' http://yade-dem.org/publi/data/DEM8/'+spheres_M1)
-		os.system('wget -nc -O inputData/'+spheres_M2+' http://yade-dem.org/publi/data/DEM8/'+spheres_M2)
+		os.system('wget -nc -O inputData/'+sphereFile+'_temp'+' https://gitlab.com/yade-dev/yade-data/-/raw/dacd33f7643a/DEM2020Benchmark/Case%202%20-%20Mixer/PartCoordinates.txt')
 	except:
-		print("** probably no internet connection, grab",spheres_M1,"by yourself **")
+		print("** probably no internet connection, grab",sphereFile,"by yourself **")
 
+# convert data with radius in last column (yade's assumption)
+if not os.path.exists('inputData/'+sphereFile):
+	skipFirst=True # skip column titles
+	with open('inputData/'+sphereFile+'_temp') as x, open('inputData/'+sphereFile, 'w') as y:
+		for line in x:
+			if skipFirst:
+				skipFirst = False
+				continue
+			if len(line)<=1: continue #remove empty line at the end
+			columns=line.split()
+			#radius goes to last column
+			columns = columns[1:]+columns[:1]
+			y.write('\t'.join(columns)+'\n')
+	y.close()
 
 hasInputWall = os.path.exists('inputData/'+wallFile)
 if not hasInputWall:
 	print("Downloading mesh file",wallFile)
 	try:
-		os.system('wget -nc -O inputData/'+wallFile+' http://yade-dem.org/publi/data/DEM8/'+wallFile)
+		os.system('wget -nc -O inputData/'+wallFile+' https://gitlab.com/yade-dev/yade-data/-/raw/dacd33f7643a/DEM2020Benchmark/Case%202%20-%20Mixer/Walls.txt')
 	except:
 		print("** probably no internet connection, grab",wallFile,"by yourself **")
+	# yade import expects a '#' before column headers, add it here
+	import fileinput
+	for line in fileinput.input('inputData/'+wallFile, inplace=True):
+		if fileinput.filelineno() == 1: sys.stdout.write('#{l}'.format(l=line))
+		else: sys.stdout.write(line)
 
 
 #####################   2. YADE PART  #####################
 
-sp_m1=ymport.text('inputData/'+spheres_M1,material=M1,color=(1,0,0))
-sp_m2=ymport.text('inputData/'+spheres_M2,material=M2,color=(0,0,1))
+sp=ymport.text('inputData/'+sphereFile,material=M1,color=(1,0,0))
+# set the material and color for M2 (radius 0.002) particles
+for s in sp:
+	if s.shape.radius == 0.002:
+		s.material = O.materials[M2]
+		s.shape.color = (0, 0, 1)
+
 facets = ymport.textFacets('inputData/'+wallFile,color=(0,1,0),material=Steel)
 #facets = ymport.stl(fileName+'.stl',color=(0,1,0),material=Steel)
 drum_ids = range(len(facets))
@@ -115,8 +135,6 @@ O.engines=[
 # -------------------------------------------------------------------- #
 
 NSTEPS = 1000
-
-sp=sp_m1+sp_m2
 
 if numMPIThreads > 1:
 	mp.mprint("appending bodies, rank", mp.rank)
@@ -145,8 +163,8 @@ if numMPIThreads > 1:
 
 else:
 	O.bodies.append(facets)
-	O.bodies.append(sp_m1)
-	O.bodies.append(sp_m2)
+	O.bodies.append(sp)
+
 
 collider.verletDist = 2e-4 # 10% of smallest radius
 O.dt=8e-7
@@ -181,7 +199,7 @@ else:
 	O.run(NSTEPS,True)
 	t2=time.time()
 	print("num. bodies:",len([b for b in O.bodies])," ",len(O.bodies))
-	print("CPU wall time for ",NSTEPS," iterations:",t2-t1,"; Cundall number =",len(sp_m1+sp_m2)*NSTEPS/(t2-t1))
+	print("CPU wall time for ",NSTEPS," iterations:",t2-t1,"; Cundall number =",len(sp)*NSTEPS/(t2-t1))
 
 ## Check particle quadrant
 def getNumParticlesInQuadrants():

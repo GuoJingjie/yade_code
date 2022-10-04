@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # 2020 © Vasileios Angelidakis <v.angelidakis2@ncl.ac.uk>
 # 2020 © Bruno Chareyre <bruno.chareyre@grenoble-inp.fr> 
 
@@ -60,13 +59,14 @@ inputFileName = 'inputData/'+str(int(N/1000))+'KParticles.txt'
 altName = 'inputData/'+str(int(N/1000))+'KParticlesSwapped.txt'
 
 urls = {}
-urls["25000"]="https://cloud.tuhh.de/index.php/s/9BHg3p39FzC7pYL/download"
-urls["50000"]="https://cloud.tuhh.de/index.php/s/28ETraDs3fbY3xo/download"
-urls["100000"]="https://cloud.tuhh.de/index.php/s/Pw2Tyc7Aw9g2kCB/download"
-#urls["walls"]="https://cloud.tuhh.de/index.php/s/49HZwje9zj4R78m/download"  # <======= NOT USED / Need a fix - we are using data from yade-dem  herefafter 
-urls["walls"]="http://yade-dem.org/publi/data/DEM8/Case3_PenetrationTest_Walls.txt"
 
-# download from organizer at TUHH
+
+urls["25000"]="https://gitlab.com/yade-dev/yade-data/-/raw/d80f45a9b1a1/DEM2020Benchmark/Case%203%20-%20Impact/25KParticles.txt"
+urls["50000"]="https://gitlab.com/yade-dev/yade-data/-/raw/d80f45a9b1a1/DEM2020Benchmark/Case%203%20-%20Impact/50KParticles.txt"
+urls["100000"]="https://gitlab.com/yade-dev/yade-data/-/raw/d80f45a9b1a1/DEM2020Benchmark/Case%203%20-%20Impact/100KParticles.txt"
+urls["walls"]="https://gitlab.com/yade-dev/yade-data/-/raw/d80f45a9b1a1/DEM2020Benchmark/Case%203%20-%20Impact/Walls.txt"
+
+# download input files
 if not os.path.exists(inputFileName):    
     os.system("wget -nc -O "+inputFileName+" "+urls[str(N)])
 
@@ -84,12 +84,19 @@ if not os.path.exists(altName):
             y.write('\t'.join(columns)+'\n')
     y.close()
 
-
-wallFileName = 'inputData/Case3Walls'+str(int(N/1000))+'.txt' # a bit pointless to download again with different N but it's to avoid collisions between parallel jobs
-
-# download from organizer at TUHH
-if not os.path.exists(wallFileName):    
-    os.system("wget -nc -O "+wallFileName+" "+urls["walls"])
+# download walls
+wallFileName = 'inputData/Case3Walls'+str(int(N/1000))+'.txt'
+if not os.path.exists(wallFileName):
+	print("Downloading mesh file",wallFileName)
+	try:
+		os.system("wget -nc -O "+wallFileName+" "+urls["walls"])
+	except:
+		print("** probably no internet connection, grab",wallFileName,"by yourself **")
+	# yade import expects a '#' before column headers, add it here
+	import fileinput
+	for line in fileinput.input(wallFileName, inplace=True):
+		if fileinput.filelineno() == 1: sys.stdout.write('#{l}'.format(l=line))
+		else: sys.stdout.write(line)
 
 #####################   2. YADE PART  #####################
 
