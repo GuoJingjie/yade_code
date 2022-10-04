@@ -2,7 +2,7 @@
 
 # This script will download and run all cases from the 2020 benchmark. It is standalone and should run on every linux system with yade installed.
 # The script itself can retrieved here:
-#   $ wget https://gitlab.com/yade-dev/trunk/-/raw/fae891db7/examples/DEM2020Benchmark/runAll.sh
+#   $ wget https://gitlab.com/yade-dev/trunk/-/raw/master/examples/DEM2020Benchmark/runAll.sh
 
 # PREREQUISITES:
 # 1. an internet connexion (else please comment out the download part and provide the scripts in current path)
@@ -47,14 +47,14 @@
 
 
 # That url should point to valid gitlab branch from where the benchmark scripts can be retrieved
-export YADE_BRANCH='https://gitlab.com/yade-dev/trunk/-/raw/fae891db719/examples/DEM2020Benchmark'
+export YADE_BRANCH='https://gitlab.com/yade-dev/trunk/-/raw/5cbbc95ed986b/examples/DEM2020Benchmark'
 # latest would be:
 # export YADE_BRANCH='https://gitlab.com/yade-dev/trunk/-/raw/master/examples//DEM2020Benchmark'
 
 # what follows will not overwrite existing scripts if they are already in current folder
 # make sure you erase them before running this script if you want fresh versions
 wget -nc $YADE_BRANCH/Case1_SiloFlow.py
-wget -nc $YADE_BRANCH/Case2_rotating_drum.py
+wget -nc $YADE_BRANCH/Case2_rotating_drum_mpi.py
 wget -nc $YADE_BRANCH/Case3_PenetrationTest.py
 wget -nc $YADE_BRANCH/plotBenchmark.py
 
@@ -79,7 +79,7 @@ $YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py small M1 $simulationTime1 #[*]
 $YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py small M2 $simulationTime1
 $YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py large M1 $simulationTime1 #[*]
 $YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py large M2 $simulationTime1
-$YADE -j $OMP_THREADS -n -x Case2_rotating_drum.py $simulationTime2 #[*]
+$YADE -j $OMP_THREADS -n -x Case2_rotating_drum_mpi.py $simulationTime2 #[*]
 $YADE -j $OMP_THREADS -n -x Case3_PenetrationTest.py 25000 $simulationTime3 #[*]
 $YADE -j $OMP_THREADS -n -x Case3_PenetrationTest.py 50000 $simulationTime3 #[*]
 $YADE -j $OMP_THREADS -n -x Case3_PenetrationTest.py 100000 $simulationTime3 #[*]
