@@ -140,12 +140,12 @@ O.engines=[
     ForceResetter(),
     InsertionSortCollider([Bo1_Sphere_Aabb(),Bo1_Facet_Aabb()],label="collider"),
     InteractionLoop(
-        [Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom()],
+        [Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom(hertzian=True)],
         [Ip2_FrictMat_FrictMat_MindlinPhys(
             frictAngle = MatchMaker(matches=((1,1,F_gg),(0,1,F_gs))), # 0 being the id of Steel and
             en         = MatchMaker(matches=((1,1,e_gg),(0,1,e_gs)))  # 1 being the id of material
         )],
-        [Law2_ScGeom_MindlinPhys_Mindlin()],
+        [Law2_ScGeom_MindlinPhys_Mindlin(preventGranularRatcheting=False)],
     ),
     NewtonIntegrator(damping=0,gravity=[0,0,-9.810],label="newton"),
     #GlobalStiffnessTimeStepper(active=1,timestepSafetyCoefficient=0.8, timeStepUpdateInterval=100, parallelMode=False, label = "ts",defaultDt=PWaveTimeStep()), #FIXME Remember to reinstate parallelMode=True when we use MPI
