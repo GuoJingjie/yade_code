@@ -2,7 +2,7 @@
 
 # This script will download and run all cases from the 2020 benchmark. It is standalone and should run on every linux system with yade installed.
 # The script itself can retrieved here:
-#   $ wget https://gitlab.com/yade-dev/trunk/-/raw/ee79223a8/examples/DEM2020Benchmark/runAll.sh
+#   $ wget https://gitlab.com/yade-dev/trunk/-/raw/master/examples/DEM2020Benchmark/original/original/runAll.sh
 
 # PREREQUISITES:
 # 1. an internet connexion (else please comment out the download part and provide the scripts in current path)
@@ -48,16 +48,16 @@
 
 
 # That url should point to valid gitlab branch from where the benchmark scripts can be retrieved
-export YADE_BRANCH='https://gitlab.com/yade-dev/trunk/-/raw/0402e0071/examples/DEM2020Benchmark'
+export YADE_BRANCH='https://gitlab.com/yade-dev/trunk/-/raw/5cbbc95ed986b/examples/DEM2020Benchmark/original'
 # latest would be:
-# export YADE_BRANCH='https://gitlab.com/yade-dev/trunk/-/raw/master/examples//DEM2020Benchmark'
+# export YADE_BRANCH='https://gitlab.com/yade-dev/trunk/-/raw/master/examples/DEM2020Benchmark'
 
 # what follows will not overwrite existing scripts if they are already in current folder
 # make sure you erase them before running this script if you want fresh versions
-wget -nc $YADE_BRANCH/Case1_SiloFlow.py
-wget -nc $YADE_BRANCH/Case2_rotating_drum.py
-wget -nc $YADE_BRANCH/Case3_PenetrationTest.py
-wget -nc $YADE_BRANCH/plotBenchmark.py
+wget -nc $YADE_BRANCH/silo.py
+wget -nc $YADE_BRANCH/mixer.py
+wget -nc $YADE_BRANCH/penetration.py
+wget -nc $YADE_BRANCH/plot.py
 
 export YADE='yadedaily'
 # export YADE="/path/to/my/own/yadeVersion"
@@ -76,13 +76,13 @@ export simulationTime3=0.01
 # export simulationTime3=0.00001
 
 # Cases with output provided in 02/2021 are signaled by ending the line [*]
-$YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py small M1 $simulationTime1 #[*]
-$YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py small M2 $simulationTime1
-$YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py large M1 $simulationTime1 #[*]
-$YADE -j $OMP_THREADS -n -x Case1_SiloFlow.py large M2 $simulationTime1
-$YADE -j $OMP_THREADS -n -x Case2_rotating_drum.py $simulationTime2 #[*]
-$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest.py 25000 $simulationTime3 #[*]
-$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest.py 50000 $simulationTime3 #[*]
-$YADE -j $OMP_THREADS -n -x Case3_PenetrationTest.py 100000 $simulationTime3 #[*]
+$YADE -j $OMP_THREADS -n -x silo.py small M1 $simulationTime1 #[*]
+$YADE -j $OMP_THREADS -n -x silo.py small M2 $simulationTime1
+$YADE -j $OMP_THREADS -n -x silo.py large M1 $simulationTime1 #[*]
+$YADE -j $OMP_THREADS -n -x silo.py large M2 $simulationTime1
+$YADE -j $OMP_THREADS -n -x mixer.py $simulationTime2 #[*]
+$YADE -j $OMP_THREADS -n -x penetration.py 25000 $simulationTime3 #[*]
+$YADE -j $OMP_THREADS -n -x penetration.py 50000 $simulationTime3 #[*]
+$YADE -j $OMP_THREADS -n -x penetration.py 100000 $simulationTime3 #[*]
 
-$YADE -n -x plotBenchmark.py # would run just as well with python3
+$YADE -n -x plot.py # would run just as well with python3
