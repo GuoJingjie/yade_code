@@ -65,7 +65,6 @@ if not hasInputSpheres:
 	except:
 		print("** probably no internet connection, grab",spheres_M1,"by yourself **")
 
-
 hasInputWall = os.path.exists('inputData/'+wallFile)
 if not hasInputWall:
 	print("Downloading mesh file", wallFile)

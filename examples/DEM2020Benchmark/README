@@ -4,7 +4,7 @@
 # 2020 © Bruno Chareyre <bruno.chareyre@grenoble-inp.fr> 
 
 
-1/ The scripts in this folder were prepared as part of a benchmark exercise inspired by discussions at DEM8 Conference.
+1/ The scripts in this folder were prepared as part of a benchmark exercise inspired by discussions at DEM8 Conference. The subfolder "original" contains the scripts used for the original benchmark comparison and will not receive updates. The other scripts are more recent and may be customized in various ways.
 
 2/ They need to be ran with yade version release 01/2021 or later (version yadedaily on debian/ubuntu)
     $ apt update
