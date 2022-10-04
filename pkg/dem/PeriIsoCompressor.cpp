@@ -125,34 +125,21 @@ void PeriTriaxController::strainStressStiffUpdate()
 	for (int i = 0; i < 3; i++)
 		strain[i] = log(scene->cell->trsf(i, i));
 
-	//Compute volume of the deformed cell
-	Real volume = scene->cell->hSize.determinant();
-
 	//Compute sum(fi*lj) and stiffness
 	stressTensor = Matrix3r::Zero();
 	Vector3r sumStiff(Vector3r::Zero());
 	int      n = 0;
-	// NOTE : This sort of loops on interactions could be removed if we had callbacks in e.g. constitutive laws
-	// → very likely performance hit; do you have some concrete design in mind?
-	// → a vector with functors so we can law->functs->pushback(myThing), and access to the fundamental members (forces, stiffness, normal, etc.). Implementing the second part is less clear in my mind. Inheriting from law::funct(force&, stiffness&, ...)?
-	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
+    if (not dynCell) FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
 		if (!I->isReal()) continue;
 		NormShearPhys*         nsi = YADE_CAST<NormShearPhys*>(I->phys.get());
 		GenericSpheresContact* gsc = YADE_CAST<GenericSpheresContact*>(I->geom.get());
-		//Contact force
-		Vector3r f      = (-1.) * (nsi->normalForce + nsi->shearForce);
-		Vector3r branch = Body::byId(I->getId2(), scene)->state->pos + scene->cell->hSize * I->cellDist.cast<Real>()
-		        - Body::byId(I->getId1(), scene)->state->pos;
-		stressTensor += f * branch.transpose();
-		if (!dynCell) {
-			for (int i = 0; i < 3; i++)
-				sumStiff[i] += math::abs(gsc->normal[i]) * nsi->kn + (1 - math::abs(gsc->normal[i])) * nsi->ks;
-			n++;
-		}
+		for (int i = 0; i < 3; i++)
+			sumStiff[i] += math::abs(gsc->normal[i]) * nsi->kn + (1 - math::abs(gsc->normal[i])) * nsi->ks;
+		n++;
 	}
-	// Divide by volume as in stressTensor=sum(fi*lj)/Volume (Love equation)
-	stressTensor /= volume;
+	// Update stress
+	stressTensor = Shop::getStress();
 	for (int axis = 0; axis < 3; axis++)
 		stress[axis] = stressTensor(axis, axis);
 	LOG_DEBUG(
