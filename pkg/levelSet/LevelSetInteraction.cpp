@@ -170,7 +170,8 @@ bool Ig2_Box_LevelSet_ScGeom::go(
 	        state1,
 	        state2,
 	        c,
-	        normal);
+	        normal,
+			shift2);
 	return true;
 }
 
@@ -231,7 +232,8 @@ bool Ig2_Wall_LevelSet_ScGeom::go(
 	        state1,
 	        state2,
 	        c,
-	        normal);
+	        normal,
+			shift2);
 	return true;
 }
 
@@ -241,7 +243,7 @@ bool Ig2_LevelSet_LevelSet_ScGeom::go(
         const State&             state1,
         const State&             state2,
         const Vector3r&          shift2,
-        const bool&                    force,
+        const bool&              force,
         const shared_ptr<Interaction>& c)
 {
 	// 1. We first determine the Aabb zone where bodies' bounds overlap. TODO: possible use of Eigen AlignedBox ?
@@ -324,7 +326,8 @@ bool Ig2_LevelSet_LevelSet_ScGeom::go(
 	        state1,
 	        state2,
 	        c,
-	        normal);
+	        normal,
+			shift2);
 	return true;
 }
 } // namespace yade
