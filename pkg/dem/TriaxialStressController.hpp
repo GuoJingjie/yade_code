@@ -141,7 +141,6 @@ public:
 		porosity=1;
 		,
 		.def_readonly("strain",&TriaxialStressController::strain,"Current strain in a vector (exx,eyy,ezz). The values reflect true (logarithmic) strain.")
-		.def_readonly("strainRate",&TriaxialStressController::getStrainRate,"Current strain rate in a vector d/dt(exx,eyy,ezz).")
 		.def_readonly("porosity",&TriaxialStressController::porosity,"Porosity of the packing, computed from :yref:`particlesVolume<TriaxialStressController::particlesVolume>` and :yref:`boxVolume<TriaxialStressController::boxVolume>`. |yupdate|")
 		.def_readonly("boxVolume",&TriaxialStressController::boxVolume,"Total packing volume.")
 		.def_readonly("particlesVolume",&TriaxialStressController::particlesVolume,"Total volume of particles (clumps and :yref:`dynamic<Body::dynamic>` spheres). |ycomp|")
@@ -149,6 +148,7 @@ public:
 		.def_readonly("max_vel1",&TriaxialStressController::max_vel1,"see :yref:`TriaxialStressController::max_vel` |ycomp|")
 		.def_readonly("max_vel2",&TriaxialStressController::max_vel2,"see :yref:`TriaxialStressController::max_vel` |ycomp|")
 		.def_readonly("max_vel3",&TriaxialStressController::max_vel3,"see :yref:`TriaxialStressController::max_vel` |ycomp|")
+		.def("strainRate",&TriaxialStressController::getStrainRate,"Current strain rate in a vector d/dt(exx,eyy,ezz).")
 		.def("stress",&TriaxialStressController::getStress,(boost::python::arg("id")),"Returns the average stress on boundary 'id'. Here, 'id' refers to the internal numbering of boundaries, between 0 and 5.")
 		)
 	// clang-format on

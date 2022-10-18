@@ -38,10 +38,16 @@ Vector3r TriaxialStressController::getStress(int boundId) const
 
 Vector3r TriaxialStressController::getStrainRate() const
 {
-	return Vector3r(
-	        (Body::byId(wall_right_id, scene)->state->vel[0] - Body::byId(wall_left_id, scene)->state->vel[0]) / width,
-	        (Body::byId(wall_top_id, scene)->state->vel[1] - Body::byId(wall_bottom_id, scene)->state->vel[1]) / height,
-	        (Body::byId(wall_front_id, scene)->state->vel[2] - Body::byId(wall_back_id, scene)->state->vel[2]) / depth);
+	if (scene->bodies->exists(wall_right_id) and scene->bodies->exists(wall_left_id)
+		and scene->bodies->exists(wall_top_id) and scene->bodies->exists(wall_bottom_id)
+		and scene->bodies->exists(wall_front_id) and scene->bodies->exists(wall_back_id)) {
+		return Vector3r(
+				(Body::byId(wall_right_id, scene)->state->vel[0] - Body::byId(wall_left_id, scene)->state->vel[0]) / width,
+				(Body::byId(wall_top_id, scene)->state->vel[1] - Body::byId(wall_bottom_id, scene)->state->vel[1]) / height,
+				(Body::byId(wall_front_id, scene)->state->vel[2] - Body::byId(wall_back_id, scene)->state->vel[2]) / depth);
+	} else {
+		return Vector3r::Zero();
+	}
 }
 
 void TriaxialStressController::updateStiffness()
