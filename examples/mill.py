@@ -1,4 +1,3 @@
-# -*- encoding=utf-8 -*-
 """
 Small showcase posted at http://www.youtube.com/watch?v=KUv26xlh89I,
 in response to pfc3d's http://www.youtube.com/watch?v=005rdDBoe4w.
@@ -7,8 +6,6 @@ Physical correctness is not the focus, the geometry and similar look is.
 You can take this file as instruction on how to build parametric surfaces,
 and how to make videos as well.
 """
-from __future__ import print_function
-from builtins import range
 from yade import pack
 from numpy import linspace
 # geometry parameters
@@ -33,7 +30,8 @@ for i in range(0,bumpNum):
 	thMax=thMin+interBumpAngle-bumpAngle
 	thTip=thMax+.5*bumpAngle
 	# the circular parts spanning from thMin to thMax
-	for th0 in linspace(thMin,thMax,interBumpAngle/dTheta,endpoint=True):
+	n=int(interBumpAngle/dTheta)
+	for th0 in linspace(thMin,thMax,n,endpoint=True):
 		pts.append(Vector3(-.5*millDp,millRad*cos(th0),millRad*sin(th0)))
 	# tip of the bump
 	pts.append(Vector3(-.5*millDp,bumpRad*cos(thTip),bumpRad*sin(thTip)))
