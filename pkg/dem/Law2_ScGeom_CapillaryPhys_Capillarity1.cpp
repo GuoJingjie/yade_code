@@ -1,9 +1,8 @@
 /*************************************************************************
-* Copyright (C) 2006 by luc Scholtes *
-* luc.scholtes@hmg.inpg.fr *
-* *
-* This program is free software; it is licensed under the terms of the *
-* GNU General Public License v2 or later. See file LICENSE for details. *
+*  Copyright (C) 2013 by Bruno Chareyre    <bruno.chareyre@grenoble-inp.fr>  *
+*                                                                        *
+*  This program is free software; it is licensed under the terms of the  *
+*  GNU General Public License v2 or later. See file LICENSE for details. *
 *************************************************************************/
 
 //Modifs : Parameters renamed as MeniscusParameters
@@ -142,6 +141,26 @@ YADE_PLUGIN((Law2_ScGeom_CapillaryPhys_Capillarity1));
 
 int firstIteration = 1;
 int x              = 0;
+
+//========================================================
+
+shared_ptr<CapillaryPhys1> Law2_ScGeom_CapillaryPhys_Capillarity1::solveStandalone(Real R1, Real R2, Real capillaryPressure, Real gap
+, shared_ptr<CapillaryPhys1> bridge = shared_ptr<CapillaryPhys1>(), bool pBased = true)
+{
+	if (dtPbased.number_of_vertices() < 1) triangulateData();
+	if (not bridge) bridge = shared_ptr<CapillaryPhys1>(new CapillaryPhys1());
+	
+	Real Dinterpol = gap / R1;
+	Real Pinterpol = capillaryPressure * R1 / liquidTension;
+	
+	MeniscusPhysicalData solution = interpolate1(dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), bridge->m, solutions, false);	
+	bridge->fCap = solution.force * Vector3r(1,0,0);
+	bridge->vMeniscus  = solution.volume * pow(R1, 3);
+	bridge->SInterface = solution.surface * pow(R1, 2);
+	bridge->meniscus = solution.volume > 0;
+	return bridge;
+}
+
 
 void Law2_ScGeom_CapillaryPhys_Capillarity1::action()
 {

@@ -1,11 +1,8 @@
-//
-// C++ Interface: Law2_ScGeom_CapillaryPhys_Capillarity
 /*************************************************************************
-* Copyright (C) 2006 by luc Scholtes *
-* luc.scholtes@hmg.inpg.fr *
-* *
-* This program is free software; it is licensed under the terms of the *
-* GNU General Public License v2 or later. See file LICENSE for details. *
+*  Copyright (C) 2013 by Bruno Chareyre    <bruno.chareyre@grenoble-inp.fr>  *
+*                                                                        *
+*  This program is free software; it is licensed under the terms of the  *
+*  GNU General Public License v2 or later. See file LICENSE for details. *
 *************************************************************************/
 #pragma once
 
@@ -90,11 +87,12 @@ public:
 	Real waterVolume();
 	void solver(Real suction, bool reset);
 	void triangulateData();
+	shared_ptr<CapillaryPhys1> solveStandalone(Real R1, Real R2, Real capillaryPressure, Real gap, shared_ptr<CapillaryPhys1> bridge, bool pBased);
 
 	// clang-format off
     YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(Law2_ScGeom_CapillaryPhys_Capillarity1,GlobalEngine,"This law allows one to take into account capillary forces/effects between spheres coming from the presence of interparticular liquid bridges (menisci).\n\nThe control parameter is the capillary pressure (or suction) Uc = ugas - Uliquid. Liquid bridges properties (volume V, extent over interacting grains delta1 and delta2) are computed as a result of the defined capillary pressure and of the interacting geometry (spheres radii and interparticular distance).\n\nReferences: in english [Scholtes2009b]_; more detailed, but in french [Scholtes2009d]_.\n\nThe law needs ascii files M(r=i) with i=R1/R2 to work (see https://yade-dem.org/wiki/CapillaryTriaxialTest). These ASCII files contain a set of results from the resolution of the Laplace-Young equation for different configurations of the interacting geometry."
     "\n\nIn order to allow capillary forces between distant spheres, it is necessary to enlarge the bounding boxes using :yref:`Bo1_Sphere_Aabb::aabbEnlargeFactor` and make the Ig2 define define distant interactions via:yref:`interactionDetectionFactor<Ig2_Sphere_Sphere_ScGeom::interactionDetectionFactor>`. It is also necessary to disable interactions removal by the constitutive law (:yref:`Law2<Law2_ScGeom_FrictPhys_CundallStrack::neverErase>=True`). The only combinations of laws supported are currently capillary law + :yref:`Law2_ScGeom_FrictPhys_CundallStrack` and capillary law + :yref:`Law2_ScGeom_MindlinPhys_Mindlin` (and the other variants of Hertz-Mindlin).\n\nSee CapillaryPhys-example.py for an example script.",
-                   ((Real,capillaryPressure,0.,,"Value of the capillary pressure Uc defines as Uc=Ugas-Uliquid"))
+		  ((Real,capillaryPressure,0.,,"Value of the capillary pressure Uc defines as Uc=Ugas-Uliquid"))
 		  ((Real,totalVolumeofWater,-1.,,"Value of imposed water volume"))
 		  ((Real,liquidTension,0.073,,"Value of the superficial water tension in N/m"))
 		  ((Real,epsilonMean,0.,," Mean Value of the roughness"))//old value was epsilon
@@ -113,7 +111,8 @@ public:
 // 		  .def("sninterface",&Law2_ScGeom_CapillaryPhys_Capillarity1::sninterface,"define the amount of solid-non-wetting interfaces in unsaturated pendular state")
 		  .def("swInterface",&Law2_ScGeom_CapillaryPhys_Capillarity1::swInterface,"define the amount of solid-wetting interfaces in unsaturated pendular state")
 		  .def("wnInterface",&Law2_ScGeom_CapillaryPhys_Capillarity1::wnInterface,"define the amount of wetting-non-wetiing interfaces in unsaturated pendular state")
-		  .def("waterVolume",&Law2_ScGeom_CapillaryPhys_Capillarity1::waterVolume,"return the total value of water in the sample")
+		  .def("waterVolume",&Law2_ScGeom_CapillaryPhys_Capillarity1::waterVolume,"return the total value of water in the sample")		  
+		  .def("solveStandalone",&Law2_ScGeom_CapillaryPhys_Capillarity1::solveStandalone, (py::args("R1"), py::args("R2"), py::args("capillaryPressure") , py::args("gap"),  py::args("bridge") = shared_ptr<CapillaryPhys1>(), py::args("pBased") = true), "solve a single bridge independently of the scene")
      );
 	// clang-format on
 };
