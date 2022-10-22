@@ -30,9 +30,6 @@
 
 namespace yade { // Cannot have #include directive inside.
 
-DT Law2_ScGeom_CapillaryPhys_Capillarity1::dtVbased;
-DT Law2_ScGeom_CapillaryPhys_Capillarity1::dtPbased;
-
 Real Law2_ScGeom_CapillaryPhys_Capillarity1::intEnergy()
 {
 	Real energy = 0;
@@ -44,8 +41,8 @@ Real Law2_ScGeom_CapillaryPhys_Capillarity1::intEnergy()
 		if (phys) {
 			if (phys->SInterface != 0) {
 				energy += liquidTension
-				        * (phys->SInterface - 4 * 3.141592653589793238462643383279502884 * (pow(currentGeometry->radius1, 2))
-				           - 4 * 3.141592653589793238462643383279502884 * (pow(currentGeometry->radius2, 2)));
+				        * (phys->SInterface - 4 * Mathr::PI * (pow(currentGeometry->radius1, 2))
+				           - 4 * Mathr::PI * (pow(currentGeometry->radius2, 2)));
 			}
 		}
 	}
@@ -64,7 +61,7 @@ Real Law2_ScGeom_CapillaryPhys_Capillarity1::wnInterface()
 		if (phys) {
 			if (phys->SInterface != 0) {
 				wn += (phys->SInterface
-				       - 2 * 3.141592653589793238462643383279502884
+				       - 2 * Mathr::PI
 				               * (pow(currentGeometry->radius1, 2) * (1 + cos(phys->Delta1))
 				                  + pow(currentGeometry->radius2, 2) * (1 + cos(phys->Delta2))));
 			}
@@ -82,7 +79,7 @@ Real Law2_ScGeom_CapillaryPhys_Capillarity1::swInterface()
 		ScGeom*         currentGeometry = static_cast<ScGeom*>(I->geom.get());
 		CapillaryPhys1* phys            = dynamic_cast<CapillaryPhys1*>(I->phys.get());
 		if (phys) {
-			sw += (2 * 3.141592653589793238462643383279502884
+			sw += (2 * Mathr::PI
 			       * (pow(currentGeometry->radius1, 2) * (1 - cos(phys->Delta1)) + pow(currentGeometry->radius2, 2) * (1 - cos(phys->Delta2))));
 		}
 	}
@@ -144,16 +141,16 @@ int x              = 0;
 
 //========================================================
 
-shared_ptr<CapillaryPhys1> Law2_ScGeom_CapillaryPhys_Capillarity1::solveStandalone(Real R1, Real R2, Real capillaryPressure, Real gap
-, shared_ptr<CapillaryPhys1> bridge = shared_ptr<CapillaryPhys1>(), bool pBased = true)
+shared_ptr<CapillaryPhys1> Law2_ScGeom_CapillaryPhys_Capillarity1::solveStandalone(Real R1, Real R2, Real pressure, Real gap
+, shared_ptr<CapillaryPhys1> bridge = shared_ptr<CapillaryPhys1>()/*, bool pBased = true*/)
 {
 	if (dtPbased.number_of_vertices() < 1) triangulateData();
 	if (not bridge) bridge = shared_ptr<CapillaryPhys1>(new CapillaryPhys1());
 	
 	Real Dinterpol = gap / R1;
-	Real Pinterpol = capillaryPressure * R1 / liquidTension;
+	Real Pinterpol = pressure * R1 / liquidTension;
 	
-	MeniscusPhysicalData solution = interpolate1(dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), bridge->m, solutions, false);	
+	MeniscusPhysicalData solution = DelaunayInterpolator::interpolate1(dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), bridge->m, solutions, false);	
 	bridge->fCap = solution.force * Vector3r(1,0,0);
 	bridge->vMeniscus  = solution.volume * pow(R1, 3);
 	bridge->SInterface = solution.surface * pow(R1, 2);
@@ -496,7 +493,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 				if ((Pinterpol >= 0)
 				    && (hertzOn ? mindlinContactPhysics->meniscus : cundallContactPhysics->meniscus)) { //FIXME: need an "else {delete}"
 					MeniscusPhysicalData solution
-					        = interpolate1(dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), cundallContactPhysics->m, solutions, reset);
+					        = DelaunayInterpolator::interpolate1(dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), cundallContactPhysics->m, solutions, reset);
 					/// capillary adhesion force
 					Real     Finterpol = solution.force;
 					Vector3r fCap      = Finterpol * R1 * liquidTension * currentContactGeometry->normal;
@@ -552,7 +549,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 					// 	        else mindlinContactPhysics->capillaryPressure = suction;
 					/// Capillary solution finder:
 					if ((Pinterpol >= 0) && (hertzOn ? mindlinContactPhysics->meniscus : cundallContactPhysics->meniscus)) {
-						MeniscusPhysicalData solution = interpolate1(
+						MeniscusPhysicalData solution = DelaunayInterpolator::interpolate1(
 						        dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), cundallContactPhysics->m, solutions, reset);
 						/// capillary adhesion force
 						Real     Finterpol = solution.force;
@@ -603,7 +600,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 						Vinterpol = mindlinContactPhysics->vMeniscus;
 					/// Capillary solution finder:
 					if ((hertzOn ? mindlinContactPhysics->meniscus : cundallContactPhysics->meniscus)) {
-						MeniscusPhysicalData solution = interpolate2(
+						MeniscusPhysicalData solution = DelaunayInterpolator::interpolate1(
 						        dtVbased, K::Point_3(R2 / R1, Vinterpol, Dinterpol), cundallContactPhysics->m, solutions, reset);
 						/// capillary adhesion force
 						Real     Finterpol = solution.force;

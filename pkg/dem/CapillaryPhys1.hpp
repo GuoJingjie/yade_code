@@ -7,8 +7,8 @@
 #pragma once
 #include <core/Dispatching.hpp>
 #include <pkg/common/ElastMat.hpp>
-#include <pkg/dem/DelaunayInterpolation.hpp>
 #include <pkg/dem/FrictPhys.hpp>
+#include <lib/triangulation/DelaunayInterpolation.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 
@@ -101,49 +101,20 @@ public:
 		        fact * arcLength,
 		        ending);
 	}
-
-	const MeniscusPhysicalData& operator=(const MeniscusPhysicalData& m1)
-	{
-		R         = m1.R;
-		volume    = m1.volume;
-		distance  = m1.distance;
-		surface   = m1.surface;
-		energy    = m1.energy;
-		force     = m1.force;
-		succion   = m1.succion;
-		delta1    = m1.delta1;
-		delta2    = m1.delta2;
-		arcLength = m1.arcLength;
-		ending    = m1.ending;
-		return *this;
-	}
 };
 
-//The structure for the meniscus: physical properties + cached values for fast interpolation
-class Meniscus {
-public:
-	typedef MeniscusPhysicalData Data;
-	Data                         data;    //the variables of Laplace's problem
-	DT::Cell_handle              cell;    //pointer to the last location in the triangulation, for faster locate()
-	std::vector<K::Vector_3>     normals; // 4 normals relative to the current cell
-
-	Meniscus()
-	        : data()
-	        , cell(DT::Cell_handle())
-	        , normals(std::vector<K::Vector_3>())
-	{
-	}
-};
+//The structure for the meniscus data: physical properties + cached values for fast interpolation
+typedef DelaunayInterpolator::InterpolatorData<MeniscusPhysicalData> Meniscus;
 
 class CapillaryPhys1 : public FrictPhys {
 public:
-	int      currentIndexes[4]; // used for faster interpolation (stores previous positions in tables)
+// 	int      currentIndexes[4]; // used for faster interpolation (stores previous positions in tables)
 	Meniscus m;
 
 	virtual ~CapillaryPhys1();
 
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CapillaryPhys1,FrictPhys,"Physics (of interaction) for Law2_ScGeom_CapillaryPhys_Capillarity.",
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CapillaryPhys1,FrictPhys,"Physics (of interaction) for Law2_ScGeom_CapillaryPhys_Capillarity1.",
 				 ((bool,meniscus,false,,"Presence of a meniscus if true"))
 				 ((bool,isBroken,false,,"If true, capillary force is zero and liquid bridge is inactive."))
 				 ((bool,computeBridge,true,,"If true, capillary bridge will be computed if not it will be ignored."))
@@ -155,7 +126,7 @@ public:
 				 ((Real,SInterface,0.,,"Fluid-Gaz Interfacial area"))
 				 ((Real,arcLength,0.,,"Arc Length of the Fluid-Gaz Interface"))
 				 ((short int,fusionNumber,0.,,"Indicates the number of meniscii that overlap with this one"))
-				 ,createIndex();currentIndexes[0]=currentIndexes[1]=currentIndexes[2]=currentIndexes[3]=0;
+				 ,createIndex();
 				 );
 	// clang-format on
 	REGISTER_CLASS_INDEX(CapillaryPhys1, FrictPhys);

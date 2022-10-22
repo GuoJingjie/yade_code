@@ -7,7 +7,6 @@
 
 #include <pkg/dem/CapillaryPhys1.hpp>
 #include <pkg/dem/ScGeom.hpp>
-
 #include <core/Omega.hpp>
 #include <core/Scene.hpp>
 
