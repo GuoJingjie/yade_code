@@ -19,8 +19,11 @@ namespace yade {
 class DelaunayInterpolator {
     public:
     //helpful array for permutations
-    static constexpr int  comb[6] = { 1, 2, 3, 0, 1, 2 };
+    static const unsigned  comb[]; // = { 1, 2, 3, 0, 1, 2 };
     
+    // NOTE: make sure this static array is defined in some source file (currently CapillaryPhysDelaunay.cpp).
+    // the folowing declararation/definition would be more convenient but not all gcc versions support this
+    // static constexpr int  comb[6] = { 1, 2, 3, 0, 1, 2 };
     
     typedef CGAL::Exact_Real_predicates_inexact_constructions_kernel K;
     typedef CGAL::Delaunay_triangulation_3< K,

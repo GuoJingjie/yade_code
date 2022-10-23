@@ -13,6 +13,7 @@
 namespace yade { // Cannot have #include directive inside.
 
 CapillaryPhysDelaunay::~CapillaryPhysDelaunay() { }
+const unsigned DelaunayInterpolator::comb[] = { 1, 2, 3, 0, 1, 2 };
 
 YADE_PLUGIN((CapillaryPhysDelaunay));
 
