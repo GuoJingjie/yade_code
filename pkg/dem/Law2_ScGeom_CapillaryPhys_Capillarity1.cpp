@@ -5,11 +5,6 @@
 *  GNU General Public License v2 or later. See file LICENSE for details. *
 *************************************************************************/
 
-//Modifs : Parameters renamed as MeniscusParameters
-//id1/id2 as id1 is the smallest grain, FIXME : wetting angle?
-//FIXME : in triaxialStressController, change test about null force in updateStiffnessccc
-//keep this #ifdef as long as you don't really want to realize a final version publicly, it will save compilation time for everyone else
-//when you want it compiled, you can just uncomment the following line
 #ifdef YADE_CGAL
 
 #define LAW2_SCGEOM_CAPILLARYPHYS_Capillarity1
@@ -29,6 +24,9 @@
 #include <iostream>
 
 namespace yade { // Cannot have #include directive inside.
+    
+DelaunayInterpolator::Dt Law2_ScGeom_CapillaryPhys_Capillarity1::dtVbased;
+DelaunayInterpolator::Dt Law2_ScGeom_CapillaryPhys_Capillarity1::dtPbased;
 
 Real Law2_ScGeom_CapillaryPhys_Capillarity1::intEnergy()
 {
