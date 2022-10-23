@@ -1,6 +1,6 @@
 #author: bruno.chareyre@grenoble-inp.fr
->> import os
->>> os.system("wget -O capillaryfile.txt https://gitlab.com/yade-dev/yade-data/-/raw/main/capillaryFiles/capillaryfile.txt?inline=false")
+import os
+os.system("wget -O capillaryfile.txt https://gitlab.com/yade-dev/yade-data/-/raw/main/capillaryFiles/capillaryfile.txt?inline=false")
 # test standalone bridge interpolator
 l=CapillarityEngine()
 l.liquidTension = 1
