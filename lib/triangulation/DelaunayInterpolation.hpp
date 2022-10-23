@@ -24,7 +24,7 @@ class DelaunayInterpolator {
     
     typedef CGAL::Exact_Real_predicates_inexact_constructions_kernel K;
     typedef CGAL::Delaunay_triangulation_3< K,
-        CGAL::Triangulation_data_structure_3< CGAL::Triangulation_vertex_base_with_info_3<unsigned, K>, CGAL::Delaunay_triangulation_cell_base_3<K> > >
+        CGAL::Triangulation_data_structure_3< CGAL::Triangulation_vertex_base_with_info_3<unsigned, K>, CGAL::Triangulation_cell_base_3<K> > >
         Dt;
     typedef std::vector<std::pair<Dt::Vertex_handle, K::FT>>                    Vertex_weight_vector;
     typedef std::back_insert_iterator<Vertex_weight_vector>                     VtxWeightsIterator;
