@@ -106,15 +106,15 @@ public:
 //The structure for the meniscus data: physical properties + cached values for fast interpolation
 typedef DelaunayInterpolator::InterpolatorData<MeniscusPhysicalData> Meniscus;
 
-class CapillaryPhys1 : public FrictPhys {
+class CapillaryPhysDelaunay : public FrictPhys {
 public:
 // 	int      currentIndexes[4]; // used for faster interpolation (stores previous positions in tables)
 	Meniscus m;
 
-	virtual ~CapillaryPhys1();
+	virtual ~CapillaryPhysDelaunay();
 
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CapillaryPhys1,FrictPhys,"Physics (of interaction) for Law2_ScGeom_CapillaryPhys_Capillarity1.",
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR(CapillaryPhysDelaunay,FrictPhys,"Physics (of interaction) for CapillarityEngine.",
 				 ((bool,meniscus,false,,"Presence of a meniscus if true"))
 				 ((bool,isBroken,false,,"If true, capillary force is zero and liquid bridge is inactive."))
 				 ((bool,computeBridge,true,,"If true, capillary bridge will be computed if not it will be ignored."))
@@ -129,22 +129,22 @@ public:
 				 ,createIndex();
 				 );
 	// clang-format on
-	REGISTER_CLASS_INDEX(CapillaryPhys1, FrictPhys);
+	REGISTER_CLASS_INDEX(CapillaryPhysDelaunay, FrictPhys);
 };
-REGISTER_SERIALIZABLE(CapillaryPhys1);
+REGISTER_SERIALIZABLE(CapillaryPhysDelaunay);
 
-class Ip2_FrictMat_FrictMat_CapillaryPhys1 : public IPhysFunctor {
+class Ip2_FrictMat_FrictMat_CapillaryPhysDelaunay : public IPhysFunctor {
 public:
 	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;
 
 	FUNCTOR2D(FrictMat, FrictMat);
 	// clang-format off
-	YADE_CLASS_BASE_DOC_ATTRS_CTOR(Ip2_FrictMat_FrictMat_CapillaryPhys1,IPhysFunctor, "RelationShips to use with Law2_ScGeom_CapillaryPhys_Capillarity1\n\n In these RelationShips all the interaction attributes are computed. \n\n.. warning::\n\tas in the others :yref:`Ip2 functors<IPhysFunctor>`, most of the attributes are computed only once, when the interaction is new.",
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR(Ip2_FrictMat_FrictMat_CapillaryPhysDelaunay,IPhysFunctor, "RelationShips to use with CapillarityEngine\n\n In these RelationShips all the interaction attributes are computed. \n\n.. warning::\n\tas in the others :yref:`Ip2 functors<IPhysFunctor>`, most of the attributes are computed only once, when the interaction is new.",
 				       ((bool,computeDefault,true,,"bool to assign the default value of computeBridge.")),;
 	  
 	);
 	// clang-format on
 };
-REGISTER_SERIALIZABLE(Ip2_FrictMat_FrictMat_CapillaryPhys1);
+REGISTER_SERIALIZABLE(Ip2_FrictMat_FrictMat_CapillaryPhysDelaunay);
 
 } // namespace yade

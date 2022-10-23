@@ -2,9 +2,16 @@
 
 # demonstrates using standalone bridge solver and some timing
 
+# output ont intel i7:
+    # triangulate data: 0.42063212394714355 sec
+    # 100000 solutions with smart locate: 0.10309433937072754 sec
+    # 100000 solutions with no cache locate: 0.2700941562652588 sec
+
+
+
 import time
  
-l=Law2_ScGeom_CapillaryPhys_Capillarity1()
+l=CapillarityEngine()
 l.liquidTension = 1
 Nsolve = 100000
 

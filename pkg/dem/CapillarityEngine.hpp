@@ -11,7 +11,7 @@
 #include <set>
 
 #include <core/Dispatching.hpp>
-#include <pkg/dem/CapillaryPhys1.hpp>
+#include <pkg/dem/CapillaryPhysDelaunay.hpp>
 #include <fstream>
 #include <iostream>
 #include <list>
@@ -43,7 +43,7 @@ public:
 };
 
 /// This is the constitutive law
-class Law2_ScGeom_CapillaryPhys_Capillarity1 : public GlobalEngine {
+class CapillarityEngine : public GlobalEngine {
 public:
 	void checkFusion();
 
@@ -62,11 +62,11 @@ public:
 	Real waterVolume();
 	void solver(Real suction, bool reset);
 	void triangulateData();
-	shared_ptr<CapillaryPhys1> solveStandalone(Real R1, Real R2, Real pressure, Real gap, shared_ptr<CapillaryPhys1> bridge/*, bool pBased*/);
+	shared_ptr<CapillaryPhysDelaunay> solveStandalone(Real R1, Real R2, Real pressure, Real gap, shared_ptr<CapillaryPhysDelaunay> bridge/*, bool pBased*/);
 
 	// clang-format off
-    YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(Law2_ScGeom_CapillaryPhys_Capillarity1,GlobalEngine,"This engine loops over interactions with physics :yref:`CapillaryPhys1` and it assign pendular bridges to them. It is a reimplementation of [Scholtes2009b]_, adding the option of imposing the bridge volume (instead of only capillary pressure) and enabling using unstructured input data by triangulation. This reimplementation also provides more geometrical quantities in order to define interfacial energy terms, it was used specifically in [Chalak2017].\n\nIf :yref:`Law2_ScGeom_CapillaryPhys_Capillarity1.imposePressure`==True, a uniform capillary pressure is assigned to all bridges, the liquid volume of each bridge is a result and it will change if the distance between the spheres changes. If :yref:`Law2_ScGeom_CapillaryPhys_Capillarity1.imposePressure`==False, then the volume of each bridge remains constant during motion, and capillary pressure is updated, instead. \n\nFor references, see [Scholtes2009b]_ and a couple papers by the same authors; [Scholtes2009d]_ (in french) is the most detailed.\n\nThe engine needs `an input data file <https://gitlab.com/yade-dev/yade-data/-/raw/887bfc12b6a8ad91024662fcf83efaf1dd01d968/capillaryFiles/capillaryfile.txt?inline=false>`__  available in yade-data package."
-    "\n\nIn order to allow capillary forces between distant spheres, it is necessary to enlarge the bounding boxes using :yref:`Bo1_Sphere_Aabb::aabbEnlargeFactor` and make the Ig2 define define distant interactions via:yref:`interactionDetectionFactor<Ig2_Sphere_Sphere_ScGeom::interactionDetectionFactor>`. It is also necessary to disable interactions removal by the constitutive law (:yref:`Law2<Law2_ScGeom_FrictPhys_CundallStrack::neverErase>=True`). The only combinations of laws supported are currently capillary law + :yref:`Law2_ScGeom_FrictPhys_CundallStrack` and capillary law + :yref:`Law2_ScGeom_MindlinPhys_Mindlin` (and the other variants of Hertz-Mindlin).\n\nSee CapillaryPhys-example.py for an example script.",
+    YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(CapillarityEngine,GlobalEngine,"This engine loops over interactions with physics :yref:`CapillaryPhysDelaunay` and it assign pendular bridges to them. It is a reimplementation of [Scholtes2009b]_, adding the option of imposing the bridge volume (instead of only capillary pressure) and enabling using unstructured input data by triangulation. This reimplementation also provides more geometrical quantities in order to define interfacial energy terms, it was used specifically in [Chalak2017].\n\nIf :yref:`CapillarityEngine.imposePressure`==True, a uniform capillary pressure is assigned to all bridges, the liquid volume of each bridge is a result and it will change if the distance between the spheres changes. If :yref:`CapillarityEngine.imposePressure`==False, then the volume of each bridge remains constant during motion, and capillary pressure is updated, instead. \n\nFor references, see [Scholtes2009b]_ and a couple papers by the same authors; [Scholtes2009d]_ (in french) is the most detailed.\n\nThe engine needs `an input data file <https://gitlab.com/yade-dev/yade-data/-/raw/887bfc12b6a8ad91024662fcf83efaf1dd01d968/capillaryFiles/capillaryfile.txt?inline=false>`__  available in yade-data package."
+    "\n\nIn order to allow capillary forces between distant spheres, it is necessary to enlarge the bounding boxes using :yref:`Bo1_Sphere_Aabb::aabbEnlargeFactor` and make the Ig2 define define distant interactions via:yref:`interactionDetectionFactor<Ig2_Sphere_Sphere_ScGeom::interactionDetectionFactor>`. It is also necessary to disable interactions removal by the constitutive law (:yref:`Law2<Law2_ScGeom_FrictPhys_CundallStrack::neverErase>=True`). The only combinations of laws supported are currently capillary law + :yref:`Law2_ScGeom_FrictPhys_CundallStrack` and capillary law + :yref:`Law2_ScGeom_MindlinPhys_Mindlin` (and the other variants of Hertz-Mindlin).\n\nSee CapillaryPhysDelaunay-example.py for an example script.",
 		  ((Real,capillaryPressure,0.,,"Value of the capillary pressure Uc defines as Uc=Ugas-Uliquid"))
 		  ((Real,totalVolumeofWater,-1.,,"Value of imposed water volume"))
 		  ((Real,liquidTension,0.073,,"Value of the superficial water tension in N/m"))
@@ -82,17 +82,17 @@ public:
                    ((bool,imposePressure,true,," If True, suction is imposed and is constant if not Volume is imposed-Undrained test"))   
 		  ((bool,totalVolumeConstant,true,," in undrained test there are 2 options, If True, the total volume of water is imposed,if false the volume of each meniscus is kept constant: in this case capillary pressure can be imposed for initial distribution of meniscus or it is the total volume that can be imposed initially")) 
 		   ,switchTriangulation=-1,
-		  .def("intEnergy",&Law2_ScGeom_CapillaryPhys_Capillarity1::intEnergy,"define the energy of interfaces in unsaturated pendular state")
-// 		  .def("sninterface",&Law2_ScGeom_CapillaryPhys_Capillarity1::sninterface,"define the amount of solid-non-wetting interfaces in unsaturated pendular state")
-		  .def("swInterface",&Law2_ScGeom_CapillaryPhys_Capillarity1::swInterface,"define the amount of solid-wetting interfaces in unsaturated pendular state")
-		  .def("wnInterface",&Law2_ScGeom_CapillaryPhys_Capillarity1::wnInterface,"define the amount of wetting-non-wetiing interfaces in unsaturated pendular state")
-		  .def("waterVolume",&Law2_ScGeom_CapillaryPhys_Capillarity1::waterVolume,"return the total value of water in the sample")		  
-		  .def("solveStandalone",&Law2_ScGeom_CapillaryPhys_Capillarity1::solveStandalone, (py::args("R1"), py::args("R2"), py::args("pressure") , py::args("gap"),  py::args("bridge") = shared_ptr<CapillaryPhys1>()/*, py::args("pBased") = true*/), "Returns a :yref:`CapillaryPhys1` object representing a single bridge independently of the scene, using radii R1 and R2, capillary pressure, and gap between two spheres. The returned value contains internals of the interpolation process, it can be passed as an optional argument ('bridge'). If the resolution is repeated multiple times, re-using cached data will increase performance if the geometrical parameters are changing by small increments")
+		  .def("intEnergy",&CapillarityEngine::intEnergy,"define the energy of interfaces in unsaturated pendular state")
+// 		  .def("sninterface",&CapillarityEngine::sninterface,"define the amount of solid-non-wetting interfaces in unsaturated pendular state")
+		  .def("swInterface",&CapillarityEngine::swInterface,"define the amount of solid-wetting interfaces in unsaturated pendular state")
+		  .def("wnInterface",&CapillarityEngine::wnInterface,"define the amount of wetting-non-wetiing interfaces in unsaturated pendular state")
+		  .def("waterVolume",&CapillarityEngine::waterVolume,"return the total value of water in the sample")		  
+		  .def("solveStandalone",&CapillarityEngine::solveStandalone, (py::args("R1"), py::args("R2"), py::args("pressure") , py::args("gap"),  py::args("bridge") = shared_ptr<CapillaryPhysDelaunay>()/*, py::args("pBased") = true*/), "Returns a :yref:`CapillaryPhysDelaunay` object representing a single bridge independently of the scene, using radii R1 and R2, capillary pressure, and gap between two spheres. The returned value contains internals of the interpolation process, it can be passed as an optional argument ('bridge'). If the resolution is repeated multiple times, re-using cached data will increase performance if the geometrical parameters are changing by small increments")
      );
 	// clang-format on
 };
 
 
-REGISTER_SERIALIZABLE(Law2_ScGeom_CapillaryPhys_Capillarity1);
+REGISTER_SERIALIZABLE(CapillarityEngine);
 
 } // namespace yade

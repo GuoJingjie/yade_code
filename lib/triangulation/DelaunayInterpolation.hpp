@@ -6,7 +6,7 @@
 *************************************************************************/
 /*
 This template class uses 3D triangulation to interpolate functions of three variables.
-Exemple usage in CapillaryPhys1 (see class "Meniscus") and Law2_ScGeom_CapillaryPhys_Capillarity1.cpp (where the interpolation happens).
+Exemple usage in CapillaryPhysDelaunay (see class "Meniscus") and CapillarityEngine.cpp (where the interpolation happens).
 */
 
 
@@ -32,7 +32,7 @@ class DelaunayInterpolator {
     
     // helper class to convert an actual data class into an interpolator-friendly class which will add some internals of the interpolation
     // on the top of the actual solution, in order to speed-up things in repetead solve.
-    // Exemple usage in CapillaryPhys1 (see class "Meniscus") and Law2_ScGeom_CapillaryPhys_Capillarity1.cpp (where the interpolation happens).
+    // Exemple usage in CapillaryPhysDelaunay (see class "Meniscus") and CapillarityEngine.cpp (where the interpolation happens).
     template <class PhysicalData>
     class InterpolatorData : public PhysicalData {
         public:

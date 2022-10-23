@@ -11,7 +11,7 @@
 #ifdef LAW2_SCGEOM_CAPILLARYPHYS_Capillarity1
 
 #include <pkg/common/ElastMat.hpp>
-#include <pkg/dem/Law2_ScGeom_CapillaryPhys_Capillarity1.hpp>
+#include <pkg/dem/CapillarityEngine.hpp>
 
 #include <lib/base/Math.hpp>
 #include <lib/high-precision/Constants.hpp>
@@ -25,17 +25,17 @@
 
 namespace yade { // Cannot have #include directive inside.
     
-DelaunayInterpolator::Dt Law2_ScGeom_CapillaryPhys_Capillarity1::dtVbased;
-DelaunayInterpolator::Dt Law2_ScGeom_CapillaryPhys_Capillarity1::dtPbased;
+DelaunayInterpolator::Dt CapillarityEngine::dtVbased;
+DelaunayInterpolator::Dt CapillarityEngine::dtPbased;
 
-Real Law2_ScGeom_CapillaryPhys_Capillarity1::intEnergy()
+Real CapillarityEngine::intEnergy()
 {
 	Real energy = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
 		if (!I->isReal()) continue;
 		ScGeom*         currentGeometry = static_cast<ScGeom*>(I->geom.get());
-		CapillaryPhys1* phys            = dynamic_cast<CapillaryPhys1*>(I->phys.get());
+		CapillaryPhysDelaunay* phys            = dynamic_cast<CapillaryPhysDelaunay*>(I->phys.get());
 		if (phys) {
 			if (phys->SInterface != 0) {
 				energy += liquidTension
@@ -48,14 +48,14 @@ Real Law2_ScGeom_CapillaryPhys_Capillarity1::intEnergy()
 }
 
 
-Real Law2_ScGeom_CapillaryPhys_Capillarity1::wnInterface()
+Real CapillarityEngine::wnInterface()
 {
 	Real wn = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
 		if (!I->isReal()) continue;
 		ScGeom*         currentGeometry = static_cast<ScGeom*>(I->geom.get());
-		CapillaryPhys1* phys            = dynamic_cast<CapillaryPhys1*>(I->phys.get());
+		CapillaryPhysDelaunay* phys            = dynamic_cast<CapillaryPhysDelaunay*>(I->phys.get());
 		if (phys) {
 			if (phys->SInterface != 0) {
 				wn += (phys->SInterface
@@ -68,14 +68,14 @@ Real Law2_ScGeom_CapillaryPhys_Capillarity1::wnInterface()
 	return wn;
 }
 
-Real Law2_ScGeom_CapillaryPhys_Capillarity1::swInterface()
+Real CapillarityEngine::swInterface()
 {
 	Real sw = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
 		if (!I->isReal()) continue;
 		ScGeom*         currentGeometry = static_cast<ScGeom*>(I->geom.get());
-		CapillaryPhys1* phys            = dynamic_cast<CapillaryPhys1*>(I->phys.get());
+		CapillaryPhysDelaunay* phys            = dynamic_cast<CapillaryPhysDelaunay*>(I->phys.get());
 		if (phys) {
 			sw += (2 * Mathr::PI
 			       * (pow(currentGeometry->radius1, 2) * (1 - cos(phys->Delta1)) + pow(currentGeometry->radius2, 2) * (1 - cos(phys->Delta2))));
@@ -85,23 +85,23 @@ Real Law2_ScGeom_CapillaryPhys_Capillarity1::swInterface()
 }
 
 
-Real Law2_ScGeom_CapillaryPhys_Capillarity1::waterVolume()
+Real CapillarityEngine::waterVolume()
 {
 	Real volume = 0;
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
 		if (!I->isReal()) continue;
-		CapillaryPhys1* phys = dynamic_cast<CapillaryPhys1*>(I->phys.get());
+		CapillaryPhysDelaunay* phys = dynamic_cast<CapillaryPhysDelaunay*>(I->phys.get());
 		if (phys) { volume += phys->vMeniscus; }
 	}
 	return volume;
 }
 
-void Law2_ScGeom_CapillaryPhys_Capillarity1::triangulateData()
+void CapillarityEngine::triangulateData()
 {
 	/// We get data from a file and input them in triangulations
 	if (solutions.size() > 0) {
-		LOG_WARN("Law2_ScGeom_CapillaryPhys_Capillarity1 asking triangulation for the second time. Ignored.");
+		LOG_WARN("CapillarityEngine asking triangulation for the second time. Ignored.");
 		return;
 	}
 	std::ifstream file(inputFilename.c_str());
@@ -132,18 +132,18 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::triangulateData()
 	dtVbased.insert(pointsV.begin(), pointsV.end());
 }
 
-YADE_PLUGIN((Law2_ScGeom_CapillaryPhys_Capillarity1));
+YADE_PLUGIN((CapillarityEngine));
 
 int firstIteration = 1;
 int x              = 0;
 
 //========================================================
 
-shared_ptr<CapillaryPhys1> Law2_ScGeom_CapillaryPhys_Capillarity1::solveStandalone(Real R1, Real R2, Real pressure, Real gap
-, shared_ptr<CapillaryPhys1> bridge = shared_ptr<CapillaryPhys1>()/*, bool pBased = true*/)
+shared_ptr<CapillaryPhysDelaunay> CapillarityEngine::solveStandalone(Real R1, Real R2, Real pressure, Real gap
+, shared_ptr<CapillaryPhysDelaunay> bridge = shared_ptr<CapillaryPhysDelaunay>()/*, bool pBased = true*/)
 {
 	if (dtPbased.number_of_vertices() < 1) triangulateData();
-	if (not bridge) bridge = shared_ptr<CapillaryPhys1>(new CapillaryPhys1());
+	if (not bridge) bridge = shared_ptr<CapillaryPhysDelaunay>(new CapillaryPhysDelaunay());
 	
 	Real Dinterpol = gap / R1;
 	Real Pinterpol = pressure * R1 / liquidTension;
@@ -157,7 +157,7 @@ shared_ptr<CapillaryPhys1> Law2_ScGeom_CapillaryPhys_Capillarity1::solveStandalo
 }
 
 
-void Law2_ScGeom_CapillaryPhys_Capillarity1::action()
+void CapillarityEngine::action()
 {
 	bool switched                        = (switchTriangulation == (imposePressure or totalVolumeConstant));
 	switchTriangulation                  = (imposePressure or totalVolumeConstant);
@@ -213,11 +213,11 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::action()
 		}
 	}
 	for (ii = scene->interactions->begin(); ii != iiEnd; ++ii) {
-		CapillaryPhys1* phys = dynamic_cast<CapillaryPhys1*>((*ii)->phys.get());
+		CapillaryPhysDelaunay* phys = dynamic_cast<CapillaryPhysDelaunay*>((*ii)->phys.get());
 		if ((*ii)->isReal() && phys->computeBridge == true) {
-			CapillaryPhys1*       cundallContactPhysics = NULL;
+			CapillaryPhysDelaunay*       cundallContactPhysics = NULL;
 			MindlinCapillaryPhys* mindlinContactPhysics = NULL;
-			if (!hertzOn) cundallContactPhysics = static_cast<CapillaryPhys1*>((*ii)->phys.get()); //use CapillaryPhys for linear model
+			if (!hertzOn) cundallContactPhysics = static_cast<CapillaryPhysDelaunay*>((*ii)->phys.get()); //use CapillaryPhysDelaunay for linear model
 			else
 				mindlinContactPhysics = static_cast<MindlinCapillaryPhys*>((*ii)->phys.get()); //use MindlinCapillaryPhys for hertz model
 
@@ -241,14 +241,14 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::action()
 		}
 	}
 }
-void Law2_ScGeom_CapillaryPhys_Capillarity1::checkFusion()
+void CapillarityEngine::checkFusion()
 {
 	//Reset fusion numbers
 	InteractionContainer::iterator ii    = scene->interactions->begin();
 	InteractionContainer::iterator iiEnd = scene->interactions->end();
 	for (; ii != iiEnd; ++ii) {
 		if ((*ii)->isReal()) {
-			if (!hertzOn) static_cast<CapillaryPhys1*>((*ii)->phys.get())->fusionNumber = 0;
+			if (!hertzOn) static_cast<CapillaryPhysDelaunay*>((*ii)->phys.get())->fusionNumber = 0;
 			else
 				static_cast<MindlinCapillaryPhys*>((*ii)->phys.get())->fusionNumber = 0;
 		}
@@ -259,9 +259,9 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::checkFusion()
 	Real                                         angle2 = -1.0;
 
 	for (int i = 0; i < bodiesMenisciiList.size(); ++i) { // i is the index (or id) of the body being tested
-		CapillaryPhys1*       cundallInteractionPhysics1 = NULL;
+		CapillaryPhysDelaunay*       cundallInteractionPhysics1 = NULL;
 		MindlinCapillaryPhys* mindlinInteractionPhysics1 = NULL;
-		CapillaryPhys1*       cundallInteractionPhysics2 = NULL;
+		CapillaryPhysDelaunay*       cundallInteractionPhysics2 = NULL;
 		MindlinCapillaryPhys* mindlinInteractionPhysics2 = NULL;
 		if (!bodiesMenisciiList[i].empty()) {
 			lastMeniscus = bodiesMenisciiList[i].end();
@@ -270,7 +270,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::checkFusion()
 				currentMeniscus = firstMeniscus;
 				++currentMeniscus;
 				if (!hertzOn) {
-					cundallInteractionPhysics1 = YADE_CAST<CapillaryPhys1*>((*firstMeniscus)->phys.get());
+					cundallInteractionPhysics1 = YADE_CAST<CapillaryPhysDelaunay*>((*firstMeniscus)->phys.get());
 					if (i == (*firstMeniscus)->getId1()) angle1 = cundallInteractionPhysics1->Delta1; //get angle of meniscus1 on body i
 					else
 						angle1 = cundallInteractionPhysics1->Delta2;
@@ -282,7 +282,7 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::checkFusion()
 				}
 				for (; currentMeniscus != lastMeniscus; ++currentMeniscus) { //... CHECK FUSION WITH ALL OTHER MENISCII ON THE BODY
 					if (!hertzOn) {
-						cundallInteractionPhysics2 = YADE_CAST<CapillaryPhys1*>((*currentMeniscus)->phys.get());
+						cundallInteractionPhysics2 = YADE_CAST<CapillaryPhysDelaunay*>((*currentMeniscus)->phys.get());
 						if (i == (*currentMeniscus)->getId1())
 							angle2 = cundallInteractionPhysics2->Delta1; //get angle of meniscus2 on body i
 						else
@@ -354,7 +354,7 @@ bool BodiesMenisciiList1::prepare(Scene* scene)
 	InteractionContainer::iterator iiEnd = scene->interactions->end();
 	for (; ii != iiEnd; ++ii) {
 		if ((*ii)->isReal()) {
-			if (static_cast<CapillaryPhys1*>((*ii)->phys.get())->meniscus) insert(*ii);
+			if (static_cast<CapillaryPhysDelaunay*>((*ii)->phys.get())->meniscus) insert(*ii);
 		}
 	}
 
@@ -402,7 +402,7 @@ void BodiesMenisciiList1::display()
 
 BodiesMenisciiList1::BodiesMenisciiList1() { initialized = false; }
 
-void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
+void CapillarityEngine::solver(Real suction, bool reset)
 {
 	if (!scene) cerr << "scene not defined!";
 	shared_ptr<BodyContainer>& bodies = scene->bodies;
@@ -415,25 +415,25 @@ void Law2_ScGeom_CapillaryPhys_Capillarity1::solver(Real suction, bool reset)
 
 	for (; ii != iiEnd; ++ii) {
 		i += 1;
-		CapillaryPhys1* phys = dynamic_cast<CapillaryPhys1*>(
+		CapillaryPhysDelaunay* phys = dynamic_cast<CapillaryPhysDelaunay*>(
 		        (*ii)->phys.get()); ////////////////////////////////////////////////////////////////////////////////////////////
 
 
 		if ((*ii)->isReal() && phys->computeBridge == true) {
 			const shared_ptr<Interaction>& interaction = *ii;
 			if (!hertzInitialized) { //NOTE: We are assuming that only one type is used in one simulation here
-				if (CapillaryPhys1::getClassIndexStatic() == interaction->phys->getClassIndex()) hertzOn = false;
+				if (CapillaryPhysDelaunay::getClassIndexStatic() == interaction->phys->getClassIndex()) hertzOn = false;
 				else if (MindlinCapillaryPhys::getClassIndexStatic() == interaction->phys->getClassIndex())
 					hertzOn = true;
 				else
 					LOG_ERROR("The capillary law is not implemented for interactions using" << interaction->phys->getClassName());
 			}
 			hertzInitialized                            = true;
-			CapillaryPhys1*       cundallContactPhysics = NULL;
+			CapillaryPhysDelaunay*       cundallContactPhysics = NULL;
 			MindlinCapillaryPhys* mindlinContactPhysics = NULL;
 
 			/// contact physics depends on the contact law, that is used (either linear model or hertz model)
-			if (!hertzOn) cundallContactPhysics = static_cast<CapillaryPhys1*>(interaction->phys.get()); //use CapillaryPhys for linear model
+			if (!hertzOn) cundallContactPhysics = static_cast<CapillaryPhysDelaunay*>(interaction->phys.get()); //use CapillaryPhysDelaunay for linear model
 			else
 				mindlinContactPhysics = static_cast<MindlinCapillaryPhys*>(interaction->phys.get()); //use MindlinCapillaryPhys for hertz model
 
