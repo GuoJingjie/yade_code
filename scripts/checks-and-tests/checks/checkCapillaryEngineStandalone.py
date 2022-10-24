@@ -1,9 +1,9 @@
 #author: bruno.chareyre@grenoble-inp.fr
 if "CGAL" in features:
-    import os
-    os.system("wget -O capillaryfile.txt https://gitlab.com/yade-dev/yade-data/-/raw/main/capillaryFiles/capillaryfile.txt?inline=false")
+
+    #os.system("wget -O capillaryfile.txt https://gitlab.com/yade-dev/yade-data/-/raw/main/capillaryFiles/capillaryfile.txt?inline=false")
     # test standalone bridge interpolator
-    l=CapillarityEngine()
+    l=CapillarityEngine(inputFilename="data/capillaryFiles/capillaryfile.txt")
     l.liquidTension = 1
 
     i = l.solveStandalone(1,1,1,0.1) # dummy solve to trigger triangulation
