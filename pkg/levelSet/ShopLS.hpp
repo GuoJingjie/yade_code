@@ -72,7 +72,7 @@ public:
 	                                  const State&                   rbp2,
 	                                  const shared_ptr<Interaction>& c,
 	                                  const Vector3r&                currentNormal,
-									  const Vector3r&				 shift2);
+	                                  const Vector3r&				 shift2);
 	static shared_ptr<ScGeom> geomPtrForLaterRemoval(const State& rbp1, const State& rbp2, const shared_ptr<Interaction>& c);
 };
 } // namespace yade

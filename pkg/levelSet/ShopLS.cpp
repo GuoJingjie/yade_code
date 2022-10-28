@@ -325,7 +325,7 @@ shared_ptr<ScGeom> ShopLS::geomPtrForLaterRemoval(const State& rbp1, const State
 	        rbp2,
 	        c,
 	        Vector3r::UnitX() /* inconsequential bullsh..*/,
-			Vector3r::Zero() /* inconsequential bullsh..*/);
+	        Vector3r::Zero() /* inconsequential bullsh..*/);
 }
 
 shared_ptr<ScGeom> ShopLS::geomPtr(

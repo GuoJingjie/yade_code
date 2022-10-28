@@ -171,7 +171,7 @@ bool Ig2_Box_LevelSet_ScGeom::go(
 	        state2,
 	        c,
 	        normal,
-			shift2);
+	        shift2);
 	return true;
 }
 
@@ -233,7 +233,7 @@ bool Ig2_Wall_LevelSet_ScGeom::go(
 	        state2,
 	        c,
 	        normal,
-			shift2);
+	        shift2);
 	return true;
 }
 
@@ -327,7 +327,7 @@ bool Ig2_LevelSet_LevelSet_ScGeom::go(
 	        state2,
 	        c,
 	        normal,
-			shift2);
+	        shift2);
 	return true;
 }
 } // namespace yade
