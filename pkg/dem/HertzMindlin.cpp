@@ -224,20 +224,7 @@ bool Law2_ScGeom_MindlinPhys_HertzWithLinearShear::go(shared_ptr<IGeom>& ig, sha
 	// shear force
 	Vector3r& Fs = geom->rotate(phys->shearForce);
 	Real      ks = nonLin > 0 ? phys->kso * math::pow(uN, 0.5) : phys->kso;
-	Vector3r  shearIncrement;
-	if (nonLin > 1) {
-		auto *   de1 = Body::byId(id1, scene)->state.get(), *de2 = Body::byId(id2, scene)->state.get();
-		Vector3r shiftVel = scene->isPeriodic ? Vector3r(scene->cell->velGrad * scene->cell->hSize * contact->cellDist.cast<Real>()) : Vector3r::Zero();
-		Vector3r shift2   = scene->isPeriodic ? Vector3r(scene->cell->hSize * contact->cellDist.cast<Real>()) : Vector3r::Zero();
-
-
-		Vector3r incidentV  = geom->getIncidentVel(de1, de2, scene->dt, shift2, shiftVel, /*preventGranularRatcheting*/ nonLin > 2);
-		Vector3r incidentVn = geom->normal.dot(incidentV) * geom->normal; // contact normal velocity
-		Vector3r incidentVs = incidentV - incidentVn;                     // contact shear velocity
-		shearIncrement      = incidentVs * scene->dt;
-	} else {
-		shearIncrement = geom->shearIncrement();
-	}
+	const Vector3r& shearIncrement = geom->shearIncrement();
 	Fs -= ks * shearIncrement;
 	// Mohr-Coulomb slip
 	Real maxFs2 = pow(Fn, 2) * pow(phys->tangensOfFrictionAngle, 2);
@@ -375,9 +362,12 @@ bool Law2_ScGeom_MindlinPhys_Mindlin::go(shared_ptr<IGeom>& ig, shared_ptr<IPhys
 	shearElastic            = scg->rotate(shearElastic);
 	Vector3r prev_FsElastic = shearElastic; // save shear force at previous time step
 	// 2. Get incident velocity, get shear and normal components
-	Vector3r incidentV  = scg->getIncidentVel(de1, de2, dt, shift2, shiftVel, preventGranularRatcheting);
+	// NOTE: below, the normal component is obtained from getIncidentVel(), OTOH, the shear component computed at next line would be wrong for sphere-facet
+	// and possibly other Ig types incompatible with preventGranularRatcheting=true. We thus use the precomputed shearIncrement from the Ig2, which should be always correct.
+    Vector3r incidentV  = scg->getIncidentVel(de1, de2, dt, shift2, shiftVel, false);
+//     Vector3r incidentV  = geom->shearIncrement()/dt;
 	Vector3r incidentVn = scg->normal.dot(incidentV) * scg->normal; // contact normal velocity
-	Vector3r incidentVs = incidentV - incidentVn;                   // contact shear velocity
+	Vector3r incidentVs = scg->shearIncrement()/dt;               // contact shear velocity  
 	// 3. Get shear force (incrementally)
 	shearElastic = shearElastic - phys->ks * (incidentVs * dt);
 
