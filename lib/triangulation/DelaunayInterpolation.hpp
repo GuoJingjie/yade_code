@@ -64,29 +64,47 @@ static Weighted_vertices getIncidentVtxWeights(
         std::vector<Dt::Geom_traits::Vector_3>& normals,
         Dt::Cell_handle& start)
 {
-
-    typedef Dt::Geom_traits::FT FT;
-	CGAL_triangulation_precondition(dt.dimension() == 3);
-	Dt::Locate_type lt;
-	int         li, lj;
-	Dt::Cell_handle c             = dt.locate(Q, lt, li, lj, start);
-	bool        updateNormals = (c != start || normals.size() < 4);
-	if (updateNormals) normals.clear();
-	if (lt == Dt::VERTEX) {
-		*nn_out++ = std::make_pair(c->vertex(li), FT(1));
-		return std::make_pair(nn_out, true);
-	} else if (dt.is_infinite(c))
-		return std::make_pair(nn_out, false); //point outside the convex-hull
-	for (int k = 0; k < 4; k++) {
-		if (updateNormals) {
-			normals.push_back(cross_product(
-			        c->vertex(comb[k])->point() - c->vertex(comb[k + 1])->point(), c->vertex(comb[k])->point() - c->vertex(comb[k + 2])->point()));
-			normals[k] = normals[k] / ((c->vertex(k)->point() - c->vertex(comb[k])->point()) * normals[k]);
-		}
-        FT weight = ((Q - c->vertex(comb[k])->point()) * normals[k]);
-		*nn_out++   = std::make_pair(c->vertex(k), weight);
+	typedef Dt::Geom_traits::FT FT;
+	bool  updateNormals = normals.size() < 4;
+    std::vector<FT> weights; weights.reserve(4);
+    
+    if (not updateNormals) { // try using cached normals 
+    for (int k = 0; k < 4; k++) {
+        FT weight = ((Q - start->vertex(comb[k])->point()) * normals[k]);
+        if (weight<-1e-4) // Negative weight implies the inmput moved to another cell, exit and reset normals below FIXME needs more customizable precision 
+        {
+            updateNormals = true; break;
+        }
+		weights.push_back(weight);
+    }
 	}
-	start = c;
+	if (not updateNormals) {
+        for (int k = 0; k < 4; k++) *nn_out++   = std::make_pair(start->vertex(k), weights[k]);
+	} else {
+		normals.clear();
+		CGAL_triangulation_precondition(dt.dimension() == 3);
+		Dt::Locate_type lt;
+		int         li, lj;
+		Dt::Cell_handle c  = dt.locate(Q, lt, li, lj, start);
+		if (lt == Dt::VERTEX) { // query coincides with a data point
+			*nn_out++ = std::make_pair(c->vertex(li), FT(1));
+			return std::make_pair(nn_out, true);
+		} else if (dt.is_infinite(c)) { // query is outside the convex-hull
+			start = c;
+			return std::make_pair(nn_out, false); 
+		}
+		// normal case, query inside a tetrahedral cell, compute normals and weights of the vertices
+		for (int k = 0; k < 4; k++) {
+			if (updateNormals) {
+				normals.push_back(cross_product(
+						c->vertex(comb[k])->point() - c->vertex(comb[k + 1])->point(), c->vertex(comb[k])->point() - c->vertex(comb[k + 2])->point()));
+				normals[k] = normals[k] / ((c->vertex(k)->point() - c->vertex(comb[k])->point()) * normals[k]);
+			}
+			FT weight = ((Q - c->vertex(comb[k])->point()) * normals[k]);
+			*nn_out++   = std::make_pair(c->vertex(k), weight);
+		}
+		start = c;
+    }
 	return std::make_pair(nn_out, true);
 }
 
