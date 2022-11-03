@@ -50,7 +50,7 @@ public:
 	static DelaunayInterpolator::Dt                         dtVbased;
 	static DelaunayInterpolator::Dt                         dtPbased;
 	std::vector<MeniscusPhysicalData> solutions;
-	int                               switchTriangulation; //to detect switches between P-based and V-based data
+	int  pressureBased; //to detect switches between P-based and V-based data
 
 
 	BodiesMenisciiList1 bodiesMenisciiList;
@@ -60,9 +60,12 @@ public:
 	Real swInterface();
 	Real wnInterface();
 	Real waterVolume();
-	void solver(Real suction, bool reset);
 	void triangulateData();
+	void checkPhysType();
 	shared_ptr<CapillaryPhysDelaunay> solveStandalone(Real R1, Real R2, Real pressure, Real gap, shared_ptr<CapillaryPhysDelaunay> bridge/*, bool pBased*/);
+	
+	template<typename IPhysT> // the template parameter should be an IPhys with capillary attributes
+	void solveBridgesT(Real suction, bool reset);
 
 	// clang-format off
     YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(CapillarityEngine,GlobalEngine,"This engine loops over interactions with physics :yref:`CapillaryPhysDelaunay` and it assign pendular bridges to them. It is a reimplementation of [Scholtes2009b]_, adding the option of imposing the bridge volume (instead of only capillary pressure) and enabling using unstructured input data by triangulation. This reimplementation also provides more geometrical quantities in order to define interfacial energy terms, it was used specifically in [Chalak2017].\n\nIf :yref:`CapillarityEngine.imposePressure`==True, a uniform capillary pressure is assigned to all bridges, the liquid volume of each bridge is a result and it will change if the distance between the spheres changes. If :yref:`CapillarityEngine.imposePressure`==False, then the volume of each bridge remains constant during motion, and capillary pressure is updated, instead. \n\nFor references, see [Scholtes2009b]_ and a couple papers by the same authors; [Scholtes2009d]_ (in french) is the most detailed.\n\nThe engine needs `an input data file <https://gitlab.com/yade-dev/yade-data/-/raw/887bfc12b6a8ad91024662fcf83efaf1dd01d968/capillaryFiles/capillaryfile.txt?inline=false>`__  available in yade-data package."
@@ -80,8 +83,12 @@ public:
                    ((string,inputFilename,string("capillaryfile.txt"),,"the file with meniscus solutions, used for interpolation."))
                    ((bool,createDistantMeniscii,false,,"Generate meniscii between distant spheres? Else only maintain the existing one. For modeling a wetting path this flag should always be false. For a drying path it should be true for one step (initialization) then false, as in the logic of [Scholtes2009c]_"))
                    ((bool,imposePressure,true,," If True, suction is imposed and is constant if not Volume is imposed-Undrained test"))   
-		  ((bool,totalVolumeConstant,true,," in undrained test there are 2 options, If True, the total volume of water is imposed,if false the volume of each meniscus is kept constant: in this case capillary pressure can be imposed for initial distribution of meniscus or it is the total volume that can be imposed initially")) 
-		   ,switchTriangulation=-1,
+		  ((bool,totalVolumeConstant,true,," in undrained test there are 2 options, If True, the total volume of water is imposed,if false the volume of each meniscus is kept constant: in this case capillary pressure can be imposed for initial distribution of meniscus or it is the total volume that can be imposed initially"))
+		  ((bool,hertzInitialized,false,," FIXME: replace by class index ")) 
+		   , /* ctor */
+           pressureBased=-1;
+		   timingDeltas=shared_ptr<TimingDeltas>(new TimingDeltas);
+           ,
 		  .def("intEnergy",&CapillarityEngine::intEnergy,"define the energy of interfaces in unsaturated pendular state")
 // 		  .def("sninterface",&CapillarityEngine::sninterface,"define the amount of solid-non-wetting interfaces in unsaturated pendular state")
 		  .def("swInterface",&CapillarityEngine::swInterface,"define the amount of solid-wetting interfaces in unsaturated pendular state")
