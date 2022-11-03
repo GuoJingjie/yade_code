@@ -30,19 +30,6 @@ void Ip2_FrictMat_FrictMat_CapillaryPhysDelaunay::go(
 	}
 };
 
-
-
-void Ip2_FrictMat_FrictMat_CapillaryMindlinPhysDelaunay::go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction)
-{
-	if (interaction->phys) return;
-	Ip2_FrictMat_FrictMat_MindlinPhys::go(b1,b2,interaction);
-	if (interaction->phys) {
-		auto newPhys = shared_ptr<CapillaryMindlinPhysDelaunay>(new CapillaryMindlinPhysDelaunay(*YADE_PTR_CAST<MindlinPhys>(interaction->phys)));
-		newPhys->computeBridge          = computeDefault;
-		interaction->phys = newPhys;
-	}
-};
-
 } // namespace yade
 
 #endif //CAPILLARYPHYS1

@@ -194,7 +194,16 @@ public:	\
 REGISTER_SERIALIZABLE(Capillary##iPhysType##Delaunay);	\
 class Ip2_##matType##_##matType##_Capillary##iPhysType##Delaunay : public Ip2_##matType##_##matType##_##iPhysType {	\
 public:	\
-	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override;	\
+	virtual void go(const shared_ptr<Material>& b1, const shared_ptr<Material>& b2, const shared_ptr<Interaction>& interaction) override	\
+	{	\
+		if (interaction->phys) return;	\
+		Ip2_##matType##_##matType##_##iPhysType::go(b1,b2,interaction);	\
+		if (interaction->phys) {	\
+			auto newPhys = shared_ptr<Capillary##iPhysType##Delaunay>(new Capillary##iPhysType##Delaunay(*YADE_PTR_CAST<iPhysType>(interaction->phys)));	\
+			newPhys->computeBridge          = computeDefault;	\
+			interaction->phys = newPhys;	\
+		}	\
+	};	\
 	FUNCTOR2D(matType, matType);	\
 	YADE_CLASS_BASE_DOC_ATTRS_CTOR(Ip2_##matType##_##matType##_Capillary##iPhysType##Delaunay,Ip2_##matType##_##matType##_##iPhysType, "Variant of :yref:`Ip2_(matType)_(matType)_(iPhysType)` to be used with :yref:`CapillarityEngine`.",	\
 	((bool,computeDefault,true,,"bool to assign the default value of computeBridge.")),;	\
