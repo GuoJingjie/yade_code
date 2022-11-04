@@ -49,7 +49,7 @@ public:
 
 	static DelaunayInterpolator::Dt   dtVbased;
 	static DelaunayInterpolator::Dt   dtPbased;
-	std::vector<MeniscusPhysicalData> solutions;
+	static std::vector<MeniscusPhysicalData> solutions;
 	int                               pressureBased; //to detect switches between P-based and V-based data
 
 

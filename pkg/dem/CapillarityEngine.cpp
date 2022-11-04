@@ -24,9 +24,9 @@ namespace yade { // Cannot have #include directive inside.
 
 YADE_PLUGIN((CapillarityEngine));
 
-DelaunayInterpolator::Dt CapillarityEngine::dtVbased;
-DelaunayInterpolator::Dt CapillarityEngine::dtPbased;
-
+DelaunayInterpolator::Dt			CapillarityEngine::dtVbased;
+DelaunayInterpolator::Dt 			CapillarityEngine::dtPbased;
+std::vector<MeniscusPhysicalData>	CapillarityEngine::solutions;
 const unsigned DelaunayInterpolator::comb[] = { 1, 2, 3, 0, 1, 2 };
 
 Real CapillarityEngine::intEnergy()
