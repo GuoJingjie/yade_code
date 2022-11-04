@@ -22,6 +22,12 @@
 #include <lib/pyutil/numpy_boost.hpp>
 #pragma GCC diagnostic pop
 
+#ifdef YADE_OPENGL
+#include <lib/opengl/GLUtils.hpp>
+#include <lib/opengl/OpenGLWrapper.hpp>
+#include <pkg/common/GLDrawFunctors.hpp>
+#endif
+
 namespace yade { // Cannot have #include directive inside.
 
 using math::max;
@@ -170,11 +176,11 @@ void TesselationWrapper::clear2(void) //for testing purpose
 void TesselationWrapper::insertSceneSpheres(bool reset)
 {
 	// declaration of ‘scene’ shadows a member of ‘yade::TesselationWrapper’ [-Werror=shadow]
-	Scene* scene2 = Omega::instance().getScene().get();
+// 	Scene* scene2 = Omega::instance().getScene().get();
 	// 	Real_timer clock;
 	//         clock.start();
-	const shared_ptr<BodyContainer>& bodies = scene2->bodies;
-	build_triangulation_with_ids(bodies, *this, reset);
+// 	const shared_ptr<BodyContainer>& bodies = scene2->bodies;
+	build_triangulation_with_ids(scene->bodies, *this, reset);
 	// 	clock.top("Triangulation");
 }
 
@@ -478,6 +484,56 @@ boost::python::list TesselationWrapper::getAlphaVertices(Real alpha) const
 		ret.append(*f);
 	return ret;
 }
+
+#ifdef YADE_OPENGL
+
+YADE_PLUGIN((GlExtra_AlphaGraph))
+
+CREATE_LOGGER(GlExtra_AlphaGraph);
+
+void GlExtra_AlphaGraph::render()
+{
+// 	// scene object changed (after reload, for instance), for re-initialization
+// 	if (tesselationW && tesselationW->scene != scene) tesselationW = shared_ptr<LawTester>();
+// 
+// 	if (!tesselationW) {
+// 		FOREACH(shared_ptr<Engine> e, scene->engines)
+// 		{
+// 			tesselationW = YADE_PTR_DYN_CAST<LawTester>(e);
+// 			if (tesselationW) break;
+// 		}
+// 	}
+// 	if (!tesselationW) {
+// 		LOG_ERROR("No LawTester in O.engines, killing myself.");
+// 		dead = true;
+// 		return;
+// 	}
+
+// 	if (reset) LOG_WARN("reset");
+	glColor3v(Vector3r(1, 0, 1));
+	glDisable(GL_LIGHTING);
+	if (not tesselationWrapper) tesselationWrapper=shared_ptr<TesselationWrapper>(new TesselationWrapper);
+	if (reset==true) {
+		segments.clear();
+// 		LOG_WARN("scene is"<<bool(tesselationWrapper->scene==NULL))
+		tesselationWrapper->insertSceneSpheres(true);
+		segments = tesselationWrapper->Tes->getExtendedAlphaGraph(alpha, shrinkedAlpha, fixedAlpha);
+		reset=false;
+	}
+	
+	auto pt = segments.begin();
+
+	glLineWidth(1.);
+	const auto colorBefore = Vector3r(.7, 1, .7);
+	short i = 0;
+	while (pt != segments.end()) {
+		GLUtils::GLDrawLine(*pt++, *pt++, colorBefore);
+		i++;
+	}
+// 	LOG_WARN("plotted point "<<i);
+}
+
+#endif /*OPENGL*/
 
 } // namespace yade
 

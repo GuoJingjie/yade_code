@@ -14,6 +14,9 @@
 #include <core/Scene.hpp>
 #include <pkg/common/Sphere.hpp>
 #include <pkg/dem/MicroMacroAnalyser.hpp>
+#ifdef YADE_OPENGL
+#include <pkg/common/OpenGLRenderer.hpp>
+#endif
 
 namespace yade { // Cannot have #include directive inside.
 
@@ -177,6 +180,39 @@ public:
 };
 REGISTER_SERIALIZABLE(TesselationWrapper);
 //} // namespace CGT
+
+#ifdef YADE_OPENGL
+
+class GlExtra_AlphaGraph : public GlExtraDrawer {
+public:
+	DECLARE_LOGGER;
+	bool reset;
+	Real alpha;
+	Real shrinkedAlpha;
+	bool fixedAlpha;
+	
+	Real getAlpha() {return  alpha;}; void setAlpha(Real a) {reset=true; alpha=a;};
+	Real getShrinkedAlpha() {return  shrinkedAlpha;}; void setShrinkedAlpha(Real a) {reset=true; shrinkedAlpha=a;};
+	bool getFixedAlpha() {return  fixedAlpha;}; void setFixedAlpha(bool a) {reset=true; fixedAlpha=a;};
+	
+	
+	void render() override;
+
+	// clang-format off
+	YADE_CLASS_BASE_DOC_ATTRS_CTOR_PY(GlExtra_AlphaGraph,GlExtraDrawer,"Display .",
+		((shared_ptr<TesselationWrapper>,tesselationWrapper,,,"Associated instance of TesselationWrapper"))
+		((vector<Vector3r>, segments,,,"segments describing the alpha contour"))
+		,/*ctor*/
+		alpha=0; shrinkedAlpha=0; fixedAlpha=false; reset=false;
+		, /*py*/
+		.add_property("alpha",&GlExtra_AlphaGraph::getAlpha,&GlExtra_AlphaGraph::setAlpha,"alpha value")
+		.add_property("shrinkedAlpha",&GlExtra_AlphaGraph::getShrinkedAlpha,&GlExtra_AlphaGraph::setShrinkedAlpha,"shrinkedAlpha value")
+		.add_property("fixedAlpha",&GlExtra_AlphaGraph::getFixedAlpha,&GlExtra_AlphaGraph::setFixedAlpha,"fixedAlpha option")
+	);
+	// clang-format on
+};
+REGISTER_SERIALIZABLE(GlExtra_AlphaGraph);
+#endif /*OPENGL*/
 
 } // namespace yade
 
