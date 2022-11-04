@@ -5,14 +5,15 @@
 #define CAPILLARYPHYS1
 #ifdef CAPILLARYPHYS1
 
-#include <pkg/dem/CapillaryPhysDelaunay.hpp>
-#include <pkg/dem/ScGeom.hpp>
 #include <core/Omega.hpp>
 #include <core/Scene.hpp>
+#include <pkg/dem/CapillaryPhysDelaunay.hpp>
+#include <pkg/dem/ScGeom.hpp>
 
 namespace yade { // Cannot have #include directive inside.
 
-YADE_PLUGIN((CapillaryPhysDelaunay)(CapillaryMindlinPhysDelaunay)(Ip2_FrictMat_FrictMat_CapillaryPhysDelaunay)(Ip2_FrictMat_FrictMat_CapillaryMindlinPhysDelaunay));
+YADE_PLUGIN(
+        (CapillaryPhysDelaunay)(CapillaryMindlinPhysDelaunay)(Ip2_FrictMat_FrictMat_CapillaryPhysDelaunay)(Ip2_FrictMat_FrictMat_CapillaryMindlinPhysDelaunay));
 
 void Ip2_FrictMat_FrictMat_CapillaryPhysDelaunay::go(
         const shared_ptr<Material>& b1 //FrictMat
@@ -22,11 +23,11 @@ void Ip2_FrictMat_FrictMat_CapillaryPhysDelaunay::go(
         const shared_ptr<Interaction>& interaction)
 {
 	if (interaction->phys) return;
-	Ip2_FrictMat_FrictMat_FrictPhys::go(b1,b2,interaction);
+	Ip2_FrictMat_FrictMat_FrictPhys::go(b1, b2, interaction);
 	if (interaction->phys) {
-		auto newPhys = shared_ptr<CapillaryPhysDelaunay>(new CapillaryPhysDelaunay(*YADE_PTR_CAST<FrictPhys>(interaction->phys)));
-		newPhys->computeBridge          = computeDefault;
-		interaction->phys = newPhys;
+		auto newPhys           = shared_ptr<CapillaryPhysDelaunay>(new CapillaryPhysDelaunay(*YADE_PTR_CAST<FrictPhys>(interaction->phys)));
+		newPhys->computeBridge = computeDefault;
+		interaction->phys      = newPhys;
 	}
 };
 

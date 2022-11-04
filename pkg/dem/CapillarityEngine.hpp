@@ -33,13 +33,13 @@ private:
 public:
 	BodiesMenisciiList1();
 	BodiesMenisciiList1(Scene* body);
-	bool                           prepare(Scene* scene);
-	bool                           insert(const shared_ptr<Interaction>& interaction);
-	bool                           remove(const shared_ptr<Interaction>& interaction);
+	bool                                prepare(Scene* scene);
+	bool                                insert(const shared_ptr<Interaction>& interaction);
+	bool                                remove(const shared_ptr<Interaction>& interaction);
 	std::list<shared_ptr<Interaction>>& operator[](int index);
-	int                            size();
-	void                           display();
-	bool initialized;
+	int                                 size();
+	void                                display();
+	bool                                initialized;
 };
 
 /// This is the constitutive law
@@ -47,10 +47,10 @@ class CapillarityEngine : public GlobalEngine {
 public:
 	void checkFusion();
 
-	static DelaunayInterpolator::Dt                         dtVbased;
-	static DelaunayInterpolator::Dt                         dtPbased;
+	static DelaunayInterpolator::Dt   dtVbased;
+	static DelaunayInterpolator::Dt   dtPbased;
 	std::vector<MeniscusPhysicalData> solutions;
-	int  pressureBased; //to detect switches between P-based and V-based data
+	int                               pressureBased; //to detect switches between P-based and V-based data
 
 
 	BodiesMenisciiList1 bodiesMenisciiList;
@@ -62,9 +62,10 @@ public:
 	Real waterVolume();
 	void triangulateData();
 	void checkPhysType();
-	shared_ptr<CapillaryPhysDelaunay> solveStandalone(Real R1, Real R2, Real pressure, Real gap, shared_ptr<CapillaryPhysDelaunay> bridge/*, bool pBased*/);
-	
-	template<typename IPhysT> // the template parameter should be an IPhys with capillary attributes
+	shared_ptr<CapillaryPhysDelaunay>
+	solveStandalone(Real R1, Real R2, Real pressure, Real gap, shared_ptr<CapillaryPhysDelaunay> bridge /*, bool pBased*/);
+
+	template <typename IPhysT> // the template parameter should be an IPhys with capillary attributes
 	void solveBridgesT(Real suction, bool reset);
 
 	// clang-format off

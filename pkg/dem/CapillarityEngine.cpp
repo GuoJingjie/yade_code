@@ -23,7 +23,7 @@
 namespace yade { // Cannot have #include directive inside.
 
 YADE_PLUGIN((CapillarityEngine));
-	
+
 DelaunayInterpolator::Dt CapillarityEngine::dtVbased;
 DelaunayInterpolator::Dt CapillarityEngine::dtPbased;
 
@@ -35,7 +35,7 @@ Real CapillarityEngine::intEnergy()
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
 		if (!I->isReal()) continue;
-		ScGeom*         currentGeometry = static_cast<ScGeom*>(I->geom.get());
+		ScGeom*                currentGeometry = static_cast<ScGeom*>(I->geom.get());
 		CapillaryPhysDelaunay* phys            = static_cast<CapillaryPhysDelaunay*>(I->phys.get());
 		if (phys) {
 			if (phys->SInterface != 0) {
@@ -55,7 +55,7 @@ Real CapillarityEngine::wnInterface()
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
 		if (!I->isReal()) continue;
-		ScGeom*         currentGeometry = static_cast<ScGeom*>(I->geom.get());
+		ScGeom*                currentGeometry = static_cast<ScGeom*>(I->geom.get());
 		CapillaryPhysDelaunay* phys            = static_cast<CapillaryPhysDelaunay*>(I->phys.get());
 		if (phys) {
 			if (phys->SInterface != 0) {
@@ -75,7 +75,7 @@ Real CapillarityEngine::swInterface()
 	FOREACH(const shared_ptr<Interaction>& I, *scene->interactions)
 	{
 		if (!I->isReal()) continue;
-		ScGeom*         currentGeometry = static_cast<ScGeom*>(I->geom.get());
+		ScGeom*                currentGeometry = static_cast<ScGeom*>(I->geom.get());
 		CapillaryPhysDelaunay* phys            = static_cast<CapillaryPhysDelaunay*>(I->phys.get());
 		if (phys) {
 			sw += (2 * Mathr::PI
@@ -134,7 +134,8 @@ void CapillarityEngine::triangulateData()
 int firstIteration = 1;
 int x              = 0;
 
-template<typename IPhysT> // the template parameter should be an IPhys with capillary attributes, see the selection of correct type below, in CapillarityEngine::action()
+template <
+        typename IPhysT> // the template parameter should be an IPhys with capillary attributes, see the selection of correct type below, in CapillarityEngine::action()
 void CapillarityEngine::solveBridgesT(Real suction, bool reset)
 {
 	if (!scene) cerr << "scene not defined!";
@@ -142,15 +143,15 @@ void CapillarityEngine::solveBridgesT(Real suction, bool reset)
 	if (dtPbased.number_of_vertices() < 1) triangulateData();
 	if (fusionDetection && !bodiesMenisciiList.initialized) bodiesMenisciiList.prepare(scene);
 	timingDeltas->checkpoint("init solver");
-	
+
 	const long size = scene->interactions->size();
-	#ifdef YADE_OPENMP
-	#pragma omp parallel for schedule(guided) num_threads(ompThreads > 0 ? std::min(ompThreads, omp_get_max_threads()) : omp_get_max_threads())
-	#endif
+#ifdef YADE_OPENMP
+#pragma omp parallel for schedule(guided) num_threads(ompThreads > 0 ? std::min(ompThreads, omp_get_max_threads()) : omp_get_max_threads())
+#endif
 	for (long i = 0; i < size; i++) {
-		const shared_ptr<Interaction>& interaction = (*scene->interactions)[i];	
-		auto phys = static_cast<IPhysT*>(interaction->phys.get()); 
-		
+		const shared_ptr<Interaction>& interaction = (*scene->interactions)[i];
+		auto                           phys        = static_cast<IPhysT*>(interaction->phys.get());
+
 		if (interaction->isReal() /*&& phys->computeBridge == true FIXME: not available in Mindlin */) {
 			const unsigned int& id1 = interaction->getId1();
 			const unsigned int& id2 = interaction->getId2();
@@ -160,7 +161,7 @@ void CapillarityEngine::solveBridgesT(Real suction, bool reset)
 			const int& geometryIndex2 = (*bodies)[id2]->shape->getClassIndex();
 			/// definition of interacting objects (not necessarily in contact)
 			ScGeom* currentContactGeometry = static_cast<ScGeom*>(interaction->geom.get());
-			
+
 			if (!(geometryIndex1 == geometryIndex2)) {
 				if (currentContactGeometry->penetrationDepth < 0) scene->interactions->requestErase(interaction);
 				continue;
@@ -174,37 +175,37 @@ void CapillarityEngine::solveBridgesT(Real suction, bool reset)
 
 			/// intergranular distance
 			Real D = -alpha * ((currentContactGeometry->penetrationDepth) + epsilonMean * (R1 + R2));
-			
+
 			bool wasMeniscus = phys->meniscus;
-			if (D <= 0 || createDistantMeniscii) { 
-					if (fusionDetection && !phys->meniscus) bodiesMenisciiList.insert(interaction);
-					phys->meniscus = true;
+			if (D <= 0 || createDistantMeniscii) {
+				if (fusionDetection && !phys->meniscus) bodiesMenisciiList.insert(interaction);
+				phys->meniscus = true;
 			}
 			Real Dinterpol = D / R1;
 
 			/// Suction (Capillary pressure):
 			if (imposePressure || (!imposePressure && totalVolumeConstant)) {
-				Real Pinterpol = 0;
-				Pinterpol = phys->isBroken ? 0 : suction * R1 / liquidTension;
+				Real Pinterpol          = 0;
+				Pinterpol               = phys->isBroken ? 0 : suction * R1 / liquidTension;
 				phys->capillaryPressure = suction;
 				/// Capillary solution finder:
-				if ((Pinterpol >= 0) && phys->meniscus) { 
+				if ((Pinterpol >= 0) && phys->meniscus) {
 					// NOTE: here, the parameter phys->m will be missing for MindlinCapillaryPhys, or CapillaryPhys
 					// Possible solution for merging the capillary flavors: give the same name to CapillaryPhysDelaunay::m  and CapillaryPhys::currentIndexes
 					// and make the interpolator a template parameter of this entire function, one interpolator will use a cell handle (from phys->m) or table indices (from CapillaryPhys)
-					MeniscusPhysicalData solution
-							= DelaunayInterpolator::interpolate1(dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), phys->m, solutions, reset);
+					MeniscusPhysicalData solution = DelaunayInterpolator::interpolate1(
+					        dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), phys->m, solutions, reset);
 					/// capillary adhesion force
-					Real     Finterpol = solution.force;
-					phys->fCap = Finterpol * R1 * liquidTension * currentContactGeometry->normal;
+					Real Finterpol = solution.force;
+					phys->fCap     = Finterpol * R1 * liquidTension * currentContactGeometry->normal;
 					/// meniscus volume
-					phys->vMeniscus  = solution.volume * pow(R1, 3);
-					
+					phys->vMeniscus = solution.volume * pow(R1, 3);
+
 					if (phys->vMeniscus > 0) {
-						phys->meniscus = true;
+						phys->meniscus   = true;
 						phys->SInterface = solution.surface * pow(R1, 2);
 					} else {
-						phys->meniscus = false;
+						phys->meniscus   = false;
 						phys->SInterface = 4 * Mathr::PI * (pow(R1, 2) + pow(R2, 2));
 						if (fusionDetection and wasMeniscus) bodiesMenisciiList.remove(interaction);
 						if (currentContactGeometry->penetrationDepth < 0) scene->interactions->requestErase(interaction);
@@ -213,34 +214,32 @@ void CapillarityEngine::solveBridgesT(Real suction, bool reset)
 					/// wetting angles
 					phys->Delta1 = math::max(solution.delta1, solution.delta2);
 					phys->Delta2 = math::min(solution.delta1, solution.delta2);
-				} else scene->interactions->requestErase(interaction);
+				} else
+					scene->interactions->requestErase(interaction);
 
 			} else {
-				if (phys->vMeniscus == 0
-					and phys->capillaryPressure != 0) { //FIXME: test capillaryPressure consistently (!0 or >0 or >=0?!)
+				if (phys->vMeniscus == 0 and phys->capillaryPressure != 0) { //FIXME: test capillaryPressure consistently (!0 or >0 or >=0?!)
 					Real Pinterpol = 0;
-					Pinterpol = phys->isBroken ? 0 : phys->capillaryPressure * R1 / liquidTension;
+					Pinterpol      = phys->isBroken ? 0 : phys->capillaryPressure * R1 / liquidTension;
 					if ((Pinterpol >= 0) && phys->meniscus) {
 						MeniscusPhysicalData solution = DelaunayInterpolator::interpolate1(
-								dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), phys->m, solutions, reset);
+						        dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), phys->m, solutions, reset);
 						/// capillary adhesion force
 						phys->fCap = solution.force * R1 * liquidTension * currentContactGeometry->normal;
 						/// meniscus volume
-						Real Vinterpol  = solution.volume * pow(R1, 3);
-						Real SInterface = solution.surface * pow(R1, 2);
+						Real Vinterpol   = solution.volume * pow(R1, 3);
+						Real SInterface  = solution.surface * pow(R1, 2);
 						phys->vMeniscus  = Vinterpol;
 						phys->SInterface = SInterface;
 						if (Vinterpol > 0) phys->meniscus = true;
-						else phys->meniscus = false;
+						else
+							phys->meniscus = false;
 
-						if (phys->meniscus == false)
-							phys->SInterface = 4 * Mathr::PI * (pow(R1, 2))
-									+ 4 * Mathr::PI * (pow(R2, 2));
+						if (phys->meniscus == false) phys->SInterface = 4 * Mathr::PI * (pow(R1, 2)) + 4 * Mathr::PI * (pow(R2, 2));
 						if (!Vinterpol) {
-							if (fusionDetection || phys->isBroken)
-								bodiesMenisciiList.remove(interaction);
+							if (fusionDetection || phys->isBroken) bodiesMenisciiList.remove(interaction);
 							if (D > ((interactionDetectionFactor - 1)
-									* (currentContactGeometry->radius2 + currentContactGeometry->radius1)))
+							         * (currentContactGeometry->radius2 + currentContactGeometry->radius1)))
 								scene->interactions->requestErase(interaction);
 						}
 						/// wetting angles
@@ -252,14 +251,14 @@ void CapillarityEngine::solveBridgesT(Real suction, bool reset)
 					/// Capillary solution finder:
 					if (phys->meniscus) {
 						MeniscusPhysicalData solution = DelaunayInterpolator::interpolate1(
-								dtVbased, K::Point_3(R2 / R1, Vinterpol, Dinterpol), phys->m, solutions, reset);
+						        dtVbased, K::Point_3(R2 / R1, Vinterpol, Dinterpol), phys->m, solutions, reset);
 						/// capillary adhesion force
 						Real     Finterpol = solution.force;
 						Vector3r fCap      = Finterpol * R1 * liquidTension * currentContactGeometry->normal;
-						phys->fCap = fCap;
+						phys->fCap         = fCap;
 						/// suction and interfacial area
-						Real Pinterpol  = solution.succion * liquidTension / R1;
-						Real SInterface = solution.surface * pow(R1, 2);
+						Real Pinterpol          = solution.succion * liquidTension / R1;
+						Real SInterface         = solution.surface * pow(R1, 2);
 						phys->capillaryPressure = Pinterpol;
 						phys->SInterface        = SInterface;
 						if (Finterpol > 0) phys->meniscus = true;
@@ -270,7 +269,7 @@ void CapillarityEngine::solveBridgesT(Real suction, bool reset)
 						if (!Vinterpol) {
 							if ((fusionDetection) || phys->isBroken) bodiesMenisciiList.remove(interaction);
 							if (D > ((interactionDetectionFactor - 1)
-									* (currentContactGeometry->radius2 + currentContactGeometry->radius1)))
+							         * (currentContactGeometry->radius2 + currentContactGeometry->radius1)))
 								scene->interactions->requestErase(interaction);
 						}
 						/// wetting angles
@@ -279,7 +278,7 @@ void CapillarityEngine::solveBridgesT(Real suction, bool reset)
 					}
 				}
 			}
-		///interaction is not real //If the interaction is not real, it should not be in the list
+			///interaction is not real //If the interaction is not real, it should not be in the list
 		} else {
 			if (fusionDetection) bodiesMenisciiList.remove(interaction);
 			scene->interactions->requestErase(interaction);
@@ -290,36 +289,37 @@ void CapillarityEngine::solveBridgesT(Real suction, bool reset)
 	timingDeltas->checkpoint("check fusion");
 }
 
-shared_ptr<CapillaryPhysDelaunay> CapillarityEngine::solveStandalone(Real R1, Real R2, Real pressure, Real gap
-, shared_ptr<CapillaryPhysDelaunay> bridge = shared_ptr<CapillaryPhysDelaunay>()/*, bool pBased = true*/)
+shared_ptr<CapillaryPhysDelaunay> CapillarityEngine::solveStandalone(
+        Real R1, Real R2, Real pressure, Real gap, shared_ptr<CapillaryPhysDelaunay> bridge = shared_ptr<CapillaryPhysDelaunay>() /*, bool pBased = true*/)
 {
 	if (dtPbased.number_of_vertices() < 1) triangulateData();
 	if (not bridge) bridge = shared_ptr<CapillaryPhysDelaunay>(new CapillaryPhysDelaunay());
-	
+
 	Real Dinterpol = gap / R1;
 	Real Pinterpol = pressure * R1 / liquidTension;
-	
-	MeniscusPhysicalData solution = DelaunayInterpolator::interpolate1(dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), bridge->m, solutions, false);	
-	bridge->fCap = solution.force * Vector3r(1,0,0);
-	bridge->vMeniscus  = solution.volume * pow(R1, 3);
-	bridge->SInterface = solution.surface * pow(R1, 2);
-	bridge->meniscus = solution.volume > 0;
+
+	MeniscusPhysicalData solution = DelaunayInterpolator::interpolate1(dtPbased, K::Point_3(R2 / R1, Pinterpol, Dinterpol), bridge->m, solutions, false);
+	bridge->fCap                  = solution.force * Vector3r(1, 0, 0);
+	bridge->vMeniscus             = solution.volume * pow(R1, 3);
+	bridge->SInterface            = solution.surface * pow(R1, 2);
+	bridge->meniscus              = solution.volume > 0;
 	return bridge;
 }
 
-void CapillarityEngine::checkPhysType() {
+void CapillarityEngine::checkPhysType()
+{
 	// TODO: add more options here if we want more contact models compatible with capillarity
 	// NOTE: We are assuming that only one type at a time is used in one simulation here
 	for (auto ii = scene->interactions->begin(); ii != scene->interactions->end(); ++ii) {
-		if (not (*ii)->phys) continue;
+		if (not(*ii)->phys) continue;
 		if (CapillaryPhysDelaunay::getClassIndexStatic() == (*ii)->phys->getClassIndex()) {
-				hertzOn = false;
-				hertzInitialized = true;
-				break;
-		} else if ( MindlinCapillaryPhys::getClassIndexStatic() == (*ii)->phys->getClassIndex()) {
-				hertzOn = true;
-				hertzInitialized = true;
-				break;
+			hertzOn          = false;
+			hertzInitialized = true;
+			break;
+		} else if (MindlinCapillaryPhys::getClassIndexStatic() == (*ii)->phys->getClassIndex()) {
+			hertzOn          = true;
+			hertzInitialized = true;
+			break;
 		}
 	}
 	if (not hertzInitialized) LOG_ERROR("The capillary law is not implemented for the interaction physics used here, or no interactions were found.")
@@ -329,19 +329,20 @@ void CapillarityEngine::checkPhysType() {
 void CapillarityEngine::action()
 {
 	timingDeltas->start();
-	if (fusionDetection and ompThreads>1) {
-		LOG_WARN("Fusion detection is not thread-safe. Turning ompThreads=1. (It is in fact 'most-likely' unsafe, not tested, comment-out this check if you want to see by yourself)")
+	if (fusionDetection and ompThreads > 1) {
+		LOG_WARN("Fusion detection is not thread-safe. Turning ompThreads=1. (It is in fact 'most-likely' unsafe, not tested, comment-out this check "
+		         "if you want to see by yourself)")
 		ompThreads = 1;
 	}
 	if (!hertzInitialized) checkPhysType();
-	bool switched                  = (pressureBased != (imposePressure or totalVolumeConstant));
-	pressureBased                  = (imposePressure or totalVolumeConstant);
+	bool switched = (pressureBased != (imposePressure or totalVolumeConstant));
+	pressureBased = (imposePressure or totalVolumeConstant);
 
 	void (CapillarityEngine::*solveBridges)(Real capillaryPressure, bool switched);
-	solveBridges = hertzOn? &CapillarityEngine::solveBridgesT<CapillaryMindlinPhysDelaunay> : &CapillarityEngine::solveBridgesT<CapillaryPhysDelaunay>;
-	
+	solveBridges = hertzOn ? &CapillarityEngine::solveBridgesT<CapillaryMindlinPhysDelaunay> : &CapillarityEngine::solveBridgesT<CapillaryPhysDelaunay>;
+
 	if (imposePressure) {
-		(this->*solveBridges)(capillaryPressure,switched);
+		(this->*solveBridges)(capillaryPressure, switched);
 	} else {
 		if (((totalVolumeConstant || (!totalVolumeConstant && firstIteration == 1)) && totalVolumeofWater != -1)
 		    || (totalVolumeConstant && totalVolumeofWater == -1)) {
@@ -390,17 +391,17 @@ void CapillarityEngine::action()
 		}
 		timingDeltas->checkpoint("closing loop");
 	}
-	
+
 	const long size = scene->interactions->size();
-	#ifdef YADE_OPENMP
-	#pragma omp parallel for schedule(guided) num_threads(ompThreads > 0 ? std::min(ompThreads, omp_get_max_threads()) : omp_get_max_threads())
-	#endif
+#ifdef YADE_OPENMP
+#pragma omp parallel for schedule(guided) num_threads(ompThreads > 0 ? std::min(ompThreads, omp_get_max_threads()) : omp_get_max_threads())
+#endif
 	for (long i = 0; i < size; i++) {
-		const shared_ptr<Interaction>& I = (*scene->interactions)[i];
-		CapillaryPhysDelaunay* phys = static_cast<CapillaryPhysDelaunay*>(I->phys.get());
+		const shared_ptr<Interaction>& I    = (*scene->interactions)[i];
+		CapillaryPhysDelaunay*         phys = static_cast<CapillaryPhysDelaunay*>(I->phys.get());
 		if (I->isReal() && phys->computeBridge == true) {
-			CapillaryPhysDelaunay*       cundallContactPhysics = NULL;
-			MindlinCapillaryPhys* mindlinContactPhysics = NULL;
+			CapillaryPhysDelaunay* cundallContactPhysics = NULL;
+			MindlinCapillaryPhys*  mindlinContactPhysics = NULL;
 			if (!hertzOn) cundallContactPhysics = static_cast<CapillaryPhysDelaunay*>(I->phys.get()); //use CapillaryPhysDelaunay for linear model
 			else
 				mindlinContactPhysics = static_cast<MindlinCapillaryPhys*>(I->phys.get()); //use MindlinCapillaryPhys for hertz model
@@ -443,10 +444,10 @@ void CapillarityEngine::checkFusion()
 	Real                                         angle2 = -1.0;
 
 	for (int i = 0; i < bodiesMenisciiList.size(); ++i) { // i is the index (or id) of the body being tested
-		CapillaryPhysDelaunay*       cundallInteractionPhysics1 = NULL;
-		MindlinCapillaryPhys* mindlinInteractionPhysics1 = NULL;
-		CapillaryPhysDelaunay*       cundallInteractionPhysics2 = NULL;
-		MindlinCapillaryPhys* mindlinInteractionPhysics2 = NULL;
+		CapillaryPhysDelaunay* cundallInteractionPhysics1 = NULL;
+		MindlinCapillaryPhys*  mindlinInteractionPhysics1 = NULL;
+		CapillaryPhysDelaunay* cundallInteractionPhysics2 = NULL;
+		MindlinCapillaryPhys*  mindlinInteractionPhysics2 = NULL;
 		if (!bodiesMenisciiList[i].empty()) {
 			lastMeniscus = bodiesMenisciiList[i].end();
 			for (firstMeniscus = bodiesMenisciiList[i].begin(); firstMeniscus != lastMeniscus;
